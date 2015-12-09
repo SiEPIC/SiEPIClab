@@ -391,7 +391,7 @@ class hp816x(object):
         self.checkError(res);      
         return float(powerVal.value);      
         
-    def setPWMAveragingTime(self, slot, channel, avgTime):
+    def setPWMAveragingTime(self, slot, chan, avgTime):
         res = self.hp816x_set_PWM_averagingTime(self.hDriver, slot, chan, avgTime);
         self.checkError(res);
         
