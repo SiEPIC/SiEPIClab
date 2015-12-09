@@ -33,7 +33,7 @@ from logWriter import logWriter,logWriterError
 import sys
 import visa
 
-softwareVersion = "1.0"
+softwareVersion = "1.1"
 
 devTypes = [CorvusEcoParameters, MGMotorParameters, \
             hp816x_N77Det_instrParameters, hp816x_instrParameters, \

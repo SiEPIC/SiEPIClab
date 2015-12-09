@@ -1,0 +1,29 @@
+Version 1.1 - Stephen
+Changes: FineAlign.py, hp816x_instr.py
+Legend: ! New, @Fixes, #Changes, **Note
+
+==FineAlign.py==
+!FineGradientSearch
+New gradient search introduced that runs the search a second time at 0.5 micron step sizes. 
+This is performed after the rough gradient search has found its result
+
+!useDebugStep
+-Togglable Debug feature added, outputs individual step data allowing for analyzing
+
+!UltraFineAlign
+-New togglable option: sets the laser(hp816x_instr)'s averaging time to longer, increases accuracy of detection.
+-Currently set to 0.01 seconds.
+
+!Laser Averaging Time
+-Originally did not specify this time.
+-Fixed to default to 0.0001 seconds unless UltraFineAlign is turned on.
+**Does not set this value until Finealign is used. For future: should be ran on pyOptomip startup.
+
+#GradientSearch
+-Original gradient search is now known as "roughGradientsearch"
+
+
+==hp816x_instr.py==
+@setPWMAveragingTime
+-fixed a typo preventing this function from running.
+(channel parameter was labeled as "channel" while the code used "chan")
