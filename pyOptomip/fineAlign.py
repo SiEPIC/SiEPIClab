@@ -1,10 +1,29 @@
+# The MIT License (MIT)
+
+# Copyright (c) 2015 Michael Caverley
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+#Version 1.1
 import math
 import numpy as np
 import hp816x_instr
-
-#VERSION 1.1 - Includes 2 gradient searches for more accuracy
-#Change Consecutive peak in gradient search's parameters to 2 if you wish for more accurate result. However, it may not be able to find the device sometimes.
-#Stephen
 
 class fineAlign(object):
     
@@ -25,13 +44,19 @@ class fineAlign(object):
     
     numGradientIter = 50;
     
-    useCrosshair = 0 # Set to 1 to use crosshair search after gradient
-    
-    useDebugStep =0 #set to 1 to turn on debug of power vs step
-    #refer to plotscript to graph data easily
-    useFineGradient = True;
-    UltraFineAlign = True;  #Setting to true will increase laser's pwm averaging time to 0.01 sec. Accuracy and scan time are significantly increased. (Default:0.0001 sec)
+    useCrosshair = 0 # Set to 1 to use crosshair search after gradient. Doesn't work very well.
 
+    useDebugStep = 0 #set to 1 to turn on tracking of power and steps
+    
+    useFineGradient = True; #Secondary Gradient Search
+    
+    UltraFineAlign = True; #Sets pwm avging time to 0.01 sec. Accuracy and scan time are increased
+    
+    abort = False # Can set to true to self.abort a fine align
+    
+    NO_ERROR = 0
+    DEVICE_NOT_FOUND = 1
+    FINE_ALIGN_ABORTED = 2
     
     
     
@@ -50,7 +75,8 @@ class fineAlign(object):
             self.logfileRGrad = open('Logfile_RGrad'+str(self.stepSize)+'um.txt','w+')
             if self.useFineGradient == True:
                 self.logfileFGrad = open('Logfile_FGrad'+str(self.stepSize)+'um.txt','w+')
-        
+        #/Debug#
+                
         for det in self.detectorPriority:
             maxSteps = math.ceil(self.scanWindowSize/float(self.stepSize))
             # Get the detector slot number and channel for the chosen detector index
@@ -59,13 +85,15 @@ class fineAlign(object):
             
             self.laser.setPWMPowerUnit(detSlot, detChan, 'dBm')
             self.laser.setPWMPowerRange(detSlot, detChan, 'auto', 0)
+            # Try to set laser output. If the laser only has one output, an error is thrown
+            # which will be ignored here
+            
             if self.UltraFineAlign == True:
                 self.laser.setPWMAveragingTime(detSlot,detChan,(0.01))
             else:
                 self.laser.setPWMAveragingTime(detSlot,detChan,(0.0001))
-                
-            # Try to set laser output. If the laser only has one output, an error is thrown
-            # which will be ignored here
+            #Sets the PWMAveraging Time    
+            
             try:
                 self.laser.setTLSOutput(self.laserOutput, slot=self.laserSlot)
             except hp816x_instr.InstrumentError:
@@ -76,48 +104,45 @@ class fineAlign(object):
                   
             
             # Spiral search method
-            if self.spiralSearch(maxSteps, detSlot, detChan):
+            res =  self.spiralSearch(maxSteps, detSlot, detChan)
+            if res == self.DEVICE_NOT_FOUND:
                 xStopPos = self.stage.getPosition()[0];
                 yStopPos = self.stage.getPosition()[1];
                 self.stage.moveRelative(xStartPos-xStopPos, yStartPos-yStopPos)
                 print 'Could not find a device using this detector.'
                 continue
+            elif res == self.FINE_ALIGN_ABORTED:
+                print 'Fine align self.aborted.'
+                break
             print 'Found a device. Optimizing power...'   
+            
             # Gradient search stage      
             res = self.gradientSearchRough(detSlot, detChan)
             
             if self.useFineGradient == True:
                 res = self.gradientSearchFine(detSlot, detChan)
-
-            
+              
             # Crosshair method
             if self.useCrosshair:
                 res = self.crosshairSearch(maxSteps, detSlot, detChan)
             self.laser.setAutorangeAll()
-            
             print 'Fine align completed.'
+            #Debug#
             if self.useDebugStep ==1:
                 self.logfileSpiral.close() 
                 self.logfileRGrad.close()
                 if self.useFineGradient == True:
                     self.logfileFGrad.close()
-
-                
+            #/Debug#
             return res
+            
         # Fine align failed  
         print 'Fine align failed.'
         xStopPos = self.stage.getPosition()[0];
         yStopPos = self.stage.getPosition()[1];
         self.stage.moveRelative(xStartPos-xStopPos, yStartPos-yStopPos)
         self.laser.setAutorangeAll()
-        
-        if self.useDebugStep ==1:
-            self.logfileSpiral.close() 
-            self.logfileRGrad.close()
-            if self.useFineGradient == True:
-                self.logfileFGrad.close()
-
-        return 1    
+        return res    
             
     def spiralSearch(self, maxSteps, detSlot, detChan):
         numSteps = 1
@@ -125,11 +150,10 @@ class fineAlign(object):
         power = self.laser.readPWM(detSlot, detChan)
     
         direction = 1;
-                    
         
         # If threshold already met return right away
         if power > self.threshold:
-            return 0
+            return self.NO_ERROR
     
         # Spiral search stage
         while power <= self.threshold and numSteps < maxSteps:
@@ -138,19 +162,24 @@ class fineAlign(object):
             for ii in xrange(1, numSteps+1):
                 self.stage.moveRelative(self.stepSize*direction,0)
                 power = self.laser.readPWM(detSlot, detChan)
-                if power > self.threshold:
-                    return 0
-                if self.useDebugStep == 1:
-                    self.logfileSpiral.write(str(self.stage.getPosition()[0])+","+str(self.stage.getPosition()[1])+","+str(power)+"\n")
+                if self.abort:
+                    return self.FINE_ALIGN_ABORTED
+                elif power > self.threshold:
+                    return self.NO_ERROR
+                    if self.useDebugStep == 1:
+                        self.logfileSpiral.write(str(self.stage.getPosition()[0])+","+str(self.stage.getPosition()[1])+","+str(power)+"\n")
+   
                     
             # Y movement
             for ii in xrange(1, numSteps+1):
                 self.stage.moveRelative(0,self.stepSize*direction)
                 power = self.laser.readPWM(detSlot, detChan)
-                if power > self.threshold:   
-                    return 0
-                if self.useDebugStep == 1:
-                    self.logfileSpiral.write(str(self.stage.getPosition()[0])+","+str(self.stage.getPosition()[1])+","+str(power)+"\n")
+                if self.abort:
+                    return self.FINE_ALIGN_ABORTED
+                elif power > self.threshold:
+                    return self.NO_ERROR
+                    if self.useDebugStep == 1:
+                        self.logfileSpiral.write(str(self.stage.getPosition()[0])+","+str(self.stage.getPosition()[1])+","+str(power)+"\n")
                     
             numSteps += 1
             
@@ -161,21 +190,21 @@ class fineAlign(object):
                 direction = 1
                 
         
-        return 1 # Return error    
-             
+        return self.DEVICE_NOT_FOUND # Return error    
+            
             
     def gradientSearchRough(self, detSlot, detChan):
         peakFoundCount = 0; # Count how many consective peaks are found
-        numConsecutivePeaks = 1; # Need this many consecutive peaks to conclude the peak was found
-
-        
+        numConsecutivePeaks = 1; # Need this many consecutive peaks to conclude the peak was found  
         for ii in xrange(self.numGradientIter):
+            if self.abort:
+                return self.FINE_ALIGN_ABORTED
             # Always move in the direction of increasing power
             power = self.laser.readPWM(detSlot, detChan)
             
             self.stage.moveRelative(self.stepSize,0)
             power_posx = self.laser.readPWM(detSlot, detChan)
-                
+            
             if power_posx > power:
                 peakFoundCount = 0
                 #Debug
@@ -221,7 +250,7 @@ class fineAlign(object):
                 continue
             
             
-         ####New Section###   
+         #8 Axis#   
             #XX
             self.stage.moveRelative(self.stepSize,0)
             power_xnegy = self.laser.readPWM(detSlot, detChan)
@@ -234,7 +263,7 @@ class fineAlign(object):
                  #
                 continue
             #XY
-            self.stage.moveRelative(0,2*self.stepSize)
+            self.stage.moveRelative(0,2*self.stepSize)            
             power_xy = self.laser.readPWM(detSlot, detChan)
                       
             if power_xy > power:
@@ -270,25 +299,25 @@ class fineAlign(object):
             
             self.stage.moveRelative(self.stepSize,self.stepSize)
             if peakFoundCount == numConsecutivePeaks:
-                return 0
+                return self.NO_ERROR
             
             peakFoundCount += 1
-            
-        
-        return 0    
 
+            
+        return self.NO_ERROR
+        
     def gradientSearchFine(self, detSlot, detChan):
         peakFoundCount = 0; # Count how many consective peaks are found
-        numConsecutivePeaks = 1; # Need this many consecutive peaks to conclude the peak was found
-
-        
+        numConsecutivePeaks = 1; # Need this many consecutive peaks to conclude the peak was found  
         for ii in xrange(self.numGradientIter):
+            if self.abort:
+                return self.FINE_ALIGN_ABORTED
             # Always move in the direction of increasing power
             power = self.laser.readPWM(detSlot, detChan)
             
             self.stage.moveRelative(0.5,0)
             power_posx = self.laser.readPWM(detSlot, detChan)
-                
+            
             if power_posx > power:
                 peakFoundCount = 0
                 #Debug
@@ -334,7 +363,7 @@ class fineAlign(object):
                 continue
             
             
-         ####New Section###   
+         #8 axis#   
             #XX
             self.stage.moveRelative(0.5,0)
             power_xnegy = self.laser.readPWM(detSlot, detChan)
@@ -386,10 +415,9 @@ class fineAlign(object):
                 return 0
             
             peakFoundCount += 1
+
             
-        
-        return 0    
-        
+        return self.NO_ERROR
             
     def crosshairSearch(self, maxSteps, detSlot, detChan):
         # Search X direction
@@ -401,9 +429,11 @@ class fineAlign(object):
         sweepXCoords = np.zeros(numSteps)  
         
         for ii in xrange(numSteps):
-           powerXVals[ii] = self.laser.readPWM(detSlot, detChan)
-           sweepXCoords[ii] = self.stage.getPosition()[0]
-           self.stage.moveRelative(self.stepSize,0)
+            if self.abort:
+                return self.FINE_ALIGN_ABORTED
+            powerXVals[ii] = self.laser.readPWM(detSlot, detChan)
+            sweepXCoords[ii] = self.stage.getPosition()[0]
+            self.stage.moveRelative(self.stepSize,0)
 
         maxPowerXIdx = np.argmax(powerXVals)
         maxPowerXPos = sweepXCoords[maxPowerXIdx]
@@ -420,6 +450,8 @@ class fineAlign(object):
         sweepYCoords = np.zeros(numSteps)    
         
         for ii in xrange(numSteps):
+           if self.abort:
+              return self.FINE_ALIGN_ABORTED
            powerYVals[ii] = self.laser.readPWM(detSlot, detChan)
            sweepYCoords[ii] = self.stage.getPosition()[1]
            self.stage.moveRelative(0,self.stepSize)
@@ -431,20 +463,5 @@ class fineAlign(object):
         yStopPos = self.stage.getPosition()[1];
         self.stage.moveRelative(maxPowerXPos-xStopPos, maxPowerYPos-yStopPos)
         
-        #print self.stage.getPosition()[1]
 
-        return 0        
-            
-    
-    
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-                        
+        return self.NO_ERROR        
