@@ -42,7 +42,7 @@ class hp816x_instrParameters(wx.Panel):
         self.para1 = wx.BoxSizer(wx.HORIZONTAL)
         self.para1name = wx.StaticText(self,label='GPIB Address')
         self.para1tc = wx.ComboBox(self, choices=self.visaAddrLst)
-        self.para1.AddMany([(self.para1name,1,wx.EXPAND|wx.ALIGN_LEFT),(self.para1tc,1,wx.EXPAND|wx.ALIGN_RIGHT)])
+        self.para1.AddMany([(self.para1name,1,wx.EXPAND),(self.para1tc,1,wx.EXPAND)])
         
         self.disconnectBtn = wx.Button(self, label='Disconnect')
         self.disconnectBtn.Bind( wx.EVT_BUTTON, self.disconnect)
@@ -51,9 +51,9 @@ class hp816x_instrParameters(wx.Panel):
         self.connectBtn = wx.Button(self, label='Connect')
         self.connectBtn.Bind( wx.EVT_BUTTON, self.connect)
         
-        hbox.AddMany([(self.disconnectBtn, 0, wx.ALIGN_RIGHT), (self.connectBtn, 0, wx.ALIGN_RIGHT)])
+        hbox.AddMany([(self.disconnectBtn, 0), (self.connectBtn, 0)])
         
-        vbox.AddMany([(self.para1,0,wx.EXPAND), (hbox, 0, wx.ALIGN_BOTTOM)])
+        vbox.AddMany([(self.para1,0), (hbox, 0)])
         
         self.SetSizer(vbox)
         

@@ -33,7 +33,7 @@ from logWriter import logWriter,logWriterError
 import sys
 import visa
 
-softwareVersion = "1.1"
+softwareVersion = "1.2"
 
 devTypes = [CorvusEcoParameters, MGMotorParameters, \
             hp816x_N77Det_instrParameters, hp816x_instrParameters, \
@@ -66,7 +66,7 @@ class pyOptomip(wx.Frame):
          sizer.Add(notebook, 2, wx.ALL|wx.EXPAND, 5)
          self.doneButton = wx.Button(self.panel, label='Done', size=(75, 20))
          self.doneButton.Bind( wx.EVT_BUTTON, self.OnButton_Done)
-         sizer.Add(self.doneButton, 0, wx.ALIGN_RIGHT|wx.ALIGN_BOTTOM|wx.ALL)
+         sizer.Add(self.doneButton, 0, wx.ALIGN_RIGHT|wx.ALL)
          
          self.log = outputlogPanel(self.panel)
          sizer.Add(self.log, 1, wx.ALL|wx.EXPAND)
