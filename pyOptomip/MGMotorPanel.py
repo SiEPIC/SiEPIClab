@@ -34,7 +34,7 @@ class topMGMotorPanel(wx.Panel):
         
         for motorCtrl in self.motor.motorLst:
             motorPanel = MGMotorPanel(self, motorCtrl)
-            vbox.Add(motorPanel, flag=wx.LEFT | wx.TOP | wx.ALIGN_LEFT, border=0, proportion=0)
+            vbox.Add(motorPanel, flag=wx.LEFT | wx.ALIGN_LEFT, border=0, proportion=0)
             vbox.Add((-1, 2))
             sl = wx.StaticLine(self);
             vbox.Add(sl, flag=wx.EXPAND, border=0, proportion=0)
@@ -53,7 +53,7 @@ class MGMotorPanel(wx.Panel):
     def InitUI(self):
         hbox = wx.BoxSizer(wx.HORIZONTAL)
         st1 = wx.StaticText(self, label='Motor')
-        hbox.Add(st1, flag=wx.ALIGN_LEFT, border=8)
+        hbox.Add(st1, border=8)
         st1 = wx.StaticText(self, label='')
         hbox.Add(st1, flag=wx.EXPAND, border=8, proportion=1)
         btn1 = wx.Button(self, label='-', size=(20, 20))
@@ -65,10 +65,10 @@ class MGMotorPanel(wx.Panel):
         hbox.Add(self.tc, proportion=2, flag=wx.EXPAND)
 
         st1 = wx.StaticText(self, label='um')
-        hbox.Add(st1, flag=wx.ALIGN_LEFT, border=8)
+        hbox.Add(st1, border=8)
 
         btn2 = wx.Button(self, label='+', size=(20, 20))
-        hbox.Add(btn2, proportion=1, flag=wx.EXPAND|wx.LEFT | wx.RIGHT, border=8)
+        hbox.Add(btn2, proportion=1, flag=wx.EXPAND, border=8)
         btn2.Bind( wx.EVT_BUTTON, self.OnButton_PlusButtonHandler )
         self.SetSizer(hbox);
         

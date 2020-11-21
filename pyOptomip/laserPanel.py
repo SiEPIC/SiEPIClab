@@ -408,12 +408,12 @@ class individualDetPanel(wx.Panel):
 
         st1 = wx.StaticText(self, label='Power (dBm):')
         #st1.SetFont(font)
-        hbox2.Add(st1, proportion=0, flag=wx.ALIGN_RIGHT)
+        hbox2.Add(st1, proportion=0)
         
         
         self.PowerSt = wx.StaticText(self, label='-100')
         #self.PowerSt.SetFont(font)
-        hbox2.Add(self.PowerSt, proportion=0, flag=wx.ALIGN_RIGHT)
+        hbox2.Add(self.PowerSt, proportion=0)
         
         
         
