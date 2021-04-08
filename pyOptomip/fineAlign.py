@@ -109,12 +109,12 @@ class fineAlign(object):
                 xStopPos = self.stage.getPosition()[0];
                 yStopPos = self.stage.getPosition()[1];
                 self.stage.moveRelative(xStartPos-xStopPos, yStartPos-yStopPos)
-                print 'Could not find a device using this detector.'
+                print ('Could not find a device using this detector.')
                 continue
             elif res == self.FINE_ALIGN_ABORTED:
-                print 'Fine align self.aborted.'
+                print ('Fine align self.aborted.')
                 break
-            print 'Found a device. Optimizing power...'   
+            print ('Found a device. Optimizing power...')   
             
             # Gradient search stage      
             res = self.gradientSearchRough(detSlot, detChan)
@@ -126,7 +126,7 @@ class fineAlign(object):
             if self.useCrosshair:
                 res = self.crosshairSearch(maxSteps, detSlot, detChan)
             self.laser.setAutorangeAll()
-            print 'Fine align completed.'
+            print ('Fine align completed.')
             #Debug#
             if self.useDebugStep ==1:
                 self.logfileSpiral.close() 
@@ -137,7 +137,7 @@ class fineAlign(object):
             return res
             
         # Fine align failed  
-        print 'Fine align failed.'
+        print ('Fine align failed.')
         xStopPos = self.stage.getPosition()[0];
         yStopPos = self.stage.getPosition()[1];
         self.stage.moveRelative(xStartPos-xStopPos, yStartPos-yStopPos)
@@ -159,7 +159,7 @@ class fineAlign(object):
         while power <= self.threshold and numSteps < maxSteps:
             
             # X movement
-            for ii in xrange(1, numSteps+1):
+            for ii in range(1, numSteps+1):
                 self.stage.moveRelative(self.stepSize*direction,0)
                 power = self.laser.readPWM(detSlot, detChan)
                 if self.abort:
@@ -171,7 +171,7 @@ class fineAlign(object):
    
                     
             # Y movement
-            for ii in xrange(1, numSteps+1):
+            for ii in range(1, numSteps+1):
                 self.stage.moveRelative(0,self.stepSize*direction)
                 power = self.laser.readPWM(detSlot, detChan)
                 if self.abort:
@@ -196,7 +196,7 @@ class fineAlign(object):
     def gradientSearchRough(self, detSlot, detChan):
         peakFoundCount = 0; # Count how many consective peaks are found
         numConsecutivePeaks = 1; # Need this many consecutive peaks to conclude the peak was found  
-        for ii in xrange(self.numGradientIter):
+        for ii in range(self.numGradientIter):
             if self.abort:
                 return self.FINE_ALIGN_ABORTED
             # Always move in the direction of increasing power
@@ -309,7 +309,7 @@ class fineAlign(object):
     def gradientSearchFine(self, detSlot, detChan):
         peakFoundCount = 0; # Count how many consective peaks are found
         numConsecutivePeaks = 1; # Need this many consecutive peaks to conclude the peak was found  
-        for ii in xrange(self.numGradientIter):
+        for ii in range(self.numGradientIter):
             if self.abort:
                 return self.FINE_ALIGN_ABORTED
             # Always move in the direction of increasing power
@@ -428,7 +428,7 @@ class fineAlign(object):
         powerXVals = np.zeros(numSteps)    
         sweepXCoords = np.zeros(numSteps)  
         
-        for ii in xrange(numSteps):
+        for ii in range(numSteps):
             if self.abort:
                 return self.FINE_ALIGN_ABORTED
             powerXVals[ii] = self.laser.readPWM(detSlot, detChan)
@@ -449,7 +449,7 @@ class fineAlign(object):
         powerYVals = np.zeros(numSteps)  
         sweepYCoords = np.zeros(numSteps)    
         
-        for ii in xrange(numSteps):
+        for ii in range(numSteps):
            if self.abort:
               return self.FINE_ALIGN_ABORTED
            powerYVals[ii] = self.laser.readPWM(detSlot, detChan)

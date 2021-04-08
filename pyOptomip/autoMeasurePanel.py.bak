@@ -37,17 +37,17 @@ class CheckListCtrl(wx.ListCtrl, CheckListCtrlMixin, ListCtrlAutoWidthMixin):
         
     def CheckAll(self):
         """ Checks all boxes in the list"""
-        for ii in range(self.GetItemCount()):
+        for ii in xrange(self.GetItemCount()):
             self.CheckItem(ii,True)
     
     def UncheckAll(self):
         """ Unchecks all boxes in the list"""
-        for ii in range(self.GetItemCount()):
+        for ii in xrange(self.GetItemCount()):
             self.CheckItem(ii,False)
             
     def getCheckedIndices(self):
         """ Returns a list of indices of all checked items in the list. """
-        return [ii for ii in range(self.GetItemCount()) if self.IsChecked(ii)]
+        return [ii for ii in xrange(self.GetItemCount()) if self.IsChecked(ii)]
             
 class coordinateMapPanel(wx.Panel):
     def __init__(self, parent, autoMeasure, numDevices):
@@ -83,7 +83,7 @@ class coordinateMapPanel(wx.Panel):
         self.styGdsCoordLst = []
         
         
-        for ii in range(self.numDevices):
+        for ii in xrange(self.numDevices):
             row = ii+2
             stDevice = wx.StaticText(self, label='Device %d'%(ii+1))
             tbxMotorCoord = wx.TextCtrl(self, size=(80,20))
@@ -275,8 +275,8 @@ class autoMeasurePanel(wx.Panel):
         """ Computes the coordinate transformation matrix. """
         A = self.autoMeasure.findCoordinateTransform(self.coordMapPanel.getMotorCoords(),\
                                                  self.coordMapPanel.getGdsCoords())
-        print('Coordinate transform matrix')
-        print(A)
+        print 'Coordinate transform matrix'
+        print A
                                                  
     def OnButton_Start(self, event):
         """ Starts an automatic measurement. """

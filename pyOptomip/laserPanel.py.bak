@@ -49,7 +49,7 @@ class tlsPanel(wx.Panel):
         st10 = wx.StaticText(self, label='Laser slot:')
         
         laserSelectChoices = ['auto']
-        laserSelectChoices.extend(list(map(str, self.laser.findTLSSlots())))
+        laserSelectChoices.extend(map(str, self.laser.findTLSSlots()))
         
         self.laserSelectCb = wx.ComboBox(self, choices=laserSelectChoices, style=wx.CB_READONLY, value=laserSelectChoices[0])
         hbox12.AddMany([(st10, 1, wx.EXPAND), (self.laserSelectCb, 1, wx.EXPAND)])
@@ -239,7 +239,7 @@ class tlsPanel(wx.Panel):
             
             self.drawGraph(self.lastSweepWavelength*1e9,self.lastSweepPower)
         except Exception as e:
-            print(e)
+            print e
         self.laser.setAutorangeAll()
         self.startDetTimer()
         

@@ -91,7 +91,7 @@ class hp816x(object):
         reset -- Reset instrument after connecting
         """
         if self.connected:
-            print('Already connected to the laser. Aborting connection.')
+            print 'Already connected to the laser. Aborting connection.'
             return
         self.hDriver = c_int32(); # Handle to the driver.
         queryID = 1; # The instrument ignores this value.
@@ -104,7 +104,7 @@ class hp816x(object):
         
         # Get the mainframe type
         deviceIdnStr = self.gpibQueryString('*IDN?').strip().split(',')
-        print('The mainframe is: %s'%deviceIdnStr[1])
+        print 'The mainframe is: %s'%deviceIdnStr[1]
         
         if '8164' in deviceIdnStr[1]:
             mainframeType = '8164'
@@ -122,7 +122,7 @@ class hp816x(object):
         self.activeSlotIndex = self.pwmSlotIndex;
         # Register the mainframe so it can do sweeps
         self.registerMainframe(self.hDriver);
-        print('Connected to the laser')
+        print 'Connected to the laser'
         self.connected = True
     
         
@@ -211,13 +211,13 @@ class hp816x(object):
         
         stitchNumber = numFullScans+1
         
-        print('Total number of datapoints: %d'%numTotalPoints)
-        print('Stitch number: %d'%stitchNumber)
+        print 'Total number of datapoints: %d'%numTotalPoints
+        print 'Stitch number: %d'%stitchNumber
         
         # Create a list of the number of points per stitch
         numPointsLst = list();
         
-        for x in operator.mul(maxPWMPointsTrunc, numFullScans):
+        for x in repeat(maxPWMPointsTrunc, numFullScans):
             numPointsLst.append(int(x));
             
         numPointsLst.append(int(round(numRemainingPts)));
@@ -243,7 +243,7 @@ class hp816x(object):
         pointsAccum = 0;
         # Loop over all the stitches
         for points,startWvl,stopWvl in zip(numPointsLst,startWvlLst,stopWvlLst):
-            print('Sweeping from %g nm to %g nm'%(startWvl*1e9,stopWvl*1e9))
+            print 'Sweeping from %g nm to %g nm'%(startWvl*1e9,stopWvl*1e9)
             # If the start or end wavelength is not a multiple of 1 pm, the laser will sometimes choose the wrong start
             # or end wavelength for doing the sweep. To fix this, we will set the sweep start wavelength to the 
             # nearest multiple of 1 pm below the start wavelength and the nearest multiple above the end wavelength.
@@ -312,7 +312,7 @@ class hp816x(object):
         res = self.hp816x_close(self.hDriver);
         self.checkError(res);
         self.connected = False
-        print('Disconnected from the laser')
+        print 'Disconnected from the laser'
         
         
     def getNumPWMChannels(self):
@@ -468,7 +468,7 @@ class hp816x(object):
     def getSlotInstruments(self):
         """ Gets the name of each instrument in the slots """
         instStr = self.gpibQueryString('*OPT?')
-        return list(map(string.strip,instStr[:-1].split(',')))
+        return map(string.strip,instStr[:-1].split(','))
         
     def findClosestValIdx(self, array, value):
         idx = (abs(array-value)).argmin()
