@@ -31,7 +31,7 @@ from dummyLaserParameters import dummyLaserParameters
 from outputlogPanel import outputlogPanel
 from logWriter import logWriter,logWriterError
 import sys
-import visa
+import pyvisa
 
 softwareVersion = "1.1"
 
@@ -44,7 +44,7 @@ class ConnectCB(wx.Choicebook):
         wx.Choicebook.__init__(self, parent, id)
         self.connectPanel = connectPanel
         # Reduce load time by getting VISA addresses here and passing them to each panel
-        rm = visa.ResourceManager()
+        rm = pyvisa.ResourceManager()
         visaAddrLst = rm.list_resources()
         for c in devTypes:
             win = wx.Panel(self)

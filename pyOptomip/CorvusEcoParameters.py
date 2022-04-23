@@ -24,7 +24,7 @@ import wx
 
 import CorvusEco
 import CorvusEcoFrame
-import visa
+import pyvisa
 
 # Panel in the Connect Instruments window which contains the connection settings for the Corvus Eco.
 class CorvusEcoParameters(wx.Panel):
@@ -43,7 +43,7 @@ class CorvusEcoParameters(wx.Panel):
         #First Parameter: Serial Port
         self.para1 = wx.BoxSizer(wx.HORIZONTAL)
         self.para1name = wx.StaticText(self,label='Serial Port')
-        self.para1tc = wx.ComboBox(self, choices=visa.ResourceManager().list_resources())
+        self.para1tc = wx.ComboBox(self, choices=pyvisa.ResourceManager().list_resources())
         #self.para1tc = wx.TextCtrl(self,value='ASRL5::INSTR')
         self.para1.AddMany([(self.para1name,1,wx.EXPAND|wx.ALIGN_LEFT),(self.para1tc,1,wx.EXPAND|wx.ALIGN_RIGHT)])
         
@@ -70,7 +70,7 @@ class CorvusEcoParameters(wx.Panel):
         
     def connect(self, event):
         self.stage = CorvusEco.CorvusEcoClass()
-        self.stage.connect(str(self.para1tc.GetValue()),visa.ResourceManager(),5,500,int(self.para2tc.GetValue()))
+        self.stage.connect(str(self.para1tc.GetValue()),pyvisa.ResourceManager(),5,500,int(self.para2tc.GetValue()))
         self.stage.panelClass = CorvusEcoFrame.topCorvusPanel
         self.connectPanel.instList.append(self.stage)  
         self.disconnectBtn.Enable()
