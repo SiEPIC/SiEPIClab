@@ -160,8 +160,8 @@ class hp816x_N77Det(hp816x_instr.hp816x):
         
         stitchNumber = numFullScans+1
         
-        print 'Total number of datapoints: %d'%numTotalPoints
-        print 'Stitch number: %d'%stitchNumber
+        print ('Total number of datapoints: %d'%numTotalPoints)
+        print ('Stitch number: %d'%stitchNumber)
         
         # Create a list of the number of points per stitch
         numPointsLst = list();
@@ -192,7 +192,7 @@ class hp816x_N77Det(hp816x_instr.hp816x):
         pointsAccum = 0;
         # Loop over all the stitches
         for points,startWvl,stopWvl in zip(numPointsLst,startWvlLst,stopWvlLst):
-            print 'Sweeping from %g nm to %g nm'%(startWvl*1e9,stopWvl*1e9)
+            print ('Sweeping from %g nm to %g nm'%(startWvl*1e9,stopWvl*1e9))
             # If the start or end wavelength is not a multiple of 1 pm, the laser will sometimes choose the wrong start
             # or end wavelength for doing the sweep. To fix this, we will set the sweep start wavelength to the 
             # nearest multiple of 1 pm below the start wavelength and the nearest multiple above the end wavelength.

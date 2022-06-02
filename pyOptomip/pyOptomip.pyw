@@ -66,14 +66,14 @@ class pyOptomip(wx.Frame):
          sizer.Add(notebook, 2, wx.ALL|wx.EXPAND, 5)
          self.doneButton = wx.Button(self.panel, label='Done', size=(75, 20))
          self.doneButton.Bind( wx.EVT_BUTTON, self.OnButton_Done)
-         sizer.Add(self.doneButton, 0, wx.ALIGN_RIGHT|wx.ALIGN_BOTTOM|wx.ALL)
+         sizer.Add(self.doneButton, 0, wx.ALIGN_RIGHT|wx.ALL)
          
          self.log = outputlogPanel(self.panel)
          sizer.Add(self.log, 1, wx.ALL|wx.EXPAND)
          self.panel.SetSizer(sizer)
          sys.stdout = logWriter(self.log)
          sys.stderr = logWriterError(self.log)
-         print "This is pyOptomip version "+softwareVersion
+         print ("This is pyOptomip version "+softwareVersion)
          self.Layout()
         
          self.Show()

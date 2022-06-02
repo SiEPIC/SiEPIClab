@@ -56,7 +56,7 @@ class autoMeasure(object):
                 devName = matchRes[5]
                 if devName in self.deviceCoordDict:
                     uniqueDevName = devName+'_'+str(ii)
-                    print 'Warning: The device name %s is duplicated. Changing its name to %s.'%(devName,uniqueDevName)
+                    print ('Warning: The device name %s is duplicated. Changing its name to %s.'%(devName,uniqueDevName))
                     devName = uniqueDevName
                 self.deviceCoordDict[devName] = dict()
                 self.deviceCoordDict[devName]['x'] = float(matchRes[0])
@@ -68,7 +68,7 @@ class autoMeasure(object):
                 self.deviceCoordDict[devName]['id'] = ii
                 self.deviceCoordDict[devName]['line'] = line
             else:
-                print 'Warning: The entry\n%s\nis not formatted correctly.' %line
+                print ('Warning: The entry\n%s\nis not formatted correctly.' %line)
     
     def findCoordinateTransform(self, motorCoords, gdsCoords):
         """ Finds the best fit affine transform which maps the GDS coordinates to motor coordinates."""
@@ -119,7 +119,7 @@ class autoMeasure(object):
             if updateGraph:
                 # Update the graph on the main window
                 wx.CallAfter(self.laser.ctrlPanel.laserPanel.laserPanel.drawGraph, sweepWavelength*1e9, sweepPower)
-            print 'GDS: (%g,%g) Motor: (%g,%g)'%(gdsCoord[0],gdsCoord[1],motorCoord[0],motorCoord[1])
+            print ('GDS: (%g,%g) Motor: (%g,%g)'%(gdsCoord[0],gdsCoord[1],motorCoord[0],motorCoord[1]))
             matFileName = os.path.join(self.saveFolder, d+'.mat')
             
             # Save sweep data and metadata to the mat file
@@ -150,7 +150,7 @@ class autoMeasure(object):
             plt.close()
             
             if abortFunction != None and abortFunction():
-                print 'Aborted'
+                print ('Aborted')
                 return
             if updateFunction != None:
                 updateFunction(ii)
