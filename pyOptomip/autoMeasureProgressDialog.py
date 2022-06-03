@@ -83,7 +83,7 @@ class autoMeasureProgressDialog(wx.Dialog):
             
     def measurementDoneCb(self,result):
         if self.exception:
-            print self.exception
+            print (self.exception)
         self.Destroy()
             
         
