@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+"""creates a frame for the corvus eco , creates connectPanel, calls InitUI"""
+
 import wx
 
 import CorvusEco
@@ -36,6 +38,11 @@ class CorvusEcoParameters(wx.Panel):
         
         
     def InitUI(self):
+        """
+        creates panels for corvus eco paremter display, one panel for inputting serial port,
+        another panel for inputting the number of axis, create connect and disconnect buttons
+        using connect and disconnect functions, fills in the rest of the frame
+        """
         sb = wx.StaticBox(self, label='Corvus Eco Connection Parameters');
         vbox = wx.StaticBoxSizer(sb, wx.VERTICAL)
         hbox = wx.BoxSizer(wx.HORIZONTAL)

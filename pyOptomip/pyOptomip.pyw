@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+"""responsible for setting up GUI"""
 import  wx
 from instrumentFrame import instrumentFrame
 import traceback
@@ -31,16 +32,25 @@ from dummyLaserParameters import dummyLaserParameters
 from outputlogPanel import outputlogPanel
 from logWriter import logWriter,logWriterError
 import sys
+"""connects to devices"""
 import pyvisa
 
 softwareVersion = "1.1"
 
+"""Contains parameter setup files for connectCB"""
 devTypes = [CorvusEcoParameters, MGMotorParameters, \
             hp816x_N77Det_instrParameters, hp816x_instrParameters, \
             dummyLaserParameters]
         
 class ConnectCB(wx.Choicebook):
     def __init__(self, parent, id, connectPanel):
+        """
+        Uses devtypes to connect various devices to initial frame set up by PyOptomip class
+        Args:
+            parent:
+            id:
+            connectPanel:
+        """
         wx.Choicebook.__init__(self, parent, id)
         self.connectPanel = connectPanel
         # Reduce load time by getting VISA addresses here and passing them to each panel
@@ -56,6 +66,12 @@ class ConnectCB(wx.Choicebook):
 
 class pyOptomip(wx.Frame):
     def __init__(self):
+         """
+        creates main frame for program and calls connectCB to set up device windows within frame,
+        creates done button in lower right corner and a log panel at the bottom of the screen,
+        connects button to function OnButton_Done which creates instrument frame and destroys
+        parameter setup frame when clicked.
+         """
          wx.Frame.__init__(self, None, wx.ID_ANY,
                            "Connect instruments",
                           size=(600,400))
@@ -80,10 +96,20 @@ class pyOptomip(wx.Frame):
 
     
     def OnButton_Done(self, event):
+        """
+        Creates instrument frame by calling createInstrumentFrame for various connected devices,
+        and destroys previous parameter setup frame
+        Args:
+            event:
+        """
         self.createInstrumentFrame();
         self.Destroy();
 
     def createInstrumentFrame(self):
+        """
+        calls function instrumentFrame to create a new instrument frame,
+        if there is an exception it will generate a message box saying could not initiate instrument control.
+        """
         try:
             instrumentFrame(None, self.panel.instList)
         except Exception as e:
