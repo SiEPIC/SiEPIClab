@@ -34,13 +34,7 @@ from autoMeasure import autoMeasure
 class instrumentFrame(wx.Frame):
   
     def __init__(self, parent, instList):
-        """
-        creates frame that is 3/4 size of the display, calls InitUI to initialize the feature of the frame,
-         if it's unable to do this it will disconnect from devices and destroy the created frame
-        Args:
-            parent:
-            instList:
-        """
+
         displaySize = wx.DisplaySize()
         super(instrumentFrame, self).__init__(parent, title='Instrument Control', \
               size=(displaySize[0]*3/4.0, displaySize[1]*3/4.0))
@@ -57,15 +51,6 @@ class instrumentFrame(wx.Frame):
         self.Show()  
         
     def InitUI(self):
-        """
-        using instlist this function will create the necessary panels for the connected devices,
-        if the device is a motor it will create a vertical sized box panel if it is anything else
-        it will create a horizontal box panel, if laser and motor are connected (using motorfound
-        and laserfound) it will add the fine align panel to the vertical motor panel, if the vertical
-        motor panel does not exist then error message will appear, if laser and motor found will add
-        automeasure panel to vertical motor panel, fills in the rest of the space with panels, sets up
-        log display
-        """
         self.Bind(wx.EVT_CLOSE, self.OnExitApp)
         vbox = wx.BoxSizer(wx.VERTICAL)
         hbox = wx.BoxSizer(wx.HORIZONTAL)
@@ -111,32 +96,18 @@ class instrumentFrame(wx.Frame):
         
 
     def motorFound(self):
-        """
-        check instlist.ismotor to see if instlist contains any motors, if it does returns true
-        Returns: True if there is a motor in instlist, false otherwise
-
-        """
         motorFound = False
         for inst in self.instList:
             motorFound = motorFound | inst.isMotor
         return motorFound
         
     def laserFound(self):
-        """
-        check instlist.isLaser to see if instlist contains any lasers, if it does return true
-        Returns:
-        """
         laserFound = False
         for inst in self.instList:
             laserFound = laserFound | inst.isLaser
         return laserFound
         
     def getLasers(self):
-        """
-        finds the location of the lasers in instlist array and places them into laserlist array
-        Returns:
-
-        """
         laserList = []
         for inst in self.instList:
             if inst.isLaser:
@@ -144,11 +115,6 @@ class instrumentFrame(wx.Frame):
         return laserList
         
     def getMotors(self):
-        """
-        finds the location of the motors in instlist array and places them into motorlist array
-        Returns:
-
-        """
         motorList = []
         for inst in self.instList:
             if inst.isMotor:
@@ -156,11 +122,6 @@ class instrumentFrame(wx.Frame):
         return motorList
         
     def OnExitApp(self, event):
-        """
-        disconnects from devices and destroys the frame
-        Args:
-            event:
-        """
         for inst in self.instList:
             inst.disconnect()
         self.Destroy()

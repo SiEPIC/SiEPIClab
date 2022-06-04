@@ -131,7 +131,7 @@ class fineAlignSettings(wx.Dialog):
             cbSelection = cb.GetValue()
             if cbSelection != 'None':
                 detIndex = self.cbOptions.index(cbSelection)
-                print (detIndex)
+                print detIndex
                 detPriority.append(detIndex)
         self.fineAlign.laserSlot = self.laserSlotCb.GetValue()
         self.fineAlign.laserPower = float(self.tcPower.GetValue())
