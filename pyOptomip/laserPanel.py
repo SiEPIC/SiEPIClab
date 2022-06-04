@@ -239,7 +239,7 @@ class tlsPanel(wx.Panel):
             
             self.drawGraph(self.lastSweepWavelength*1e9,self.lastSweepPower)
         except Exception as e:
-            print (e)
+            print e
         self.laser.setAutorangeAll()
         self.startDetTimer()
         

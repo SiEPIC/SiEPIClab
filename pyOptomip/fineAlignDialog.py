@@ -68,7 +68,7 @@ class fineAlignDialog(wx.Dialog):
     def fineAlignDoneCb(self,result):
         result.get()
         if self.exception:
-            print (self.exception)
+            print self.exception
         self.fineAlign.abort = False
         self.Destroy()
             

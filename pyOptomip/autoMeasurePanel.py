@@ -275,8 +275,8 @@ class autoMeasurePanel(wx.Panel):
         """ Computes the coordinate transformation matrix. """
         A = self.autoMeasure.findCoordinateTransform(self.coordMapPanel.getMotorCoords(),\
                                                  self.coordMapPanel.getGdsCoords())
-        print ('Coordinate transform matrix')
-        print (A)
+        print 'Coordinate transform matrix'
+        print A
                                                  
     def OnButton_Start(self, event):
         """ Starts an automatic measurement. """

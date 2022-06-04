@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-"""responsible for setting up GUI"""
 import  wx
 from instrumentFrame import instrumentFrame
 import traceback
@@ -32,29 +31,20 @@ from dummyLaserParameters import dummyLaserParameters
 from outputlogPanel import outputlogPanel
 from logWriter import logWriter,logWriterError
 import sys
-"""connects to devices"""
-import pyvisa
+import visa
 
 softwareVersion = "1.1"
 
-"""Contains parameter setup files for connectCB"""
 devTypes = [CorvusEcoParameters, MGMotorParameters, \
             hp816x_N77Det_instrParameters, hp816x_instrParameters, \
             dummyLaserParameters]
         
 class ConnectCB(wx.Choicebook):
     def __init__(self, parent, id, connectPanel):
-        """
-        Uses devtypes to connect various devices to initial frame set up by PyOptomip class
-        Args:
-            parent:
-            id:
-            connectPanel:
-        """
         wx.Choicebook.__init__(self, parent, id)
         self.connectPanel = connectPanel
         # Reduce load time by getting VISA addresses here and passing them to each panel
-        rm = pyvisa.ResourceManager()
+        rm = visa.ResourceManager()
         visaAddrLst = rm.list_resources()
         for c in devTypes:
             win = wx.Panel(self)
@@ -66,12 +56,6 @@ class ConnectCB(wx.Choicebook):
 
 class pyOptomip(wx.Frame):
     def __init__(self):
-         """
-        creates main frame for program and calls connectCB to set up device windows within frame,
-        creates done button in lower right corner and a log panel at the bottom of the screen,
-        connects button to function OnButton_Done which creates instrument frame and destroys
-        parameter setup frame when clicked.
-         """
          wx.Frame.__init__(self, None, wx.ID_ANY,
                            "Connect instruments",
                           size=(600,400))
@@ -82,34 +66,24 @@ class pyOptomip(wx.Frame):
          sizer.Add(notebook, 2, wx.ALL|wx.EXPAND, 5)
          self.doneButton = wx.Button(self.panel, label='Done', size=(75, 20))
          self.doneButton.Bind( wx.EVT_BUTTON, self.OnButton_Done)
-         sizer.Add(self.doneButton, 0, wx.ALIGN_RIGHT|wx.ALL)
+         sizer.Add(self.doneButton, 0, wx.ALIGN_RIGHT|wx.ALIGN_BOTTOM|wx.ALL)
          
          self.log = outputlogPanel(self.panel)
          sizer.Add(self.log, 1, wx.ALL|wx.EXPAND)
          self.panel.SetSizer(sizer)
          sys.stdout = logWriter(self.log)
          sys.stderr = logWriterError(self.log)
-         print ("This is pyOptomip version "+softwareVersion)
+         print "This is pyOptomip version "+softwareVersion
          self.Layout()
         
          self.Show()
 
     
     def OnButton_Done(self, event):
-        """
-        Creates instrument frame by calling createInstrumentFrame for various connected devices,
-        and destroys previous parameter setup frame
-        Args:
-            event:
-        """
         self.createInstrumentFrame();
         self.Destroy();
 
     def createInstrumentFrame(self):
-        """
-        calls function instrumentFrame to create a new instrument frame,
-        if there is an exception it will generate a message box saying could not initiate instrument control.
-        """
         try:
             instrumentFrame(None, self.panel.instList)
         except Exception as e:

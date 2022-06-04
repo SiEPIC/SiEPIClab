@@ -334,8 +334,8 @@ class CorvusEcoClass():
             motorPosStr = self.ser.read()
             res = map(float, motorPosStr.strip().split())
         except Exception as e:
-            print (e)
-            print (motorPosStr)
+            print e
+            print motorPosStr
             print('An Error has occured')
             self.showErr()
         return res

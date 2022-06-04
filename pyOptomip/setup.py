@@ -32,7 +32,7 @@ build_exe_options = {"packages": ["scipy.sparse.csgraph._validation", "win32com"
 
 setup(
     name = "pyOptomip",
-    version = "1.0", #TODO: this should read from the pyoptomip.pyw varible `softwareVersion`
+    version = "1.0",
     description = "pyOptomip",
     options = {"build_exe": build_exe_options},
     executables = [Executable("pyOptomip.pyw", base = "Win32GUI")])

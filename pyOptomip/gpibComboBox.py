@@ -21,11 +21,11 @@
 # THE SOFTWARE.
 
 import wx
-import pyvisa
+import visa
 
 class gpibComboBox(wx.ComboBox):
 
     def __init__(self, **kwargs):
         super(gpibComboBox, self).__init__(kwargs)
-        rm = pyvisa.ResourceManager()
+        rm = visa.ResourceManager()
         
