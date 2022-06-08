@@ -17,6 +17,11 @@ Installation instructions:
 
     In a command prompt, run
         pip install comtypes
+
+5. Install qontrol
+
+    In a command prompt, run
+        pip install qontrol
         
 Instructions for running the GUI software:
 

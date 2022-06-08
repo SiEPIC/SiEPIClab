@@ -22,6 +22,8 @@
 
 """responsible for setting up GUI"""
 import  wx
+
+import QontrolMotorParameters
 from instrumentFrame import instrumentFrame
 import traceback
 from CorvusEcoParameters import CorvusEcoParameters
