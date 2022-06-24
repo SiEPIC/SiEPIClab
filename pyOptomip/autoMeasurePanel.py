@@ -234,7 +234,7 @@ class autoMeasurePanel(wx.Panel):
                                        wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
         fileDlg.ShowModal()
         self.coordFileTb.SetValue(fileDlg.GetFilenames()[0])      
-        fileDlg.Destroy()   
+        #fileDlg.Destroy()
         self.autoMeasure.readCoordFile(fileDlg.GetPath())
         deviceDict = self.autoMeasure.deviceCoordDict
         deviceLst = [dev for dev in deviceDict]
