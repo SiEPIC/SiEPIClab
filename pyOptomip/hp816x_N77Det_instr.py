@@ -26,6 +26,7 @@ from itertools import repeat;
 import hp816x_instr
 import math;
 
+
 class hp816x_N77Det(hp816x_instr.hp816x):
     name = 'hp816x N77 Detector'
     numPWMSlots = 5;    
@@ -166,7 +167,7 @@ class hp816x_N77Det(hp816x_instr.hp816x):
         # Create a list of the number of points per stitch
         numPointsLst = list();
 
-        for x in operator.mul(maxPWMPointsTrunc, numFullScans):
+        for x in repeat(maxPWMPointsTrunc, numFullScans):
             numPointsLst.append(int(x));
             
         numPointsLst.append(int(round(numRemainingPts)));

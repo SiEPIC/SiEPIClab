@@ -26,7 +26,7 @@ import numpy.ctypeslib as npct;
 from itertools import repeat;
 import math;
 import string
-import six
+
 
 class hp816x(object):
     
@@ -219,7 +219,7 @@ class hp816x(object):
         # Create a list of the number of points per stitch
         numPointsLst = list();
         
-        for x in operator.mul(maxPWMPointsTrunc, numFullScans):
+        for x in repeat(maxPWMPointsTrunc, numFullScans):
             numPointsLst.append(int(x));
             
         numPointsLst.append(int(round(numRemainingPts)));
