@@ -37,7 +37,7 @@ class hp816x_N77Det(hp816x_instr.hp816x):
         self.hN77Det = c_int32();
 
         queryID = 1; # The instrument ignores this value.
-        res = self.hp816x_init(n77DetAddr.encode('utf-8'), queryID, reset, byref(self.hN77Det));
+        res = self.hp816x_init(n77DetAddr, queryID, reset, byref(self.hN77Det));
         self.checkErrorN77(res);
         self.registerMainframe(self.hN77Det);
         self.N77SlotInfo = self.getN77SlotInfo(); # Keep mainframe slot info
@@ -160,13 +160,13 @@ class hp816x_N77Det(hp816x_instr.hp816x):
         
         stitchNumber = numFullScans+1
         
-        print('Total number of datapoints: %d'%numTotalPoints)
-        print('Stitch number: %d'%stitchNumber)
+        print 'Total number of datapoints: %d'%numTotalPoints
+        print 'Stitch number: %d'%stitchNumber
         
         # Create a list of the number of points per stitch
         numPointsLst = list();
-
-        for x in operator.mul(maxPWMPointsTrunc, numFullScans):
+        
+        for x in repeat(maxPWMPointsTrunc, numFullScans):
             numPointsLst.append(int(x));
             
         numPointsLst.append(int(round(numRemainingPts)));
@@ -192,7 +192,7 @@ class hp816x_N77Det(hp816x_instr.hp816x):
         pointsAccum = 0;
         # Loop over all the stitches
         for points,startWvl,stopWvl in zip(numPointsLst,startWvlLst,stopWvlLst):
-            print('Sweeping from %g nm to %g nm'%(startWvl*1e9,stopWvl*1e9))
+            print 'Sweeping from %g nm to %g nm'%(startWvl*1e9,stopWvl*1e9)
             # If the start or end wavelength is not a multiple of 1 pm, the laser will sometimes choose the wrong start
             # or end wavelength for doing the sweep. To fix this, we will set the sweep start wavelength to the 
             # nearest multiple of 1 pm below the start wavelength and the nearest multiple above the end wavelength.

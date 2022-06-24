@@ -115,7 +115,7 @@ class myMatplotlibPanel(wx.Panel):
         self.canvas.filetypes['mat'] = 'MATLAB' # Add mat filetype to save file dialog
         self.toolbar = myToolbar(self.canvas)
         vbox.Add(self.canvas, 1, wx.EXPAND)
-        vbox.Add(self.toolbar, 0, wx.ALIGN_BOTTOM)
+        vbox.Add(self.toolbar, 0, wx.EXPAND)
         self.SetSizer(vbox)
         #self.toolbar.Hide()
      

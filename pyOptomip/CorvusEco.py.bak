@@ -32,7 +32,7 @@ Last updated: July 15, 2014
 #however, NONE of any of the axis will move when given the commmand (making it impossible to tell you which axis is not working)
 #Corvus will tell you there is an internal error, but it does not give ANY details.
 
-
+from __future__ import division
 import time
 
 class CorvusEcoClass():
@@ -44,7 +44,7 @@ class CorvusEcoClass():
         self.ser = rm.get_instrument(visaName) #Connects to device with pyVisa
         self.ser.baud_rate = 57600 # Sets baudrate
         self.ser.write('identify') #Asks for identification
-        print((self.ser.read()+ ' [Model Name][Hardware Ver][Software Ver][Internal Use][Dip-Switch]'))
+        print(self.ser.read()+ ' [Model Name][Hardware Ver][Software Ver][Internal Use][Dip-Switch]')
         print('Connected\n')
         
         #Sets minimum # of axis to send commands to
@@ -99,14 +99,14 @@ class CorvusEcoClass():
         self.ser.write(str(velocity)+' sv') #set velocity
         self.ser.write('gv') #Get Velocity
         response = self.ser.read()
-        print(('Velocity set to: '+response+' [units]/s\n'))
+        print('Velocity set to: '+response+' [units]/s\n')
         
     #Units: (Unit/s^2) use setunit command            
     def setAcceleration(self,Acceleration):
         self.ser.write(str(Acceleration)+' sa') #Set Acceleration
         self.ser.write('ga')#Get Acceleration
         response = self.ser.read()
-        print(('Acceleration set to: '+response+' [units]/s^2\n'))
+        print('Acceleration set to: '+response+' [units]/s^2\n')
     
     #Closed Loop ----------------------------
     def setcloop(self,toggle):
@@ -195,7 +195,7 @@ class CorvusEcoClass():
     def getunit(self,axis):
         self.ser.write('%d getunit'%(axis))
         value = self.ser.read()
-        print(('Axis %d is set to unitvalue: %s'%(axis,value)))
+        print ('Axis %d is set to unitvalue: %s'%(axis,value))
             
 #=======Movement functions============
     def moveX(self,distance):
@@ -332,10 +332,10 @@ class CorvusEcoClass():
         try:
             self.ser.write('pos')
             motorPosStr = self.ser.read()
-            res = list(map(float, motorPosStr.strip().split()))
+            res = map(float, motorPosStr.strip().split())
         except Exception as e:
-            print(e)
-            print(motorPosStr)
+            print e
+            print motorPosStr
             print('An Error has occured')
             self.showErr()
         return res

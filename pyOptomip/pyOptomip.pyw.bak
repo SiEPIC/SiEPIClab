@@ -31,7 +31,7 @@ from dummyLaserParameters import dummyLaserParameters
 from outputlogPanel import outputlogPanel
 from logWriter import logWriter,logWriterError
 import sys
-import pyvisa as visa
+import visa
 
 softwareVersion = "1.1"
 
@@ -56,27 +56,27 @@ class ConnectCB(wx.Choicebook):
 
 class pyOptomip(wx.Frame):
     def __init__(self):
-        wx.Frame.__init__(self, None, wx.ID_ANY,
-                          "Connect instruments",
+         wx.Frame.__init__(self, None, wx.ID_ANY,
+                           "Connect instruments",
                           size=(600,400))
-        self.panel = wx.Panel(self)
-        self.panel.instList = []
-        notebook = ConnectCB(self.panel,-1, self.panel)
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(notebook, 2, wx.ALL|wx.EXPAND, 5)
-        self.doneButton = wx.Button(self.panel, label='Done', size=(75, 20))
-        self.doneButton.Bind( wx.EVT_BUTTON, self.OnButton_Done)
-        sizer.Add(self.doneButton, 0, wx.ALIGN_RIGHT|wx.ALL)
+         self.panel = wx.Panel(self)
+         self.panel.instList = []
+         notebook = ConnectCB(self.panel,-1, self.panel)
+         sizer = wx.BoxSizer(wx.VERTICAL)
+         sizer.Add(notebook, 2, wx.ALL|wx.EXPAND, 5)
+         self.doneButton = wx.Button(self.panel, label='Done', size=(75, 20))
+         self.doneButton.Bind( wx.EVT_BUTTON, self.OnButton_Done)
+         sizer.Add(self.doneButton, 0, wx.ALIGN_RIGHT|wx.ALIGN_BOTTOM|wx.ALL)
          
-        self.log = outputlogPanel(self.panel)
-        sizer.Add(self.log, 1, wx.ALL|wx.EXPAND)
-        self.panel.SetSizer(sizer)
-        sys.stdout = logWriter(self.log)
-        sys.stderr = logWriterError(self.log)
-        print("This is pyOptomip version "+softwareVersion)
-        self.Layout()
+         self.log = outputlogPanel(self.panel)
+         sizer.Add(self.log, 1, wx.ALL|wx.EXPAND)
+         self.panel.SetSizer(sizer)
+         sys.stdout = logWriter(self.log)
+         sys.stderr = logWriterError(self.log)
+         print "This is pyOptomip version "+softwareVersion
+         self.Layout()
         
-        self.Show()
+         self.Show()
 
     
     def OnButton_Done(self, event):

@@ -70,7 +70,7 @@ class fineAlignSettings(wx.Dialog):
         stSlot = wx.StaticText(self, label='Laser slot')
         fgsWidgetList.append((stSlot,0))
         laserSelectChoices = ['auto']
-        laserSelectChoices.extend(list(map(str, self.fineAlign.laser.findTLSSlots())))
+        laserSelectChoices.extend(map(str, self.fineAlign.laser.findTLSSlots()))
         
         self.laserSlotCb = wx.ComboBox(self, choices=laserSelectChoices, style=wx.CB_READONLY, value=self.fineAlign.laserSlot)
         fgsWidgetList.append((self.laserSlotCb,0))
@@ -131,7 +131,7 @@ class fineAlignSettings(wx.Dialog):
             cbSelection = cb.GetValue()
             if cbSelection != 'None':
                 detIndex = self.cbOptions.index(cbSelection)
-                print(detIndex)
+                print detIndex
                 detPriority.append(detIndex)
         self.fineAlign.laserSlot = self.laserSlotCb.GetValue()
         self.fineAlign.laserPower = float(self.tcPower.GetValue())

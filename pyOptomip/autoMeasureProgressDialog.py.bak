@@ -23,20 +23,23 @@
 import wx
 from wx.lib.delayedresult import startWorker
 
-# Dialog box that appears while running a fine align.
-class fineAlignDialog(wx.Dialog):
+# Dialog box that appears while an automatic measurement is running.
+class autoMeasureProgressDialog(wx.Dialog):
 
     def __init__(self, *args, **kw):
-        super(fineAlignDialog, self).__init__(*args, **kw) 
+        super(autoMeasureProgressDialog, self).__init__(*args, **kw) 
         self.InitUI()
         
     def InitUI(self):
+        self.abort = False
         vbox = wx.BoxSizer(wx.VERTICAL)
         
-        st1 = wx.StaticText(self, label='Performing fine align...')
+        self.gauge = wx.Gauge(self, range=100, size=(250, 25))
         
-        vbox.Add(st1, proportion=0, flag=wx.ALIGN_CENTRE)
-
+        vbox.Add(self.gauge, proportion=0, flag=wx.ALIGN_CENTRE)
+        
+        self.text = wx.StaticText(self)
+        vbox.Add(self.text, proportion=0, flag=wx.ALIGN_CENTRE)
         
         self.stopBtn = wx.Button(self, wx.ID_STOP)
         self.stopBtn.Bind( wx.EVT_BUTTON, self.OnButton_Stop)
@@ -48,33 +51,44 @@ class fineAlignDialog(wx.Dialog):
         self.SetSizerAndFit(vbox)
         
     def OnClose(self, event):
-        self.fineAlign.abort = True
+        self.abort = 1
         
 
-    def runFineAlign(self, fineAlign):
-        self.fineAlign = fineAlign
-        self.exception = None
-        startWorker(self.fineAlignDoneCb, self.doFineAlign, wargs=[fineAlign])
+    def runMeasurement(self, devices,autoMeasure):
+        """ Runs the automatic measurement."""
+        self.numDevices = len(devices)
+        self.gauge.SetRange(self.numDevices)
+        self.text.SetLabel('0 out of %d devices measured'%self.numDevices)
+        # Run the automatic measurement in a separate thread so it doesnt block the GUI.
+        startWorker(self.measurementDoneCb, self.doMeasurement, wargs=(autoMeasure,devices,self.checkAborted,self.slowThreadUpdateGauge))
         self.ShowModal()
         
+    def checkAborted(self):
+        return self.abort
         
-    def doFineAlign(self,fineAlign):
+    def slowThreadUpdateGauge(self,ii):
+        wx.CallAfter(self.updateGauge,ii)
+        
+    def updateGauge(self,ii):
+        self.gauge.SetValue(ii)
+        self.text.SetLabel('%d out of %d devices measured'%(ii,self.numDevices))
+        
+    def doMeasurement(self,autoMeasure, devices, abortFunction, updateFunction):
+        self.exception = None
         try:
-            fineAlign.abort = False
-            fineAlign.doFineAlign()
+            autoMeasure.beginMeasure(devices, abortFunction=abortFunction, updateFunction=updateFunction)
         except Exception as e:
             self.exception = e
+        return 0
             
-    def fineAlignDoneCb(self,result):
-        result.get()
+    def measurementDoneCb(self,result):
         if self.exception:
-            print(self.exception)
-        self.fineAlign.abort = False
+            print self.exception
         self.Destroy()
             
         
     def OnButton_Stop(self,event):
-        self.fineAlign.abort = True
+        self.abort = True
         
         
         
