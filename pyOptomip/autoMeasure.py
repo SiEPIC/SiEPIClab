@@ -43,14 +43,18 @@ class autoMeasure(object):
             data = f.readlines()
           
         # Remove the first line since it is the header and remove newline char  
-        dataStrip = [line.strip() for line in data[1:]];
-        
-        reg = re.compile(r'(.*),(.*),(.*),([0-9]+),(.+),(.+),(.*)');
-        
+        dataStrip = [line.strip() for line in data[1:]]
+        dataStrip2 = []
+        for x in dataStrip:
+            j = x.replace(" ", "")
+            dataStrip2.append(j)
+        reg = re.compile(r'(.*),(.*),(.*),([0-9]+),(.+),(.+),(.*)')
+
+
         self.deviceCoordDict = OrderedDict();
         
         # Parse the data in each line and put it into a dict
-        for ii,line in enumerate(dataStrip):
+        for ii,line in enumerate(dataStrip2):
             if reg.match(line):
                 matchRes = reg.findall(line)[0]
                 devName = matchRes[5]
