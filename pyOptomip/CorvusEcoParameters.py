@@ -50,7 +50,7 @@ class CorvusEcoParameters(wx.Panel):
         #Second Parameter: Number of Axis
         self.para2 = wx.BoxSizer(wx.HORIZONTAL)
         self.para2name = wx.StaticText(self,label='Number of Axis')
-        self.para2tc = wx.TextCtrl(self,value='2')
+        self.para2tc = wx.TextCtrl(self,value='3')
         self.para2.AddMany([(self.para2name,1,wx.EXPAND),(self.para2tc,1,wx.EXPAND)])
         
         self.disconnectBtn = wx.Button(self, label='Disconnect')
