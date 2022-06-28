@@ -25,6 +25,7 @@ from instrumentFrame import instrumentFrame
 import traceback
 from CorvusEcoParameters import CorvusEcoParameters
 from MGMotorParameters import MGMotorParameters
+from QontrolMotorParameters import QontrolMotorParameters
 from hp816x_N77Det_instrParameters import hp816x_N77Det_instrParameters
 from hp816x_instrParameters import hp816x_instrParameters
 from dummyLaserParameters import dummyLaserParameters
@@ -37,7 +38,7 @@ softwareVersion = "1.1"
 
 devTypes = [CorvusEcoParameters, MGMotorParameters, \
             hp816x_N77Det_instrParameters, hp816x_instrParameters, \
-            dummyLaserParameters]
+            QontrolMotorParameters]
         
 class ConnectCB(wx.Choicebook):
     def __init__(self, parent, id, connectPanel):
