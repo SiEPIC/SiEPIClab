@@ -28,16 +28,18 @@ from MGMotorParameters import MGMotorParameters
 from hp816x_N77Det_instrParameters import hp816x_N77Det_instrParameters
 from hp816x_instrParameters import hp816x_instrParameters
 from dummyLaserParameters import dummyLaserParameters
+from SMUParameters import SMUParameters
 from outputlogPanel import outputlogPanel
 from logWriter import logWriter,logWriterError
 import sys
 import pyvisa as visa
+from instrumentFrame_withtabs import instrumentFrame_withtabs
 
 softwareVersion = "1.1"
 
 devTypes = [CorvusEcoParameters, MGMotorParameters, \
             hp816x_N77Det_instrParameters, hp816x_instrParameters, \
-            dummyLaserParameters]
+            dummyLaserParameters, SMUParameters]
         
 class ConnectCB(wx.Choicebook):
     def __init__(self, parent, id, connectPanel):
@@ -85,7 +87,8 @@ class pyOptomip(wx.Frame):
 
     def createInstrumentFrame(self):
         try:
-            instrumentFrame(None, self.panel.instList)
+            instrumentFrame_withtabs(None, self.panel.instList)
+            #instrumentFrame(None, self.panel.instList)
         except Exception as e:
             dial = wx.MessageDialog(None, 'Could not initiate instrument control. '+traceback.format_exc(), 'Error', wx.ICON_ERROR)
             dial.ShowModal()

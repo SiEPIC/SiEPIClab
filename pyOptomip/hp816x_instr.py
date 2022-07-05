@@ -32,6 +32,7 @@ class hp816x(object):
     
     # Constants
     name = 'hp816x'
+    isSMU =False
     isMotor=False
     isLaser=True
     # Slot info

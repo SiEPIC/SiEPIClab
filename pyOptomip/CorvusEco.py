@@ -38,6 +38,7 @@ import time
 class CorvusEcoClass():
     NumberOfAxis = 3 #default the axis number @ 3 just in case.
     name = 'CorvusEco'
+    isSMU=False
     isMotor=True
     isLaser=False
     def connect(self,visaName,rm,Velocity,Acceleration,NumberOfAxis):

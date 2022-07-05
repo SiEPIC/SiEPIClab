@@ -31,13 +31,16 @@ from autoMeasurePanel import autoMeasurePanel
 from autoMeasure import autoMeasure
 
 
+
+
+
 class instrumentFrame(wx.Frame):
   
     def __init__(self, parent, instList):
 
         displaySize = wx.DisplaySize()
         super(instrumentFrame, self).__init__(parent, title='Instrument Control', \
-              size=(displaySize[0]*3/4.0, displaySize[1]*3/4.0))
+              size=(displaySize[0]*3/4.0, displaySize[1]*3/4.0)) #creates mainframe entire instruemnt control is housed in
         
         self.instList = instList;
         try:
