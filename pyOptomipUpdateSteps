@@ -8,6 +8,7 @@
 	pip install comtypes=="1.1.11"
 	pip install qontrol
 	pip install matplotlib=="3.4.3"
+	pip install numpy=="1.20.3"
 	
 	Make sure the correct versions are downloaded and the previous versions have been uninstalled
 	
