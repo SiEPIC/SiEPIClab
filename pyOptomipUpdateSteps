@@ -4,7 +4,7 @@
 
 4.in command prompt run 
 	python -m pip install -U wxPython
-	pip install pyvisa="1.11.3"
+	pip install pyvisa=="1.11.3"
 	pip install comtypes=="1.1.11"
 	pip install qontrol
 	pip install matplotlib=="3.4.3"
