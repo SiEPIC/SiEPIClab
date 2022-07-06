@@ -55,7 +55,7 @@ class TabOne(wx.Panel):
             else:
                 hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
 
-        if self.laserFound() and self.motorFound():
+
             self.fineAlign = fineAlign(self.getLasers()[0], self.getMotors()[0])
             try:
                 self.fineAlignPanel = fineAlignPanel(self, self.fineAlign)
@@ -239,6 +239,13 @@ class TabFour(wx.Panel):
         vbox = wx.BoxSizer(wx.VERTICAL)
         hbox = wx.BoxSizer(wx.HORIZONTAL)
 
+        for inst in self.instList:
+            panel = inst.panelClass(self, inst)
+
+            self.autoMeasure = autoMeasure(self.getLasers()[0], self.getMotors()[0], self.fineAlign)
+
+            self.autoMeasurePanel = autoMeasurePanel(self, self.autoMeasure)
+
         vbox.Add(hbox, 3, wx.EXPAND)
         self.log = outputlogPanel(self)
         vbox.Add(self.log, 1, wx.EXPAND)
@@ -316,7 +323,7 @@ class instrumentFrame_withtabs(wx.Frame):
         nb.AddPage(tab1, "Home")
         nb.AddPage(tab2, "Electrical")
         nb.AddPage(tab3, "Optical")
-        nb.AddPage(tab4, "Automation Control")
+        nb.AddPage(tab4, "Automated Measurements")
 
         # Set notebook in a sizer to create the layout
         sizer = wx.BoxSizer(wx.VERTICAL)
