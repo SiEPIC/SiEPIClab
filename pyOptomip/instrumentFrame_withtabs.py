@@ -29,7 +29,7 @@ import traceback
 from logWriter import logWriter,logWriterError
 from autoMeasurePanel import autoMeasurePanel
 from autoMeasure import autoMeasure
-import pyvisa
+import pyvisa as visa
 
 
 # Define the tab content as classes:
@@ -126,9 +126,6 @@ class TabTwo(wx.Panel):
         hbox = wx.BoxSizer(wx.HORIZONTAL)
 
         for inst in self.instList:
-            #if inst.isSMU:
-                #panel = inst.panelClass(self, str(self.para1tc.GetValue()))
-            #else:
             panel = inst.panelClass(self, inst)
 
             if inst.isSMU:
@@ -140,6 +137,7 @@ class TabTwo(wx.Panel):
 
 
         vbox.Add(hbox, 3, wx.EXPAND)
+
         self.log = outputlogPanel(self)
         vbox.Add(self.log, 1, wx.EXPAND)
         self.SetSizer(vbox)
@@ -302,7 +300,7 @@ class instrumentFrame_withtabs(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnExitApp)
 
 
-
+        #c = wx.Panel(self)
         p = wx.Panel(self)
         nb = wx.Notebook(p)
 
@@ -318,10 +316,21 @@ class instrumentFrame_withtabs(wx.Frame):
         nb.AddPage(tab3, "Optical")
         nb.AddPage(tab4, "Automation Control")
 
+        outputlabel = wx.StaticBox(self, label='SMU Control');
+
+        output = wx.StaticBoxSizer(outputlabel, wx.VERTICAL)
+
+        print(self.instList)
+
+
         # Set notebook in a sizer to create the layout
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(nb, 1, wx.EXPAND)
         p.SetSizer(sizer)
+
+
+
+
 
     def OnExitApp(self, event):
         for inst in self.instList:

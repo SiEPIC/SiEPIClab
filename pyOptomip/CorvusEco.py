@@ -34,6 +34,7 @@ Last updated: July 15, 2014
 
 
 import time
+import pyvisa as visa
 
 class CorvusEcoClass():
     NumberOfAxis = 3 #default the axis number @ 3 just in case.

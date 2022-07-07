@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+import os
 
 import wx
 from keithley2600 import Keithley2600
@@ -49,6 +50,7 @@ class topSMUPanel(wx.Panel):
 
 
 
+
 class SMUPanel(wx.Panel):
 
     def __init__(self, parent):
@@ -57,10 +59,12 @@ class SMUPanel(wx.Panel):
 
     def InitUI(self):
 
-        vbox = wx.BoxSizer(wx.VERTICAL)
-        hbox1 = wx.BoxSizer(wx.HORIZONTAL)
-        st1 = wx.StaticText(self, label='SMU Control')
-        hbox1.Add(st1, flag=wx.ALIGN_LEFT, border=8)
+        vboxOuter = wx.BoxSizer(wx.VERTICAL)
+
+        smulabel = wx.StaticBox(self, label='SMU Control')
+
+        vbox = wx.StaticBoxSizer(smulabel, wx.VERTICAL)
+        #vbox = wx.BoxSizer(wx.VERTICAL)
 
         hbox2 = wx.BoxSizer(wx.HORIZONTAL)
         st2 = wx.StaticText(self, label='Set Voltage (V)')
@@ -81,76 +85,140 @@ class SMUPanel(wx.Panel):
 
         hbox3.AddMany([(st3, 1, wx.EXPAND), (self.currentset, 1, wx.EXPAND), (self.btn_currentset, 1, wx.EXPAND)])
 
-
-
         hbox4 = wx.BoxSizer(wx.HORIZONTAL)
 
-        hbox45 = wx.BoxSizer(wx.HORIZONTAL)
+        st4 = wx.StaticText(self, label='Voltage Reading (V): ')
+        self.voltread = wx.StaticText(self, label="0")
 
-        fgs = wx.FlexGridSizer(4, 2, 8, 25)
-
-        st4 = wx.StaticText(self, label='Voltage Reading')
-        self.voltread = wx.TextCtrl(self)
-        self.voltread.SetValue('0')
-
-        hbox45.AddMany([(st4, 1, wx.EXPAND), (self.voltread, 1, wx.EXPAND)])
-
-        fgs.Add(hbox4, 1, wx.EXPAND)
-
-        hbox4.Add(fgs, proportion=1, flag=wx.ALL, border=0)
-        self.SetSizer(hbox4)
-
-
-
-        #self.timer = wx.Timer(self, wx.ID_ANY)
-        #self.Bind(wx.EVT_TIMER, SMUClass.getvoltage, self.timer)
-        #self.timer.Start(1000)
-
-
-
+        hbox4.AddMany([(st4, 1, wx.EXPAND), (self.voltread, 1, wx.EXPAND)])
 
         hbox5 = wx.BoxSizer(wx.HORIZONTAL)
 
-        st5 = wx.StaticText(self, label='Current Reading')
-        self.currentread = wx.TextCtrl(self)
-        self.currentread.SetValue('0')
-        self.currentread = wx.StaticText(self, label='1')
-        # self.PowerSt.SetFont(font)
-        hbox2.Add(self.currentread, proportion=0)
-
-
-
+        st5 = wx.StaticText(self, label='Current Reading (mA): ')
+        self.currentread = wx.StaticText(self, label="0")
 
         hbox5.AddMany([(st5, 1, wx.EXPAND), (self.currentread, 1, wx.EXPAND)])
 
-        vbox.AddMany([(hbox1, 0, wx.EXPAND), (hbox2, 1, wx.EXPAND), (hbox3, 0, wx.EXPAND), (hbox4, 0, wx.EXPAND), (hbox5, 0, wx.EXPAND)])
+        hbox6 = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.SetSizer(vbox)
+        st6 = wx.StaticText(self, label='Resistance (Ω): ')
+        self.rread = wx.StaticText(self, label="0")
 
-        #v = self.k.smua.measure.v()  # measures and returns the SMUA voltage
-        #print(v)
-        #i = self.k.smua.measure.i()  # measures current at SMUA
-        #print(i)
-        #SMUClass.setVoltage(1, 0.5, visaName)
-        # SMUClass.setCurrent(1, 0.05, visaName)
-        # k.apply_voltage(k.smua, 1)
-        #v = self.k.smua.measure.v()  # measures and returns the SMUA voltage
-       # print(v)
-        #i = self.k.smua.measure.i()
-       # print(i)
+        hbox6.AddMany([(st6, 1, wx.EXPAND), (self.rread, 1, wx.EXPAND)])
+
+
+        self.timer = wx.Timer(self, wx.ID_ANY)
+        self.Bind(wx.EVT_TIMER, self.UpdateAutoMeasurement, self.timer)
+        self.timer.Start(1000)
+
+
+        vbox.AddMany([(hbox2, 1, wx.EXPAND), (hbox3, 0, wx.EXPAND), (hbox4, 1, wx.EXPAND), (hbox5, 0, wx.EXPAND), (hbox6, 0, wx.EXPAND)])
+
+
+        sbSweep = wx.StaticBox(self, label='Sweep Settings');
+        vboxSweep = wx.StaticBoxSizer(sbSweep, wx.VERTICAL)
+
+        hbox1_1 = wx.BoxSizer(wx.HORIZONTAL)
+
+        sw1 = wx.StaticText(self, label='Set Max. Voltage (V)')
+        self.voltmaxset = wx.TextCtrl(self)
+        self.voltmaxset.SetValue('0')
+
+        hbox1_1.AddMany([(sw1, 1, wx.EXPAND), (self.voltmaxset, 1, wx.EXPAND)])
+
+        hbox2_1 = wx.BoxSizer(wx.HORIZONTAL)
+
+        sw2 = wx.StaticText(self, label='Set Min. Voltage (V)')
+        self.voltminset = wx.TextCtrl(self)
+        self.voltminset.SetValue('0')
+
+        hbox2_1.AddMany([(sw2, 1, wx.EXPAND), (self.voltminset, 1, wx.EXPAND)])
+
+        hbox3_1 = wx.BoxSizer(wx.HORIZONTAL)
+
+        sw3 = wx.StaticText(self, label='Set Resolution')
+        self.reso = wx.TextCtrl(self)
+        self.reso.SetValue('0')
+
+        hbox3_1.AddMany([(sw3, 1, wx.EXPAND), (self.reso, 1, wx.EXPAND)])
+
+        st4_1 = wx.StaticText(self, label='Save folder:')
+        hbox4_1 = wx.BoxSizer(wx.HORIZONTAL)
+        hbox4_1.Add(st4_1, proportion=1, flag=wx.EXPAND)
+        ##
+        self.outputFolderTb = wx.TextCtrl(self, style=wx.TE_READONLY)
+        self.outputFolderBtn = wx.Button(self, wx.ID_OPEN, size=(50, 20))
+        self.outputFolderBtn.Bind(wx.EVT_BUTTON, self.OnButton_SelectOutputFolder)
+        hbox4_2 = wx.BoxSizer(wx.HORIZONTAL)
+        hbox4_2.AddMany([(self.outputFolderTb, 1, wx.EXPAND), (self.outputFolderBtn, 0, wx.EXPAND)])
+
+
+        hbox5_1 = wx.BoxSizer(wx.HORIZONTAL)
+
+        self.sweepBtn = wx.Button(self, label='IV Sweep', size=(50, 20))
+        self.sweepBtn.Bind(wx.EVT_BUTTON, self.OnButton_Sweep)
+
+        hbox5_1.Add(self.sweepBtn, 1, wx.EXPAND)
+
+        vboxSweep.AddMany([(hbox1_1, 1, wx.EXPAND), (hbox2_1, 0, wx.EXPAND), (hbox3_1, 0, wx.EXPAND), (hbox4_1, 0, wx.EXPAND), (hbox4_2, 0, wx.EXPAND), (hbox5_1, 0, wx.EXPAND)])
+
+
+        vboxOuter.AddMany([(vbox, 0, wx.EXPAND), (vboxSweep, 0, wx.EXPAND)])
+
+        self.SetSizer(vboxOuter)
+
+
+        #self.SetSizer(vboxSweep)
+
+    def OnButton_SelectOutputFolder(self, event):
+        """ Opens a file dialog to select an output directory for automatic measurement. """
+        dirDlg = wx.DirDialog(self, "Open", "", wx.DD_DEFAULT_STYLE)
+        dirDlg.ShowModal()
+        self.outputFolderTb.SetValue(dirDlg.GetPath())
+        dirDlg.Destroy()
+
+    def OnButton_Sweep(self, event):
+        result = self.smu.ivsweep(float(self.voltminset.GetValue()), float(self.voltmaxset.GetValue()), float(self.reso.GetValue()))
+        bufferfile = os.getcwd()
+        print(bufferfile)
+        bufferfile = bufferfile + '/ivSweepTestResults.txt'
+        print(bufferfile)
+
+        result.save(bufferfile) #saves contents of result table to a buffer file in working directory
+
+        original = open(bufferfile, 'r')
+        data = original.readlines() #read contents of buffer file
+
+        savefile = self.outputFolderTb.GetValue()
+        savefile = savefile + '/ivsweeptestresults.txt'
+
+        target = open(savefile, 'w') #creates save folder
+        target.writelines(data) #writes contents of buffer file to specifed save location
 
     def UpdateAutoMeasurement(self, event):
-        self.smu.smua.measure
-        v = self.k.smua.measure.v()
-        panel.currentread.SetLabel(str(self.laser.readPWM(panel.slot, panel.chan)))
+        v = self.smu.getvoltage()
+        i = self.smu.getcurrent()
+        self.voltread.SetLabel(str(int(v*1000)/1000))
+        self.currentread.SetLabel(str(int(i*1e6)/1000))
+        if v == 0:
+            r = 'NA'
+        elif i == 0:
+            r = 'NA'
+        else:
+            r = v/i
+        self.rread.SetLabel(str(int(r*1000)/1000))
 
 
     def OnButton_currentSet(self, event):
         self.smu.setCurrent((float(self.currentset.GetValue())/1e3))
-        self.smu.read_error_queue()
+        self.voltset.SetValue('')
+
 
     def OnButton_voltageSet(self, event):
         self.smu.setVoltage((float(self.voltset.GetValue())))
+        self.currentset.SetValue('')
 
     def OnButton_currentlimitSet(self, event):
         pass
+
+
