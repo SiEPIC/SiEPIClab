@@ -34,8 +34,11 @@ Last updated: July 15, 2014
 
 
 import time
+import numpy as np
 from keithley2600 import Keithley2600
 
+from keithley2600 import Keithley2600Base
+from keithley2600 import ResultTable
 
 
 class SMUClass():
@@ -50,16 +53,7 @@ class SMUClass():
     def connect(self, visaName, rm):
         self.k = Keithley2600(visaName)
         self.k.smua.source.output = self.k.smua.OUTPUT_ON  #turns on SMUA
-
-        self.k.apply_voltage(self.k.smua, 0.2)
-
-        #SMUClass.setVoltage(self, 6)
-        # SMUClass.setCurrent(1, 0.05, visaName)
-        # k.apply_voltage(k.smua, 1)
-        v = self.k.smua.measure.v()  # measures and returns the SMUA voltage
-        print(v)
-        i = self.k.smua.measure.i()
-        print(i)
+        self.setCurrent(0)
 
         print('Connected\n')
 
@@ -73,277 +67,72 @@ class SMUClass():
 
 
     def setVoltage(self, voltage):
+        """ Sets the source of the SMU to a specified voltage
+            Arguments:
+                voltage: a float representing the voltage to set the SMU to
+            Returns:
+                A print statement indicating that the voltage has been set
+            """
         self.k.apply_voltage(self.k.smua, voltage)
-        print('Set voltage to ' + str(voltage) + 'V')
+        print('Set voltage to ' + str(int(voltage*1e9)/1e9) + 'V')
 
     def setCurrent(self, current):
+        """ Sets the source of the SMU to a specified current
+                    Arguments:
+                        current: a float representing the current to set the SMU to
+                    Returns:
+                        A print statement indicating that the current has been set
+                    """
         self.k.apply_current(self.k.smua, current)
-        print('Set current to ' + str(current*100) + 'mA')
+        print('Set current to ' + str(int(current*1e6)/1000) + 'mA')
 
     def setcurrentlimit(self, currentlimit):
         pass
 
-    def sweep(self, voltage1, voltage2, step, visaName):
-        k = Keithley2600(visaName)
+    def setvoltagelimit(self, voltagelimit):
+        pass
 
-        sweeplist = [voltage1]
-        amount = (voltage2 - voltage1)/step + 1
+    def getvoltage(self):
+        v = self.k.smua.measure.v()
+        return v
 
-        for x in range(amount):
-            sweeplist.append(voltage1 + step)
-            print(str(sweeplist[x]))
-        k.voltage_sweep_single_smu(k.smua, sweeplist)
+    def getcurrent(self):
+        i = self.k.smua.measure.i()
+        return i
+
+    def ivsweep(self, voltagemin: float, voltagemax: float, resolution: float):
+
+        sweeplist = [voltagemin]
+        stepsize = (voltagemax - voltagemin)
+        stepsize = stepsize/(resolution - 1)
+        voltagex = voltagemin
+
+        for x in range(int(resolution - 1)):
+            sweeplist.append(voltagex + stepsize)
+            voltagex = voltagex + stepsize
+
+        print(sweeplist)
+
+        pars = {'recorded': time.asctime(), 'sweep_type': 'iv'}
+        # create ResultTable with two columns
+        rt = ResultTable(['Voltage', 'Current'], ['V', 'A'], params=pars)
+        fig = rt.plot(live=True)
+
+        for v in sweeplist:
+            self.k.apply_voltage(self.k.smua, v)
+            i = self.k.smua.measure.i()
+            rt.append_row([v, i])
+            time.sleep(1)
+
+        return rt
+
+        #result = self.k.voltage_sweep_single_smu(self.k.smua, sweeplist, 0.001, -1, True)
+
+        #return result
+
+
 
     #def elecopticsweep(self, voltage1, voltage2, step, visaName):
 
 
 
-
-    # Closed Loop ----------------------------
-    def setcloop(self, toggle):
-        # 0 = off
-        # 1 = on
-        try:
-            self.ser.write('%d 1 setcloop' % (toggle))
-            self.ser.write('%d 2 setcloop' % (toggle))
-            self.ser.write('%d 3 setcloop' % (toggle))
-            if toggle == 0:
-                print('Close Loop Disabled for All Axis.')
-            if toggle == 1:
-                print('Close Loop Enabled for All Axis.')
-        except:
-            self.showErr()
-
-    # set scale type
-    def setscaletype(self, stype):
-        # value of 0 or 1
-        # 0 = Analog
-        # 1 = digital
-        try:
-            self.ser.write('%d 1 setscaletype' % (stype))
-            self.ser.write('%d 2 setscaletype' % (stype))
-            self.ser.write('%d 3 setscaletype' % (stype))
-            if stype == 0:
-                print('Scale Type set to Analog for All Axis')
-            if stype == 1:
-                print('Scale Type set to Digital for All Axis')
-        except:
-            self.showErr()
-
-    def setclperiod(self, direction, distance):
-        # + or - for direction
-        # distance in microns, value from 0.0000001 to 1.999999
-
-        microndistance = distance / 1000
-
-        try:
-            self.ser.write('%s %d 1 setclperiod' % (direction, microndistance))
-            self.ser.write('%s %d 2 setclperiod' % (direction, microndistance))
-            self.ser.write('%s %d 3 setclperiod' % (direction, microndistance))
-            print('Clperiod Set Successfully')
-        except:
-            self.showErr()
-
-    def setnselpos(self, pos):
-        # pos: 0 or 1
-        # 0 returns the calculated position
-        # 1 returns the measured position
-
-        try:
-            self.ser.write('%d 1 setnselpos' % (pos))
-            self.ser.write('%d 2 setnselpos' % (pos))
-            self.ser.write('%d 3 setnselpos' % (pos))
-            print('Complete')
-            # NOTE: Try doing this with axis disabled and see if the function still works
-            # should still work even if axis disabled.
-        except:
-            self.showErr()
-
-    # sets the unit for all axis
-    # 0 = microstep
-    # 1 = micron
-    # 2 = millimeters
-    # 3 = centimeters
-    # 4 = meters
-    # 5 = inches
-    # 6 = mil (1/1000 inch)
-    def setunit(self, unit):
-        self.ser.write('%d 0 setunit' % (unit))
-        self.ser.write('%d 1 setunit' % (unit))
-        self.ser.write('%d 2 setunit' % (unit))
-        self.ser.write('%d 3 setunit' % (unit))
-        print('Units set successfully.')
-
-    # Checks the currently set units
-    # 0 = microstep
-    # 1 = micron
-    # 2 = millimeters
-    # 3 = centimeters
-    # 4 = meters
-    # 5 = inches
-    # 6 = mil (1/1000 inch)
-    def getunit(self, axis):
-        self.ser.write('%d getunit' % (axis))
-        value = self.ser.read()
-        print(('Axis %d is set to unitvalue: %s' % (axis, value)))
-
-    # =======Movement functions============
-    def moveX(self, distance):
-        if self.NumberOfAxis == 1:
-            try:
-                self.ser.write(str(distance) + ' r')
-                # print ('Move Complete')
-            except:
-                print('An Error has occured')
-                self.showErr()
-
-        if self.NumberOfAxis == 2:
-            try:
-                self.ser.write(str(distance) + ' 0 r')
-                # print ('Move Complete')
-            except:
-                print('An Error has occured')
-                self.showErr()
-
-        if self.NumberOfAxis == 3:
-            try:
-                self.ser.write(str(distance) + ' 0 0 r')
-                # print ('Move Complete')
-            except:
-                print('An Error has occured')
-                self.showErr()
-
-    def moveY(self, distance):
-        if self.NumberOfAxis == 1:
-            print('Error: Axis 2 Not Enabled.')
-
-        if self.NumberOfAxis == 2:
-            try:
-                self.ser.write('0 ' + str(distance) + ' r')
-                # print ('Move Complete')
-            except:
-                print('An Error has occured')
-                self.showErr()
-
-        if self.NumberOfAxis == 3:
-            try:
-                self.ser.write('0 ' + str(distance) + ' 0 r')
-                # print ('Move Complete')
-            except:
-                print('An Error has occured')
-                self.showErr()
-
-    def moveZ(self, distance):
-        if self.NumberOfAxis == 1:
-            print('Error: Axis 3 Not Enabled.')
-
-        if self.NumberOfAxis == 2:
-            print('Error: Axis 3 Not Enabled.')
-
-        if self.NumberOfAxis == 3:
-            try:
-                self.ser.write('0 0 ' + str(distance) + ' r')
-                # print ('Move Complete')
-            except:
-                print('An Error has occured')
-                self.showErr()
-
-    # Moves all the axis together
-    # can be used regardless of how many axis are enabled
-    def moveRelative(self, x, y=0, z=0):
-        if self.NumberOfAxis == 1:
-            try:
-                self.ser.write('%.6f r' % (x))
-                # print ('Move Complete')
-            except:
-                print('An Error has occured')
-                self.showErr()
-
-        if self.NumberOfAxis == 2:
-            try:
-                self.ser.write('%.6f %.6f r' % (x, y))
-                # print ('Move Complete')
-            except:
-                print('An Error has occured')
-                self.showErr()
-
-        if self.NumberOfAxis == 3:
-            try:
-                self.ser.write('%.6f %.6f %.6f r' % (x, y, z))
-                # print ('Move Complete')
-            except:
-                print('An Error has occured')
-                self.showErr()
-        self.waitMoveComplete()
-
-    def moveAbsoluteXY(self, x, y):
-        xCurrentPos = self.getPosition()[0];
-        yCurrentPos = self.getPosition()[1];
-        self.moveRelative(x - xCurrentPos, y - yCurrentPos)
-
-    def waitMoveComplete(self):
-        while int(self.ser.ask('st')) & 1:
-            time.sleep(0.001)
-
-    # Absolute MOve
-    # Has a possible range of +/- 16383mm
-    # units are the ones defined to the axis (should be microns)
-
-    # From manual: The move profile is calculated in respect to the velocity/acceleration
-    # setup and the given hard or software limits. The axes are linear interpolated,
-    # this causes the controller to start and stop all active axes simultaneously
-    #    def moveAbsolute(self,x,y=0,z=0):
-    #        if self.NumberOfAxis == 1:
-    #            try:
-    #                self.ser.write('%d m'%(x))
-    #                print ('Move Complete')
-    #            except:
-    #                print('An Error has occured')
-    #                self.showErr()
-    #
-    #        if self.NumberOfAxis == 2:
-    #            try:
-    #                self.ser.write('%d %d m'%(x,y))
-    #                print ('Move Complete')
-    #            except:
-    #                print('An Error has occured')
-    #                self.showErr()
-    #
-    #        if self.NumberOfAxis == 3:
-    #            try:
-    #                self.ser.write('%d %d %d m'%(x,y,z))
-    #                print ('Move Complete')
-    #            except:
-    #                print('An Error has occured')
-    #                self.showErr()
-
-    def getPosition(self):
-        try:
-            self.ser.write('pos')
-            motorPosStr = self.ser.read()
-            res = list(map(float, motorPosStr.strip().split()))
-        except Exception as e:
-            print(e)
-            print(motorPosStr)
-            print('An Error has occured')
-            self.showErr()
-        return res
-
-    def clear(self):  # Should clear any lingering messages in the device
-        try:
-            self.ser.write('clear')  # Clears the parameter stack, refer to page 287 in manual for more detail
-        except:
-            self.showErr()
-
-    def reset(self):  # Resets the whole device, equivalent of disconnecting the power according to the manual
-        # a beep should be heard after the device is reset
-        try:
-            self.ser.write('reset')
-        except:
-            self.showErr()
-
-    def showErr(self):
-        self.ser.write(
-            'ge')  # Returns error and clears the error stack, Errors are given as codes which are listen in them manual
-        error = str('Error Code: ' + self.ser.read() + ' (Refer to Manual Page 165)')
-        raise Exception(error)

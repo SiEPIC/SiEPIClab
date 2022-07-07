@@ -26,10 +26,10 @@ import sys
 from fineAlign import fineAlign
 from fineAlignPanel import fineAlignPanel
 import traceback
-from logWriter import logWriter, logWriterError
+from logWriter import logWriter,logWriterError
 from autoMeasurePanel import autoMeasurePanel
 from autoMeasure import autoMeasure
-import pyvisa
+import pyvisa as visa
 
 
 # Define the tab content as classes:
@@ -41,10 +41,11 @@ class HomeTab(wx.Panel):
         hbox = wx.BoxSizer(wx.HORIZONTAL)
 
         for inst in self.instList:
-            # if inst.isSMU:
-            # panel = inst.panelClass(self)
-            # else:
-            panel = inst.panelClass(self, inst)
+            #if inst.isSMU:
+               # panel = inst.panelClass(self)
+           # else:
+            panel = inst.panelClass(self,inst)
+
 
             if inst.isMotor:
                 motorVbox = wx.BoxSizer(wx.VERTICAL)
@@ -311,6 +312,8 @@ class instrumentFrame_withtabs(wx.Frame):
     def InitUI(self):
         self.Bind(wx.EVT_CLOSE, self.OnExitApp)
 
+
+        #c = wx.Panel(self)
         p = wx.Panel(self)
         nb = wx.Notebook(p)
 
@@ -326,10 +329,21 @@ class instrumentFrame_withtabs(wx.Frame):
         nb.AddPage(tab3, "Optical")
         nb.AddPage(tab4, "Automated Measurements")
 
+        outputlabel = wx.StaticBox(self, label='SMU Control');
+
+        output = wx.StaticBoxSizer(outputlabel, wx.VERTICAL)
+
+        print(self.instList)
+
+
         # Set notebook in a sizer to create the layout
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(nb, 1, wx.EXPAND)
         p.SetSizer(sizer)
+
+
+
+
 
     def OnExitApp(self, event):
         for inst in self.instList:

@@ -30,7 +30,7 @@ from keithley2600 import Keithley2600
 
 # Panel in the Connect Instruments window which contains the connection settings for the Corvus Eco.
 class SMUParameters(wx.Panel):
-    name = 'SMU Control Unit'
+    name = 'Source Meter Unit'
 
     def __init__(self, parent, connectPanel, **kwargs):
         super(SMUParameters, self).__init__(parent)
