@@ -35,7 +35,7 @@ Last updated: July 15, 2014
 
 import time
 from keithley2600 import Keithley2600
-from keithley2600 import Keithley2600Base
+
 
 
 class SMUClass():
@@ -45,6 +45,7 @@ class SMUClass():
     isSMU = True
     isMotor = False
     isLaser = False
+    isQontrol = False
 
     def connect(self, visaName, rm):
         self.k = Keithley2600(visaName)
