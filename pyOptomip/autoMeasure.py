@@ -48,13 +48,13 @@ class autoMeasure(object):
         for x in dataStrip:
             j = x.replace(" ", "")
             dataStrip2.append(j)
-        reg = re.compile(r'(.*),(.*),(.*),([0-9]+),(.+),(.+),(.*)')
+        reg = re.compile(r'(.*),(.*),(.*),(.[0-9]+),(.+),(.+)')
 
 
         self.deviceCoordDict = OrderedDict();
         
         # Parse the data in each line and put it into a dict
-        for ii,line in enumerate(dataStrip2):
+        for ii, line in enumerate(dataStrip):
             if reg.match(line):
                 matchRes = reg.findall(line)[0]
                 devName = matchRes[5]
@@ -67,8 +67,11 @@ class autoMeasure(object):
                 self.deviceCoordDict[devName]['y'] = float(matchRes[1])
                 self.deviceCoordDict[devName]['polarization'] = matchRes[2]
                 self.deviceCoordDict[devName]['wavelength'] = matchRes[3]
+                print(matchRes[3])
                 self.deviceCoordDict[devName]['type'] = matchRes[4]
-                self.deviceCoordDict[devName]['comment'] = matchRes[6]
+                print(matchRes[4])
+                self.deviceCoordDict[devName]['comment'] = matchRes[5]
+                print(matchRes[5])
                 self.deviceCoordDict[devName]['id'] = ii
                 self.deviceCoordDict[devName]['line'] = line
             else:

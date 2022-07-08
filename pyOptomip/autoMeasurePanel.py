@@ -243,7 +243,7 @@ class autoMeasurePanel(wx.Panel):
         # Adds items to the check list
         self.checkList.DeleteAllItems()
         for ii,device in enumerate(deviceDict):
-            self.checkList.InsertStringItem(ii, device)
+            self.checkList.InsertItem(ii, device)
             self.checkList.SetItemData(ii,deviceDict[device]['id'])
         self.checkList.SortItems(self.checkListSort) # Make sure items in list are sorted
         self.Refresh()
