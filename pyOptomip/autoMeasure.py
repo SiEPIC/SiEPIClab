@@ -48,7 +48,7 @@ class autoMeasure(object):
         for x in dataStrip:
             j = x.replace(" ", "")
             dataStrip2.append(j)
-        reg = re.compile(r'(.*),(.*),(.*),(.[0-9]+),(.+),(.+)')
+        reg = re.compile(r'(.*),(.*),(.*),(.[0-9]+),(.+),(.+),(.+)')
 
 
         self.deviceCoordDict = OrderedDict();
@@ -70,7 +70,7 @@ class autoMeasure(object):
                 print(matchRes[3])
                 self.deviceCoordDict[devName]['type'] = matchRes[4]
                 print(matchRes[4])
-                self.deviceCoordDict[devName]['comment'] = matchRes[5]
+                self.deviceCoordDict[devName]['comment'] = matchRes[6]
                 print(matchRes[5])
                 self.deviceCoordDict[devName]['id'] = ii
                 self.deviceCoordDict[devName]['line'] = line

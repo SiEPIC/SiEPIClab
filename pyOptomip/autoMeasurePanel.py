@@ -22,6 +22,7 @@
 
 import wx
 import numpy as np
+import wx.lib.mixins.listctrl
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
 from autoMeasureProgressDialog import autoMeasureProgressDialog
@@ -144,7 +145,7 @@ class autoMeasurePanel(wx.Panel):
     def __init__(self, parent, autoMeasure):
         super(autoMeasurePanel, self).__init__(parent)
         self.autoMeasure = autoMeasure
-        self.InitUI()   
+        self.InitUI()
         
         
     def InitUI(self):
@@ -171,7 +172,7 @@ class autoMeasurePanel(wx.Panel):
         hbox2 = wx.BoxSizer(wx.HORIZONTAL)
         hbox2.AddMany([(self.checkAllBtn, 0, wx.EXPAND), (self.uncheckAllBtn, 0, wx.EXPAND)])
         ##
-        self.checkList = CheckListCtrl(self)
+        self.checkList = wx.ListCtrl(self, -1, style = wx.LC_REPORT)
         self.checkList.InsertColumn(0, 'Device', width=100)
         hbox3 = wx.BoxSizer(wx.HORIZONTAL)
         hbox3.Add(self.checkList, proportion=1, flag=wx.EXPAND)
@@ -243,13 +244,19 @@ class autoMeasurePanel(wx.Panel):
         # Adds items to the check list
         self.checkList.DeleteAllItems()
         for ii,device in enumerate(deviceDict):
+            self.checkList.EnableCheckBoxes(True)
             self.checkList.InsertItem(ii, device)
             self.checkList.SetItemData(ii,deviceDict[device]['id'])
         self.checkList.SortItems(self.checkListSort) # Make sure items in list are sorted
         self.Refresh()
         
     def OnButton_CheckAll(self, event):
-        self.checkList.CheckAll()
+
+        for ii in range(self.checkList.GetItemCount()):
+            self.checkList.CheckItem(ii, True)
+            #self.CheckItem(ii,True)
+
+        #self.checkList.CheckAll()
         
     def OnButton_GotoDevice(self, event):
         selectedDevice = self.devSelectCb.GetValue()
@@ -262,7 +269,11 @@ class autoMeasurePanel(wx.Panel):
         
         
     def OnButton_UncheckAll(self, event):
-        self.checkList.UncheckAll()
+
+        for ii in range(self.checkList.GetItemCount()):
+            self.checkList.CheckItem(ii,False)
+            #self.CheckItem(ii,False)
+        #self.checkList.UncheckAll()
         
     def OnButton_SelectOutputFolder(self, event):
         """ Opens a file dialog to select an output directory for automatic measurement. """
