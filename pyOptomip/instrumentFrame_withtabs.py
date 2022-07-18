@@ -56,30 +56,23 @@ class TabOne(wx.Panel):
                 hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
 
 
-            self.fineAlign = fineAlign(self.getLasers()[0], self.getMotors()[0])
-            try:
-                self.fineAlignPanel = fineAlignPanel(self, self.fineAlign)
-            except Exception as e:
-                dial = wx.MessageDialog(None, 'Could not initiate instrument control. ' + traceback.format_exc(),
-                                        'Error', wx.ICON_ERROR)
-                dial.ShowModal()
-            motorVbox.Add(self.fineAlignPanel, proportion=0, flag=wx.EXPAND)
+            #self.fineAlign = fineAlign(self.getLasers()[0], self.getMotors()[0])
+            #try:
+            #    self.fineAlignPanel = fineAlignPanel(self, self.fineAlign)
+            #except Exception as e:
+            #    dial = wx.MessageDialog(None, 'Could not initiate instrument control. ' + traceback.format_exc(),
+             #                           'Error', wx.ICON_ERROR)
+             #   dial.ShowModal()
+            #motorVbox.Add(self.fineAlignPanel, proportion=0, flag=wx.EXPAND)
 
-            self.autoMeasure = autoMeasure(self.getLasers()[0], self.getMotors()[0], self.fineAlign)
+            #self.autoMeasure = autoMeasure(self.getLasers()[0], self.getMotors()[0], self.fineAlign)
 
-            self.autoMeasurePanel = autoMeasurePanel(self, self.autoMeasure)
-            motorVbox.Add(self.autoMeasurePanel, proportion=0, flag=wx.EXPAND)
+            #self.autoMeasurePanel = autoMeasurePanel(self, self.autoMeasure)
+            #motorVbox.Add(self.autoMeasurePanel, proportion=0, flag=wx.EXPAND)
 
         if self.motorFound():
             hbox.Add(motorVbox)
 
-        vbox.Add(hbox, 3, wx.EXPAND)
-        self.log = outputlogPanel(self)
-        vbox.Add(self.log, 1, wx.EXPAND)
-        self.SetSizer(vbox)
-
-        sys.stdout = logWriter(self.log)
-        sys.stderr = logWriterError(self.log)
 
 
 
@@ -127,26 +120,16 @@ class TabTwo(wx.Panel):
 
         for inst in self.instList:
             panel = inst.panelClass(self, inst)
+            print(inst)
 
             if inst.isSMU:
                 hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
             #else:
                #  hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
 
-
-
-
         vbox.Add(hbox, 3, wx.EXPAND)
-
-        self.log = outputlogPanel(self)
-        vbox.Add(self.log, 1, wx.EXPAND)
         self.SetSizer(vbox)
-
-        sys.stdout = logWriter(self.log)
-        sys.stderr = logWriterError(self.log)
-
         self.Layout()
-
         self.Show()
 
     def motorFound(self):
@@ -186,16 +169,6 @@ class TabThree(wx.Panel):
         self.instList = instList
         vbox = wx.BoxSizer(wx.VERTICAL)
         hbox = wx.BoxSizer(wx.HORIZONTAL)
-
-
-
-        vbox.Add(hbox, 3, wx.EXPAND)
-        self.log = outputlogPanel(self)
-        vbox.Add(self.log, 1, wx.EXPAND)
-        self.SetSizer(vbox)
-
-        sys.stdout = logWriter(self.log)
-        sys.stderr = logWriterError(self.log)
 
 
 
@@ -240,17 +213,10 @@ class TabFour(wx.Panel):
         for inst in self.instList:
             panel = inst.panelClass(self, inst)
 
-            self.autoMeasure = autoMeasure(self.getLasers()[0], self.getMotors()[0], self.fineAlign)
+          #  self.autoMeasure = autoMeasure(self.getLasers()[0], self.getMotors()[0], self.fineAlign)
 
-            self.autoMeasurePanel = autoMeasurePanel(self, self.autoMeasure)
+         #   self.autoMeasurePanel = autoMeasurePanel(self, self.autoMeasure)
 
-        vbox.Add(hbox, 3, wx.EXPAND)
-        self.log = outputlogPanel(self)
-        vbox.Add(self.log, 1, wx.EXPAND)
-        self.SetSizer(vbox)
-
-        sys.stdout = logWriter(self.log)
-        sys.stderr = logWriterError(self.log)
 
     def motorFound(self):
         motorFound = False
@@ -308,8 +274,8 @@ class instrumentFrame_withtabs(wx.Frame):
 
 
         #c = wx.Panel(self)
-        p = wx.Panel(self)
-        nb = wx.Notebook(p)
+        self.p = wx.Panel(self)
+        nb = wx.Notebook(self.p)
 
         # Create the tab windows
         tab1 = TabOne(nb, self.instList)
@@ -327,13 +293,16 @@ class instrumentFrame_withtabs(wx.Frame):
 
         output = wx.StaticBoxSizer(outputlabel, wx.VERTICAL)
 
-        print(self.instList)
-
 
         # Set notebook in a sizer to create the layout
         sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(nb, 1, wx.EXPAND)
-        p.SetSizer(sizer)
+        sizer.Add(nb, 2, wx.ALL | wx.EXPAND, 5)
+
+        self.log = outputlogPanel(self.p)
+        sizer.Add(self.log, 1, wx.ALL|wx.EXPAND)
+        self.p.SetSizer(sizer)
+        sys.stdout = logWriter(self.log)
+        sys.stderr = logWriterError(self.log)
 
 
 
