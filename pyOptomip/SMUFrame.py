@@ -343,12 +343,12 @@ class SMUPanel(wx.Panel):
         """ Calls ivsweep function using SMU class, saves and formats data to a csv file in chosen savefile location """
 
         if self.sweeptypeflag == 'Voltage':
-            if float(self.reso.GetValue()) / 1000 > (float(self.maxset.GetValue()) - float(self.minset.GetValue())):
+            if int(self.reso.GetValue()) / 1000 > (int(self.maxset.GetValue()) - int(self.minset.GetValue())):
                 print("Error: Please enter valid resolution")
                 return
 
         if self.sweeptypeflag == 'Current':
-            if float(self.reso.GetValue()) > (float(self.maxset.GetValue()) - float(self.minset.GetValue())):
+            if int(self.reso.GetValue()) > (int(self.maxset.GetValue()) - int(self.minset.GetValue())):
                 print("Error: Please enter valid resolution")
                 return
 
