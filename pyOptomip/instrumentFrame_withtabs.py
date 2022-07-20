@@ -124,8 +124,8 @@ class ElectricalTab(wx.Panel):
                #  hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
 
         vbox.Add(hbox, 3, wx.EXPAND)
-        self.log = outputlogPanel(self)
-        vbox.Add(self.log, 1, wx.EXPAND)
+        #self.log = outputlogPanel(self)
+        #vbox.Add(self.log, 1, wx.EXPAND)
         self.SetSizer(vbox)
         self.Layout()
         self.Show()
@@ -184,12 +184,12 @@ class OpticalTab(wx.Panel):
                 hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
 
         vbox.Add(hbox, 3, wx.EXPAND)
-        self.log = outputlogPanel(self)
-        vbox.Add(self.log, 1, wx.EXPAND)
+        #self.log = outputlogPanel(self)
+        #vbox.Add(self.log, 1, wx.EXPAND)
         self.SetSizer(vbox)
 
-        sys.stdout = logWriter(self.log)
-        sys.stderr = logWriterError(self.log)
+        #sys.stdout = logWriter(self.log)
+        #sys.stderr = logWriterError(self.log)
 
     def motorFound(self):
         motorFound = False
@@ -238,18 +238,17 @@ class AutoMeasureTab(wx.Panel):
             dial.ShowModal()
 
         self.autoMeasure = autoMeasure(self.getLasers(), self.getMotors(), self.fineAlign)
-
         self.autoMeasurePanel = autoMeasurePanel(self, self.autoMeasure)
 
         vbox.Add(self.autoMeasurePanel, proportion=0, flag=wx.EXPAND)
 
         vbox.Add(hbox, 3, wx.EXPAND)
-        self.log = outputlogPanel(self)
-        vbox.Add(self.log, 1, wx.EXPAND)
+        #self.log = outputlogPanel(self)
+        #vbox.Add(self.log, 1, wx.EXPAND)
         self.SetSizer(vbox)
 
-        sys.stdout = logWriter(self.log)
-        sys.stderr = logWriterError(self.log)
+        #sys.stdout = logWriter(self.log)
+        #sys.stderr = logWriterError(self.log)
 
     def motorFound(self):
         motorFound = False
