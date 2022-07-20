@@ -36,6 +36,7 @@ Last updated: July 15, 2014
 import time
 import numpy as np
 from keithley2600 import Keithley2600
+
 from keithley2600 import Keithley2600Base
 from keithley2600 import ResultTable
 
@@ -46,6 +47,7 @@ class SMUClass():
     isSMU = True
     isMotor = False
     isLaser = False
+    isQontrol = False
 
     def __init__(self):
         self.Aflag = False
