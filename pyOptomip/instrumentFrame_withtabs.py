@@ -33,7 +33,7 @@ import pyvisa as visa
 
 
 # Define the tab content as classes:
-class TabOne(wx.Panel):
+class HomeTab(wx.Panel):
     def __init__(self, parent, instList):
         wx.Panel.__init__(self, parent)
         self.instList = instList
@@ -105,7 +105,7 @@ class TabOne(wx.Panel):
             inst.disconnect()
         self.Destroy()
 
-class TabTwo(wx.Panel):
+class ElectricalTab(wx.Panel):
     def __init__(self, parent, instList):
         wx.Panel.__init__(self, parent)
         self.instList = instList
@@ -222,14 +222,14 @@ class OpticalTab(wx.Panel):
             inst.disconnect()
         self.Destroy()
 
-class TabFour(wx.Panel):
+class AutoMeasureTab(wx.Panel):
     def __init__(self, parent, instList):
         wx.Panel.__init__(self, parent)
         self.instList = instList
         vbox = wx.BoxSizer(wx.VERTICAL)
         hbox = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.fineAlign = fineAlign(self.getLasers()[0], self.getMotors()[0])
+        self.fineAlign = fineAlign(self.getLasers(), self.getMotors())
         try:
             self.fineAlignPanel = fineAlignPanel(self, self.fineAlign)
         except Exception as e:
@@ -237,7 +237,7 @@ class TabFour(wx.Panel):
                                     'Error', wx.ICON_ERROR)
             dial.ShowModal()
 
-        self.autoMeasure = autoMeasure(self.getLasers()[0], self.getMotors()[0], self.fineAlign)
+        self.autoMeasure = autoMeasure(self.getLasers(), self.getMotors(), self.fineAlign)
 
         self.autoMeasurePanel = autoMeasurePanel(self, self.autoMeasure)
 
