@@ -58,9 +58,9 @@ class SMUClass():
 
         self.inst = rm.open_resource(visaName)
         print(self.inst.query("*IDN?\n"))
-        self.inst.write("beeper.beep(0.1,2400)")
-        self.inst.write("delay(0.250)")
-        self.inst.write("beeper.beep(0.1,2400)")
+        #self.inst.write("beeper.beep(0.1,2400)")
+        #self.inst.write("delay(0.250)")
+        #self.inst.write("beeper.beep(0.1,2400)")
         #self.inst.write("read_error_queue()")
 
         self.inst.write("smua.reset()") #Reset channel A
@@ -82,117 +82,102 @@ class SMUClass():
         print('SMU Disconnected')
 
 
-    def setVoltage(self, voltage, outputA, outputB):
+    def setVoltage(self, voltage, channel):#, outputA, outputB):
         """ Sets the source of the SMU to a specified voltage
             Arguments:
                 voltage: a float representing the voltage to set the SMU to
             Returns:
                 A print statement indicating that the voltage has been set
             """
-
-        if outputA is False and outputB is False:
-            print("Please select an output channel")
-
-        if outputA is True:
+        if channel == 'A':
             self.inst.write("smua.source.func = smua.OUTPUT_DCVOLTS")
             setvoltstring = "smua.source.levelv = " + str(voltage)
             self.inst.write(setvoltstring)
             print('Set channel A voltage to ' + str(int(voltage)) + 'V')
 
-        if outputB is True:
+        if channel == 'B':
             self.inst.write("smub.source.func = smub.OUTPUT_DCVOLTS")
             setvoltstring = "smub.source.levelv = " + str(voltage)
             self.inst.write(setvoltstring)
             print('Set channel B voltage to ' + str(int(voltage)) + 'V')
 
 
-    def setCurrent(self, current, outputA, outputB):
+
+        #if outputA is False and outputB is False:
+         #   print("Please select an output channel")
+
+        #if outputA is True:
+         #   self.inst.write("smua.source.func = smua.OUTPUT_DCVOLTS")
+          #  setvoltstring = "smua.source.levelv = " + str(voltage)
+           # self.inst.write(setvoltstring)
+            #print('Set channel A voltage to ' + str(int(voltage)) + 'V')
+
+        #if outputB is True:
+         #   self.inst.write("smub.source.func = smub.OUTPUT_DCVOLTS")
+          #  setvoltstring = "smub.source.levelv = " + str(voltage)
+           # self.inst.write(setvoltstring)
+            #print('Set channel B voltage to ' + str(int(voltage)) + 'V')
+
+
+    def setCurrent(self, current, channel):#outputA, outputB):
         """ Sets the source of the SMU to a specified current
                     Arguments:
                         current: a float representing the current to set the SMU to
+                        channel: specifies which channel to set current in
                     Returns:
                         A print statement indicating that the current has been set
                     """
-        #self.k.apply_current(self.k.smua, current)
-        #self.inst.write("smua.reset()")
-        if outputA is True and outputB is True:
+        if channel == 'A':
             self.inst.write("smua.source.func = smua.OUTPUT_DCAMPS")
             setcurrentstring = "smua.source.leveli = " + str(current)
             self.inst.write(setcurrentstring)
             print('Set channel A current to ' + str(int(current * 1e6) / 1000) + 'mA')
 
-            self.inst.write("smub.source.func = smub.OUTPUT_DCAMPS")
-            setcurrentstring = "smub.source.leveli = " + str(current)
-            self.inst.write(setcurrentstring)
-            print('Set channel B current to ' + str(int(current * 1e6) / 1000) + ' mA')
-
-        elif outputA is False and outputB is False:
-            print("Please select an output channel")
-
-        elif outputA is True:
-            self.inst.write("smua.source.func = smua.OUTPUT_DCAMPS")
-            setcurrentstring = "smua.source.leveli = " + str(current)
-            self.inst.write(setcurrentstring)
-            print('Set channel A current to ' + str(int(current * 1e6) / 1000) + ' mA')
-
-        elif outputB is True:
+        if channel == 'B':
             self.inst.write("smub.source.func = smub.OUTPUT_DCAMPS")
             setcurrentstring = "smub.source.leveli = " + str(current)
             self.inst.write(setcurrentstring)
             print('Set channel B current to ' + str(int(current * 1e6) / 1000) + ' mA')
 
 
+    def setcurrentlimit(self, currentlimit, channel):#outputA, outputB):
 
-
-    def setcurrentlimit(self, currentlimit, outputA, outputB):
-
-        if outputA is False and outputB is False:
-            print("Please select an output channel")
-
-        if outputA is True:
-            currentlimitstring = "smua.source.limiti = " + str(float(currentlimit/1000))
+        if channel == 'A':
+            currentlimitstring = "smua.source.limiti = " + str(float(currentlimit / 1000))
             self.inst.write(currentlimitstring)
             print("Set channel A current limit to " + str(currentlimit) + " mA")
 
-        if outputB is True:
-            currentlimitstring = "smub.source.limiti = " + str(float(currentlimit/1000))
+        if channel == 'B':
+            currentlimitstring = "smub.source.limiti = " + str(float(currentlimit / 1000))
             self.inst.write(currentlimitstring)
             print("Set channel B current limit to " + str(currentlimit) + " mA")
 
 
-    def setvoltagelimit(self, voltagelimit, outputA, outputB):
+    def setvoltagelimit(self, voltagelimit, channel):# outputA, outputB):
 
-
-        if outputA is False and outputB is False:
-            print("Please select an output channel")
-
-        if outputA is True:
+        if channel == 'A':
             voltagelimitstring = "smua.source.limitv = " + str(voltagelimit)
             self.inst.write(voltagelimitstring)
             print("Set channel A voltage limit to " + str(voltagelimit) + " V")
 
-        if outputB is True:
+        if channel == 'B':
             voltagelimitstring = "smub.source.limitv = " + str(voltagelimit)
             self.inst.write(voltagelimitstring)
             print("Set channel B voltage limit to " + str(voltagelimit) + " V")
 
 
-    def setpowerlimit(self, powerlimit, outputA, outputB):
+    def setpowerlimit(self, powerlimit, channel):# outputA, outputB):
 
 
-        if outputA is False and outputB is False:
-            print("Please select an output channel")
-
-        if outputA is True:
-            powerlimitstring = "smua.source.limitp = " + str(float(powerlimit/1000))
+        if channel == 'A':
+            powerlimitstring = "smua.source.limitp = " + str(float(powerlimit / 1000))
             self.inst.write(powerlimitstring)
             print("Set channel A power limit to " + str(powerlimit) + " mW")
 
-        if outputB is True:
-            powerlimitstring = "smub.source.limitp = " + str(float(powerlimit/1000))
+        if channel == 'B':
+            powerlimitstring = "smub.source.limitp = " + str(float(powerlimit / 1000))
             self.inst.write(powerlimitstring)
             print("Set channel B power limit to " + str(powerlimit) + " mW")
-
 
 
     def getvoltageA(self):
@@ -206,8 +191,8 @@ class SMUClass():
     def getcurrentA(self):
         #i = self.k.smua.measure.i()
         i = self.inst.query("print(smua.measure.i())")
-        #i = 15
         return i
+
 
     def getvoltageB(self):
         #v = self.k.smua.measure.v()
@@ -219,26 +204,38 @@ class SMUClass():
 
     def getcurrentB(self):
         #i = self.k.smua.measure.i()
-        i = self.inst.query("print(smub.measure.i())")
-        #i = 15
+        i = self.inst.query("print(smub.measure.r())")
         return i
 
 
-    def ivsweep(self, voltagemin:float, voltagemax:float, resolution:float):
+    def getresistanceA(self):
+        r = self.inst.query("print(smua.measure.r())")
+        return r
 
-        sweeplist = [voltagemin]
-        stepsize = (voltagemax - voltagemin)
-        stepsize = stepsize/(resolution - 1)
-        voltagex = voltagemin
 
-        for x in range(int(resolution - 1)):
-            sweeplist.append(voltagex + stepsize)
-            voltagex = voltagex + stepsize
+    def getresistanceB(self):
+        r = self.inst.query("print(smub.measure.r())")
+        return r
 
-        pars = {'recorded': time.asctime(), 'sweep_type': 'iv'}
-        # create ResultTable with two columns
-        #rt = ResultTable(['Voltage', 'Current'], ['V', 'A'], params=pars)
-        #fig = rt.plot(live=True)
+
+    def ivsweep(self, min:float, max:float, resolution:float, independantvar):
+
+        if independantvar == 'Voltage':
+            sweeplist = [min]
+            x = min
+
+            while x < max:
+                sweeplist.append(x + resolution/1000)
+                x = x + resolution/1000
+
+        if independantvar  == 'Current':
+            sweeplist = [min/1000]
+            x = min/1000
+
+            while x < max/1000:
+                sweeplist.append(x + resolution/1000)
+                x = x + resolution/1000
+
         self.voltageresultA = []
         self.currentresultA = []
         self.voltageresultB = []
@@ -248,55 +245,109 @@ class SMUClass():
         self.powerresultA = []
         self.powerresultB = []
 
-        if self.Aflag == True:
-            self.inst.write("smua.source.func = smua.OUTPUT_DCVOLTS")
+        if independantvar == 'Voltage':
 
-            for v in sweeplist:
-                setvoltstring = "smua.source.levelv = " + str(v)
+            if self.Aflag == True:
+                self.inst.write("smua.source.func = smua.OUTPUT_DCVOLTS")
+
+                for v in sweeplist:
+                    setvoltstring = "smua.source.levelv = " + str(v)
+                    self.inst.write(setvoltstring)
+                    # self.k.apply_voltage(self.k.smua, v)
+                    # i = self.k.smua.measure.i()
+                    i = self.inst.query("print(smua.measure.i())")
+                    i = float(i) * 1000
+                    r = self.inst.query("print(smua.measure.r())")
+                    r = float(r)
+                    p = self.inst.query("print(smua.measure.p())")
+                    p = float(p) * 1000
+                    print(p)
+                    self.voltageresultA.append(v)
+                    self.currentresultA.append(i)
+                    self.resistanceresultA.append(r)
+                    self.powerresultA.append(p)
+                    # rt.append_row([v, i])
+                    time.sleep(1)
+
+            if self.Aflag == True:
+                setvoltstring = "smua.source.levelv = " + str(0)
                 self.inst.write(setvoltstring)
-                #self.k.apply_voltage(self.k.smua, v)
-                #i = self.k.smua.measure.i()
-                i = self.inst.query("print(smua.measure.i())")
-                i = float(i)
-                r = self.inst.query("print(smua.measure.r())")
-                r = float(r)
-                p = self.inst.query("print(smua.measure.p())")
-                p = float(p)
-                self.voltageresultA.append(v)
-                self.currentresultA.append(i)
-                self.resistanceresultA.append(r)
-                self.powerresultA.append(p)
-                #rt.append_row([v, i])
-                time.sleep(1)
 
-        if self.Aflag == True:
-            setvoltstring = "smua.source.levelv = " + str(0)
-            self.inst.write(setvoltstring)
+            if self.Bflag == True:
+                self.inst.write("smub.source.func = smub.OUTPUT_DCVOLTS")
 
+                for v in sweeplist:
+                    setvoltstring = "smub.source.levelv = " + str(v)
+                    self.inst.write(setvoltstring)
+                    # self.k.apply_voltage(self.k.smua, v)
+                    # i = self.k.smua.measure.i()
+                    i = self.inst.query("print(smub.measure.i())")
+                    i = float(i) * 1000
+                    r = self.inst.query("print(smub.measure.r())")
+                    r = float(r)
+                    p = self.inst.query("print(smub.measure.p())")
+                    p = float(p) * 1000
+                    self.voltageresultB.append(v)
+                    self.currentresultB.append(i)
+                    self.resistanceresultB.append(r)
+                    self.powerresultB.append(p)
+                    time.sleep(1)
 
-        if self.Bflag == True:
-            self.inst.write("smub.source.func = smub.OUTPUT_DCVOLTS")
-
-            for v in sweeplist:
-                setvoltstring = "smub.source.levelv = " + str(v)
+            if self.Bflag == True:
+                setvoltstring = "smub.source.levelv = " + str(0)
                 self.inst.write(setvoltstring)
-                # self.k.apply_voltage(self.k.smua, v)
-                # i = self.k.smua.measure.i()
-                i = self.inst.query("print(smub.measure.i())")
-                i = float(i)
-                r = self.inst.query("print(smub.measure.r())")
-                r = float(r)
-                p = self.inst.query("print(smub.measure.p())")
-                p = float(p)
-                self.voltageresultB.append(v)
-                self.currentresultB.append(i)
-                self.resistanceresultB.append(r)
-                self.powerresultB.append(p)
-                time.sleep(1)
 
-        if self.Bflag == True:
-            setvoltstring = "smub.source.levelv = " + str(0)
-            self.inst.write(setvoltstring)
+        if independantvar == 'Current':
+
+            if self.Aflag == True:
+                self.inst.write("smua.source.func = smua.OUTPUT_DCAMPS")
+
+                for i in sweeplist:
+                    setcurrentstring = "smua.source.leveli = " + str(i)
+                    self.inst.write(setcurrentstring)
+
+                    v = self.inst.query("print(smua.measure.v())")
+                    v = float(v)
+                    r = self.inst.query("print(smua.measure.r())")
+                    r = float(r)
+                    p = self.inst.query("print(smua.measure.p())")
+                    p = float(p) * 1000
+                    print(p)
+                    self.voltageresultA.append(v)
+                    self.currentresultA.append(i*1000)
+                    self.resistanceresultA.append(r)
+                    self.powerresultA.append(p)
+                    # rt.append_row([v, i])
+                    time.sleep(1)
+
+            if self.Aflag == True:
+                setcurrentstring = "smua.source.leveli = " + str(0)
+                self.inst.write(setcurrentstring)
+
+            if self.Bflag == True:
+                self.inst.write("smub.source.func = smub.OUTPUT_DCAMPS")
+
+                for i in sweeplist:
+                    setcurrentstring = "smub.source.leveli = " + str(i)
+                    self.inst.write(setcurrentstring)
+
+                    v = self.inst.query("print(smub.measure.v())")
+                    v = float(v)
+                    r = self.inst.query("print(smub.measure.r())")
+                    r = float(r)
+                    p = self.inst.query("print(smub.measure.p())")
+                    p = float(p) * 1000
+                    print(p)
+                    self.voltageresultA.append(v)
+                    self.currentresultA.append(i)
+                    self.resistanceresultA.append(r)
+                    self.powerresultA.append(p)
+                    # rt.append_row([v, i])
+                    time.sleep(1)
+
+            if self.Bflag == True:
+                setcurrentstring = "smub.source.leveli = " + str(0)
+                self.inst.write(setcurrentstring)
 
         if self.Aflag == True:
             print(self.voltageresultA)
@@ -306,42 +357,41 @@ class SMUClass():
             print(self.voltageresultB)
             print(self.currentresultB)
 
-        #for v in sweeplist:
-         #   self.inst.write()
-         #   self.k.apply_voltage(self.k.smua, v)
-         #   i = self.k.smua.measure.i()
-         #   rt.append_row([v, i])
-         #   time.sleep(1)
-
-       # setvoltstring = "smua.source.levelv = " + str(0)
-       # self.inst.write(setvoltstring)
-       # self.inst.write()
-        #self.k.apply_voltage(self.k.smua, 0)
-
         print('Sweep Completed!')
 
-        #return rt
 
-    def turnchannelon(self, A, B):
+    def turnchannelon(self, channel):#A, B):
 
-        if A is True and B is True:
+        if channel == 'A':
             self.inst.write("smua.source.output = smua.OUTPUT_ON")
+            self.onflagA = 'ON'
+            print("Channel A ON")
+        if channel == 'B':
+            self.inst.write("smub.source.output = smub.OUTPUT_ON")
+            self.onflagB = 'ON'
+            print("Channel B ON")
+        if channel == 'All':
+            self.inst.write("smua.source.output = smua.OUTPUT_ON")
+            self.onflagA = 'ON'
             print("Channel A ON")
             self.inst.write("smua.source.output = smub.OUTPUT_ON")
-            print("Channel B ON")
-        if A is True:
-            self.inst.write("smua.source.output = smua.OUTPUT_ON")
-            print("Channel A ON")
-        elif B is True:
-            self.inst.write("smub.source.output = smub.OUTPUT_ON")
+            self.onflagB = 'ON'
             print("Channel B ON")
 
-    def turnchanneloff(self, A, B):
 
-        if A is True:
+    def turnchanneloff(self, channel): #A, B):
+
+        if channel == 'A':
             self.inst.write("smua.source.output = smua.OUTPUT_OFF")
             print("Channel A OFF")
-        if B is True:
+
+        if channel == 'B':
+            self.inst.write("smub.source.output = smub.OUTPUT_OFF")
+            print("Channel B OFF")
+
+        if channel == 'All':
+            self.inst.write("smua.source.output = smua.OUTPUT_OFF")
+            print("Channel A OFF")
             self.inst.write("smub.source.output = smub.OUTPUT_OFF")
             print("Channel B OFF")
 
