@@ -70,7 +70,7 @@ class SMUPanel(wx.Panel):
         super(SMUPanel, self).__init__(parent)
         self.graphPanel = graph
         self.InitUI()
-        self.plotflag = 'A'
+        self.plotflag = ''
         self.dependantA = []
         self.dependantB = []
         self.typeflag = 'IV'
@@ -98,11 +98,13 @@ class SMUPanel(wx.Panel):
         #self.smuasel.SetValue(False)
         #self.smubsel = wx.CheckBox(self, label='B', pos=(20, 20))
         #self.smubsel.SetValue(False)
-        self.btn_outputtoggle = wx.Button(self, label='ON/OFF', size=(50, 20))
-        self.btn_outputtoggle.Bind(wx.EVT_BUTTON, self.OnButton_outputToggle)
+        self.btn_ontoggle = wx.Button(self, label='ON', size=(20, 20))
+        self.btn_ontoggle.Bind(wx.EVT_BUTTON, self.OnButton_outputToggle)
+        self.btn_offtoggle = wx.Button(self, label='OFF', size=(20, 20))
+        self.btn_offtoggle.Bind(wx.EVT_BUTTON, self.OnButton_outputToggle)
 
         #hbox1.AddMany([(st1, 1, wx.EXPAND), (self.smuasel, 1, wx.EXPAND), (self.smubsel, 1, wx.EXPAND), (self.btn_outputtoggle, 1, wx.EXPAND)])
-        hbox1.AddMany([(st1, 1, wx.EXPAND), (self.smusel, 1, wx.EXPAND), (self.btn_outputtoggle, 1, wx.EXPAND)])
+        hbox1.AddMany([(st1, 1, wx.EXPAND), (self.smusel, 1, wx.EXPAND), (self.btn_ontoggle, 1, wx.EXPAND), (self.btn_offtoggle, 1, wx.EXPAND)])
         #Set Voltage layout
 
         hbox2 = wx.BoxSizer(wx.HORIZONTAL)
@@ -221,14 +223,26 @@ class SMUPanel(wx.Panel):
 
         hbox1_2 = wx.BoxSizer(wx.HORIZONTAL)
         st1_1 = wx.StaticText(self, label='Select SMU Output')
-        self.smua2sel = wx.CheckBox(self, label='A', pos=(20, 20))
-        self.smua2sel.SetValue(False)
-        self.smub2sel = wx.CheckBox(self, label='B', pos=(20, 20))
-        self.smub2sel.SetValue(False)
-        self.btn_outputtoggle = wx.Button(self, label='Set', size=(50, 20))
-        self.btn_outputtoggle.Bind(wx.EVT_BUTTON, self.OnButton_outputTogglesweep)
 
-        hbox1_2.AddMany([(st1_1, 1, wx.EXPAND), (self.smua2sel, 1, wx.EXPAND), (self.smub2sel, 1, wx.EXPAND), (self.btn_outputtoggle, 1, wx.EXPAND)])
+        selections3 = ['A', 'B', 'All']
+
+        self.smu2sel = wx.ComboBox(self, id=1, choices=selections3)
+        self.smu2sel.Bind(wx.EVT_COMBOBOX, self.OnButton_outputTogglesweep)
+
+        # self.smuasel = wx.CheckBox(self, label='A', pos=(20, 20))
+        # self.smuasel.SetValue(False)
+        # self.smubsel = wx.CheckBox(self, label='B', pos=(20, 20))
+        # self.smubsel.SetValue(False
+
+
+        #self.smua2sel = wx.CheckBox(self, label='A', pos=(20, 20))
+        #self.smua2sel.SetValue(False)
+        #self.smub2sel = wx.CheckBox(self, label='B', pos=(20, 20))
+        #self.smub2sel.SetValue(False)
+        #self.btn_outputtoggle = wx.Button(self, label='Set', size=(50, 20))
+        #self.btn_outputtoggle.Bind(wx.EVT_BUTTON, self.OnButton_outputTogglesweep)
+
+        hbox1_2.AddMany([(st1_1, 1, wx.EXPAND), (self.smu2sel, 1, wx.EXPAND)])
 
 
         hbox1_1 = wx.BoxSizer(wx.HORIZONTAL)
@@ -273,14 +287,19 @@ class SMUPanel(wx.Panel):
         hbox4_3 = wx.BoxSizer(wx.HORIZONTAL)
 
         sc2 = wx.StaticText(self, label='Plot Selection:')
-        self.plotsel = wx.CheckBox(self, label='A', pos=(20, 20))
-        self.plotsel.SetValue(False)
-        self.plotsel.Bind(wx.EVT_CHECKBOX, self.PlotselectBtn)
-        self.plot2sel = wx.CheckBox(self, label='B', pos=(20, 20))
-        self.plot2sel.SetValue(False)
-        self.plot2sel.Bind(wx.EVT_CHECKBOX, self.PlotselectBtn)
+        selections2 = ['A', 'B']
 
-        hbox4_3.AddMany([(sc2, 1, wx.EXPAND), (self.plotsel, 1, wx.EXPAND), (self.plot2sel, 1, wx.EXPAND)])
+        self.plotsel = wx.ComboBox(self, choices=selections2)
+        self.plotsel.Bind(wx.EVT_COMBOBOX, self.PlotselectBtn)
+
+        #self.plotsel = wx.CheckBox(self, label='A', pos=(20, 20))
+        #self.plotsel.SetValue(False)
+        #self.plotsel.Bind(wx.EVT_CHECKBOX, self.PlotselectBtn)
+        #self.plot2sel = wx.CheckBox(self, label='B', pos=(20, 20))
+        #self.plot2sel.SetValue(False)
+        #self.plot2sel.Bind(wx.EVT_CHECKBOX, self.PlotselectBtn)
+
+        hbox4_3.AddMany([(sc2, 1, wx.EXPAND), (self.plotsel, 1, wx.EXPAND)])
 
         hbox4_4 = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -323,8 +342,18 @@ class SMUPanel(wx.Panel):
     def OnButton_Sweep(self, event):
         """ Calls ivsweep function using SMU class, saves and formats data to a csv file in chosen savefile location """
 
+        if self.sweeptypeflag == 'Voltage':
+            if float(self.reso.GetValue()) / 1000 > (float(self.maxset.GetValue()) - float(self.minset.GetValue())):
+                print("Error: Please enter valid resolution")
+                return
+
+        if self.sweeptypeflag == 'Current':
+            if float(self.reso.GetValue()) > (float(self.maxset.GetValue()) - float(self.minset.GetValue())):
+                print("Error: Please enter valid resolution")
+                return
 
         print('Commencing Sweep...')
+        print(self.sweeptypeflag)
 
         self.smu.ivsweep(float(self.minset.GetValue()), float(self.maxset.GetValue()), float(self.reso.GetValue()), self.sweeptypeflag)
 
@@ -466,57 +495,69 @@ class SMUPanel(wx.Panel):
 
 
     def OnButton_currentSet(self, event):
-        self.smu.setCurrent((float(self.currentset.GetValue())/1e3), self.smusel)#self.smuasel.GetValue(), self.smubsel.GetValue())
+        self.smu.setCurrent((float(self.currentset.GetValue())/1e3), self.smusel.GetValue())#self.smuasel.GetValue(), self.smubsel.GetValue())
         self.voltset.SetValue('')
 
 
     def OnButton_voltageSet(self, event):
-        self.smu.setVoltage((float(self.voltset.GetValue())), self.smusel) # self.smuasel.GetValue(), self.smubsel.GetValue())
+        self.smu.setVoltage((float(self.voltset.GetValue())), self.smusel.GetValue()) # self.smuasel.GetValue(), self.smubsel.GetValue())
         self.currentset.SetValue('')
 
 
     def OnButton_currentlim(self, event):
-        self.smu.setcurrentlimit(float(self.currentlim.GetValue()), self.smusel)# self.smuasel.GetValue(), self.smubsel.GetValue())
+        self.smu.setcurrentlimit(float(self.currentlim.GetValue()), self.smusel.GetValue())# self.smuasel.GetValue(), self.smubsel.GetValue())
 
 
     def OnButton_voltagelim(self, event):
-        self.smu.setvoltagelimit(float(self.voltlim.GetValue()), self.smusel)# self.smuasel.GetValue(), self.smubsel.GetValue())
+        self.smu.setvoltagelimit(float(self.voltlim.GetValue()), self.smusel.GetValue())# self.smuasel.GetValue(), self.smubsel.GetValue())
 
 
     def OnButton_powerlim(self, event):
-        self.smu.setpowerlimit(float(self.powerlim.GetValue()), self.smusel)# self.smuasel.GetValue(), self.smubsel.GetValue())
+        self.smu.setpowerlimit(float(self.powerlim.GetValue()), self.smusel.GetValue())# self.smuasel.GetValue(), self.smubsel.GetValue())
 
 
     def OnButton_outputToggle(self, event):
 
-        if self.smu.onflagA == True and self.smusel == 'A':
-            self.smu.turnchanneloff(self.smusel)
-        if self.smu.onflagA == True and self.smusel == 'A':
-            self.smu.turnchanneloff(self.smusel)
+        c = event.GetEventObject()
+        flag = c.GetLabel()
 
-        if self.btn_outputtoggle == False:
-            self.
-
-        if self.smusel.GetValue() == 'A':
-            self.smu.turnchannelon(True)
-        if self.smusel.GetValue() == '':
-            self.smu.turnchanneloff(True, True)
-        if self.smusel.GetValue() == 'B':
-            self.smu.turnchannelon(False, True)
-        if self.smubsel.GetValue() == False:
-            self.smu.turnchanneloff(False, True)
+        if self.smusel.GetValue() == 'A' and flag == 'ON':
+            self.smu.turnchannelon(self.smusel.GetValue())
+        if self.smusel.GetValue() == 'A' and flag == 'OFF':
+            self.smu.turnchanneloff(self.smusel.GetValue())
+        if self.smusel.GetValue() == 'B' and flag == 'ON':
+            self.smu.turnchannelon(self.smusel.GetValue())
+        if self.smusel.GetValue() == 'B' and flag == 'OFF':
+            self.smu.turnchanneloff(self.smusel.GetValue())
+        if self.smusel.GetValue() == 'All' and flag == 'ON':
+            self.smu.turnchannelon(self.smusel.GetValue())
+        if self.smusel.GetValue() == 'All' and flag == 'OFF':
+            self.smu.turnchanneloff(self.smusel.GetValue())
 
 
     def OnButton_outputTogglesweep(self, event):
 
-        if self.smua2sel.GetValue() == False and self.smub2sel.GetValue() == False:
-            print("Please select an output")
-        if self.smua2sel.GetValue() == True and self.smub2sel.GetValue() == True:
-            self.smu.setoutputflag(True, True)
-        if self.smua2sel.GetValue() == True and self.smub2sel.GetValue() == False:
-            self.smu.setoutputflag(True, False)
-        if self.smua2sel.GetValue() == False and self.smub2sel.GetValue() == True:
-            self.smu.setoutputflag(False, True)
+        c = event.GetEventObject()
+        iden = c.GetId()
+        if iden == 1:
+            print(self.smu2sel.GetValue())
+
+            if self.smu2sel.GetValue() == '':
+                print("Please select an output")
+                self.smu.setoutputflagoff('A')
+                self.smu.setoutputflagoff('B')
+
+            if self.smu2sel.GetValue() == 'A':
+                self.smu.setoutputflagon(self.smu2sel.GetValue())
+                self.smu.setoutputflagoff('B')
+
+            if self.smu2sel.GetValue() == 'B':
+                self.smu.setoutputflagon(self.smu2sel.GetValue())
+                self.smu.setoutputflagoff('A')
+
+            if self.smu2sel.GetValue() == 'All':
+                self.smu.setoutputflagon('A')
+                self.smu.setoutputflagon('B')
 
 
     def onChecked(self, e):
@@ -545,52 +586,62 @@ class SMUPanel(wx.Panel):
     def PlotselectBtn(self, event):
 
         c = event.GetEventObject()
-        label = c.GetLabel()
+        label = self.plotsel.GetValue()
+
+
+        a = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        b = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
 
         if self.dependantA==[] and self.dependantB==[]:
-            if self.plotsel.GetValue() and self.plot2sel.GetValue():
-                if label == "A":
-                    self.plot2sel.SetValue(False)
-                    self.plotflag = 'A'
 
-                if label == "B":
-                    self.plotsel.SetValue(False)
-                    self.plotflag = 'B'
-
-            elif self.plotsel.GetValue() and self.plot2sel.GetValue() == False:
+            if label == 'A':
                 self.plotflag = 'A'
 
-            elif self.plot2sel.GetValue() and self.plotsel.GetValue() == False:
+            if label == 'B':
                 self.plotflag = 'B'
 
             return
 
-        if self.plotsel.GetValue() and self.plot2sel.GetValue():
-            if label == "A":
-                self.plot2sel.SetValue(False)
+        if self.dependantB == []:
+
+            if label == 'A':
                 self.plotflag = 'A'
                 if self.sweeptypeflag == 'Voltage':
                     self.Plot(self.voltageA, self.dependantA)
                 if self.sweeptypeflag == 'Current':
                     self.Plot(self.currentA, self.dependantA)
-            if label == "B":
-                self.plotsel.SetValue(False)
+
+            if label == 'B':
+                self.plotflag = 'B'
+                self.Plot(a, b)
+
+            return
+
+        if self.dependantA == []:
+
+            if label == 'A':
+                self.plotflag = 'A'
+                self.Plot(a, b)
+
+
+            if label == 'B':
                 self.plotflag = 'B'
                 if self.sweeptypeflag == 'Voltage':
                     self.Plot(self.voltageB, self.dependantB)
                 if self.sweeptypeflag == 'Current':
                     self.Plot(self.currentB, self.dependantB)
 
-        elif self.plotsel.GetValue() and self.plot2sel.GetValue()==False:
-            self.plot2sel.SetValue(False)
+            return
+
+        if label == 'A':
             self.plotflag = 'A'
             if self.sweeptypeflag == 'Voltage':
                 self.Plot(self.voltageA, self.dependantA)
             if self.sweeptypeflag == 'Current':
                 self.Plot(self.currentA, self.dependantA)
 
-        elif self.plot2sel.GetValue() and self.plotsel.GetValue()==False:
-            self.plotsel.SetValue(False)
+        if label == 'B':
             self.plotflag = 'B'
             if self.sweeptypeflag == 'Voltage':
                 self.Plot(self.voltageB, self.dependantB)
@@ -612,6 +663,14 @@ class SMUPanel(wx.Panel):
         cb = event.GetEventObject()
         label = cb.GetLabel()
         value = cb.GetValue()
+
+
+        if value==False:
+            self.typeflag = ''
+            self.dependantA = [0]
+            self.dependantB = [0]
+            self.Plot(self.dependantA, self.dependantB)
+
 
         if label=='RV/RI' and value==True:
             self.typesel.SetValue(False)
@@ -707,3 +766,4 @@ class SMUPanel(wx.Panel):
             self.maxunit.SetLabel('mA')
             self.resunit.SetLabel('mA')
             print('Set to Current sweep')
+

@@ -101,6 +101,17 @@ class SMUClass():
             self.inst.write(setvoltstring)
             print('Set channel B voltage to ' + str(int(voltage)) + 'V')
 
+        if channel == 'All':
+            self.inst.write("smua.source.func = smua.OUTPUT_DCVOLTS")
+            setvoltstring = "smua.source.levelv = " + str(voltage)
+            self.inst.write(setvoltstring)
+            print('Set channel A voltage to ' + str(int(voltage)) + 'V')
+
+            self.inst.write("smub.source.func = smub.OUTPUT_DCVOLTS")
+            setvoltstring = "smub.source.levelv = " + str(voltage)
+            self.inst.write(setvoltstring)
+            print('Set channel B voltage to ' + str(int(voltage)) + 'V')
+
 
 
         #if outputA is False and outputB is False:
@@ -137,7 +148,18 @@ class SMUClass():
             self.inst.write("smub.source.func = smub.OUTPUT_DCAMPS")
             setcurrentstring = "smub.source.leveli = " + str(current)
             self.inst.write(setcurrentstring)
-            print('Set channel B current to ' + str(int(current * 1e6) / 1000) + ' mA')
+            print('Set channel B current to ' + str(int(current * 1e6) / 1000) + 'mA')
+
+        if channel == 'All':
+            self.inst.write("smua.source.func = smua.OUTPUT_DCAMPS")
+            setcurrentstring = "smua.source.leveli = " + str(current)
+            self.inst.write(setcurrentstring)
+            print('Set channel A current to ' + str(int(current * 1e6) / 1000) + 'mA')
+
+            self.inst.write("smub.source.func = smub.OUTPUT_DCAMPS")
+            setcurrentstring = "smub.source.leveli = " + str(current)
+            self.inst.write(setcurrentstring)
+            print('Set channel B current to ' + str(int(current * 1e6) / 1000) + 'mA')
 
 
     def setcurrentlimit(self, currentlimit, channel):#outputA, outputB):
@@ -145,12 +167,21 @@ class SMUClass():
         if channel == 'A':
             currentlimitstring = "smua.source.limiti = " + str(float(currentlimit / 1000))
             self.inst.write(currentlimitstring)
-            print("Set channel A current limit to " + str(currentlimit) + " mA")
+            print("Set channel A current limit to " + str(currentlimit) + "mA")
 
         if channel == 'B':
             currentlimitstring = "smub.source.limiti = " + str(float(currentlimit / 1000))
             self.inst.write(currentlimitstring)
-            print("Set channel B current limit to " + str(currentlimit) + " mA")
+            print("Set channel B current limit to " + str(currentlimit) + "mA")
+
+        if channel == 'All':
+            currentlimitstring = "smua.source.limiti = " + str(float(currentlimit / 1000))
+            self.inst.write(currentlimitstring)
+            print("Set channel A current limit to " + str(currentlimit) + "mA")
+
+            currentlimitstring = "smub.source.limiti = " + str(float(currentlimit / 1000))
+            self.inst.write(currentlimitstring)
+            print("Set channel B current limit to " + str(currentlimit) + "mA")
 
 
     def setvoltagelimit(self, voltagelimit, channel):# outputA, outputB):
@@ -161,6 +192,15 @@ class SMUClass():
             print("Set channel A voltage limit to " + str(voltagelimit) + " V")
 
         if channel == 'B':
+            voltagelimitstring = "smub.source.limitv = " + str(voltagelimit)
+            self.inst.write(voltagelimitstring)
+            print("Set channel B voltage limit to " + str(voltagelimit) + " V")
+
+        if channel == 'All':
+            voltagelimitstring = "smua.source.limitv = " + str(voltagelimit)
+            self.inst.write(voltagelimitstring)
+            print("Set channel A voltage limit to " + str(voltagelimit) + " V")
+
             voltagelimitstring = "smub.source.limitv = " + str(voltagelimit)
             self.inst.write(voltagelimitstring)
             print("Set channel B voltage limit to " + str(voltagelimit) + " V")
@@ -179,31 +219,32 @@ class SMUClass():
             self.inst.write(powerlimitstring)
             print("Set channel B power limit to " + str(powerlimit) + " mW")
 
+        if channel == 'All':
+            powerlimitstring = "smua.source.limitp = " + str(float(powerlimit / 1000))
+            self.inst.write(powerlimitstring)
+            print("Set channel A power limit to " + str(powerlimit) + " mW")
+
+            powerlimitstring = "smub.source.limitp = " + str(float(powerlimit / 1000))
+            self.inst.write(powerlimitstring)
+            print("Set channel B power limit to " + str(powerlimit) + " mW")
+
 
     def getvoltageA(self):
-        #v = self.k.smua.measure.v()
-
         v = self.inst.query("print(smua.measure.v())")
-        #v = 15
         return v
 
 
     def getcurrentA(self):
-        #i = self.k.smua.measure.i()
         i = self.inst.query("print(smua.measure.i())")
         return i
 
 
     def getvoltageB(self):
-        #v = self.k.smua.measure.v()
-
         v = self.inst.query("print(smub.measure.v())")
-        #v = 15
         return v
 
 
     def getcurrentB(self):
-        #i = self.k.smua.measure.i()
         i = self.inst.query("print(smub.measure.r())")
         return i
 
@@ -220,22 +261,6 @@ class SMUClass():
 
     def ivsweep(self, min:float, max:float, resolution:float, independantvar):
 
-        if independantvar == 'Voltage':
-            sweeplist = [min]
-            x = min
-
-            while x < max:
-                sweeplist.append(x + resolution/1000)
-                x = x + resolution/1000
-
-        if independantvar  == 'Current':
-            sweeplist = [min/1000]
-            x = min/1000
-
-            while x < max/1000:
-                sweeplist.append(x + resolution/1000)
-                x = x + resolution/1000
-
         self.voltageresultA = []
         self.currentresultA = []
         self.voltageresultB = []
@@ -245,7 +270,18 @@ class SMUClass():
         self.powerresultA = []
         self.powerresultB = []
 
+        print(self.Aflag)
+        print(self.Bflag)
+
         if independantvar == 'Voltage':
+
+            sweeplist = [min]
+            x = min
+
+            while x < max:
+                sweeplist.append(x + resolution / 1000)
+                x = x + resolution / 1000
+
 
             if self.Aflag == True:
                 self.inst.write("smua.source.func = smua.OUTPUT_DCVOLTS")
@@ -298,6 +334,14 @@ class SMUClass():
                 self.inst.write(setvoltstring)
 
         if independantvar == 'Current':
+
+            sweeplist = [min / 1000]
+            x = min / 1000
+
+            while x < max / 1000:
+                sweeplist.append(x + resolution / 1000)
+                x = x + resolution / 1000
+
 
             if self.Aflag == True:
                 self.inst.write("smua.source.func = smua.OUTPUT_DCAMPS")
@@ -366,15 +410,17 @@ class SMUClass():
             self.inst.write("smua.source.output = smua.OUTPUT_ON")
             self.onflagA = 'ON'
             print("Channel A ON")
+
         if channel == 'B':
             self.inst.write("smub.source.output = smub.OUTPUT_ON")
             self.onflagB = 'ON'
             print("Channel B ON")
+
         if channel == 'All':
             self.inst.write("smua.source.output = smua.OUTPUT_ON")
             self.onflagA = 'ON'
             print("Channel A ON")
-            self.inst.write("smua.source.output = smub.OUTPUT_ON")
+            self.inst.write("smub.source.output = smub.OUTPUT_ON")
             self.onflagB = 'ON'
             print("Channel B ON")
 
@@ -395,23 +441,36 @@ class SMUClass():
             self.inst.write("smub.source.output = smub.OUTPUT_OFF")
             print("Channel B OFF")
 
-    def setoutputflag(self, A, B):
 
-        if A is True:
+    def setoutputflagon(self, channel):#A, B):
+
+        if channel == 'A':
             self.Aflag = True
             print("Channel A set for use with sweep")
-        if B is True:
+        if channel == 'B':
             self.Bflag = True
             print("Channel B set for use with sweep")
-        if A is False:
+        if channel == 'All':
+            self.Aflag =True
+            self.Bflag = True
+            print("Channel A set for use with sweep")
+            print("Channel B set for use with sweep")
+
+
+    def setoutputflagoff(self, channel):  # A, B):
+
+        if channel == 'A':
             self.Aflag = False
             print("Channel A disabled for use with sweep")
-        if B is False:
+        if channel == 'B':
             self.Bflag = False
             print("Channel B disabled for use with sweep")
+        if channel == 'All':
+            self.Aflag = False
+            self.Bflag = False
+            print("Channel A disabled for use with sweep")
+            print("Channel B disabled for use with sweep")
 
-
-    #def elecopticsweep(self, voltage1, voltage2, step, visaName):
 
 
 
