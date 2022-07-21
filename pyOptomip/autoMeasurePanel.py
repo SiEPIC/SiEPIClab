@@ -51,10 +51,11 @@ class CheckListCtrl(wx.ListCtrl, CheckListCtrlMixin, ListCtrlAutoWidthMixin):
 
 
 class coordinateMapPanel(wx.Panel):
-    def __init__(self, parent, autoMeasure, numDevices):
+    def __init__(self, parent, autoMeasure, numDevices, device_list):
         super(coordinateMapPanel, self).__init__(parent)
         self.autoMeasure = autoMeasure
         self.numDevices = numDevices
+        self.device_list = device_list
         self.InitUI()
 
     def InitUI(self):
@@ -90,8 +91,12 @@ class coordinateMapPanel(wx.Panel):
             tbxMotorCoord = wx.TextCtrl(self, size=(80, 20))
             tbyMotorCoord = wx.TextCtrl(self, size=(80, 20))
             tbzMotorCoord = wx.TextCtrl(self, size=(80, 20))
-            tbxGdsCoord = wx.TextCtrl(self, size=(80, 20))
-            tbyGdsCoord = wx.TextCtrl(self, size=(80, 20))
+            #tbxGdsCoord = wx.TextCtrl(self, size=(80, 20))
+            #tbyGdsCoord = wx.TextCtrl(self, size=(80, 20))
+            tbGdsDevice = wx.Choice(self, size=(80,20), choices = self.device_list,
+                                    style=0, validator=DefaultValidator, name=DeviceID)
+            tbxGdsCoord = tbGdsDevice.GetSelection()
+            tbyGdsCoord = tbGdsDevice.GetSelection()
             btnGetMotorCoord = wx.Button(self, label='Get Pos.', size=(50, 20))
 
             self.stxMotorCoordLst.append(tbxMotorCoord)
@@ -183,7 +188,7 @@ class autoMeasurePanel(wx.Panel):
         hbox3 = wx.BoxSizer(wx.HORIZONTAL)
         hbox3.Add(self.checkList, proportion=1, flag=wx.EXPAND)
         ##
-        self.coordMapPanel = coordinateMapPanel(self, self.autoMeasure, 5)
+        self.coordMapPanel = coordinateMapPanel(self, self.autoMeasure, 5, device_list)
         hbox4 = wx.BoxSizer(wx.HORIZONTAL)
         hbox4.Add(self.coordMapPanel, proportion=1, flag=wx.EXPAND)
         ##
@@ -241,15 +246,14 @@ class autoMeasurePanel(wx.Panel):
         self.coordFileTb.SetValue(fileDlg.GetFilenames()[0])
         # fileDlg.Destroy()
         self.autoMeasure.readCoordFile(fileDlg.GetPath())
-        deviceDict = self.autoMeasure.deviceCoordDict
-        deviceLst = [dev for dev in deviceDict]
+        deviceList = self.autoMeasure.devices
         self.devSelectCb.Clear()
-        self.devSelectCb.AppendItems(deviceLst)
+        self.devSelectCb.AppendItems(deviceList)
         # Adds items to the check list
         self.checkList.DeleteAllItems()
-        for ii, device in enumerate(deviceDict):
-            self.checkList.InsertStringItem(ii, device)
-            self.checkList.SetItemData(ii, deviceDict[device]['id'])
+        for ii, device in enumerate(deviceList):
+            self.checkList.InsertStringItem(ii, device.getDeviceID)
+            self.checkList.SetItemData(ii, device)
         self.checkList.SortItems(self.checkListSort)  # Make sure items in list are sorted
         self.Refresh()
 
