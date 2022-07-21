@@ -23,6 +23,7 @@
 import wx
 import numpy as np
 import wx.lib.mixins.listctrl
+import myMatplotlibPanel
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
 from autoMeasureProgressDialog import autoMeasureProgressDialog
@@ -61,23 +62,23 @@ class coordinateMapPanel(wx.Panel):
     def InitUI(self):
         gbs = wx.GridBagSizer(0, 0)
 
-        stMotorCoord = wx.StaticText(self, label='Motor Coords.')
-        stGdsCoord = wx.StaticText(self, label='GDS Coords.')
+        stMotorCoord = wx.StaticText(self, label='Motor Coordinates')
+        #stGdsCoord = wx.StaticText(self, label='GDS Coords.')
 
         stxMotorCoord = wx.StaticText(self, label='X')
         styMotorCoord = wx.StaticText(self, label='Y')
         stzMotorCoord = wx.StaticText(self, label='Z')
-        stxGdsCoord = wx.StaticText(self, label='X')
-        styGdsCoord = wx.StaticText(self, label='Y')
+        #stxGdsCoord = wx.StaticText(self, label='X')
+        #styGdsCoord = wx.StaticText(self, label='Y')
 
-        gbs.Add(stMotorCoord, pos=(0, 1), span=(1, 2), flag=wx.ALIGN_CENTER)
-        gbs.Add(stGdsCoord, pos=(0, 3), span=(1, 2), flag=wx.ALIGN_CENTER)
+        gbs.Add(stMotorCoord, pos=(0, 2), span=(1, 2), flag=wx.ALIGN_CENTER)
+        #gbs.Add(stGdsCoord, pos=(0, 1), span=(1, 2), flag=wx.ALIGN_CENTER)
 
-        gbs.Add(stxMotorCoord, pos=(1, 1), span=(1, 1), flag=wx.ALIGN_CENTER)
-        gbs.Add(styMotorCoord, pos=(1, 2), span=(1, 1), flag=wx.ALIGN_CENTER)
-        gbs.Add(stzMotorCoord, pos=(1, 3), span=(1, 1), flag=wx.ALIGN_CENTER)
-        gbs.Add(stxGdsCoord, pos=(1, 4), span=(1, 1), flag=wx.ALIGN_CENTER)
-        gbs.Add(styGdsCoord, pos=(1, 5), span=(1, 1), flag=wx.ALIGN_CENTER)
+        gbs.Add(stxMotorCoord, pos=(1, 2), span=(1, 1), flag=wx.ALIGN_CENTER)
+        gbs.Add(styMotorCoord, pos=(1, 3), span=(1, 1), flag=wx.ALIGN_CENTER)
+        gbs.Add(stzMotorCoord, pos=(1, 4), span=(1, 1), flag=wx.ALIGN_CENTER)
+        #gbs.Add(stxGdsCoord, pos=(1, 4), span=(1, 1), flag=wx.ALIGN_CENTER)
+        #gbs.Add(styGdsCoord, pos=(1, 5), span=(1, 1), flag=wx.ALIGN_CENTER)
 
         self.stxMotorCoordLst = []
         self.styMotorCoordLst = []
@@ -94,23 +95,23 @@ class coordinateMapPanel(wx.Panel):
             #tbxGdsCoord = wx.TextCtrl(self, size=(80, 20))
             #tbyGdsCoord = wx.TextCtrl(self, size=(80, 20))
             tbGdsDevice = wx.Choice(self, size=(80,20), choices = self.device_list,
-                                    style=0, validator=DefaultValidator, name=DeviceID)
-            tbxGdsCoord = tbGdsDevice.GetSelection()
-            tbyGdsCoord = tbGdsDevice.GetSelection()
+                                    style=0)
+
             btnGetMotorCoord = wx.Button(self, label='Get Pos.', size=(50, 20))
 
             self.stxMotorCoordLst.append(tbxMotorCoord)
+
             self.styMotorCoordLst.append(tbyMotorCoord)
             self.stzMotorCoordLst.append(tbyMotorCoord)
-            self.stxGdsCoordLst.append(tbxGdsCoord)
-            self.styGdsCoordLst.append(tbyGdsCoord)
+            self.stxGdsCoordLst.append(tbGdsDevice)
+            self.styGdsCoordLst.append(tbGdsDevice)
 
             gbs.Add(stDevice, pos=(row, 0), span=(1, 1))
-            gbs.Add(tbxMotorCoord, pos=(row, 1), span=(1, 1))
-            gbs.Add(tbyMotorCoord, pos=(row, 2), span=(1, 1))
-            gbs.Add(tbzMotorCoord, pos=(row, 3), span=(1, 1))
-            gbs.Add(tbxGdsCoord, pos=(row, 4), span=(1, 1))
-            gbs.Add(tbyGdsCoord, pos=(row, 5), span=(1, 1))
+            gbs.Add(tbxMotorCoord, pos=(row, 2), span=(1, 1))
+            gbs.Add(tbyMotorCoord, pos=(row, 3), span=(1, 1))
+            gbs.Add(tbzMotorCoord, pos=(row, 4), span=(1, 1))
+            gbs.Add(tbGdsDevice, pos=(row, 1), span=(1, 1))
+            #gbs.Add(tbyGdsCoord, pos=(row, 5), span=(1, 1))
             gbs.Add(btnGetMotorCoord, pos=(row, 6), span=(1, 1))
             # For each button map a function which is called when it is pressed
             btnGetMotorCoord.Bind(wx.EVT_BUTTON,
@@ -158,15 +159,21 @@ class autoMeasurePanel(wx.Panel):
     def __init__(self, parent, autoMeasure):
         super(autoMeasurePanel, self).__init__(parent)
         self.autoMeasure = autoMeasure
+        self.device_list = []
         self.InitUI()
 
     def InitUI(self):
 
-        sbOuter = wx.StaticBox(self, label='Automatic measurement');
+        sbOuter = wx.StaticBox(self, label='Automatic measurements');
         vboxOuter = wx.StaticBoxSizer(sbOuter, wx.VERTICAL)
+
+        self.graph = myMatplotlibPanel.myMatplotlibPanel(self) #use for regular mymatplotlib file
+
 
         st1 = wx.StaticText(self, label='Coordinate file:')
         hbox0 = wx.BoxSizer(wx.HORIZONTAL)
+        #hbox = wx.StaticBoxSizer(sbOuter, wx.HORIZONTAL)
+        hbox0.Add(self.graph, flag=wx.EXPAND, border=0, proportion=0)
         hbox0.Add(st1, proportion=1, flag=wx.EXPAND)
         ##
         self.coordFileTb = wx.TextCtrl(self, style=wx.TE_READONLY)
@@ -188,7 +195,7 @@ class autoMeasurePanel(wx.Panel):
         hbox3 = wx.BoxSizer(wx.HORIZONTAL)
         hbox3.Add(self.checkList, proportion=1, flag=wx.EXPAND)
         ##
-        self.coordMapPanel = coordinateMapPanel(self, self.autoMeasure, 5, device_list)
+        self.coordMapPanel = coordinateMapPanel(self, self.autoMeasure, 3, self.device_list)
         hbox4 = wx.BoxSizer(wx.HORIZONTAL)
         hbox4.Add(self.coordMapPanel, proportion=1, flag=wx.EXPAND)
         ##
@@ -222,11 +229,12 @@ class autoMeasurePanel(wx.Panel):
         hbox9 = wx.BoxSizer(wx.HORIZONTAL)
         hbox9.AddMany([(self.devSelectCb, 1, wx.EXPAND), (self.gotoDevBtn, 0, wx.EXPAND)])
         ##
-        vboxOuter.AddMany([(hbox0, 0, wx.EXPAND), (hbox1, 0, wx.EXPAND), (hbox2, 0, wx.EXPAND), \
+        vboxOuter.AddMany([(hbox1, 0, wx.EXPAND),  (hbox2, 0, wx.EXPAND), \
                            (hbox3, 0, wx.EXPAND), (hbox4, 0, wx.EXPAND), (hbox5, 0, wx.EXPAND), \
                            (hbox6, 0, wx.EXPAND), (hbox7, 0, wx.EXPAND), (hbox8, 0, wx.EXPAND), \
                            (hbox9, 0, wx.EXPAND)])
-        self.SetSizer(vboxOuter)
+        hbox0.Add(vboxOuter, flag=wx.LEFT | wx.TOP | wx.ALIGN_LEFT, border=0, proportion=0)
+        self.SetSizer(hbox0)
 
     def checkListSort(self, item1, item2):
         # Items are the client data associated with each entry
@@ -247,6 +255,7 @@ class autoMeasurePanel(wx.Panel):
         # fileDlg.Destroy()
         self.autoMeasure.readCoordFile(fileDlg.GetPath())
         deviceList = self.autoMeasure.devices
+        self.device_list = deviceList
         self.devSelectCb.Clear()
         self.devSelectCb.AppendItems(deviceList)
         # Adds items to the check list
@@ -255,6 +264,7 @@ class autoMeasurePanel(wx.Panel):
             self.checkList.InsertStringItem(ii, device.getDeviceID)
             self.checkList.SetItemData(ii, device)
         self.checkList.SortItems(self.checkListSort)  # Make sure items in list are sorted
+        self.coordMapPanel = coordinateMapPanel(self, self.autoMeasure, 3, self.device_list)
         self.Refresh()
 
     def OnButton_CheckAll(self, event):

@@ -37,7 +37,7 @@ import time
 import numpy as np
 from keithley2600 import Keithley2600
 
-from keithley2600 import Keithley2600Base
+
 from keithley2600 import ResultTable
 
 
