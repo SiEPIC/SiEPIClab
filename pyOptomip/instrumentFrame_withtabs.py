@@ -44,7 +44,6 @@ class HomeTab(wx.Panel):
         self.instList = instList
         vbox = wx.BoxSizer(wx.VERTICAL)
         hbox = wx.BoxSizer(wx.HORIZONTAL)
-        vbox2 = wx.BoxSizer(wx.VERTICAL)
         homeVbox = wx.BoxSizer(wx.VERTICAL)
 
         self.graph = myMatplotlibPanel.myMatplotlibPanel(self)  # use for regular mymatplotlib file
@@ -65,7 +64,7 @@ class HomeTab(wx.Panel):
 
             if inst.isMotor:
                 homeVbox.Add(panel, proportion=0, border=0, flag=wx.EXPAND)
-                self.fineAlign = fineAlign(self.getLasers(), self.getMotors())
+                self.fineAlign = fineAlign(self.getLasers()[0], self.getMotors()[0])
                 try:
                     self.fineAlignPanel = fineAlignPanel(self, self.fineAlign)
                 except Exception as e:
@@ -73,8 +72,8 @@ class HomeTab(wx.Panel):
                                             'Error', wx.ICON_ERROR)
                     dial.ShowModal()
                 homeVbox.Add(self.fineAlignPanel, proportion=0, flag=wx.EXPAND)
-                if self.motorFound():
-                    hbox.Add(homeVbox)
+                #if self.motorFound():
+                 #   hbox.Add(homeVbox)
             if inst.isDetect:
                 homeVbox.Add(panel, proportion=0, border=0, flag=wx.EXPAND)
                 #self.detectorPanel = detectorPanel(panel, inst.getNumPWMChannels(), inst)
@@ -87,12 +86,6 @@ class HomeTab(wx.Panel):
               #  detPanel = detectorPanel(tlsPanel, self.laser.getNumPWMChannels(), self.laser)
               #  detectVbox.Add(detPanel, proportion=0, border=0, flag=wx.EXPAND)
               #  hbox.Add(detectVbox)
-
-
-            elif inst.isSMU:
-                pass
-            elif inst.isQontrol:
-                pass
             #else:
              #   hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
         hbox.Add(homeVbox)
@@ -102,12 +95,6 @@ class HomeTab(wx.Panel):
         self.SetSizer(vbox)
         self.Layout()
         self.Show()
-
-
-
-
-
-
 
     def motorFound(self):
         motorFound = False
@@ -213,7 +200,10 @@ class OpticalTab(wx.Panel):
         self.instList = instList
 
         for inst in instList:
-            panel = inst.panelClass(self, inst)
+            if inst.isLaser:
+                panel = inst.panelClass(self, inst, False, True)
+            else:
+                panel = inst.panelClass(self, inst)
 
 
 
@@ -383,14 +373,12 @@ class TestingparametersTab(wx.Panel):
         self.Destroy()
 
 
-
 class instrumentFrame_withtabs(wx.Frame):
 
     def __init__(self, parent, instList):
 
         displaySize = wx.DisplaySize()
-        super(instrumentFrame_withtabs, self).__init__(parent, title='Instrument Control', \
-                                              size=(displaySize[0] * 3 / 4.0, displaySize[1] * 3 / 4.0))
+        super(instrumentFrame_withtabs, self).__init__(parent, title='Instrument Control', size=(displaySize[0] * 5 / 8.0, displaySize[1] * 3 / 4.0))
 
         self.instList = instList
         try:
@@ -425,7 +413,7 @@ class instrumentFrame_withtabs(wx.Frame):
         nb.AddPage(tab4, "Automated Measurements")
         nb.AddPage(tab5, "Testing Parameters")
 
-        outputlabel = wx.StaticBox(self, label='SMU Control');
+        outputlabel = wx.StaticBox(self, label='SMU Control')
 
         output = wx.StaticBoxSizer(outputlabel, wx.VERTICAL)
 
@@ -441,10 +429,6 @@ class instrumentFrame_withtabs(wx.Frame):
         self.p.SetSizer(sizer)
         sys.stdout = logWriter(self.log)
         sys.stderr = logWriterError(self.log)
-
-
-
-
 
     def OnExitApp(self, event):
         for inst in self.instList:
