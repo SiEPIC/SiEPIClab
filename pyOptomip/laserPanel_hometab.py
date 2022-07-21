@@ -247,7 +247,7 @@ class tlsPanel(wx.Panel):
 class laserTopPanel(wx.Panel):      
 	# Panel which contains the panels used for controling the laser and detectors. It also
 	# contains the graph.
-    def __init__(self, parent, laser, showGraph=True):
+    def __init__(self, parent, laser, detectflag, showGraph=True):
         super(laserTopPanel, self).__init__(parent)
         
         self.showGraph = showGraph
