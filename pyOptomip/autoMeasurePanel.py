@@ -19,16 +19,16 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+import traceback
 
 import wx
 import numpy as np
 import wx.lib.mixins.listctrl
 import myMatplotlibPanel
-from wx.lib.mixins.listctrl import CheckListCtrlMixin
-from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
 from autoMeasureProgressDialog import autoMeasureProgressDialog
 import os
 import time
+from filterFrame import filterFrame
 
 global deviceList
 global deviceListAsObjects
@@ -39,8 +39,6 @@ class CheckListCtrl(wx.ListCtrl):
     def __init__(self, parent):
         wx.ListCtrl.__init__(self, parent, -1, style=wx.LC_REPORT)
         self.EnableCheckBoxes(True)
-        #ListCtrlAutoWidthMixin.__init__(self)  # Sets the width of the last column to take all available space
-        #CheckListCtrlMixin.__init__(self)  # Adds check boxes to listctrl
 
     def CheckAll(self):
         """ Checks all boxes in the list"""
@@ -68,22 +66,16 @@ class coordinateMapPanel(wx.Panel):
         gbs = wx.GridBagSizer(0, 0)
 
         stMotorCoord = wx.StaticText(self, label='Motor Coordinates')
-        # stGdsCoord = wx.StaticText(self, label='GDS Coords.')
 
         stxMotorCoord = wx.StaticText(self, label='X')
         styMotorCoord = wx.StaticText(self, label='Y')
         stzMotorCoord = wx.StaticText(self, label='Z')
-        # stxGdsCoord = wx.StaticText(self, label='X')
-        # styGdsCoord = wx.StaticText(self, label='Y')
 
         gbs.Add(stMotorCoord, pos=(0, 2), span=(1, 2), flag=wx.ALIGN_CENTER)
-        # gbs.Add(stGdsCoord, pos=(0, 1), span=(1, 2), flag=wx.ALIGN_CENTER)
 
         gbs.Add(stxMotorCoord, pos=(1, 2), span=(1, 1), flag=wx.ALIGN_CENTER)
         gbs.Add(styMotorCoord, pos=(1, 3), span=(1, 1), flag=wx.ALIGN_CENTER)
         gbs.Add(stzMotorCoord, pos=(1, 4), span=(1, 1), flag=wx.ALIGN_CENTER)
-        # gbs.Add(stxGdsCoord, pos=(1, 4), span=(1, 1), flag=wx.ALIGN_CENTER)
-        # gbs.Add(styGdsCoord, pos=(1, 5), span=(1, 1), flag=wx.ALIGN_CENTER)
 
         self.stxMotorCoordLst = []
         self.styMotorCoordLst = []
@@ -108,8 +100,6 @@ class coordinateMapPanel(wx.Panel):
             tbxMotorCoord = wx.TextCtrl(self, size=(80, 20))
             tbyMotorCoord = wx.TextCtrl(self, size=(80, 20))
             tbzMotorCoord = wx.TextCtrl(self, size=(80, 20))
-            # tbxGdsCoord = wx.TextCtrl(self, size=(80, 20))
-            # tbyGdsCoord = wx.TextCtrl(self, size=(80, 20))
 
             btnGetMotorCoord = wx.Button(self, label='Get Pos.', size=(50, 20))
 
@@ -131,8 +121,8 @@ class coordinateMapPanel(wx.Panel):
             gbs.Add(tbyMotorCoord, pos=(row, 3), span=(1, 1))
             gbs.Add(tbzMotorCoord, pos=(row, 4), span=(1, 1))
             gbs.Add(self.GDSDevList[ii], pos=(row, 1), span=(1, 1))
-            # gbs.Add(tbyGdsCoord, pos=(row, 5), span=(1, 1))
             gbs.Add(btnGetMotorCoord, pos=(row, 6), span=(1, 1))
+
             # For each button map a function which is called when it is pressed
             btnGetMotorCoord.Bind(wx.EVT_BUTTON,
                                   lambda event, xcoord=tbxMotorCoord, ycoord=tbyMotorCoord,
@@ -148,7 +138,6 @@ class coordinateMapPanel(wx.Panel):
     def on_drop_down(self, event):
         global deviceList
         for GDSDevice in self.GDSDevList:
-            #GDSDevice.Clear()
             for dev in deviceList:
                 GDSDevice.Append(dev)
 
@@ -235,13 +224,17 @@ class autoMeasurePanel(wx.Panel):
         fileLoadBox = wx.BoxSizer(wx.HORIZONTAL)
         fileLoadBox.AddMany([(self.coordFileTb, 1, wx.EXPAND), (self.coordFileSelectBtn, 0, wx.EXPAND)])
 
-        #Add Selection Buttons
+        #Add Selection Buttons and Filter
         self.checkAllBtn = wx.Button(self, label='Select All', size=(80, 20))
         self.checkAllBtn.Bind(wx.EVT_BUTTON, self.OnButton_CheckAll)
         self.uncheckAllBtn = wx.Button(self, label='Unselect All', size=(80, 20))
         self.uncheckAllBtn.Bind(wx.EVT_BUTTON, self.OnButton_UncheckAll)
+        self.filterBtn = wx.Button(self, label='Filter', size=(70, 20))
+        self.filterBtn.Bind(wx.EVT_BUTTON, self.OnButton_Filter)
+
         selectBox = wx.BoxSizer(wx.HORIZONTAL)
-        selectBox.AddMany([(self.checkAllBtn, 0, wx.EXPAND), (self.uncheckAllBtn, 0, wx.EXPAND)])
+        selectBox.AddMany([(self.checkAllBtn, 0, wx.EXPAND), (self.uncheckAllBtn, 0, wx.EXPAND),
+                           (self.filterBtn, 0, wx.EXPAND)])
 
         #Add devices checklist
         self.checkList = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
@@ -418,3 +411,18 @@ class autoMeasurePanel(wx.Panel):
 
         # Enable detector auto measurement
         self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.startDetTimer()
+
+    def OnButton_Filter(self, event):
+        self.createFilterFrame();
+        self.Destroy();
+
+    def createFilterFrame(self):
+        global deviceListAsObjects
+        try:
+            filterFrame(None, deviceListAsObjects)
+
+        except Exception as e:
+            dial = wx.MessageDialog(None, 'Could not initiate filter. ' + traceback.format_exc(),
+                                        'Error', wx.ICON_ERROR)
+            dial.ShowModal()
+
