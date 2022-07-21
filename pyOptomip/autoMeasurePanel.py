@@ -31,13 +31,16 @@ import os
 import time
 
 global deviceList
+global deviceListAsObjects
+global fileLoaded
 
 
-class CheckListCtrl(wx.ListCtrl, CheckListCtrlMixin, ListCtrlAutoWidthMixin):
+class CheckListCtrl(wx.ListCtrl):
     def __init__(self, parent):
         wx.ListCtrl.__init__(self, parent, -1, style=wx.LC_REPORT)
-        ListCtrlAutoWidthMixin.__init__(self)  # Sets the width of the last column to take all available space
-        CheckListCtrlMixin.__init__(self)  # Adds check boxes to listctrl
+        self.EnableCheckBoxes(True)
+        #ListCtrlAutoWidthMixin.__init__(self)  # Sets the width of the last column to take all available space
+        #CheckListCtrlMixin.__init__(self)  # Adds check boxes to listctrl
 
     def CheckAll(self):
         """ Checks all boxes in the list"""
@@ -97,7 +100,7 @@ class coordinateMapPanel(wx.Panel):
         self.tbGdsDevice3 = wx.ComboBox(self, size=(80, 20), choices=[], style=wx.CB_DROPDOWN)
         self.tbGdsDevice3.Bind(wx.EVT_COMBOBOX_DROPDOWN, self.on_drop_down)
 
-        self.GDSDevList = [self.tbGdsDevice1,self.tbGdsDevice2, self.tbGdsDevice3]
+        self.GDSDevList = [self.tbGdsDevice1, self.tbGdsDevice2, self.tbGdsDevice3]
 
         for ii in range(self.numDevices):
             row = ii + 2
@@ -108,15 +111,20 @@ class coordinateMapPanel(wx.Panel):
             # tbxGdsCoord = wx.TextCtrl(self, size=(80, 20))
             # tbyGdsCoord = wx.TextCtrl(self, size=(80, 20))
 
-
             btnGetMotorCoord = wx.Button(self, label='Get Pos.', size=(50, 20))
 
             self.stxMotorCoordLst.append(tbxMotorCoord)
 
             self.styMotorCoordLst.append(tbyMotorCoord)
-            self.stzMotorCoordLst.append(tbyMotorCoord)
-            self.stxGdsCoordLst.append(self.GDSDevList[ii])
-            self.styGdsCoordLst.append(self.GDSDevList[ii])
+            self.stzMotorCoordLst.append(tbzMotorCoord)
+
+            if fileLoaded is True:
+
+                global deviceListAsObjects
+                for dev in deviceListAsObjects:
+                    if self.GDSDevList[ii] == dev.getDeviceID():
+                        self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
+                        self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
 
             gbs.Add(stDevice, pos=(row, 0), span=(1, 1))
             gbs.Add(tbxMotorCoord, pos=(row, 2), span=(1, 1))
@@ -140,11 +148,9 @@ class coordinateMapPanel(wx.Panel):
     def on_drop_down(self, event):
         global deviceList
         for GDSDevice in self.GDSDevList:
-            GDSDevice.Clear()
+            #GDSDevice.Clear()
             for dev in deviceList:
                 GDSDevice.Append(dev)
-
-
 
     def Event_OnCoordButton(self, event, xcoord, ycoord, zcoord):
         """ Called when the button is pressed to get the current motor coordinates, and put it into the text box. """
@@ -185,7 +191,10 @@ class autoMeasurePanel(wx.Panel):
         self.InitUI()
 
     def InitUI(self):
-
+        global fileLoaded
+        fileLoaded = False
+        global deviceListAsObjects
+        deviceListAsObjects = []
         sbOuter = wx.StaticBox(self, label='Automatic measurements');
         vboxOuter = wx.StaticBoxSizer(sbOuter, wx.VERTICAL)
 
@@ -193,9 +202,10 @@ class autoMeasurePanel(wx.Panel):
 
         st1 = wx.StaticText(self, label='Coordinate file:')
         hbox0 = wx.BoxSizer(wx.HORIZONTAL)
+        hbox01 = wx.BoxSizer(wx.HORIZONTAL)
         # hbox = wx.StaticBoxSizer(sbOuter, wx.HORIZONTAL)
         hbox0.Add(self.graph, flag=wx.EXPAND, border=0, proportion=1)
-        hbox0.Add(st1, proportion=1, flag=wx.EXPAND)
+        hbox01.Add(st1, proportion=1, flag=wx.EXPAND)
         ##
         self.coordFileTb = wx.TextCtrl(self, style=wx.TE_READONLY)
         self.coordFileTb.SetValue('No file selected')
@@ -250,7 +260,7 @@ class autoMeasurePanel(wx.Panel):
         hbox9 = wx.BoxSizer(wx.HORIZONTAL)
         hbox9.AddMany([(self.devSelectCb, 1, wx.EXPAND), (self.gotoDevBtn, 0, wx.EXPAND)])
         ##
-        vboxOuter.AddMany([(hbox1, 0, wx.EXPAND), (hbox2, 0, wx.EXPAND), \
+        vboxOuter.AddMany([(hbox01, 0, wx.EXPAND),(hbox1, 0, wx.EXPAND), (hbox2, 0, wx.EXPAND), \
                            (hbox3, 0, wx.EXPAND), (hbox4, 0, wx.EXPAND), (hbox5, 0, wx.EXPAND), \
                            (hbox6, 0, wx.EXPAND), (hbox7, 0, wx.EXPAND), (hbox8, 0, wx.EXPAND), \
                            (hbox9, 0, wx.EXPAND)])
@@ -275,6 +285,7 @@ class autoMeasurePanel(wx.Panel):
         self.coordFileTb.SetValue(fileDlg.GetFilenames()[0])
         # fileDlg.Destroy()
         self.autoMeasure.readCoordFile(fileDlg.GetPath())
+        global deviceListAsObjects
         deviceListAsObjects = self.autoMeasure.devices
         self.device_list = deviceListAsObjects
         global deviceList
@@ -289,9 +300,12 @@ class autoMeasurePanel(wx.Panel):
             self.checkList.InsertItem(ii, device)
             for dev in deviceListAsObjects:
                 if dev.getDeviceID() == device:
-                    index = deviceListAsObjects.index(dev) #Stores index of device in list
+                    index = deviceListAsObjects.index(dev)  # Stores index of device in list
             self.checkList.SetItemData(ii, index)
         self.checkList.SortItems(self.checkListSort)  # Make sure items in list are sorted
+        self.checkList.EnableCheckBoxes()
+        global fileLoaded
+        fileLoaded = True
         self.Refresh()
 
     def OnButton_CheckAll(self, event):
