@@ -36,12 +36,13 @@ from logWriter import logWriter, logWriterError
 import sys
 import pyvisa as visa
 from instrumentFrame_withtabs import instrumentFrame_withtabs
+from N77Det_instrParameters import N77Det_instrParameters
 
 softwareVersion = "1.1"
 
 devTypes = [CorvusEcoParameters, MGMotorParameters, QontrolMotorParameters,
             hp816x_N77Det_instrParameters, hp816x_instrParameters,
-            SMUParameters]
+            SMUParameters,]# N77Det_instrParameters]
 
 
 class ConnectCB(wx.Choicebook):

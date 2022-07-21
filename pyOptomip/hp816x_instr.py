@@ -32,9 +32,10 @@ class hp816x(object):
     
     # Constants
     name = 'hp816x'
-    isSMU =False
-    isMotor=False
-    isLaser=True
+    isSMU = False
+    isMotor = False
+    isLaser = True
+    isQontrol = False
     # Slot info
     hp816x_UNDEF = 0;
     hp816x_SINGLE_SENSOR = 1;

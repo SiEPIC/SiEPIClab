@@ -59,7 +59,7 @@ class autoMeasure(object):
         devices = []
 
         # Parse the data in each line and put it into a list of devices
-        for ii, line in enumerate(dataStrip2):
+        for ii, line in enumerate(dataStrip):
             if reg.match(line):
                 matchRes = reg.findall(line)[0]
                 devName = matchRes[5]

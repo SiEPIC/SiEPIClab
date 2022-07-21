@@ -31,7 +31,7 @@ class hp816x_N77Det(hp816x_instr.hp816x):
     name = 'hp816x N77 Detector'
     numPWMSlots = 5;    
     maxPWMPoints = 100000;
-    isDetect = False
+    isDetect = True
 
     
     def connect(self, visaAddr, n77DetAddr, reset = 0, forceTrans=1, autoErrorCheck=1):
