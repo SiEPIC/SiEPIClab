@@ -29,7 +29,6 @@ from autoMeasureProgressDialog import autoMeasureProgressDialog
 import os
 import time
 
-
 class CheckListCtrl(wx.ListCtrl, CheckListCtrlMixin, ListCtrlAutoWidthMixin):
     def __init__(self, parent):
         wx.ListCtrl.__init__(self, parent, -1, style=wx.LC_REPORT)
