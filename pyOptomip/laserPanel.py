@@ -32,8 +32,8 @@ class tlsPanel(wx.Panel):
   
     def __init__(self, parent, laser, graphPanel):
         super(tlsPanel, self).__init__(parent)
-        self.devName = 'Laser';
-        self.laser = laser;
+        self.devName = 'Laser'
+        self.laser = laser
         self.graphPanel = graphPanel
         self.InitUI()   
         
@@ -42,7 +42,7 @@ class tlsPanel(wx.Panel):
         
         vboxOuter = wx.BoxSizer(wx.VERTICAL)
         
-        sbCW = wx.StaticBox(self, label='CW Settings');
+        sbCW = wx.StaticBox(self, label='CW Settings')
         vboxCW = wx.StaticBoxSizer(sbCW, wx.VERTICAL)
         
         hbox12 = wx.BoxSizer(wx.HORIZONTAL)
@@ -268,12 +268,12 @@ class laserTopPanel(wx.Panel):
         #self.laserPanel = laserPanel(self, self.laser, self.graph, self.detectflag)
 
         if self.detectflag:
-            self.laserPanel = tlsPanel(self, self.laser, self.graph)
+            #self.laserPanel = tlsPanel(self, self.laser, self.graph)
             self.detectorPanelLst = list()
 
             # for ii in xrange(self.laser.getNumPWMChannels()):
-            self.detectorPanel = detectorPanel(self, self.laser.getNumPWMChannels(), self.laser)
-            self.laserPanel.detectorPanel = self.detectorPanel
+            self.detectorPanel = detectorPanel(self, self.laser.getNumPWMChannels(), self.laser, self.detectflag)
+            #self.laserPanel.detectorPanel = self.detectorPanel
             hbox.Add(self.detectorPanel, flag=wx.LEFT | wx.TOP | wx.EXPAND, border=0, proportion=0)
         else:
             self.laserPanel = laserPanel(self, self.laser, self.graph, self.detectflag)
@@ -302,13 +302,19 @@ class laserPanel(wx.Panel):
             self.detectorPanelLst = list()
 
             # for ii in xrange(self.laser.getNumPWMChannels()):
-            self.detectorPanel = detectorPanel(self, self.laser.getNumPWMChannels(), self.laser)
+            self.detectorPanel = detectorPanel(self, self.laser.getNumPWMChannels(), self.laser, self.detectflag)
             self.laserPanel.detectorPanel = self.detectorPanel
 
             vbox.Add(self.detectorPanel, border=0, proportion=0, flag=wx.EXPAND)
         else:
             self.laserPanel = tlsPanel(self, self.laser, self.graphPanel)
+            self.detectorPanelLst = list()
+
+            # for ii in xrange(self.laser.getNumPWMChannels()):
+            self.detectorPanel = detectorPanel(self, self.laser.getNumPWMChannels(), self.laser, self.detectflag)
+            self.laserPanel.detectorPanel = self.detectorPanel
             vbox.Add(self.laserPanel, flag=wx.LEFT | wx.TOP | wx.EXPAND, border=0, proportion=0)
+
 
             #self.detectorPanelLst = list()
 
@@ -328,61 +334,73 @@ class laserPanel(wx.Panel):
         
 class detectorPanel(wx.Panel):
     """ Panel containing the individual panels for each detector. """
-    def __init__(self, parent, numDet, laser):
+    def __init__(self, parent, numDet, laser, detectflag):
         super(detectorPanel, self).__init__(parent)
         self.numDet = numDet
         self.laser = laser
+        self.detectflag = detectflag
         self.InitUI()
         
     def InitUI(self):
     
         #font = wx.SystemSettings_GetFont(wx.SYS_SYSTEM_FONT)
         #font.SetPointSize(12)
-        
-        sbDet = wx.StaticBox(self, label='Detector Settings');
-        
-        vbox = wx.StaticBoxSizer(sbDet, wx.VERTICAL)
-        hbox = wx.BoxSizer(wx.HORIZONTAL)
-        
-        self.initialRangeSt = wx.StaticText(self, label='Initial range (dBm)')
-        #self.initialRangeSt.SetFont(font)
-        hbox.Add(self.initialRangeSt, proportion=1, flag=wx.ALIGN_LEFT)
-        
-        self.initialRangeTc = wx.TextCtrl(self, size=(40,20))
-        self.initialRangeTc.SetValue('-20')
-        hbox.Add(self.initialRangeTc, proportion=0, flag=wx.EXPAND|wx.RIGHT, border=15)
-        
-        
-        self.sweepRangeDecSt = wx.StaticText(self, label='Range dec. (dBm)')
-        #self.sweepRangeDecSt.SetFont(font)
-        hbox.Add(self.sweepRangeDecSt, proportion=1, flag=wx.ALIGN_LEFT)
-        
-        self.sweepRangeDecTc = wx.TextCtrl(self, size=(40,20))
-        self.sweepRangeDecTc.SetValue('20')
-        hbox.Add(self.sweepRangeDecTc, proportion=0, flag=wx.EXPAND)
 
-        
+        if self.detectflag:
 
-        vbox.Add(hbox, proportion=0, flag=wx.EXPAND, border=0)
-        
-        
-        sl = wx.StaticLine(self);
-        vbox.Add(sl, proportion=0, flag=wx.EXPAND)
-        
-        self.detectorPanelLst = list();
-        for ii,slotInfo in zip(self.laser.pwmSlotIndex,self.laser.pwmSlotMap):
-            name = 'Slot %d Det %d' % (slotInfo[0],slotInfo[1]+1)
-            det = individualDetPanel(self, name=name, slot=slotInfo[0], chan=slotInfo[1])
-            self.detectorPanelLst.append(det)
-            vbox.Add(det, proportion=1, flag=wx.LEFT, border=15)
-            sl = wx.StaticLine(self);
+            sbDet = wx.StaticBox(self, label='Detector Settings')
+
+            vbox = wx.StaticBoxSizer(sbDet, wx.VERTICAL)
+            hbox = wx.BoxSizer(wx.HORIZONTAL)
+
+            self.initialRangeSt = wx.StaticText(self, label='Initial range (dBm)')
+            # self.initialRangeSt.SetFont(font)
+            hbox.Add(self.initialRangeSt, proportion=1, flag=wx.ALIGN_LEFT)
+
+            self.initialRangeTc = wx.TextCtrl(self, size=(40, 20))
+            self.initialRangeTc.SetValue('-20')
+            hbox.Add(self.initialRangeTc, proportion=0, flag=wx.EXPAND | wx.RIGHT, border=15)
+
+            self.sweepRangeDecSt = wx.StaticText(self, label='Range dec. (dBm)')
+            # self.sweepRangeDecSt.SetFont(font)
+            hbox.Add(self.sweepRangeDecSt, proportion=1, flag=wx.ALIGN_LEFT)
+
+            self.sweepRangeDecTc = wx.TextCtrl(self, size=(40, 20))
+            self.sweepRangeDecTc.SetValue('20')
+            hbox.Add(self.sweepRangeDecTc, proportion=0, flag=wx.EXPAND)
+
+            vbox.Add(hbox, proportion=0, flag=wx.EXPAND, border=0)
+
+            sl = wx.StaticLine(self)
             vbox.Add(sl, proportion=0, flag=wx.EXPAND)
-        self.SetSizer(vbox)
+
+            self.detectorPanelLst = list()
+            for ii, slotInfo in zip(self.laser.pwmSlotIndex, self.laser.pwmSlotMap):
+                name = 'Slot %d Det %d' % (slotInfo[0], slotInfo[1] + 1)
+                det = individualDetPanel(self, name=name, slot=slotInfo[0], chan=slotInfo[1])
+                self.detectorPanelLst.append(det)
+                vbox.Add(det, proportion=1, flag=wx.LEFT, border=15)
+                sl = wx.StaticLine(self)
+                vbox.Add(sl, proportion=0, flag=wx.EXPAND)
+            self.SetSizer(vbox)
+
+            self.laser.setAutorangeAll()
+            self.timer = wx.Timer(self, wx.ID_ANY)
+            self.Bind(wx.EVT_TIMER, self.UpdateAutoMeasurement, self.timer)
+            self.timer.Start(1000)
         
-        self.laser.setAutorangeAll()
-        self.timer = wx.Timer(self, wx.ID_ANY)
-        self.Bind(wx.EVT_TIMER, self.UpdateAutoMeasurement, self.timer)
-        self.timer.Start(1000)
+        else:
+
+            self.detectorPanelLst = list()
+            for ii, slotInfo in zip(self.laser.pwmSlotIndex, self.laser.pwmSlotMap):
+                name = 'Slot %d Det %d' % (slotInfo[0], slotInfo[1] + 1)
+                det = individualDetPanel(self, name=name, slot=slotInfo[0], chan=slotInfo[1])
+                self.detectorPanelLst.append(det)
+
+            self.laser.setAutorangeAll()
+            self.timer = wx.Timer(self, wx.ID_ANY)
+            self.Bind(wx.EVT_TIMER, self.UpdateAutoMeasurement, self.timer)
+            self.timer.Start(1000)
         
     def getActiveDetectors(self):
         activeDetectorLst = list();
