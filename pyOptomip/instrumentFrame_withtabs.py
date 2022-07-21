@@ -26,7 +26,7 @@ import sys
 from fineAlign import fineAlign
 from fineAlignPanel import fineAlignPanel
 import traceback
-from logWriter import logWriter,logWriterError
+from logWriter import logWriter, logWriterError
 from autoMeasurePanel import autoMeasurePanel
 from autoMeasure import autoMeasure
 from laserPanel import detectorPanel
@@ -48,10 +48,10 @@ class HomeTab(wx.Panel):
         hbox.Add(self.graph, flag=wx.EXPAND, border=0, proportion=1)
 
         for inst in self.instList:
-            #if inst.isSMU:
-               # panel = inst.panelClass(self)
-           # else:
-            panel = inst.panelClass(self,inst)
+            # if inst.isSMU:
+            # panel = inst.panelClass(self)
+            # else:
+            panel = inst.panelClass(self, inst)
 
             if inst.isMotor:
                 motorVbox = wx.BoxSizer(wx.VERTICAL)
@@ -66,37 +66,30 @@ class HomeTab(wx.Panel):
                 motorVbox.Add(self.fineAlignPanel, proportion=0, flag=wx.EXPAND)
                 if self.motorFound():
                     hbox.Add(motorVbox)
-            #if inst.isDetect:
-             #   detectVbox = wx.BoxSizer(wx.VERTICAL)
-              #  motorVbox.Add(panel, proportion=0, border=0, flag=wx.EXPAND)
-               # hbox.Add(motorVbox)
-            #if inst.isQontrol:
+            # if inst.isDetect:
+            #   detectVbox = wx.BoxSizer(wx.VERTICAL)
+            #  motorVbox.Add(panel, proportion=0, border=0, flag=wx.EXPAND)
+            # hbox.Add(motorVbox)
+            # if inst.isQontrol:
 
-               # self.laser = hp816x_N77Det()
-              #  detectVbox = wx.BoxSizer(wx.VERTICAL)
-              #  detPanel = detectorPanel(tlsPanel, self.laser.getNumPWMChannels(), self.laser)
-              #  detectVbox.Add(detPanel, proportion=0, border=0, flag=wx.EXPAND)
-              #  hbox.Add(detectVbox)
-
+            # self.laser = hp816x_N77Det()
+            #  detectVbox = wx.BoxSizer(wx.VERTICAL)
+            #  detPanel = detectorPanel(tlsPanel, self.laser.getNumPWMChannels(), self.laser)
+            #  detectVbox.Add(detPanel, proportion=0, border=0, flag=wx.EXPAND)
+            #  hbox.Add(detectVbox)
 
             elif inst.isSMU:
                 pass
             elif inst.isQontrol:
                 pass
-            #else:
-             #   hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
+            # else:
+            #   hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
         vbox.Add(hbox, 3, wx.EXPAND)
         # self.log = outputlogPanel(self)
         # vbox.Add(self.log, 1, wx.EXPAND)
         self.SetSizer(vbox)
         self.Layout()
         self.Show()
-
-
-
-
-
-
 
     def motorFound(self):
         motorFound = False
@@ -129,6 +122,7 @@ class HomeTab(wx.Panel):
             inst.disconnect()
         self.Destroy()
 
+
 class ElectricalTab(wx.Panel):
     def __init__(self, parent, instList):
         wx.Panel.__init__(self, parent)
@@ -144,12 +138,12 @@ class ElectricalTab(wx.Panel):
 
             if inst.isSMU:
                 hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
-            #else:
-               #  hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
+            # else:
+            #  hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
 
         vbox.Add(hbox, 3, wx.EXPAND)
-        #self.log = outputlogPanel(self)
-        #vbox.Add(self.log, 1, wx.EXPAND)
+        # self.log = outputlogPanel(self)
+        # vbox.Add(self.log, 1, wx.EXPAND)
         self.SetSizer(vbox)
         self.Layout()
         self.Show()
@@ -197,8 +191,6 @@ class OpticalTab(wx.Panel):
         for inst in instList:
             panel = inst.panelClass(self, inst)
 
-
-
             if inst.isLaser:
                 laserVbox = wx.BoxSizer(wx.VERTICAL)
                 laserVbox.Add(panel, proportion=0, border=0, flag=wx.EXPAND)
@@ -206,8 +198,8 @@ class OpticalTab(wx.Panel):
                 pass
             elif inst.isQontrol:
                 pass
-            #else:
-             #   hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
+            # else:
+            #   hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
 
         vbox.Add(hbox, 3, wx.EXPAND)
         # self.log = outputlogPanel(self)
@@ -269,12 +261,12 @@ class AutoMeasureTab(wx.Panel):
         vbox.Add(self.autoMeasurePanel, proportion=0, flag=wx.EXPAND)
 
         vbox.Add(hbox, 3, wx.EXPAND)
-        #self.log = outputlogPanel(self)
-        #vbox.Add(self.log, 1, wx.EXPAND)
+        # self.log = outputlogPanel(self)
+        # vbox.Add(self.log, 1, wx.EXPAND)
         self.SetSizer(vbox)
 
-        #sys.stdout = logWriter(self.log)
-        #sys.stderr = logWriterError(self.log)
+        # sys.stdout = logWriter(self.log)
+        # sys.stderr = logWriterError(self.log)
 
     def motorFound(self):
         motorFound = False
@@ -314,7 +306,7 @@ class instrumentFrame_withtabs(wx.Frame):
 
         displaySize = wx.DisplaySize()
         super(instrumentFrame_withtabs, self).__init__(parent, title='Instrument Control', \
-                                              size=(displaySize[0] * 3 / 4.0, displaySize[1] * 3 / 4.0))
+                                                       size=(displaySize[0] * 3 / 4.0, displaySize[1] * 3 / 4.0))
 
         self.instList = instList
         try:
@@ -330,8 +322,7 @@ class instrumentFrame_withtabs(wx.Frame):
     def InitUI(self):
         self.Bind(wx.EVT_CLOSE, self.OnExitApp)
 
-
-        #c = wx.Panel(self)
+        # c = wx.Panel(self)
         self.p = wx.Panel(self)
         nb = wx.Notebook(self.p)
 
@@ -353,20 +344,15 @@ class instrumentFrame_withtabs(wx.Frame):
 
         print(self.instList)
 
-
         # Set notebook in a sizer to create the layout
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(nb, 2, wx.ALL | wx.EXPAND, 5)
 
         self.log = outputlogPanel(self.p)
-        sizer.Add(self.log, 1, wx.ALL|wx.EXPAND)
+        sizer.Add(self.log, 1, wx.ALL | wx.EXPAND)
         self.p.SetSizer(sizer)
         sys.stdout = logWriter(self.log)
         sys.stderr = logWriterError(self.log)
-
-
-
-
 
     def OnExitApp(self, event):
         for inst in self.instList:

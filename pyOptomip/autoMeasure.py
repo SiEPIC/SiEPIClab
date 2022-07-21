@@ -56,20 +56,20 @@ class autoMeasure(object):
         # x,y,deviceid,padname,params
         regElec = re.compile(r'(.*),(.*),(.+),(.*),(.*)')
 
-        devices = []
+        self.devices = []
 
         # Parse the data in each line and put it into a list of devices
-        for ii, line in enumerate(dataStrip):
+        for ii, line in enumerate(dataStrip2):
             if reg.match(line):
                 matchRes = reg.findall(line)[0]
                 devName = matchRes[5]
                 device = ElectroOpticDevice(devName, matchRes[3], matchRes[2], float(matchRes[0]), float(matchRes[1]))
-                devices.append(device)
+                self.devices.append(device)
             else:
                 if regElec.match(line):
                     matchRes = reg.findall(line)[0]
                     devName = matchRes[2]
-                    for device in devices:
+                    for device in self.devices:
                         if device.getDeviceID() == devName:
                             device.addElectricalCoordinates(matchRes[3], float(matchRes[0]), float(matchRes[1]))
                 else:
