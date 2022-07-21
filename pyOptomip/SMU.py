@@ -48,6 +48,7 @@ class SMUClass():
     isMotor = False
     isLaser = False
     isQontrol = False
+    isDetect = False
 
     def __init__(self):
         self.Aflag = False
@@ -60,9 +61,9 @@ class SMUClass():
 
         self.inst = rm.open_resource(visaName)
         print(self.inst.query("*IDN?\n"))
-        #self.inst.write("beeper.beep(0.1,2400)")
-        #self.inst.write("delay(0.250)")
-        #self.inst.write("beeper.beep(0.1,2400)")
+        self.inst.write("beeper.beep(0.1,2400)")
+        self.inst.write("delay(0.250)")
+        self.inst.write("beeper.beep(0.1,2400)")
         #self.inst.write("read_error_queue()")
 
         self.inst.write("smua.reset()") #Reset channel A

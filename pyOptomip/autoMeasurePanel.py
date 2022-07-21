@@ -22,6 +22,7 @@
 
 import wx
 import numpy as np
+import wx.lib.mixins.listctrl
 from wx.lib.mixins.listctrl import CheckListCtrlMixin
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
 from autoMeasureProgressDialog import autoMeasureProgressDialog
@@ -183,7 +184,7 @@ class autoMeasurePanel(wx.Panel):
         hbox2 = wx.BoxSizer(wx.HORIZONTAL)
         hbox2.AddMany([(self.checkAllBtn, 0, wx.EXPAND), (self.uncheckAllBtn, 0, wx.EXPAND)])
         ##
-        self.checkList = CheckListCtrl(self)
+        self.checkList = wx.ListCtrl(self, -1, style = wx.LC_REPORT)
         self.checkList.InsertColumn(0, 'Device', width=100)
         hbox3 = wx.BoxSizer(wx.HORIZONTAL)
         hbox3.Add(self.checkList, proportion=1, flag=wx.EXPAND)
@@ -258,7 +259,9 @@ class autoMeasurePanel(wx.Panel):
         self.Refresh()
 
     def OnButton_CheckAll(self, event):
-        self.checkList.CheckAll()
+        #self.checkList.CheckAll()
+        for ii in range(self.checkList.GetItemCount()):
+            self.checkList.CheckItem(ii, True)
 
     def OnButton_GotoDevice(self, event):
         selectedDevice = self.devSelectCb.GetValue()
@@ -270,7 +273,9 @@ class autoMeasurePanel(wx.Panel):
         self.autoMeasure.motor.moveAbsoluteXY(motorCoord[0], motorCoord[1])
 
     def OnButton_UncheckAll(self, event):
-        self.checkList.UncheckAll()
+        #self.checkList.UncheckAll()
+        for ii in range(self.checkList.GetItemCount()):
+            self.checkList.CheckItem(ii, False)
 
     def OnButton_SelectOutputFolder(self, event):
         """ Opens a file dialog to select an output directory for automatic measurement. """

@@ -22,14 +22,14 @@
 
 import wx
 from hp816x_N77Det_instr import hp816x_N77Det
-import laserPanel
+import laserPanel_hometab
 
 # Panel in the Connect Instruments window which contains the connection settings for the hp816x 
 # mainframe with the N77xx detector.
-class hp816x_N77Det_instrParameters(wx.Panel):
+class N77Det_instrParameters(wx.Panel):
     name='Laser: hp816x with N77 Detector'
     def __init__(self, parent, connectPanel, **kwargs):
-        super(hp816x_N77Det_instrParameters, self).__init__(parent)
+        super(N77Det_instrParameters, self).__init__(parent)
         self.connectPanel = connectPanel
         self.visaAddrLst = kwargs['visaAddrLst']
         self.InitUI()
@@ -71,7 +71,7 @@ class hp816x_N77Det_instrParameters(wx.Panel):
     def connect(self, event):
         self.laser = hp816x_N77Det()
         self.laser.connect(self.para1tc.GetValue(), self.para2tc.GetValue(), reset=0, forceTrans=1)
-        self.laser.panelClass = laserPanel.laserTopPanel # Give the laser its panel class
+        self.laser.panelClass = laserPanel_hometab.laserTopPanel # Give the laser its panel class
         self.connectPanel.instList.append(self.laser)
         self.disconnectBtn.Enable()
         self.connectBtn.Disable()

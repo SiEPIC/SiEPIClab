@@ -39,9 +39,11 @@ import pyvisa as visa
 class CorvusEcoClass():
     NumberOfAxis = 3 #default the axis number @ 3 just in case.
     name = 'CorvusEco'
-    isSMU=False
-    isMotor=True
-    isLaser=False
+    isSMU = False
+    isMotor = True
+    isLaser = False
+    isQontrol = False
+    isDetect = False
     def connect(self,visaName,rm,Velocity,Acceleration,NumberOfAxis):
         self.ser = rm.get_instrument(visaName) #Connects to device with pyVisa
         self.ser.baud_rate = 57600 # Sets baudrate

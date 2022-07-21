@@ -28,7 +28,7 @@ import pyvisa as visa
 from keithley2600 import Keithley2600
 
 
-# Panel in the Connect Instruments window which contains the connection settings for the Corvus Eco.
+# Panel in the Connect Instruments window which contains the connection settings for the SMU.
 class SMUParameters(wx.Panel):
     name = 'Source Meter Unit'
 
