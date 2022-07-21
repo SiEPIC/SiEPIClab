@@ -247,9 +247,10 @@ class tlsPanel(wx.Panel):
 class laserTopPanel(wx.Panel):      
 	# Panel which contains the panels used for controling the laser and detectors. It also
 	# contains the graph.
-    def __init__(self, parent, laser, showGraph=True):
+    def __init__(self, parent, laser, detectflag, showGraph):
         super(laserTopPanel, self).__init__(parent)
-        
+
+        self.detectflag = detectflag
         self.showGraph = showGraph
         self.laser = laser;
         self.laser.ctrlPanel = self # So the laser knows what panel is controlling it
@@ -261,10 +262,23 @@ class laserTopPanel(wx.Panel):
         if self.showGraph:
             self.graph = myMatplotlibPanel.myMatplotlibPanel(self)
             hbox.Add(self.graph, flag=wx.EXPAND, border=0, proportion=1)
+        else:
+            self.graph = myMatplotlibPanel.myMatplotlibPanel(self)
         
-        self.laserPanel = laserPanel(self, self.laser, self.graph)
-    
-        hbox.Add(self.laserPanel, flag=wx.LEFT | wx.TOP | wx.EXPAND, border=0, proportion=0)
+        #self.laserPanel = laserPanel(self, self.laser, self.graph, self.detectflag)
+
+        if self.detectflag:
+            self.laserPanel = tlsPanel(self, self.laser, self.graph)
+            self.detectorPanelLst = list()
+
+            # for ii in xrange(self.laser.getNumPWMChannels()):
+            self.detectorPanel = detectorPanel(self, self.laser.getNumPWMChannels(), self.laser)
+            self.laserPanel.detectorPanel = self.detectorPanel
+            hbox.Add(self.detectorPanel, flag=wx.LEFT | wx.TOP | wx.EXPAND, border=0, proportion=0)
+        else:
+            self.laserPanel = laserPanel(self, self.laser, self.graph, self.detectflag)
+            hbox.Add(self.laserPanel, flag=wx.LEFT | wx.TOP | wx.EXPAND, border=0, proportion=0)
+
         
 
         self.SetSizer(hbox)
@@ -272,36 +286,45 @@ class laserTopPanel(wx.Panel):
 class laserPanel(wx.Panel):
     """ Panel which contains the panel used to control the tunable laser and the panel to
 	control the detectors. """
-    def __init__(self, parent, laser, graph):
+    def __init__(self, parent, laser, graph, detectflag):
         super(laserPanel, self).__init__(parent)
+        self.detectflag = detectflag
         self.graphPanel = graph
-        self.laser = laser;
+        self.laser = laser
         self.InitUI()
   
     def InitUI(self):  
-        sb = wx.StaticBox(self, label='Laser');
+        sb = wx.StaticBox(self, label='Laser')
         vbox = wx.StaticBoxSizer(sb, wx.VERTICAL)
         
-        
-        self.laserPanel = tlsPanel(self, self.laser, self.graphPanel)
-    
-        vbox.Add(self.laserPanel, flag=wx.LEFT | wx.TOP | wx.EXPAND, border=0, proportion=0)
-        
-        self.detectorPanelLst = list();
-        
-        #for ii in xrange(self.laser.getNumPWMChannels()):
-        self.detectorPanel = detectorPanel(self, self.laser.getNumPWMChannels(), self.laser)
-        self.laserPanel.detectorPanel = self.detectorPanel;
+        if self.detectflag:
+            self.laserPanel = tlsPanel(self, self.laser, self.graphPanel)
+            self.detectorPanelLst = list()
 
-        vbox.Add(self.detectorPanel, border=0, proportion=0, flag=wx.EXPAND)
+            # for ii in xrange(self.laser.getNumPWMChannels()):
+            self.detectorPanel = detectorPanel(self, self.laser.getNumPWMChannels(), self.laser)
+            self.laserPanel.detectorPanel = self.detectorPanel
+
+            vbox.Add(self.detectorPanel, border=0, proportion=0, flag=wx.EXPAND)
+        else:
+            self.laserPanel = tlsPanel(self, self.laser, self.graphPanel)
+            vbox.Add(self.laserPanel, flag=wx.LEFT | wx.TOP | wx.EXPAND, border=0, proportion=0)
+
+            #self.detectorPanelLst = list()
+
+            # for ii in xrange(self.laser.getNumPWMChannels()):
+            #self.detectorPanel = detectorPanel(self, self.laser.getNumPWMChannels(), self.laser)
+            #self.laserPanel.detectorPanel = self.detectorPanel
+
+            #vbox.Add(self.detectorPanel, border=0, proportion=0, flag=wx.EXPAND)
     
         #sl = wx.StaticLine(self.panel);
         self.SetSizer(vbox)
         
     def OnClose(self, event):
-        self.laserPanel.Destroy();
-        self.detetorPanel.Destroy();
-        self.Destroy();
+        self.laserPanel.Destroy()
+        self.detectorPanel.Destroy()
+        self.Destroy()
         
 class detectorPanel(wx.Panel):
     """ Panel containing the individual panels for each detector. """
@@ -309,7 +332,7 @@ class detectorPanel(wx.Panel):
         super(detectorPanel, self).__init__(parent)
         self.numDet = numDet
         self.laser = laser
-        self.InitUI()   
+        self.InitUI()
         
     def InitUI(self):
     
