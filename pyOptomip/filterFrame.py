@@ -24,6 +24,4 @@ class filterFrame(wx.Frame):
         self.SetSizer(hbox)
 
     def OnExitApp(self, event):
-        for inst in self.instList:
-            inst.disconnect()
         self.Destroy()
