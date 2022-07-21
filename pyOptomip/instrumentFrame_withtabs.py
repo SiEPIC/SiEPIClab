@@ -213,11 +213,7 @@ class OpticalTab(wx.Panel):
         self.instList = instList
 
         for inst in instList:
-
-            if inst.isLaser:
-                panel = inst.panelClass(self, inst, False, True)
-            else:
-                panel = inst.panelClass(self, inst)
+            panel = inst.panelClass(self, inst)
 
 
 
