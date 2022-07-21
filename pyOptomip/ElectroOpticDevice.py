@@ -6,7 +6,7 @@ class ElectroOpticDevice:
         self.wavelength = wavelength
         self.polarization = polarization
 
-        self.opticalCoordinates = [device_id, x, y]
+        self.opticalCoordinates = [x, y]
         self.electricalCoordinates = []
 
     def addElectricalCoordinates(self, padname, x, y):
