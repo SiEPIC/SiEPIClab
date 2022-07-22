@@ -23,11 +23,12 @@ import os
 import myMatplotlibPanel
 import myMatplotlibPanel_pyplot
 import wx
+import re
 import csv
 from outputlogPanel import outputlogPanel
 from logWriter import logWriter, logWriterError
 import sys
-from autoMeasure import autoMeasure
+from ElectroOpticDevice import ElectroOpticDevice
 import numpy as np
 from keithley2600 import Keithley2600
 from SMU import SMUClass
@@ -76,6 +77,11 @@ class TopPanel(wx.Panel):
         super(TopPanel, self).__init__(parent)
         self.routineflag = ""
         self.panel = SetPanel(self)#BlankPanel(self)
+        self.autoMeasure = autoMeasure()
+        self.selected = []
+        self.data = {'index': [], 'device': [], 'VoltMin': [], 'VoltMax': [], 'CurrentMin': [], 'CurrentMax': [],
+                     'VoltRes': [], 'CurrentRes': [], 'IV': [], 'RV': [], 'PV': [], 'Start': [], 'Stop': [],
+                     'Stepsize': [], 'Sweeppower': [], 'Sweepspeed': [], 'Laseroutput': [], 'Numscans': []}
         self.InitUI()
 
     def InitUI(self):
@@ -99,8 +105,20 @@ class TopPanel(wx.Panel):
         ##
         self.checkList = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
         self.checkList.InsertColumn(0, 'Device', width=100)
+        self.checkList.Bind(wx.EVT_LIST_ITEM_CHECKED, self.checkListchecked)
+        self.checkList.Bind(wx.EVT_LIST_ITEM_UNCHECKED, self.checkListunchecked)
+        self.checkListset = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
+        self.checkListset.InsertColumn(0, 'Device', width=100)
         hbox3 = wx.BoxSizer(wx.HORIZONTAL)
-        hbox3.Add(self.checkList, proportion=1, flag=wx.EXPAND)
+        vboxdevices = wx.BoxSizer(wx.VERTICAL)
+        vboxset = wx.BoxSizer(wx.VERTICAL)
+
+        vboxdevices.Add(self.checkList, proportion=1, flag=wx.EXPAND)
+        vboxset.Add(self.checkListset, proportion=1, flag=wx.EXPAND)
+
+        hbox3.AddMany([(vboxdevices, 1, wx.EXPAND),(vboxset, 1, wx.EXPAND)])
+
+
         ##
         #self.autoMeasure = autoMeasure
         #self.coordMapPanel = autoMeasure.coordinateMapPanel(self, self.autoMeasure, 3)
@@ -136,7 +154,7 @@ class TopPanel(wx.Panel):
         hbox7 = wx.BoxSizer(wx.HORIZONTAL)
 
         self.setBtn = wx.Button(self, label='Set', size=(50, 20))
-        #self.setBtn.Bind(wx.EVT_BUTTON, self.SetButton)
+        self.setBtn.Bind(wx.EVT_BUTTON, self.SetButton)
 
         self.importBtn = wx.Button(self, label='Import', size=(50, 20))
         #self.importBtn.Bind(wx.EVT_BUTTON, self.ImportButton)
@@ -170,8 +188,6 @@ class TopPanel(wx.Panel):
         deviceList = []
         for device in deviceListAsObjects:
             deviceList.append(device.getDeviceID())
-        self.devSelectCb.Clear()
-        self.devSelectCb.AppendItems(deviceList)
         # Adds items to the check list
         self.checkList.DeleteAllItems()
         for ii, device in enumerate(deviceList):
@@ -182,6 +198,32 @@ class TopPanel(wx.Panel):
             self.checkList.SetItemData(ii, index)
         self.checkList.SortItems(self.checkListSort)  # Make sure items in list are sorted
         self.checkList.EnableCheckBoxes()
+
+        for ii in range(self.checkList.GetItemCount()):
+            self.data['index'] = ii
+
+        self.data['device'] = ['Empty'] * self.checkList.GetItemCount()
+        self.data['VoltMin'] = ['Empty'] * self.checkList.GetItemCount()
+        self.data['VoltMax'] = ['Empty'] * self.checkList.GetItemCount()
+        self.data['CurrentMin'] = ['Empty'] * self.checkList.GetItemCount()
+        self.data['CurrentMax'] = ['Empty'] * self.checkList.GetItemCount()
+        self.data['VoltRes'] = ['Empty'] * self.checkList.GetItemCount()
+        self.data['CurrentRes'] = ['Empty'] * self.checkList.GetItemCount()
+        self.data['IV'] = ['Empty'] * self.checkList.GetItemCount()
+        self.data['RV'] = ['Empty'] * self.checkList.GetItemCount()
+        self.data['PV'] = ['Empty'] * self.checkList.GetItemCount()
+        self.data['Start'] = ['Empty'] * self.checkList.GetItemCount()
+        self.data['Stop'] = ['Empty'] * self.checkList.GetItemCount()
+        self.data['Stepsize'] = ['Empty'] * self.checkList.GetItemCount()
+        self.data['Sweeppower'] = ['Empty'] * self.checkList.GetItemCount()
+        self.data['Sweepspeed'] = ['Empty'] * self.checkList.GetItemCount()
+        self.data['Laseroutput'] = ['Empty'] * self.checkList.GetItemCount()
+        self.data['Numscans'] = ['Empty'] * self.checkList.GetItemCount()
+
+
+
+
+
         global fileLoaded
         fileLoaded = True
         self.Refresh()
@@ -221,6 +263,26 @@ class TopPanel(wx.Panel):
           #  self.panel = BlankPanel(self)
            # print("self panel should change")
 
+    def checkListSort(self, item1, item2):
+        # Items are the client data associated with each entry
+        if item2 < item2:
+            return -1
+        elif item1 > item2:
+            return 1
+        else:
+            return 0
+
+
+    def checkListchecked(self, event):
+        c = event.GetIndex()
+        self.selected.append(c)
+        print(self.selected)
+
+    def checkListunchecked(self, event):
+        x = event.GetIndex()
+        self.selected.remove(x)
+        print(self.selected)
+
 
     def OnButton_SelectOutputFolder(self, event):
         """ Opens a file dialog to select an output directory for automatic measurement. """
@@ -229,7 +291,40 @@ class TopPanel(wx.Panel):
         self.outputFolderTb.SetValue(dirDlg.GetPath())
         dirDlg.Destroy()
 
-    #def SetButton(self, event):
+    def SetButton(self, event):
+
+        for c in range(len(self.selected)):
+
+            self.data['device'][self.selected[c]] = self.checkList.GetItemText(self.selected[c], 0)
+            self.data['VoltMin'][self.selected[c]] = '0'
+            self.data['VoltMax'][self.selected[c]] = '0'
+            self.data['CurrentMin'][self.selected[c]] = '0'
+            self.data['CurrentMax'][self.selected[c]] = '0'
+            self.data['VoltRes'][self.selected[c]] = '0'
+            self.data['CurrentRes'][self.selected[c]] = '0'
+            self.data['IV'][self.selected[c]] = self.panel.typesel.GetValue()
+            self.data['RV'][self.selected[c]] = self.panel.type2sel.GetValue()
+            self.data['PV'][self.selected[c]] = self.panel.type3sel.GetValue()
+            self.data['Start'][self.selected[c]] = self.panel.startWvlTc.GetValue()
+            self.data['Stop'][self.selected[c]] = self.panel.stopWvlTc.GetValue()
+            self.data['Stepsize'][self.selected[c]] = self.panel.stepWvlTc.GetValue()
+            self.data['Sweeppower'][self.selected[c]] = self.panel.sweepPowerTc.GetValue()
+            self.data['Sweepspeed'][self.selected[c]] = self.panel.sweepSpeedCb.GetValue()
+            self.data['Laseroutput'][self.selected[c]] = self.panel.laserOutputCb.GetValue()
+            self.data['Numscans'][self.selected[c]] = self.panel.numSweepCb.GetValue()
+
+        print(self.data['device'])
+        print(self.data['IV'])
+        print('set')
+
+
+
+
+
+            #index = self.checkList.GetFirstSelected()
+            #device = self.checkList.GetItem(index, 0)
+            #self.data['device'] = device.device_id
+            #print(self.data['device'])
 
     # def ImportButton(self, event):
 
@@ -437,6 +532,47 @@ class SetPanel(wx.Panel):
         tophbox.AddMany([(elecvbox, 1, wx.EXPAND), (opticvbox, 1, wx.EXPAND),(othervbox, 1, wx.EXPAND)])
 
         self.SetSizer(tophbox)
+
+
+class autoMeasure(object):
+
+    def __init__(self):
+        self.saveFolder = os.getcwd()
+
+    def readCoordFile(self, fileName):
+
+        with open(fileName, 'r') as f:
+            data = f.readlines()
+
+        # Remove the first line since it is the header and remove newline char
+        dataStrip = [line.strip() for line in data[1:]]
+        dataStrip2 = []
+        for x in dataStrip:
+            j = x.replace(" ", "")
+            dataStrip2.append(j)
+        # x,y,polarization,wavelength,type,deviceid,params
+        reg = re.compile(r'(.*),(.*),(.*),([0-9]+),(.+),(.+),(.*)')
+        # x,y,deviceid,padname,params
+        regElec = re.compile(r'(.*),(.*),(.+),(.*),(.*)')
+
+        self.devices = []
+
+        # Parse the data in each line and put it into a list of devices
+        for ii, line in enumerate(dataStrip2):
+            if reg.match(line):
+                matchRes = reg.findall(line)[0]
+                devName = matchRes[5]
+                device = ElectroOpticDevice(devName, matchRes[3], matchRes[2], float(matchRes[0]), float(matchRes[1]))
+                self.devices.append(device)
+            else:
+                if regElec.match(line):
+                    matchRes = reg.findall(line)[0]
+                    devName = matchRes[2]
+                    for device in self.devices:
+                        if device.getDeviceID() == devName:
+                            device.addElectricalCoordinates(matchRes[3], float(matchRes[0]), float(matchRes[1]))
+                else:
+                    print('Warning: The entry\n%s\nis not formatted correctly.' % line)
 
 
 
