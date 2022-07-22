@@ -35,6 +35,8 @@ from laserPanel import tlsPanel
 from hp816x_N77Det_instr import hp816x_N77Det
 import myMatplotlibPanel
 import pyvisa as visa
+from TestParameters import testParameters
+from TestParameters import TopPanel
 
 
 # Define the tab content as classes:
@@ -320,18 +322,9 @@ class TestingparametersTab(wx.Panel):
         vbox = wx.BoxSizer(wx.VERTICAL)
         hbox = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.fineAlign = fineAlign(self.getLasers(), self.getMotors())
-        try:
-            self.fineAlignPanel = fineAlignPanel(self, self.fineAlign)
-        except Exception as e:
-            dial = wx.MessageDialog(None, 'Could not initiate instrument control. ' + traceback.format_exc(),
-                                    'Error', wx.ICON_ERROR)
-            dial.ShowModal()
+        self.testingParameters = TopPanel(self)
 
-        self.autoMeasure = autoMeasure(self.getLasers(), self.getMotors(), self.fineAlign)
-        self.autoMeasurePanel = autoMeasurePanel(self, self.autoMeasure)
-
-        vbox.Add(self.autoMeasurePanel, proportion=0, flag=wx.EXPAND)
+        vbox.Add(self.testingParameters, proportion=0, flag=wx.EXPAND)
 
         vbox.Add(hbox, 3, wx.EXPAND)
         #self.log = outputlogPanel(self)
