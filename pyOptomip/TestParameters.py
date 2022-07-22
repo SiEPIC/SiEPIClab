@@ -439,11 +439,6 @@ class SetPanel(wx.Panel):
         self.SetSizer(tophbox)
 
 
-class BlankPanel(wx.Panel):
-    def __init__(self, parent):
-        super(BlankPanel, self).__init__(parent)
-
-
 
 if __name__ == '__main__':
     app = wx.App(redirect=False)
