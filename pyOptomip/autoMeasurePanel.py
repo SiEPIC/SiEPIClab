@@ -29,30 +29,12 @@ from autoMeasureProgressDialog import autoMeasureProgressDialog
 import os
 import time
 from filterFrame import filterFrame
+from filterFrame import Filter
+import csv
 
 global deviceList
 global deviceListAsObjects
 global fileLoaded
-
-
-class CheckListCtrl(wx.ListCtrl):
-    def __init__(self, parent):
-        wx.ListCtrl.__init__(self, parent, -1, style=wx.LC_REPORT)
-        self.EnableCheckBoxes(True)
-
-    def CheckAll(self):
-        """ Checks all boxes in the list"""
-        for ii in range(self.GetItemCount()):
-            self.CheckItem(ii, True)
-
-    def UncheckAll(self):
-        """ Unchecks all boxes in the list"""
-        for ii in range(self.GetItemCount()):
-            self.CheckItem(ii, False)
-
-    def getCheckedIndices(self):
-        """ Returns a list of indices of all checked items in the list. """
-        return [ii for ii in range(self.GetItemCount()) if self.IsChecked(ii)]
 
 
 class coordinateMapPanel(wx.Panel):
@@ -170,7 +152,18 @@ class coordinateMapPanel(wx.Panel):
         return coordsLst
 
 
-# Panel that appears in the Instrument Control window to set up automatic measurements.
+def createFilterFrame():
+    global deviceListAsObjects
+    try:
+        devFilter = filterFrame(None, deviceListAsObjects)
+        return devFilter
+
+    except Exception as e:
+        dial = wx.MessageDialog(None, 'Could not initiate filter. ' + traceback.format_exc(),
+                                'Error', wx.ICON_ERROR)
+        dial.ShowModal()
+
+
 class autoMeasurePanel(wx.Panel):
 
     def __init__(self, parent, autoMeasure):
@@ -178,23 +171,24 @@ class autoMeasurePanel(wx.Panel):
         self.autoMeasure = autoMeasure
         self.device_list = []
         self.InitUI()
+        self.deviceFilter = Filter(True, True, True, True, set(), set())
 
     def InitUI(self):
 
         global fileLoaded
-        fileLoaded = False #list of devices is currently empty
+        fileLoaded = False  # list of devices is currently empty
         global deviceListAsObjects
         deviceListAsObjects = []
 
-        #Create Automated Measurements Panel
+        # Create Automated Measurements Panel
         sbOuter = wx.StaticBox(self, label='Automated Measurements')
         vboxOuter = wx.StaticBoxSizer(sbOuter, wx.VERTICAL)
 
-        #Create File Upload Box
+        # Create File Upload Box
         sbUpload = wx.StaticBox(self, label='File Upload')
         vboxUpload = wx.StaticBoxSizer(sbUpload, wx.VERTICAL)
 
-        #Create Opical Alignment Box
+        # Create Opical Alignment Box
         sbOptical = wx.StaticBox(self, label='Optical Alignment')
         vboxOptical = wx.StaticBoxSizer(sbOptical, wx.VERTICAL)
 
@@ -206,17 +200,17 @@ class autoMeasurePanel(wx.Panel):
         sbMeasurement = wx.StaticBox(self, label='Electro-Optic Measurements')
         vboxMeasurement = wx.StaticBoxSizer(sbMeasurement, wx.VERTICAL)
 
-        #Add MatPlotLib Panel
+        # Add MatPlotLib Panel
         matPlotBox = wx.BoxSizer(wx.HORIZONTAL)
         self.graph = myMatplotlibPanel.myMatplotlibPanel(self)  # use for regular mymatplotlib file
         matPlotBox.Add(self.graph, flag=wx.EXPAND, border=0, proportion=1)
 
-        #Add Coordinate file label
+        # Add Coordinate file label
         st1 = wx.StaticText(self, label='Coordinate file:')
         fileLabelBox = wx.BoxSizer(wx.HORIZONTAL)
         fileLabelBox.Add(st1, proportion=1, flag=wx.EXPAND)
 
-        #Allow File Selection
+        # Allow File Selection
         self.coordFileTb = wx.TextCtrl(self, style=wx.TE_READONLY)
         self.coordFileTb.SetValue('No file selected')
         self.coordFileSelectBtn = wx.Button(self, wx.ID_OPEN, size=(50, 20))
@@ -224,7 +218,7 @@ class autoMeasurePanel(wx.Panel):
         fileLoadBox = wx.BoxSizer(wx.HORIZONTAL)
         fileLoadBox.AddMany([(self.coordFileTb, 1, wx.EXPAND), (self.coordFileSelectBtn, 0, wx.EXPAND)])
 
-        #Add Selection Buttons and Filter
+        # Add Selection Buttons and Filter
         self.checkAllBtn = wx.Button(self, label='Select All', size=(80, 20))
         self.checkAllBtn.Bind(wx.EVT_BUTTON, self.OnButton_CheckAll)
         self.uncheckAllBtn = wx.Button(self, label='Unselect All', size=(80, 20))
@@ -236,77 +230,84 @@ class autoMeasurePanel(wx.Panel):
         selectBox.AddMany([(self.checkAllBtn, 0, wx.EXPAND), (self.uncheckAllBtn, 0, wx.EXPAND),
                            (self.filterBtn, 0, wx.EXPAND)])
 
-        #Add devices checklist
+        # Add devices checklist
         self.checkList = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
         self.checkList.InsertColumn(0, 'Device', width=100)
         checkListBox = wx.BoxSizer(wx.HORIZONTAL)
         checkListBox.Add(self.checkList, proportion=1, flag=wx.EXPAND)
 
-        #Add Optical Alignment set up
+        # Add Optical Alignment set up
         self.coordMapPanelOpt = coordinateMapPanel(self, self.autoMeasure, 3)
         opticalBox = wx.BoxSizer(wx.HORIZONTAL)
         opticalBox.Add(self.coordMapPanelOpt, proportion=1, flag=wx.EXPAND)
 
-        #Add Electrical Alignment set up
+        # Add Electrical Alignment set up
         self.coordMapPanelElec = coordinateMapPanel(self, self.autoMeasure, 3)
         electricalBox = wx.BoxSizer(wx.HORIZONTAL)
         electricalBox.Add(self.coordMapPanelElec, proportion=1, flag=wx.EXPAND)
 
         # Add Measurement Buttons
-        self.calculateBtn = wx.Button(self, label='Calculate', size=(70, 20))
-        self.calculateBtn.Bind(wx.EVT_BUTTON, self.OnButton_Calculate)
+        self.calculateBtnO = wx.Button(self, label='Calculate', size=(70, 20))
+        self.calculateBtnO.Bind(wx.EVT_BUTTON, self.OnButton_CalculateOpt)
         self.startBtn = wx.Button(self, label='Start', size=(70, 20))
         self.startBtn.Bind(wx.EVT_BUTTON, self.OnButton_Start)
+        self.saveBtn = wx.Button(self, label='Save', size=(70, 20))
+        self.saveBtn.Bind(wx.EVT_BUTTON, self.OnButton_SaveA)
         optButtonBox = wx.BoxSizer(wx.HORIZONTAL)
-        optButtonBox.AddMany([(self.calculateBtn, 0, wx.EXPAND), (self.startBtn, 0, wx.EXPAND)])
+        optButtonBox.AddMany([(self.calculateBtnO, 0, wx.EXPAND), (self.startBtn, 0, wx.EXPAND),
+                              (self.saveBtn, 0, wx.EXPAND)])
 
-        #Add Measurement Buttons
-        self.calculateBtn = wx.Button(self, label='Calculate', size=(70, 20))
-        self.calculateBtn.Bind(wx.EVT_BUTTON, self.OnButton_Calculate)
+        # Add Measurement Buttons
+        self.calculateBtnE = wx.Button(self, label='Calculate', size=(70, 20))
+        self.calculateBtnE.Bind(wx.EVT_BUTTON, self.OnButton_CalculateElec)
         self.startBtn = wx.Button(self, label='Start', size=(70, 20))
         self.startBtn.Bind(wx.EVT_BUTTON, self.OnButton_Start)
+        self.saveBtn = wx.Button(self, label='Save', size=(70, 20))
+        self.saveBtn.Bind(wx.EVT_BUTTON, self.OnButton_SaveB)
         elecButtonBox = wx.BoxSizer(wx.HORIZONTAL)
-        elecButtonBox.AddMany([(self.calculateBtn, 0, wx.EXPAND), (self.startBtn, 0, wx.EXPAND)])
+        elecButtonBox.AddMany([(self.calculateBtnE, 0, wx.EXPAND), (self.startBtn, 0, wx.EXPAND),
+                               (self.saveBtn, 0, wx.EXPAND)])
 
-        #Add Save folder label
+
+        # Add Save folder label
         st2 = wx.StaticText(self, label='Save folder:')
         saveLabelBox = wx.BoxSizer(wx.HORIZONTAL)
         saveLabelBox.Add(st2, proportion=1, flag=wx.EXPAND)
 
-        #Add Save folder Option
+        # Add Save folder Option
         self.outputFolderTb = wx.TextCtrl(self, style=wx.TE_READONLY)
         self.outputFolderBtn = wx.Button(self, wx.ID_OPEN, size=(50, 20))
         self.outputFolderBtn.Bind(wx.EVT_BUTTON, self.OnButton_SelectOutputFolder)
         saveBox = wx.BoxSizer(wx.HORIZONTAL)
         saveBox.AddMany([(self.outputFolderTb, 1, wx.EXPAND), (self.outputFolderBtn, 0, wx.EXPAND)])
 
-        #Add "Move to Device" label
+        # Add "Move to Device" label
         st3 = wx.StaticText(self, label='Move to individual device:')
         moveLabelBox = wx.BoxSizer(wx.HORIZONTAL)
         moveLabelBox.Add(st3, proportion=1, flag=wx.EXPAND)
 
-        #Add Measurement Buttons
+        # Add Measurement Buttons
         self.devSelectCb = wx.ComboBox(self, style=wx.CB_READONLY, size=(200, 20))
         self.gotoDevBtn = wx.Button(self, label='Go', size=(70, 20))
         self.gotoDevBtn.Bind(wx.EVT_BUTTON, self.OnButton_GotoDevice)
         goBox = wx.BoxSizer(wx.HORIZONTAL)
         goBox.AddMany([(self.devSelectCb, 1, wx.EXPAND), (self.gotoDevBtn, 0, wx.EXPAND)])
 
-        #Populate File Upload Box with file upload, save folder selection and device checklist
+        # Populate File Upload Box with file upload, save folder selection and device checklist
         vboxUpload.AddMany([(fileLabelBox, 0, wx.EXPAND), (fileLoadBox, 0, wx.EXPAND),
-                           (saveLabelBox, 0, wx.EXPAND), (saveBox, 0, wx.EXPAND),
+                            (saveLabelBox, 0, wx.EXPAND), (saveBox, 0, wx.EXPAND),
                             (checkListBox, 0, wx.EXPAND), (selectBox, 0, wx.EXPAND)])
 
-        #Populate Optical Box with alignment and buttons
+        # Populate Optical Box with alignment and buttons
         vboxOptical.AddMany([(opticalBox, 0, wx.EXPAND), (optButtonBox, 0, wx.EXPAND)])
 
-        #Populate Electrical Box with alignment and buttons
+        # Populate Electrical Box with alignment and buttons
         vboxElectrical.AddMany([(electricalBox, 0, wx.EXPAND), (elecButtonBox, 0, wx.EXPAND)])
 
-        #Populate Measurement Box with drop down menu and go button
+        # Populate Measurement Box with drop down menu and go button
         vboxMeasurement.AddMany([(moveLabelBox, 0, wx.EXPAND), (goBox, 0, wx.EXPAND)])
 
-        #Add all boxes to outer box
+        # Add all boxes to outer box
         vboxOuter.AddMany([(vboxUpload, 0, wx.EXPAND), (vboxOptical, 0, wx.EXPAND),
                            (vboxElectrical, 0, wx.EXPAND), (vboxMeasurement, 0, wx.EXPAND)])
         matPlotBox.Add(vboxOuter, flag=wx.LEFT | wx.TOP | wx.ALIGN_LEFT, border=0, proportion=0)
@@ -379,10 +380,17 @@ class autoMeasurePanel(wx.Panel):
         self.outputFolderTb.SetValue(dirDlg.GetPath())
         dirDlg.Destroy()
 
-    def OnButton_Calculate(self, event):
+    def OnButton_CalculateOpt(self, event):
         """ Computes the coordinate transformation matrix. """
-        A = self.autoMeasure.findCoordinateTransform(self.coordMapPanel.getMotorCoords(), \
-                                                     self.coordMapPanel.getGdsCoords())
+        A = self.autoMeasure.findCoordinateTransform(self.coordMapPanelOpt.getMotorCoords(),
+                                                     self.coordMapPanelOpt.getGdsCoords())
+        print('Coordinate transform matrix')
+        print(A)
+
+    def OnButton_CalculateElec(self, event):
+        """ Computes the coordinate transformation matrix. """
+        A = self.autoMeasure.findCoordinateTransform(self.coordMapPanelElec.getMotorCoords(),
+                                                     self.coordMapPanelElec.getGdsCoords())
         print('Coordinate transform matrix')
         print(A)
 
@@ -413,16 +421,89 @@ class autoMeasurePanel(wx.Panel):
         self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.startDetTimer()
 
     def OnButton_Filter(self, event):
-        self.createFilterFrame();
-        self.Destroy();
 
-    def createFilterFrame(self):
-        global deviceListAsObjects
-        try:
-            filterFrame(None, deviceListAsObjects)
+        self.deviceFilter = createFilterFrame()
 
-        except Exception as e:
-            dial = wx.MessageDialog(None, 'Could not initiate filter. ' + traceback.format_exc(),
-                                        'Error', wx.ICON_ERROR)
-            dial.ShowModal()
+        if self.deviceFilter.TE is True:
+            for ii in range(self.checkList.GetItemCount()):
+                if self.device_list[self.checkList.GetItemData(ii)].polarization == 'TE':
+                    self.checkList.CheckItem(ii, True)
+        else:
+            for i in range(self.checkList.GetItemCount()):
+                if self.device_list[self.checkList.GetItemData(i)].polarization == 'TE':
+                    self.checkList.CheckItem(i, False)
+
+        if self.deviceFilter.TM is True:
+            for i in range(self.checkList.GetItemCount()):
+                if self.device_list[self.checkList.GetItemData(i)].polarization == 'TM':
+                    self.checkList.CheckItem(i, True)
+        else:
+            for i in range(self.checkList.GetItemCount()):
+                if self.device_list[self.checkList.GetItemData(i)].polarization == 'TM':
+                    self.checkList.CheckItem(i, False)
+
+        if self.deviceFilter.thirteen is True:
+            for i in range(self.checkList.GetItemCount()):
+                if self.device_list[self.checkList.GetItemData(i)].polarization == 1310:
+                    self.checkList.CheckItem(i, True)
+        else:
+            for i in range(self.checkList.GetItemCount()):
+                if self.device_list[self.checkList.GetItemData(i)].polarization == 1310:
+                    self.checkList.CheckItem(i, False)
+
+        if self.deviceFilter.fifteen is True:
+            for i in range(self.checkList.GetItemCount()):
+                if self.device_list[self.checkList.GetItemData(i)].polarization == 1550:
+                    self.checkList.CheckItem(i, True)
+        else:
+            for i in range(self.checkList.GetItemCount()):
+                if self.device_list[self.checkList.GetItemData(i)].polarization == 1550:
+                    self.checkList.CheckItem(i, False)
+
+        for select in self.deviceFilter.keywords:
+            for i in range(self.checkList.GetItemCount()):
+                if select in self.device_list[self.checkList.GetItemData(i)].device_id:
+                    self.checkList.CheckItem(i, True)
+
+        for deselect in self.deviceFilter.deselect:
+            for i in range(self.checkList.GetItemCount()):
+                if deselect in self.device_list[self.checkList.GetItemData(i)].device_id:
+                    self.checkList.CheckItem(i, False)
+
+    def OnButton_SaveA(self, event):
+        """ Computes the coordinate transformation matrix. """
+        A = self.autoMeasure.findCoordinateTransform(self.coordMapPanelOpt.getMotorCoords(),
+                                                     self.coordMapPanelOpt.getGdsCoords())
+
+        # Make a folder with the current time
+        timeStr = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
+        csvFileName = os.path.join(self.outputFolderTb.GetValue(), timeStr + 'A.csv')
+
+        f = open(csvFileName, 'w', newline='')
+        writer = csv.writer(f)
+
+        row0 = [A[0][0], A[0][1], A[0][2], A[0][3]]
+        writer.writerow(row0)
+        row1 = [A[1][0], A[1][1], A[1][2], A[1][3]]
+        writer.writerow(row1)
+        row2 = [A[2][0], A[2][1], A[2][2], A[2][3]]
+        writer.writerow(row2)
+        row3 = [A[3][0], A[3][1], A[3][2], A[3][3]]
+        writer.writerow(row3)
+        f.close()
+
+    def OnButton_SaveB(self, event):
+        """ Computes the coordinate transformation matrix. """
+        B = self.autoMeasure.findCoordinateTransform(self.coordMapPanelElec.getMotorCoords(),
+                                                     self.coordMapPanelElec.getGdsCoords())
+
+        # Make a folder with the current time
+        timeStr = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
+        matFileName = os.path.join(self.outputFolderTb.GetValue(), timeStr + 'B.mat')
+
+        # Save sweep data and metadata to the mat file
+        matDict = dict()
+
+        matDict['Electrical Matrix'] = B
+
 
