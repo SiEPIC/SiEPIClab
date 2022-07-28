@@ -23,3 +23,19 @@ class QontrolMotor:
 
     def disconnect(self):
         self.q.close()
+
+    # Moves all the axis together
+    # can be used regardless of how many axis are enabled
+    def moveAbsoluteXYZ(self, x, y=0, z=0):
+        self.q[0] = x
+        self.q[1] = y
+        self.q[2] = z
+
+    def moveRelativeXYZ(self, x, y, z):
+        xCurrentPos = self.q[0]
+        yCurrentPos = self.q[1]
+        zCurrentPos = self.q[2]
+        self.q[0] = x - xCurrentPos
+        self.q[1] = y - yCurrentPos
+        self.q[2] = z - zCurrentPos
+

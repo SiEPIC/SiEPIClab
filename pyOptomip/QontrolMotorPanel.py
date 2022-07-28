@@ -22,26 +22,26 @@
 import wx
 
 
-# Panel that appears in the main window which contains the controls for the Corvus motor.
+# Panel that appears in the main window which contains the controls for the Qontrol motors.
 class topQontrolMotorPanel(wx.Panel):
     def __init__(self, parent, motor):
         super(topQontrolMotorPanel, self).__init__(parent)
-        self.qontrol = motor[0];
+        self.qontrol = motor[0]
         self.numAxes = self.qontrol.numAxes
-        self.maxaxis = self.numAxes + 1
+        self.maxAxis = self.numAxes + 1
         self.InitUI()
 
     def InitUI(self):
-        sb = wx.StaticBox(self, label='Qontrol');
+        sb = wx.StaticBox(self, label='Qontrol')
         vbox = wx.StaticBoxSizer(sb, wx.VERTICAL)
 
         axis = 1
-        for motorCtrl in range(axis, self.maxaxis):
+        for motorCtrl in range(axis, self.maxAxis):
             motorPanel = QontrolPanel(self, motorCtrl, axis)
             motorPanel.motor = self.qontrol
             vbox.Add(motorPanel, flag=wx.LEFT | wx.TOP | wx.ALIGN_LEFT, border=0, proportion=0)
             vbox.Add((-1, 2))
-            sl = wx.StaticLine(self);
+            sl = wx.StaticLine(self)
             vbox.Add(sl, flag=wx.EXPAND, border=0, proportion=0)
             vbox.Add((-1, 2))
             axis = axis + 1
@@ -54,8 +54,8 @@ class QontrolPanel(wx.Panel):
     def __init__(self, parent, motorCtrl, axis):
         super(QontrolPanel, self).__init__(parent)
         self.parent = parent
-        self.motorCtrl = motorCtrl;
-        self.axis = axis;
+        self.motorCtrl = motorCtrl
+        self.axis = axis
         self.InitUI()
 
     def InitUI(self):
@@ -82,38 +82,40 @@ class QontrolPanel(wx.Panel):
 
     def getMoveValue(self):
         try:
-            val = float(self.tc.GetValue());
+            val = float(self.tc.GetValue())
         except ValueError:
-            self.tc.SetValue('0');
-            return 0.0;
-        return val;
+            self.tc.SetValue('0')
+            return 0.0
+        return val
 
     def OnButton_MinusButtonHandler(self, event):
 
-        current_position = self.parent.qontrol.q
-
         if self.axis == 1:
-            self.parent.qontrol.q[0] = (-1 *(current_position+self.getMoveValue()))
+            current_position = self.parent.qontrol.q.x[0]
+            self.parent.qontrol.q.x[0] = (-1 * (current_position+self.getMoveValue()))
             print("Axis 1 Moved")
 
         if self.axis == 2:
-            self.parent.qontrol.q[1] = (-1 * (current_position + self.getMoveValue()))
+            current_position = self.parent.qontrol.q.x[1]
+            self.parent.qontrol.q.x[1] = (-1 * (current_position + self.getMoveValue()))
             print("Axis 2 Moved")
 
         if self.axis == 3:
-            self.parent.qontrol.q[2] = (-1 * (current_position + self.getMoveValue()))
+            current_position = self.parent.qontrol.q.x[2]
+            self.parent.qontrol.q.x[2] = (-1 * (current_position + self.getMoveValue()))
             print("Axis 3 Moved")
 
     def OnButton_PlusButtonHandler(self, event):
 
-        current_position = self.parent.qontrol.q
-
         if self.axis == 1:
-            self.parent.qontrol.q[0] = (current_position + self.getMoveValue())
+            current_position = self.parent.qontrol.q.x[0]
+            self.parent.qontrol.q.x[0] = (current_position + self.getMoveValue())
             print("Axis 1 Moved")
         if self.axis == 2:
-            self.parent.qontrol.q[1] = (current_position + self.getMoveValue())
+            current_position = self.parent.qontrol.q.x[1]
+            self.parent.qontrol.q.x[1] = (current_position + self.getMoveValue())
             print("Axis 2 Moved")
         if self.axis == 3:
-            self.parent.qontrol.q[2] = (current_position + self.getMoveValue())
+            current_position = self.parent.qontrol.q.x[2]
+            self.parent.qontrol.q.x[2] = (current_position + self.getMoveValue())
             print("Axis 3 Moved")
