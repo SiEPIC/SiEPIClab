@@ -323,6 +323,7 @@ class autoMeasurePanel(wx.Panel):
             return 0
 
     def createFilterFrame(self):
+        """"""
         global deviceListAsObjects
         try:
             filterFrame(None, self.checkList, self.device_list)
@@ -365,7 +366,7 @@ class autoMeasurePanel(wx.Panel):
         self.Refresh()
 
     def OnButton_CheckAll(self, event):
-        # self.checkList.CheckAll()
+        """Selects all items in the devices check list"""
         for ii in range(self.checkList.GetItemCount()):
             self.checkList.CheckItem(ii, True)
 
@@ -379,7 +380,7 @@ class autoMeasurePanel(wx.Panel):
         self.autoMeasure.motor.moveAbsoluteXY(motorCoord[0], motorCoord[1])
 
     def OnButton_UncheckAll(self, event):
-        # self.checkList.UncheckAll()
+        """Deselects all items in the devices checklist"""
         for ii in range(self.checkList.GetItemCount()):
             self.checkList.CheckItem(ii, False)
 
@@ -404,6 +405,7 @@ class autoMeasurePanel(wx.Panel):
         print('Coordinate transform matrix')
         print(A)
 
+    #TODO: Update this for electro-optic measurements and current data formats
     def OnButton_Start(self, event):
         """ Starts an automatic measurement. """
 

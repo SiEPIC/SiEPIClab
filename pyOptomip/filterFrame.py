@@ -4,11 +4,13 @@ import wx
 class filterFrame(wx.Frame):
 
     def __init__(self, parent, checklist, deviceList):
-
+        """A frame which opens upon clicking the filter button within the auto-measure tab.
+        Used to filter which devices are selected within a checklist of electro-optic devices"""
         displaySize = wx.DisplaySize()
         super(filterFrame, self).__init__(parent, title='Filter',
                                           size=(displaySize[0] * 3 / 8.0, displaySize[1] * 2 / 4.0))
 
+        #initial status of the checklist
         self.TE = False
         self.TM = False
         self.thirteen = False
@@ -16,7 +18,9 @@ class filterFrame(wx.Frame):
         self.keywords = set()
         self.deselect = set()
 
+        #Checklist object
         self.checkList = checklist
+        #List of devices as ElectroOpticDevices
         self.device_list = deviceList
 
         try:
@@ -27,6 +31,7 @@ class filterFrame(wx.Frame):
         self.Show()
 
     def InitUI(self):
+        """Layout of the frame"""
         self.Bind(wx.EVT_CLOSE, self.OnExitApp)
 
         mode = wx.StaticText(self, label='Mode')
@@ -81,7 +86,8 @@ class filterFrame(wx.Frame):
         self.Destroy()
 
     def OnDone(self, event):
-
+        """Filters devices in checklist before closing. If you wish to deselect a keyword, you must ensure
+        to check at least one mode and at least one wavelength, otherwise nothing will be selected."""
         if self.TE is True:
             for ii in range(self.checkList.GetItemCount()):
                 if self.device_list[self.checkList.GetItemData(ii)].polarization == 'TE':
@@ -144,25 +150,25 @@ class filterFrame(wx.Frame):
         self.Destroy()
 
     def OnSetTE(self, event):
-
+        """When the TE box is checked"""
         self.TE = True
 
     def OnSetTM(self, event):
-
+        """When the TM box is checked"""
         self.TM = True
 
     def OnSet1310(self, event):
-
+        """When the 1310nm box is checked"""
         self.thirteen = True
 
     def OnSet1550(self, event):
-
+        """When the 1550nm box is checked"""
         self.fifteen = True
 
     def OnSelect(self, event):
-
+        """Adds the word typed in to the textctrl object to a set of words to select"""
         self.keywords.add(self.keyword.GetValue())
 
     def OnDeSelect(self, event):
-
+        """Adds the word typed in to the textctrl object to a set of words to deselect"""
         self.deselect.add(self.keyword.GetValue())
