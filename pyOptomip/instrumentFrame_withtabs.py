@@ -270,8 +270,9 @@ class AutoMeasureTab(wx.Panel):
                                     'Error', wx.ICON_ERROR)
             dial.ShowModal()
 
-        self.autoMeasure = autoMeasure(self.getLasers(), self.getMotors(), self.fineAlign)
-        self.autoMeasurePanel = autoMeasurePanel(self, self.autoMeasure)
+        self.autoMeasureE = autoMeasure(self.getLasers(), self.getMotors(), self.fineAlign)
+        self.autoMeasureO = autoMeasure(self.getLasers(), self.getMotors(), self.fineAlign)
+        self.autoMeasurePanel = autoMeasurePanel(self, self.autoMeasureE, self.autoMeasureO)
 
         vbox.Add(self.autoMeasurePanel, proportion=0, flag=wx.EXPAND)
 
