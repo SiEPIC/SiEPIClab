@@ -198,7 +198,7 @@ class autoMeasurePanel(wx.Panel):
         vboxElectrical = wx.StaticBoxSizer(sbElectrical, wx.VERTICAL)
 
         # Create Electrical Optic Measurement Box
-        sbMeasurement = wx.StaticBox(self, label='Move to Device')
+        sbMeasurement = wx.StaticBox(self, label='Electro-Optic Measurements')
         vboxMeasurement = wx.StaticBoxSizer(sbMeasurement, wx.VERTICAL)
 
         # Add MatPlotLib Panel
@@ -246,6 +246,7 @@ class autoMeasurePanel(wx.Panel):
         self.coordMapPanelElec = coordinateMapPanel(self, self.autoMeasureElec, 3)
         electricalBox = wx.BoxSizer(wx.HORIZONTAL)
         electricalBox.Add(self.coordMapPanelElec, proportion=1, flag=wx.EXPAND)
+
 
         # Add Measurement Buttons
         self.calculateBtnO = wx.Button(self, label='Calculate', size=(70, 20))
@@ -302,6 +303,7 @@ class autoMeasurePanel(wx.Panel):
         goBoxElec = wx.BoxSizer(wx.HORIZONTAL)
         goBoxElec.AddMany([(self.devSelectCb, 1, wx.EXPAND), (self.gotoDevBtn, 0, wx.EXPAND)])
 
+
         # Populate File Upload Box with file upload, save folder selection and device checklist
         vboxUpload.AddMany([(fileLabelBox, 0, wx.EXPAND), (fileLoadBox, 0, wx.EXPAND),
                             (saveLabelBox, 0, wx.EXPAND), (saveBox, 0, wx.EXPAND),
@@ -314,12 +316,16 @@ class autoMeasurePanel(wx.Panel):
         vboxElectrical.AddMany([(electricalBox, 0, wx.EXPAND), (elecButtonBox, 0, wx.EXPAND)])
 
         # Populate Measurement Box with drop down menu and go button
-        vboxMeasurement.AddMany([(elecOptButtonBox, 0, wx.EXPAND), (moveLabelBox, 0, wx.EXPAND), (goBoxOpt, 0, wx.EXPAND),
-                                 (moveElecLabelBox, 0, wx.EXPAND), (goBoxElec, 0, wx.EXPAND)])
+        vboxMeasurement.AddMany(
+            [(elecOptButtonBox, 0, wx.EXPAND), (moveLabelBox, 0, wx.EXPAND), (goBoxOpt, 0, wx.EXPAND),
+             (moveElecLabelBox, 0, wx.EXPAND), (goBoxElec, 0, wx.EXPAND)])
+
+        topBox = wx.BoxSizer(wx.HORIZONTAL)
+        topBox.AddMany([(vboxUpload, 0, wx.EXPAND), (vboxMeasurement, 0, wx.EXPAND)])
 
         # Add all boxes to outer box
-        vboxOuter.AddMany([(vboxUpload, 0, wx.EXPAND), (vboxOptical, 0, wx.EXPAND),
-                           (vboxElectrical, 0, wx.EXPAND), (vboxMeasurement, 0, wx.EXPAND)])
+        vboxOuter.AddMany([(topBox, 0, wx.EXPAND), (vboxOptical, 0, wx.EXPAND),
+                           (vboxElectrical, 0, wx.EXPAND)])
         matPlotBox.Add(vboxOuter, flag=wx.LEFT | wx.TOP | wx.ALIGN_LEFT, border=0, proportion=0)
 
         self.SetSizer(matPlotBox)
@@ -362,6 +368,8 @@ class autoMeasurePanel(wx.Panel):
             deviceList.append(device.getDeviceID())
         self.devSelectCb.Clear()
         self.devSelectCb.AppendItems(deviceList)
+        self.devSelectCbOpt.Clear()
+        self.devSelectCbOpt.AppendItems(deviceList)
         # Adds items to the check list
         self.checkList.DeleteAllItems()
         for ii, device in enumerate(deviceList):
@@ -458,7 +466,7 @@ class autoMeasurePanel(wx.Panel):
         self.Refresh()
 
     def OnButton_Save(self, event):
-        """ Computes the coordinate transformation matrix. """
+        """Saves the gds devices usied for alignment as well as motor positions"""
         A = self.autoMeasureOpt.findCoordinateTransform(self.coordMapPanelOpt.getMotorCoords(),
                                                         self.coordMapPanelOpt.getGdsCoordsOpt())
 
@@ -466,24 +474,38 @@ class autoMeasurePanel(wx.Panel):
                                                          self.coordMapPanelElec.getGdsCoordsElec())
 
         # Make a folder with the current time
+        fileName = self.coordFileTb.GetValue()
         timeStr = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
-        csvFileName = os.path.join(self.outputFolderTb.GetValue(), timeStr + 'Optical Matrix.csv')
+        csvFileName = os.path.join(self.outputFolderTb.GetValue(), timeStr + '_{}.csv'.format(fileName))
 
         f = open(csvFileName, 'w', newline='')
         writer = csv.writer(f)
-
-        row0 = A[0][0]
-        writer.writerow(row0)
-        row1 = A[0][1]
-        writer.writerow(row1)
-        row2 = A[0][2]
-        writer.writerow(row2)
-        blank = []
-        writer.writerow(blank)
-        row3 = B[0][0]
-        writer.writerow(row3)
-        row4 = B[0][1]
-        writer.writerow(row4)
-        row5 = B[0][2]
-        writer.writerow(row5)
+        optCoords = self.coordMapPanelOpt.getMotorCoords()
+        Opt = ['Optical Alignment']
+        writer.writerow(Opt)
+        Opt = ['Device', 'Motor x', 'Motor y', 'Motor z']
+        writer.writerow(Opt)
+        dev1 = [self.coordMapPanelOpt.tbGdsDevice1.GetValue(),
+                optCoords[0][0], optCoords[0][1], optCoords[0][2]]
+        writer.writerow(dev1)
+        dev2 = [self.coordMapPanelOpt.tbGdsDevice2.GetValue(),
+                optCoords[1][0], optCoords[1][1], optCoords[1][2]]
+        writer.writerow(dev2)
+        dev3 = [self.coordMapPanelOpt.tbGdsDevice3.GetValue(),
+                optCoords[2][0], optCoords[2][1], optCoords[2][2]]
+        writer.writerow(dev3)
+        elecCoords = self.coordMapPanelElec.getMotorCoords()
+        Elec = ['Electrical Alignment']
+        writer.writerow(Elec)
+        elec = ['Device', 'Motor x', 'Motor y', 'Motor z']
+        writer.writerow(elec)
+        dev1 = [self.coordMapPanelElec.tbGdsDevice1.GetValue(),
+                elecCoords[0][0], elecCoords[0][1], elecCoords[0][2]]
+        writer.writerow(dev1)
+        dev2 = [self.coordMapPanelElec.tbGdsDevice2.GetValue(),
+                elecCoords[1][0], elecCoords[1][1], elecCoords[1][2]]
+        writer.writerow(dev2)
+        dev3 = [self.coordMapPanelElec.tbGdsDevice3.GetValue(),
+                elecCoords[2][0], elecCoords[2][1], elecCoords[2][2]]
+        writer.writerow(dev3)
         f.close()

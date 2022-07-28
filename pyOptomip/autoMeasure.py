@@ -159,10 +159,10 @@ class autoMeasure(object):
             plt.savefig(pdfFileName)
             plt.close()
 
-            if abortFunction != None and abortFunction():
+            if abortFunction is not None and abortFunction():
                 print('Aborted')
                 return
-            if updateFunction != None:
+            if updateFunction is not None:
                 updateFunction(ii)
 
 
