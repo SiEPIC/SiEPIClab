@@ -19,17 +19,16 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+import sys
 import traceback
 
 import wx
-import numpy as np
 import wx.lib.mixins.listctrl
 import myMatplotlibPanel
 from autoMeasureProgressDialog import autoMeasureProgressDialog
 import os
 import time
 from filterFrame import filterFrame
-from filterFrame import Filter
 import csv
 
 global deviceList
@@ -64,6 +63,8 @@ class coordinateMapPanel(wx.Panel):
         self.stzMotorCoordLst = []
         self.stxGdsCoordLst = []
         self.styGdsCoordLst = []
+        self.elecxGdsCoordLst = []
+        self.elecyGdsCoordLst = []
 
         self.tbGdsDevice1 = wx.ComboBox(self, size=(80, 20), choices=[], style=wx.CB_DROPDOWN)
         self.tbGdsDevice1.Bind(wx.EVT_COMBOBOX_DROPDOWN, self.on_drop_down)
@@ -97,6 +98,8 @@ class coordinateMapPanel(wx.Panel):
                     if self.GDSDevList[ii] == dev.getDeviceID():
                         self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
                         self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
+                        self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
+                        self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
 
             gbs.Add(stDevice, pos=(row, 0), span=(1, 1))
             gbs.Add(tbxMotorCoord, pos=(row, 2), span=(1, 1))
@@ -141,7 +144,7 @@ class coordinateMapPanel(wx.Panel):
                 coordsLst.append((float(xval), float(yval), float(zval)))
         return coordsLst
 
-    def getGdsCoords(self):
+    def getGdsCoordsOpt(self):
         """ Reads the GDS coordinates from all completed text fields. """
         coordsLst = []
         for tcx, tcy in zip(self.stxGdsCoordLst, self.styGdsCoordLst):
@@ -151,18 +154,15 @@ class coordinateMapPanel(wx.Panel):
                 coordsLst.append((float(xval), float(yval)))
         return coordsLst
 
-
-def createFilterFrame():
-    global deviceListAsObjects
-    try:
-        devFilter = filterFrame(None, deviceListAsObjects)
-        return devFilter
-
-    except Exception as e:
-        dial = wx.MessageDialog(None, 'Could not initiate filter. ' + traceback.format_exc(),
-                                'Error', wx.ICON_ERROR)
-        dial.ShowModal()
-
+    def getGdsCoordsElec(self):
+        """ Reads the GDS coordinates from all completed text fields. """
+        coordsLst = []
+        for tcx, tcy in zip(self.elecxGdsCoordLst, self.elecyGdsCoordLst):
+            xval = tcx.GetValue()
+            yval = tcy.GetValue()
+            if xval != '' and yval != '':
+                coordsLst.append((float(xval), float(yval)))
+        return coordsLst
 
 class autoMeasurePanel(wx.Panel):
 
@@ -171,7 +171,6 @@ class autoMeasurePanel(wx.Panel):
         self.autoMeasure = autoMeasure
         self.device_list = []
         self.InitUI()
-        self.deviceFilter = Filter(True, True, True, True, set(), set())
 
     def InitUI(self):
 
@@ -311,6 +310,7 @@ class autoMeasurePanel(wx.Panel):
         vboxOuter.AddMany([(vboxUpload, 0, wx.EXPAND), (vboxOptical, 0, wx.EXPAND),
                            (vboxElectrical, 0, wx.EXPAND), (vboxMeasurement, 0, wx.EXPAND)])
         matPlotBox.Add(vboxOuter, flag=wx.LEFT | wx.TOP | wx.ALIGN_LEFT, border=0, proportion=0)
+
         self.SetSizer(matPlotBox)
 
     def checkListSort(self, item1, item2):
@@ -321,6 +321,16 @@ class autoMeasurePanel(wx.Panel):
             return 1
         else:
             return 0
+
+    def createFilterFrame(self):
+        global deviceListAsObjects
+        try:
+            filterFrame(None, self.checkList, self.device_list)
+
+        except Exception as e:
+            dial = wx.MessageDialog(None, 'Could not initiate filter. ' + traceback.format_exc(),
+                                    'Error', wx.ICON_ERROR)
+            dial.ShowModal()
 
     def OnButton_ChooseCoordFile(self, event):
         """ Opens a file dialog to select a coordinate file. """
@@ -383,14 +393,14 @@ class autoMeasurePanel(wx.Panel):
     def OnButton_CalculateOpt(self, event):
         """ Computes the coordinate transformation matrix. """
         A = self.autoMeasure.findCoordinateTransform(self.coordMapPanelOpt.getMotorCoords(),
-                                                     self.coordMapPanelOpt.getGdsCoords())
+                                                     self.coordMapPanelOpt.getGdsCoordsOpt())
         print('Coordinate transform matrix')
         print(A)
 
     def OnButton_CalculateElec(self, event):
         """ Computes the coordinate transformation matrix. """
         A = self.autoMeasure.findCoordinateTransform(self.coordMapPanelElec.getMotorCoords(),
-                                                     self.coordMapPanelElec.getGdsCoords())
+                                                     self.coordMapPanelElec.getGdsCoordsElec())
         print('Coordinate transform matrix')
         print(A)
 
@@ -422,88 +432,47 @@ class autoMeasurePanel(wx.Panel):
 
     def OnButton_Filter(self, event):
 
-        self.deviceFilter = createFilterFrame()
-
-        if self.deviceFilter.TE is True:
-            for ii in range(self.checkList.GetItemCount()):
-                if self.device_list[self.checkList.GetItemData(ii)].polarization == 'TE':
-                    self.checkList.CheckItem(ii, True)
-        else:
-            for i in range(self.checkList.GetItemCount()):
-                if self.device_list[self.checkList.GetItemData(i)].polarization == 'TE':
-                    self.checkList.CheckItem(i, False)
-
-        if self.deviceFilter.TM is True:
-            for i in range(self.checkList.GetItemCount()):
-                if self.device_list[self.checkList.GetItemData(i)].polarization == 'TM':
-                    self.checkList.CheckItem(i, True)
-        else:
-            for i in range(self.checkList.GetItemCount()):
-                if self.device_list[self.checkList.GetItemData(i)].polarization == 'TM':
-                    self.checkList.CheckItem(i, False)
-
-        if self.deviceFilter.thirteen is True:
-            for i in range(self.checkList.GetItemCount()):
-                if self.device_list[self.checkList.GetItemData(i)].polarization == 1310:
-                    self.checkList.CheckItem(i, True)
-        else:
-            for i in range(self.checkList.GetItemCount()):
-                if self.device_list[self.checkList.GetItemData(i)].polarization == 1310:
-                    self.checkList.CheckItem(i, False)
-
-        if self.deviceFilter.fifteen is True:
-            for i in range(self.checkList.GetItemCount()):
-                if self.device_list[self.checkList.GetItemData(i)].polarization == 1550:
-                    self.checkList.CheckItem(i, True)
-        else:
-            for i in range(self.checkList.GetItemCount()):
-                if self.device_list[self.checkList.GetItemData(i)].polarization == 1550:
-                    self.checkList.CheckItem(i, False)
-
-        for select in self.deviceFilter.keywords:
-            for i in range(self.checkList.GetItemCount()):
-                if select in self.device_list[self.checkList.GetItemData(i)].device_id:
-                    self.checkList.CheckItem(i, True)
-
-        for deselect in self.deviceFilter.deselect:
-            for i in range(self.checkList.GetItemCount()):
-                if deselect in self.device_list[self.checkList.GetItemData(i)].device_id:
-                    self.checkList.CheckItem(i, False)
+        self.createFilterFrame()
+        self.Refresh()
 
     def OnButton_SaveA(self, event):
         """ Computes the coordinate transformation matrix. """
         A = self.autoMeasure.findCoordinateTransform(self.coordMapPanelOpt.getMotorCoords(),
-                                                     self.coordMapPanelOpt.getGdsCoords())
+                                                     self.coordMapPanelOpt.getGdsCoordsOpt())
 
         # Make a folder with the current time
         timeStr = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
-        csvFileName = os.path.join(self.outputFolderTb.GetValue(), timeStr + 'A.csv')
+        csvFileName = os.path.join(self.outputFolderTb.GetValue(), timeStr + 'Optical Matrix.csv')
 
         f = open(csvFileName, 'w', newline='')
         writer = csv.writer(f)
 
-        row0 = [A[0][0], A[0][1], A[0][2], A[0][3]]
+        row0 = A[0][0]
         writer.writerow(row0)
-        row1 = [A[1][0], A[1][1], A[1][2], A[1][3]]
+        row1 = A[0][1]
         writer.writerow(row1)
-        row2 = [A[2][0], A[2][1], A[2][2], A[2][3]]
+        row2 = A[0][2]
         writer.writerow(row2)
-        row3 = [A[3][0], A[3][1], A[3][2], A[3][3]]
-        writer.writerow(row3)
         f.close()
 
     def OnButton_SaveB(self, event):
         """ Computes the coordinate transformation matrix. """
         B = self.autoMeasure.findCoordinateTransform(self.coordMapPanelElec.getMotorCoords(),
-                                                     self.coordMapPanelElec.getGdsCoords())
+                                                     self.coordMapPanelElec.getGdsCoordsElec())
 
         # Make a folder with the current time
         timeStr = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
-        matFileName = os.path.join(self.outputFolderTb.GetValue(), timeStr + 'B.mat')
+        csvFileName = os.path.join(self.outputFolderTb.GetValue(), timeStr + 'ElectricalMatrix.csv')
 
-        # Save sweep data and metadata to the mat file
-        matDict = dict()
+        f = open(csvFileName, 'w', newline='')
+        writer = csv.writer(f)
 
-        matDict['Electrical Matrix'] = B
+        row0 = B[0][0]
+        writer.writerow(row0)
+        row1 = B[0][1]
+        writer.writerow(row1)
+        row2 = B[0][2]
+        writer.writerow(row2)
+        f.close()
 
 

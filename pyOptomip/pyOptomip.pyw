@@ -22,21 +22,21 @@
 # THE SOFTWARE.
 
 import wx
-from instrumentFrame import instrumentFrame
+
 import traceback
 from CorvusEcoParameters import CorvusEcoParameters
 from MGMotorParameters import MGMotorParameters
 from hp816x_N77Det_instrParameters import hp816x_N77Det_instrParameters
 from hp816x_instrParameters import hp816x_instrParameters
 from QontrolMotorParameters import QontrolMotorParameters
-from dummyLaserParameters import dummyLaserParameters
+
 from SMUParameters import SMUParameters
 from outputlogPanel import outputlogPanel
 from logWriter import logWriter, logWriterError
 import sys
 import pyvisa as visa
 from instrumentFrame_withtabs import instrumentFrame_withtabs
-from N77Det_instrParameters import N77Det_instrParameters
+
 
 softwareVersion = "1.1"
 
@@ -86,8 +86,8 @@ class pyOptomip(wx.Frame):
         self.Show()
 
     def OnButton_Done(self, event):
-        self.createInstrumentFrame();
-        self.Destroy();
+        self.createInstrumentFrame()
+        self.Destroy()
 
     def createInstrumentFrame(self):
         try:
