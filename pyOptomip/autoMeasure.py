@@ -78,8 +78,8 @@ class autoMeasure(object):
     def findCoordinateTransform(self, motorCoords, gdsCoords):
         """ Finds the best fit affine transform which maps the GDS coordinates to motor coordinates."""
 
-        if len(motorCoords) != len(gdsCoords):
-            raise CoordinateTransformException('You must have the same number of motor coordinates and GDS coordinates')
+        #if len(motorCoords) != (len(gdsCoords)+1):
+            #raise CoordinateTransformException('You must have the same number of motor coordinates and GDS coordinates')
 
         if len(motorCoords) < 3:
             raise CoordinateTransformException('You must have at least 3 device coordinates.')
@@ -90,7 +90,7 @@ class autoMeasure(object):
         Xmotor = mat(zeros((numTriples+1, numTriples)))  # 4x3
 
         # zip: [0,Dev1MotorCoords,Dev1gds], [1,Dev2MotorCoords,Dev2gds], [2,Dev3MotorCoords,Dev3gds]
-        for i, motorCoord, gdsCoord in zip(range(numPairs), motorCoords, gdsCoords):
+        for i, motorCoord, gdsCoord in zip(range(numTriples), motorCoords, gdsCoords):
             Xgds[0, i] = gdsCoord[0]
             Xgds[1, i] = gdsCoord[1]
             Xgds[2, i] = 0
@@ -101,7 +101,7 @@ class autoMeasure(object):
             Xmotor[3, i] = 1
 
         # Do least squares fitting
-        M = linalg.lstsq(Xgds, Xmotor)
+        M = linalg.lstsq(Xgds, Xmotor, rcond=-1)
 
         self.transformMatrix = M
 
@@ -159,10 +159,10 @@ class autoMeasure(object):
             plt.savefig(pdfFileName)
             plt.close()
 
-            if abortFunction != None and abortFunction():
+            if abortFunction is not None and abortFunction():
                 print('Aborted')
                 return
-            if updateFunction != None:
+            if updateFunction is not None:
                 updateFunction(ii)
 
 
