@@ -42,6 +42,12 @@ from keithley2600 import ResultTable
 
 
 class SMUClass():
+    """ The overarching class containing all functions needed to control a connected SMU
+                        Arguments:
+
+                        Returns:
+
+                        """
 
     name = 'SMU'
     isSMU = True
@@ -55,6 +61,13 @@ class SMUClass():
         self.Bflag = False
 
     def connect(self, visaName, rm):
+        """ Connects to the SMU via pyvisa, resets outputs
+                    Arguments:
+                        visaName: the visa address of the selected SMU
+                        rm: an instance of pyvisa.resourcemanager used to connect to the device
+                    Returns:
+                        A print statement indicating that the SMU is connected
+                    """
         self.k = Keithley2600(visaName)
         #self.k.smua.source.output = self.k.smua.OUTPUT_ON  #turns on SMUA
         #self.setCurrent(0)
@@ -67,6 +80,7 @@ class SMUClass():
         #self.inst.write("read_error_queue()")
 
         self.inst.write("smua.reset()") #Reset channel A
+        self.inst.write("smub.reset()") #Reset channel B
         self.inst.write("dataqueue.clear()")
         self.inst.write("errorqueue.clear()")
 
@@ -77,10 +91,15 @@ class SMUClass():
 
 
     def disconnect(self):
-        #self.k.smua.source.output = self.k.smua.OUTPUT_OFF
-        #self.k.disconnect()
+        """ Turns off and disconnects the outputs of the SMU
+                    Arguments:
+                        N/A
+                    Returns:
+                        N/A
+                    """
 
-        self.inst.write("smua.source.output = smua.OUTPUT_OFF") #Turn off output
+        self.inst.write("smua.source.output = smua.OUTPUT_OFF") #Turn off output A
+        self.inst.write("smub.source.output = smub.OUTPUT_OFF") #Turn off output B
         #self.inst.write("disconnect()") #disconnect from smu
         print('SMU Disconnected')
 
@@ -116,24 +135,7 @@ class SMUClass():
             print('Set channel B voltage to ' + str(int(voltage)) + 'V')
 
 
-
-        #if outputA is False and outputB is False:
-         #   print("Please select an output channel")
-
-        #if outputA is True:
-         #   self.inst.write("smua.source.func = smua.OUTPUT_DCVOLTS")
-          #  setvoltstring = "smua.source.levelv = " + str(voltage)
-           # self.inst.write(setvoltstring)
-            #print('Set channel A voltage to ' + str(int(voltage)) + 'V')
-
-        #if outputB is True:
-         #   self.inst.write("smub.source.func = smub.OUTPUT_DCVOLTS")
-          #  setvoltstring = "smub.source.levelv = " + str(voltage)
-           # self.inst.write(setvoltstring)
-            #print('Set channel B voltage to ' + str(int(voltage)) + 'V')
-
-
-    def setCurrent(self, current, channel):#outputA, outputB):
+    def setCurrent(self, current, channel):
         """ Sets the source of the SMU to a specified current
                     Arguments:
                         current: a float representing the current to set the SMU to
@@ -165,7 +167,14 @@ class SMUClass():
             print('Set channel B current to ' + str(int(current * 1e6) / 1000) + 'mA')
 
 
-    def setcurrentlimit(self, currentlimit, channel):#outputA, outputB):
+    def setcurrentlimit(self, currentlimit, channel):
+        """ Sets the current limit of the smu
+                            Arguments:
+                                currentlimit: a float representing the current limit in mA
+                                channel: specifies which channel to set current in
+                            Returns:
+                                A print statement indicating that the current limit has been set
+                            """
 
         if channel == 'A':
             currentlimitstring = "smua.source.limiti = " + str(float(currentlimit / 1000))
@@ -187,7 +196,14 @@ class SMUClass():
             print("Set channel B current limit to " + str(currentlimit) + "mA")
 
 
-    def setvoltagelimit(self, voltagelimit, channel):# outputA, outputB):
+    def setvoltagelimit(self, voltagelimit, channel):
+        """ Sets the voltage limit of the smu
+                            Arguments:
+                                voltage limit : a float representing the voltage limit to set
+                                channel: specifies which channel to set voltage in
+                            Returns:
+                                A print statement indicating that the voltage has been set
+                            """
 
         if channel == 'A':
             voltagelimitstring = "smua.source.limitv = " + str(voltagelimit)
@@ -209,7 +225,14 @@ class SMUClass():
             print("Set channel B voltage limit to " + str(voltagelimit) + " V")
 
 
-    def setpowerlimit(self, powerlimit, channel):# outputA, outputB):
+    def setpowerlimit(self, powerlimit, channel):
+        """ Sets the power limit of the smu
+                            Arguments:
+                                power: a float representing the powerlimit to set the SMU to
+                                channel: specifies which channel to set current in
+                            Returns:
+                                A print statement indicating that the powerlimit has been set
+                            """
 
 
         if channel == 'A':
@@ -233,11 +256,23 @@ class SMUClass():
 
 
     def getvoltageA(self):
+        """ Queries the smu and returns the voltage measured at channel A
+                            Arguments:
+
+                            Returns:
+                                the voltage seen at channel A in volts
+                            """
         v = self.inst.query("print(smua.measure.v())")
         return v
 
 
     def getcurrentA(self):
+        """ Queries the smu and returns the current measured at channel A
+                            Arguments:
+
+                            Returns:
+                                the current seen at channel A in Amps
+                            """
         i = self.inst.query("print(smua.measure.i())")
         return i
 
@@ -407,7 +442,7 @@ class SMUClass():
         print('Sweep Completed!')
 
 
-    def turnchannelon(self, channel):#A, B):
+    def turnchannelon(self, channel):
 
         if channel == 'A':
             self.inst.write("smua.source.output = smua.OUTPUT_ON")
@@ -428,7 +463,7 @@ class SMUClass():
             print("Channel B ON")
 
 
-    def turnchanneloff(self, channel): #A, B):
+    def turnchanneloff(self, channel):
 
         if channel == 'A':
             self.inst.write("smua.source.output = smua.OUTPUT_OFF")
@@ -445,7 +480,7 @@ class SMUClass():
             print("Channel B OFF")
 
 
-    def setoutputflagon(self, channel):#A, B):
+    def setoutputflagon(self, channel):
 
         if channel == 'A':
             self.Aflag = True
@@ -460,7 +495,7 @@ class SMUClass():
             print("Channel B set for use with sweep")
 
 
-    def setoutputflagoff(self, channel):  # A, B):
+    def setoutputflagoff(self, channel):
 
         if channel == 'A':
             self.Aflag = False
