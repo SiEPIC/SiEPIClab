@@ -990,8 +990,8 @@ class SetPanel(wx.Panel):
 
         self.elecroutine = wx.TextCtrl(self, size= (40,20))
         self.elecroutine.name = 'elecroutine'
-        self.elecroutine.Bind(wx.EVT_TEXT, self.setnumroutine)
         self.elecroutine.SetValue('0')
+        self.elecroutine.Bind(wx.EVT_TEXT, self.setnumroutine)
 
         electricalroutine.AddMany([(st10_2, 1, wx.EXPAND), (self.elecroutine, 0)])
 
@@ -1002,13 +1002,10 @@ class SetPanel(wx.Panel):
 
         self.optroutine = wx.TextCtrl(self, size = (40,20))
         self.optroutine.name = 'optroutine'
-        self.optroutine.Bind(wx.EVT_TEXT, self.setnumroutine)
         self.optroutine.SetValue('0')
+        self.optroutine.Bind(wx.EVT_TEXT, self.setnumroutine)
 
         opticalroutine.AddMany([(st11_2, 1, wx.EXPAND), (self.optroutine, 0)])
-
-
-
 
         setvwsweeproutine = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -1016,8 +1013,8 @@ class SetPanel(wx.Panel):
 
         self.setvroutine = wx.TextCtrl(self, size = (40,20))
         self.setvroutine.name = 'setvroutine'
-        self.setvroutine.Bind(wx.EVT_TEXT, self.setnumroutine)
         self.setvroutine.SetValue('0')
+        self.setvroutine.Bind(wx.EVT_TEXT, self.setnumroutine)
 
         setvwsweeproutine.AddMany([(st12_2, 1, wx.EXPAND), (self.setvroutine, 0)])
 
@@ -1029,8 +1026,8 @@ class SetPanel(wx.Panel):
 
         self.setwroutine = wx.TextCtrl(self, size = (40,20))
         self.setwroutine.name = 'setwroutine'
-        self.setwroutine.Bind(wx.EVT_TEXT, self.setnumroutine)
         self.setwroutine.SetValue('0')
+        self.setwroutine.Bind(wx.EVT_TEXT, self.setnumroutine)
 
         setwvsweeproutine.AddMany([(st13_2, 1, wx.EXPAND), (self.setwroutine)])
 
@@ -1431,6 +1428,7 @@ class SetPanel(wx.Panel):
 
         self.routineselectsetv = wx.ComboBox(self, choices=options, style=wx.CB_READONLY, value='1')
         self.routineselectsetv.name = 'routineselectsetv'
+        self.routineselectsetv.SetItems(options)
         self.routineselectsetv.Bind(wx.EVT_COMBOBOX_DROPDOWN, self.routinepanel)
         self.routineselectsetv.Bind(wx.EVT_COMBOBOX, self.swaproutine)
 
@@ -1559,16 +1557,7 @@ class SetPanel(wx.Panel):
 
         opticvbox_2.AddMany([(ophbox_2_2, 0, wx.EXPAND), (ophbox_2, 0, wx.EXPAND), (opt_hbox9_2, 0, wx.EXPAND), (opt_hbox10_2, 0, wx.EXPAND)])
 
-
-
-
-
         routineselect.AddMany([(instructions, 0, wx.EXPAND), (electricalroutine, 0, wx.EXPAND), (opticalroutine, 0, wx.EXPAND), (setvwsweeproutine, 0, wx.EXPAND), (setwvsweeproutine, 0, wx.EXPAND)])
-
-
-
-
-
 
         tophbox.AddMany([(elecvbox, 0, wx.EXPAND), (opticvbox, 0, wx.EXPAND)])
         tophbox2.AddMany([(elecvbox2, 0, wx.EXPAND), (opticvbox_2, 1, wx.EXPAND)])
@@ -1579,8 +1568,6 @@ class SetPanel(wx.Panel):
         highestvbox.AddMany([(tophbox, 1, wx.EXPAND), (tophbox2, 1, wx.EXPAND)])
 
         highesthbox.AddMany([(routineselect, 0, wx.EXPAND), (highestvbox, 1, wx.EXPAND)])
-
-
 
         self.SetSizer(highesthbox)
         #self.SetSizer(tophbox)
