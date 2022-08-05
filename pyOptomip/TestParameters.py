@@ -80,7 +80,8 @@ class TopPanel(wx.Panel):
     def __init__(self, parent):
         super(TopPanel, self).__init__(parent)
         self.routineflag = ""
-        self.panel = SetPanel(self)#BlankPanel(self)
+        self.setpanel = SetPanel(self)#BlankPanel(self)
+        self.instructpanel = InstructPanel(self, self.setpanel)
         self.autoMeasure = autoMeasure()
         self.selected = []
         self.retrievedataselected = []
@@ -116,14 +117,17 @@ class TopPanel(wx.Panel):
 
         sbOuter = wx.StaticBox(self, label='Test Parameter Creation')
         vboxOuter = wx.StaticBoxSizer(sbOuter, wx.VERTICAL)
-        hbox = wx.BoxSizer(wx.HORIZONTAL)
 
+        #Coordinate file select
+        hbox = wx.BoxSizer(wx.HORIZONTAL)
         self.coordFileTb = wx.TextCtrl(self, style=wx.TE_READONLY)
         self.coordFileTb.SetValue('No file selected')
         self.coordFileSelectBtn = wx.Button(self, wx.ID_OPEN, size=(50, 20))
         self.coordFileSelectBtn.Bind(wx.EVT_BUTTON, self.OnButton_ChooseCoordFile)
         hbox.AddMany([(self.coordFileTb, 1, wx.EXPAND), (self.coordFileSelectBtn, 0, wx.EXPAND)])
 
+        #select all button, unselect all button, select keyword button, unselect keyword button, retreive data button
+        hbox2 = wx.BoxSizer(wx.HORIZONTAL)
         self.checkAllBtn = wx.Button(self, label='Select All', size=(80, 20))
         self.checkAllBtn.Bind(wx.EVT_BUTTON, self.OnButton_CheckAll)
         self.uncheckAllBtn = wx.Button(self, label='Unselect All', size=(80, 20))
@@ -135,89 +139,64 @@ class TopPanel(wx.Panel):
         self.searchBtn.Bind(wx.EVT_BUTTON, self.SearchDevices)
         self.unsearchBtn = wx.Button(self, label='Unselect keyword', size=(100, 20))
         self.unsearchBtn.Bind(wx.EVT_BUTTON, self.unSearchDevices)
-
         self.retrievedataBtn = wx.Button(self, label='Retrieve Data', size=(100, 20))
         self.retrievedataBtn.Bind(wx.EVT_BUTTON, self.retrievedata)
-
-
-        hbox2 = wx.BoxSizer(wx.HORIZONTAL)
         hbox2.AddMany([(self.checkAllBtn, 0, wx.EXPAND), (self.uncheckAllBtn, 0, wx.EXPAND), (self.searchFile, 0, wx.EXPAND), (self.searchBtn, 0, wx.EXPAND), (self.unsearchBtn, 0, wx.EXPAND), (self.retrievedataBtn, 0, wx.EXPAND)])
+
         ##
         self.checkList = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
         self.checkList.InsertColumn(0, 'Device', width=100)
         self.checkList.Bind(wx.EVT_LIST_ITEM_CHECKED, self.checkListchecked)
         self.checkList.Bind(wx.EVT_LIST_ITEM_UNCHECKED, self.checkListunchecked)
-        #self.checkListset = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
-        #self.checkListset.InsertColumn(0, 'Device', width=100)
-        #self.checkListset.Bind(wx.EVT_LIST_ITEM_CHECKED, self.checkListcheckedset)
-        #self.checkListset.Bind(wx.EVT_LIST_ITEM_UNCHECKED, self.checkListuncheckedset)
+
         hbox3 = wx.BoxSizer(wx.HORIZONTAL)
         vboxdevices = wx.BoxSizer(wx.VERTICAL)
-        vboxset = wx.BoxSizer(wx.VERTICAL)
 
-        vboxdevices.Add(self.checkList, proportion=1, flag=wx.EXPAND)
-        #vboxset.Add(self.checkListset, proportion=1, flag=wx.EXPAND)
+        vboxdevices.AddMany([(self.checkList, 1, wx.EXPAND), (self.instructpanel, 1, wx.EXPAND)])
+        #vboxdevices.Add(self.instructpanel, 1, wx.EXPAND)
 
-        hbox3.AddMany([(vboxdevices, 1, wx.EXPAND)])#,(vboxset, 1, wx.EXPAND)])
+        #hbox3.AddMany([(vboxdevices, 0, wx.EXPAND)])
 
 
-        ##
-        #self.autoMeasure = autoMeasure
-        #self.coordMapPanel = autoMeasure.coordinateMapPanel(self, self.autoMeasure, 3)
-        #hbox4 = wx.BoxSizer(wx.HORIZONTAL)
-        #hbox4.Add(self.coordMapPanel, proportion=1, flag=wx.EXPAND)
 
-        #hbox4 = wx.BoxSizer(wx.HORIZONTAL)
-        #t1 = wx.StaticText(self, label='Select Routine: ')
-        #selections = ['Electrical', 'Optical', 'Set Voltage, Wavelength sweep', 'Set Wavelength, Voltage sweep']
-
-        #self.routinesel = wx.ComboBox(self, choices=selections)
-        #self.routinesel.Bind(wx.EVT_COMBOBOX, self.routineSet)
-
-        #hbox4.AddMany([(st1, 0, wx.EXPAND), (self.routinesel, 0, wx.EXPAND)])
 
         hbox5 = wx.BoxSizer(wx.HORIZONTAL)
-        #self.panel = ElectricalPanel(self)
 
-        hbox5.Add(self.panel, 0, wx.EXPAND)
+        hbox5.Add(self.setpanel, 0, wx.EXPAND)
+
 
         hbox6 = wx.BoxSizer(wx.HORIZONTAL)
-
         st2 = wx.StaticText(self, label='Save folder:')
-        # Add Save folder Option
         self.outputFolderTb = wx.TextCtrl(self, style=wx.TE_READONLY)
         self.outputFolderBtn = wx.Button(self, wx.ID_OPEN, size=(50, 20))
         self.outputFolderBtn.Bind(wx.EVT_BUTTON, self.OnButton_SelectOutputFolder)
-
         hbox6.AddMany([(st2, 1, wx.EXPAND), (self.outputFolderTb, 1, wx.EXPAND), (self.outputFolderBtn, 0, wx.EXPAND)])
 
+        #Import file select
         hbox6_5 = wx.BoxSizer(wx.HORIZONTAL)
-
         st10 = wx.StaticText(self, label='Import file:')
-        # Add Save folder Option
         self.importFolderTb = wx.TextCtrl(self, style=wx.TE_READONLY)
         self.importFolderBtn = wx.Button(self, wx.ID_OPEN, size=(50, 20))
         self.importFolderBtn.Bind(wx.EVT_BUTTON, self.OnButton_SelectImportFolder)
-
         hbox6_5.AddMany([(st10, 1, wx.EXPAND), (self.importFolderTb, 1, wx.EXPAND), (self.importFolderBtn, 0, wx.EXPAND)])
 
-
-
+        #set button, import button and export button
         hbox7 = wx.BoxSizer(wx.HORIZONTAL)
-
         self.setBtn = wx.Button(self, label='Set', size=(50, 20))
         self.setBtn.Bind(wx.EVT_BUTTON, self.SetButton)
-
         self.importBtn = wx.Button(self, label='Import', size=(50, 20))
         self.importBtn.Bind(wx.EVT_BUTTON, self.ImportButton)
-
         self.exportBtn = wx.Button(self, label='Export', size=(50, 20))
         self.exportBtn.Bind(wx.EVT_BUTTON, self.ExportButton)
-
         hbox7.AddMany([(self.setBtn, 0, wx.EXPAND), (self.importBtn, 0, wx.EXPAND), (self.exportBtn, 0, wx.EXPAND)])
 
+        hboxouter = wx.BoxSizer(wx.HORIZONTAL)
 
-        vboxOuter.AddMany([(hbox, 0, wx.EXPAND), (hbox2, 0, wx.EXPAND), (hbox3, 0, wx.EXPAND), (hbox5, 0, wx.EXPAND),
+        hboxouter.AddMany([(vboxdevices, 1 , wx.EXPAND), (hbox5, 0, wx.EXPAND)])
+        #hboxouter.Add(hbox5, 0, wx.EXPAND)
+        #hboxouter.Add(vboxdevices, 0, wx.EXPAND)
+
+        vboxOuter.AddMany([(hbox, 0, wx.EXPAND), (hbox2, 0, wx.EXPAND), (hboxouter, 0, wx.EXPAND),
                            (hbox6, 0, wx.ALIGN_LEFT), (hbox6_5, 0, wx.ALIGN_LEFT), (hbox7, 0, wx.ALIGN_RIGHT)])
 
         self.SetSizer(vboxOuter)
@@ -916,6 +895,194 @@ class TopPanel(wx.Panel):
                  #   writer.writerow(row[c])
 
 
+class InstructPanel(wx.Panel):
+
+    def __init__(self, parent, setpanel):
+        super(InstructPanel, self).__init__(parent)
+        self.setpanel = setpanel
+        self.InitUI()
+
+    def InitUI(self):
+
+        # INSTRUCTIONS###################################################################################################
+
+        sbw = wx.StaticBox(self, label='Instructions')
+        instructions = wx.StaticBoxSizer(sbw, wx.VERTICAL)
+
+        # create sizers and text for instructions
+        steps = wx.BoxSizer(wx.VERTICAL)
+        step1 = wx.BoxSizer(wx.HORIZONTAL)
+        stp1 = wx.StaticText(self, label='1. Upload GDS file')
+        step1.Add(stp1, 1, wx.EXPAND)
+
+        step2 = wx.BoxSizer(wx.HORIZONTAL)
+        stp2 = wx.StaticText(self, label='2. Select devices you wish to create routines for')
+        step2.Add(stp2, 1, wx.EXPAND)
+
+        step3 = wx.BoxSizer(wx.HORIZONTAL)
+        stp3 = wx.StaticText(self, label='3. Select number of routines per type of routine')
+        step3.Add(stp3, 1, wx.EXPAND)
+
+        step4 = wx.BoxSizer(wx.HORIZONTAL)
+        stp4 = wx.StaticText(self, label='4. Fill in routine data')
+        step4.Add(stp4, 1, wx.EXPAND)
+
+        step5 = wx.BoxSizer(wx.HORIZONTAL)
+        stp5 = wx.StaticText(self, label='5. Click set button')
+        step5.Add(stp5, 1, wx.EXPAND)
+
+        step6 = wx.BoxSizer(wx.HORIZONTAL)
+        stp6 = wx.StaticText(self, label='6. Repeat from step 2')
+        step6.Add(stp6, 1, wx.EXPAND)
+
+        # format steps
+        steps.AddMany([(step1, 1, wx.EXPAND), (step2, 1, wx.EXPAND), (step3, 1, wx.EXPAND), (step4, 1, wx.EXPAND),
+                       (step5, 1, wx.EXPAND), (step6, 1, wx.EXPAND)])
+        instructions.Add(steps, 1, wx.EXPAND)
+
+        # NUMBER OF ROUTINES SELECTION###################################################################################
+
+        # create general sizer for routine selection
+        sb1_3 = wx.StaticBox(self, label='Routine Select')
+        routineselect = wx.StaticBoxSizer(sb1_3, wx.VERTICAL)
+
+        # Electrical, set number of routines selection
+        electricalroutine = wx.BoxSizer(wx.HORIZONTAL)
+        st10_2 = wx.StaticText(self, label='Electrical Routine')
+        self.elecroutine = wx.TextCtrl(self, size=(40, 20))
+        self.elecroutine.name = 'elecroutine'
+        self.elecroutine.SetValue('0')
+        self.elecroutine.Bind(wx.EVT_TEXT, self.setnumroutine)
+        electricalroutine.AddMany([(st10_2, 1, wx.EXPAND), (self.elecroutine, 0)])
+
+        # Optical, set number of routines selection
+        opticalroutine = wx.BoxSizer(wx.HORIZONTAL)
+        st11_2 = wx.StaticText(self, label='Optical Routine')
+        self.optroutine = wx.TextCtrl(self, size=(40, 20))
+        self.optroutine.name = 'optroutine'
+        self.optroutine.SetValue('0')
+        self.optroutine.Bind(wx.EVT_TEXT, self.setnumroutine)
+        opticalroutine.AddMany([(st11_2, 1, wx.EXPAND), (self.optroutine, 0)])
+
+        # Set voltage, wavelength sweep, set number of routines selection
+        setvwsweeproutine = wx.BoxSizer(wx.HORIZONTAL)
+        st12_2 = wx.StaticText(self, label='Set Voltage, Wavelength Sweep Routine')
+        self.setvroutine = wx.TextCtrl(self, size=(40, 20))
+        self.setvroutine.name = 'setvroutine'
+        self.setvroutine.SetValue('0')
+        self.setvroutine.Bind(wx.EVT_TEXT, self.setnumroutine)
+        setvwsweeproutine.AddMany([(st12_2, 1, wx.EXPAND), (self.setvroutine, 0)])
+
+        # Set wavelength, voltage sweep, set number of routines selection
+        setwvsweeproutine = wx.BoxSizer(wx.HORIZONTAL)
+        st13_2 = wx.StaticText(self, label='Set Wavelength, Voltage Sweep Routine')
+        self.setwroutine = wx.TextCtrl(self, size=(40, 20))
+        self.setwroutine.name = 'setwroutine'
+        self.setwroutine.SetValue('0')
+        self.setwroutine.Bind(wx.EVT_TEXT, self.setnumroutine)
+        setwvsweeproutine.AddMany([(st13_2, 1, wx.EXPAND), (self.setwroutine)])
+
+        # format routine selection sizers
+        routineselect.AddMany(
+            [(instructions, 0, wx.EXPAND), (electricalroutine, 0, wx.EXPAND), (opticalroutine, 0, wx.EXPAND),
+             (setvwsweeproutine, 0, wx.EXPAND), (setwvsweeproutine, 0, wx.EXPAND)])
+
+        self.SetSizer(routineselect)
+
+    def setnumroutine(self, event):
+        """ When the user hits the electrical panel save button this function saves the data in the panel to a list with a size equal to the number of routines
+                                                    Arguments:
+
+                                                    Returns:
+
+                                                    """
+        c = event.GetEventObject()
+
+        optionsblank = []
+        #if c == self.elecroutine:
+
+        if c.GetValue() != '':
+            options = []
+            for x in range(int(c.GetValue())):
+                x = x + 1
+                options.append(str(x))
+
+            print(c.name)
+            if c.name == 'elecroutine':
+                self.setpanel.routineselectelec.SetItems(options)
+                self.setpanel.elecvolt = [''] * int(c.GetValue())
+                self.setpanel.eleccurrent = [''] * int(c.GetValue())
+                self.setpanel.elecvmax = [''] * int(c.GetValue())
+                self.setpanel.elecvmin = ['']* int(c.GetValue())
+                self.setpanel.elecimin = [''] * int(c.GetValue())
+                self.setpanel.elecimax = [''] * int(c.GetValue())
+                self.setpanel.elecires = [''] * int(c.GetValue())
+                self.setpanel.elecvres = [''] * int(c.GetValue())
+                self.setpanel.eleciv = [''] * int(c.GetValue())
+                self.setpanel.elecrv = [''] * int(c.GetValue())
+                self.setpanel.elecpv = [''] * int(c.GetValue())
+                self.setpanel.elecchannelA = [''] * int(c.GetValue())
+                self.setpanel.elecchannelB = [''] * int(c.GetValue())
+                self.setpanel.elecflagholder = [''] * int(c.GetValue())
+
+            if c.name == 'optroutine':
+                self.setpanel.routineselectopt.SetItems(options)
+                self.setpanel.start = [''] * int(c.GetValue())
+                self.setpanel.stop = [''] * int(c.GetValue())
+                self.setpanel.step = [''] * int(c.GetValue())
+                self.setpanel.sweeppow = [''] * int(c.GetValue())
+                self.setpanel.sweepsped = [''] * int(c.GetValue())
+                self.setpanel.laserout = [''] * int(c.GetValue())
+                self.setpanel.numscans = [''] * int(c.GetValue())
+                self.setpanel.initialran = [''] * int(c.GetValue())
+                self.setpanel.rangedecre = [''] * int(c.GetValue())
+                self.setpanel.opticflagholder = [''] * int(c.GetValue())
+
+            if c.name == 'setwroutine':
+                self.setpanel.routineselectsetw.SetItems(options)
+                self.setpanel.setwvolt = [''] * int(c.GetValue())
+                self.setpanel.setwcurrent = [''] * int(c.GetValue())
+                self.setpanel.setwvmax = [''] * int(c.GetValue())
+                self.setpanel.setwvmin = [''] * int(c.GetValue())
+                self.setpanel.setwimin = [''] * int(c.GetValue())
+                self.setpanel.setwimax = [''] * int(c.GetValue())
+                self.setpanel.setwires = [''] * int(c.GetValue())
+                self.setpanel.setwvres = [''] * int(c.GetValue())
+                self.setpanel.setwiv = [''] * int(c.GetValue())
+                self.setpanel.setwrv = [''] * int(c.GetValue())
+                self.setpanel.setwpv = [''] * int(c.GetValue())
+                self.setpanel.setwchannelA = [''] * int(c.GetValue())
+                self.setpanel.setwchannelB = [''] * int(c.GetValue())
+                self.setpanel.setwwavelengths = [''] * int(c.GetValue())
+                self.setpanel.setwflagholder = [''] * int(c.GetValue())
+
+            if c.name == 'setvroutine':
+                self.setpanel.routineselectsetv.SetItems(options)
+                self.setpanel.setvstart = [''] * int(c.GetValue())
+                self.setpanel.setvstop = [''] * int(c.GetValue())
+                self.setpanel.setvstep = [''] * int(c.GetValue())
+                self.setpanel.setvsweeppow = [''] * int(c.GetValue())
+                self.setpanel.setvsweepsped = [''] * int(c.GetValue())
+                self.setpanel.setvlaserout = [''] * int(c.GetValue())
+                self.setpanel.setvnumscans = [''] * int(c.GetValue())
+                self.setpanel.setvinitialran = [''] * int(c.GetValue())
+                self.setpanel.setvrangedecre = [''] * int(c.GetValue())
+                self.setpanel.setvchannelA = [''] * int(c.GetValue())
+                self.setpanel.setvchannelB = [''] * int(c.GetValue())
+                self.setpanel.setvvoltages = [''] * int(c.GetValue())
+                self.setpanel.setvflagholder = [''] * int(c.GetValue())
+
+        if c.GetValue() == '':
+            if c.name == 'elecroutine':
+                self.setpanel.routineselectelec.SetItems(optionsblank)
+            if c.name == 'optroutine':
+                self.setpanel.routineselectopt.SetItems(optionsblank)
+            if c.name == 'setwroutine':
+                self.setpanel.routineselectsetw.SetItems(optionsblank)
+            if c.name == 'setvroutine':
+                self.setpanel.routineselectsetv.SetItems(optionsblank)
+
+
 
 class SetPanel(wx.Panel):
 
@@ -979,89 +1146,6 @@ class SetPanel(wx.Panel):
         self.InitUI()
 
     def InitUI(self):
-
-        #INSTRUCTIONS###################################################################################################
-
-        sbw = wx.StaticBox(self, label='Instructions')
-        instructions = wx.StaticBoxSizer(sbw, wx.VERTICAL)
-
-        #create sizers and text for instructions
-        steps = wx.BoxSizer(wx.VERTICAL)
-        step1 = wx.BoxSizer(wx.HORIZONTAL)
-        stp1 = wx.StaticText(self, label='1. Upload GDS file')
-        step1.Add(stp1, 1, wx.EXPAND)
-
-        step2 = wx.BoxSizer(wx.HORIZONTAL)
-        stp2 = wx.StaticText(self, label='2. Select devices you wish to create routines for')
-        step2.Add(stp2, 1, wx.EXPAND)
-
-        step3 = wx.BoxSizer(wx.HORIZONTAL)
-        stp3 = wx.StaticText(self, label='3. Select number of routines per type of routine')
-        step3.Add(stp3, 1, wx.EXPAND)
-
-        step4 = wx.BoxSizer(wx.HORIZONTAL)
-        stp4 = wx.StaticText(self, label='4. Fill in routine data')
-        step4.Add(stp4, 1, wx.EXPAND)
-
-        step5 = wx.BoxSizer(wx.HORIZONTAL)
-        stp5 = wx.StaticText(self, label='5. Click set button')
-        step5.Add(stp5, 1, wx.EXPAND)
-
-        step6 = wx.BoxSizer(wx.HORIZONTAL)
-        stp6 = wx.StaticText(self, label='6. Repeat from step 2')
-        step6.Add(stp6, 1, wx.EXPAND)
-
-        #format steps
-        steps.AddMany([(step1, 1, wx.EXPAND), (step2, 1, wx.EXPAND), (step3, 1, wx.EXPAND), (step4, 1, wx.EXPAND),
-                       (step5, 1, wx.EXPAND), (step6, 1, wx.EXPAND)])
-        instructions.Add(steps, 1, wx.EXPAND)
-
-        #NUMBER OF ROUTINES SELECTION###################################################################################
-
-        #create general sizer for routine selection
-        sb1_3 = wx.StaticBox(self, label='Routine Select')
-        routineselect = wx.StaticBoxSizer(sb1_3, wx.VERTICAL)
-
-        #Electrical, set number of routines selection
-        electricalroutine = wx.BoxSizer(wx.HORIZONTAL)
-        st10_2 = wx.StaticText(self, label='Electrical Routine')
-        self.elecroutine = wx.TextCtrl(self, size= (40,20))
-        self.elecroutine.name = 'elecroutine'
-        self.elecroutine.SetValue('0')
-        self.elecroutine.Bind(wx.EVT_TEXT, self.setnumroutine)
-        electricalroutine.AddMany([(st10_2, 1, wx.EXPAND), (self.elecroutine, 0)])
-
-        #Optical, set number of routines selection
-        opticalroutine = wx.BoxSizer(wx.HORIZONTAL)
-        st11_2 = wx.StaticText(self, label='Optical Routine')
-        self.optroutine = wx.TextCtrl(self, size = (40,20))
-        self.optroutine.name = 'optroutine'
-        self.optroutine.SetValue('0')
-        self.optroutine.Bind(wx.EVT_TEXT, self.setnumroutine)
-        opticalroutine.AddMany([(st11_2, 1, wx.EXPAND), (self.optroutine, 0)])
-
-        # Set voltage, wavelength sweep, set number of routines selection
-        setvwsweeproutine = wx.BoxSizer(wx.HORIZONTAL)
-        st12_2 = wx.StaticText(self, label='Set Voltage, Wavelength Sweep Routine')
-        self.setvroutine = wx.TextCtrl(self, size = (40,20))
-        self.setvroutine.name = 'setvroutine'
-        self.setvroutine.SetValue('0')
-        self.setvroutine.Bind(wx.EVT_TEXT, self.setnumroutine)
-        setvwsweeproutine.AddMany([(st12_2, 1, wx.EXPAND), (self.setvroutine, 0)])
-
-        #Set wavelength, voltage sweep, set number of routines selection
-        setwvsweeproutine = wx.BoxSizer(wx.HORIZONTAL)
-        st13_2 = wx.StaticText(self, label='Set Wavelength, Voltage Sweep Routine')
-        self.setwroutine = wx.TextCtrl(self, size = (40,20))
-        self.setwroutine.name = 'setwroutine'
-        self.setwroutine.SetValue('0')
-        self.setwroutine.Bind(wx.EVT_TEXT, self.setnumroutine)
-        setwvsweeproutine.AddMany([(st13_2, 1, wx.EXPAND), (self.setwroutine)])
-
-        #format routine selection sizers
-        routineselect.AddMany(
-            [(instructions, 0, wx.EXPAND), (electricalroutine, 0, wx.EXPAND), (opticalroutine, 0, wx.EXPAND),
-             (setvwsweeproutine, 0, wx.EXPAND), (setwvsweeproutine, 0, wx.EXPAND)])
 
         ##CREATE ELECTRICAL PANEL#######################################################################################
 
@@ -1480,13 +1564,13 @@ class SetPanel(wx.Panel):
         opticvbox_2.AddMany([(ophbox_2_2, 0, wx.EXPAND), (ophbox_2, 0, wx.EXPAND), (opt_hbox9_2, 0, wx.EXPAND), (opt_hbox10_2, 0, wx.EXPAND)])
 
         #format all sizers
-        tophbox.AddMany([(elecvbox, 0, wx.EXPAND), (opticvbox, 0, wx.EXPAND)])
+        tophbox.AddMany([(elecvbox, 0, wx.EXPAND), (opticvbox, 1, wx.EXPAND)])
         tophbox2.AddMany([(elecvbox2, 0, wx.EXPAND), (opticvbox_2, 1, wx.EXPAND)])
         highestvbox = wx.BoxSizer(wx.VERTICAL)
-        highesthbox = wx.BoxSizer(wx.HORIZONTAL)
+        #highesthbox = wx.BoxSizer(wx.HORIZONTAL)
         highestvbox.AddMany([(tophbox, 1, wx.EXPAND), (tophbox2, 1, wx.EXPAND)])
-        highesthbox.AddMany([(routineselect, 0, wx.EXPAND), (highestvbox, 1, wx.EXPAND)])
-        self.SetSizer(highesthbox)
+        #highesthbox.AddMany([(routineselect, 0, wx.EXPAND), (highestvbox, 1, wx.EXPAND)])
+        self.SetSizer(highestvbox)
 
 
     def cleartext(self, event):
@@ -1500,7 +1584,7 @@ class SetPanel(wx.Panel):
 
 
     def setnumroutine(self, event):
-        """ When the user hits the electrcial panel save button this function saves the data in the panel to a list with a size equal to the number of routines
+        """ When the user hits the electrical panel save button this function saves the data in the panel to a list with a size equal to the number of routines
                                                     Arguments:
 
                                                     Returns:
