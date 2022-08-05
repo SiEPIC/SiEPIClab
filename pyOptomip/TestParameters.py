@@ -331,7 +331,6 @@ class TopPanel(wx.Panel):
         if self.retrievedataflag == False:
             print("Entering routine extraction mode")
             self.retrievedataflag = True
-            OnButton_UncheckAll(wx.EVT_BUTTON)
             return
 
         #self.retrievedataselected
