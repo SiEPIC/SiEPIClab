@@ -1,6 +1,6 @@
-1. install Anaconda3 2021.11 32-bit, ensure python version is 3.9.7, wxpython does not work on anything above 3.10
+1. install Anaconda3-2022.05-Windows-x86_64.exe, ensure python version is 3.9.7 by using a virtual environment, wxpython does not work on anything above 3.10
 2. install NI max, including all suggested driver downloads on initial install,and NIvisa and NI 488.2 downloaded from NI package manager
-3. install keysight 816x Instrument driver version 4.5.0, use the following link https://www.keysight.com/ca/en/lib/software-detail/driver/816x-vxi-plugplay-driver-112417.html
+3. install keysight 816x Instrument driver version 4.6.3 (has support for 64-bit), use the following link https://www.keysight.com/ca/en/lib/software-detail/driver/816x-vxi-plugplay-driver-112417.html
 
 4.in command prompt run 
 	python -m pip install -U wxPython
@@ -42,6 +42,13 @@ Open D:\Anaconda3\Library\site-packages\comptypes\automation.py
 	to 
 	deviceIdnStr = self.gpibQueryString('*IDN?'.encode('utf-8'))
         deviceIdnStr = deviceIdnStr.strip().decode('utf-8').split(',')
+
+7. Ensure the following changes have been made in the file hp816x_instr.py
+	
+	edit line 76 to read:
+		def __init__(self, libLocation='hp816x_64.dll'):
+	edit line 81 to read:
+		self.hLib = WinDLL('hp816x_64.dll');
 	
 Continue adding changes and instructions here when they are done
 	
