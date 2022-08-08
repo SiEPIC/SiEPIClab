@@ -270,8 +270,8 @@ class AutoMeasureTab(wx.Panel):
                                     'Error', wx.ICON_ERROR)
             dial.ShowModal()
 
-        self.autoMeasureE = autoMeasure(self.getLasers(), self.getMotors(), self.fineAlign)
-        self.autoMeasureO = autoMeasure(self.getLasers(), self.getMotors(), self.fineAlign)
+        self.autoMeasureE = autoMeasure(self.getLasers(), self.getMotors(), self.getSMUs(), self.fineAlign)
+        self.autoMeasureO = autoMeasure(self.getLasers(), self.getMotors(), self.getSMUs(), self.fineAlign)
         self.autoMeasurePanel = autoMeasurePanel(self, self.autoMeasureE, self.autoMeasureO)
 
         vbox.Add(self.autoMeasurePanel, proportion=0, flag=wx.EXPAND)
@@ -309,6 +309,13 @@ class AutoMeasureTab(wx.Panel):
             if inst.isMotor:
                 motorList.append(inst)
         return motorList
+
+    def getSMUs(self):
+        SMUList = []
+        for inst in self.instList:
+            if inst.isSMU:
+                SMUList.append(inst)
+        return SMUList
 
     def OnExitApp(self, event):
         for inst in self.instList:

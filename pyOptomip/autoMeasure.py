@@ -29,7 +29,7 @@ import time
 import matplotlib.pyplot as plt
 from collections import OrderedDict
 from ElectroOpticDevice import ElectroOpticDevice
-from pyOptomip.measurementRoutines import measurementRoutines
+from measurementRoutines import measurementRoutines
 
 
 class autoMeasure(object):
@@ -133,7 +133,7 @@ class autoMeasure(object):
                     gdsCoordElec = (device.getElectricalCoordinates[0], device.getElectricalicalCoordinates[1])
                     motorCoordElec = self.gdsToMotorCoords(gdsCoordElec)
 
-                    # TODO: Make wedge probe move out of way first
+                    #TODO: Make wedge probe move out of way first then compensate for how chip stage has moved
                     self.motor.moveAbsoluteXYZElec(motorCoordElec[0], motorCoordElec[1], motorCoordElec[2])
                     self.motor.moveAbsoluteXYZOpt(motorCoordOpt[0], motorCoordOpt[1], motorCoordOpt[2])
                     self.motor.moveAbsoluteXYZElec(motorCoordElec[0], motorCoordElec[1], motorCoordElec[2])

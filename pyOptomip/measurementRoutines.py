@@ -2,7 +2,7 @@ import math
 from ctypes import *
 from itertools import repeat
 import numpy as np
-from wx import wx
+import wx
 
 
 class measurementRoutines:
