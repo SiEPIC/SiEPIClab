@@ -133,10 +133,15 @@ class autoMeasure(object):
                     gdsCoordElec = (device.getElectricalCoordinates[0], device.getElectricalicalCoordinates[1])
                     motorCoordElec = self.gdsToMotorCoords(gdsCoordElec)
 
-                    #TODO: Make wedge probe move out of way first then compensate for how chip stage has moved
-                    self.motor.moveAbsoluteXYZElec(motorCoordElec[0], motorCoordElec[1], motorCoordElec[2])
+                    #move wedge probe out of the way
+                    self.motor.moveRelativeXYZElec(motorCoordElec[0], -2000, 2000)
+                    #move chip stage
+                    x = motorCoordOpt[0] - self.motor.getPosition[0]
+                    y = motorCoordOpt[1] - self.motor.getPosition[1]
+                    z = motorCoordOpt[2] - self.motor.getPosition[2]
                     self.motor.moveAbsoluteXYZOpt(motorCoordOpt[0], motorCoordOpt[1], motorCoordOpt[2])
-                    self.motor.moveAbsoluteXYZElec(motorCoordElec[0], motorCoordElec[1], motorCoordElec[2])
+                    #Move wedge probe and compensate for movement of chip stage
+                    self.motor.moveAbsoluteXYZElec(motorCoordElec[0]+x, motorCoordElec[1]+y, motorCoordElec[2]+z)
 
                     self.fineAlign.doFineAlign()
 
