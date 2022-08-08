@@ -2,15 +2,17 @@ import math
 from ctypes import *
 from itertools import repeat
 import numpy as np
+from wx import wx
 
 
 class measurementRoutines:
 
-    def __init__(self, flag, deviceInfo, smu, laser):
+    def __init__(self, flag, deviceInfo, i, smu, laser):
         """A class containing different types of measurement routines including iv sweeps, optical spectrum sweeps
         iv sweeps at fixed wavelengths and optical sweeps with bias voltages."""
 
         self.deviceDict = deviceInfo
+        self.i = i
         self.SMU = smu
         self.laser = laser
 
@@ -24,8 +26,12 @@ class measurementRoutines:
             self.opticalSweepWithBiasVoltages()
 
     def ivSweep(self):
-        # min,max,res,independentVar
-        self.SMU.ivsweep(self.deviceDict[0], self.deviceDict[0], self.deviceDict[0], self.deviceDict[0])
+        if self.deviceDict['Voltsel'][self.i]:
+            self.SMU.ivsweep(self.deviceDict['VoltMin'][self.i], self.deviceDict['VoltMax'][self.i],
+                             self.deviceDict['VoltRes'][self.i], 'Voltage')
+        if self.deviceDict['Currentsel'][self.i]:
+            self.SMU.ivsweep(self.deviceDict['CurrentMin'][self.i], self.deviceDict['CurrentMax'][self.i],
+                             self.deviceDict['CurrentRes'][self.i], 'Current')
 
     def opticalSweep(self):
 
@@ -36,8 +42,7 @@ class measurementRoutines:
         numChan = len(self.laser.pwmSlotIndex)
         numActiveChan = len(self.laser.activeSlotIndex)  # Number of active channels
 
-        # TODO: Fill these in from csv
-        numTotalPoints = int(round((self.sweepStopWvl - self.sweepStartWvl) / self.sweepStepWvl + 1))
+        numTotalPoints = int(round((self.deviceDict['Stop'][self.i] - self.deviceDict['Start'][self.i]) / self.deviceDict['Stepsize'][self.i] + 1))
 
         # The laser reserves 100 pm of spectrum which takes away from the maximum number of data points per scan
         # Also, we will reserve another 100 data points as an extra buffer.
@@ -65,14 +70,12 @@ class measurementRoutines:
         # Create a list of the start and stop wavelengths per stitch
         pointsAccum = 0
         for points in numPointsLst:
-            # TODO: change these to use values from csv
-            startWvlLst.append(self.sweepStartWvl + pointsAccum * self.sweepStepWvl)
-            stopWvlLst.append(self.sweepStartWvl + (pointsAccum + points - 1) * self.sweepStepWvl)
+            startWvlLst.append(self.deviceDict['Start'][self.i]+ pointsAccum * self.deviceDict['Stepsize'][self.i])
+            stopWvlLst.append(self.deviceDict['Start'][self.i]+ (pointsAccum + points - 1) * self.deviceDict['Stepsize'][self.i])
             pointsAccum += points
 
         # Set sweep speed
-        # TODO: Use value from csv
-        self.laser.setSweepSpeed(self.sweepSpeed)
+        self.laser.setSweepSpeed(self.deviceDict['Sweepspeed'][self.i])
 
         wavelengthArrPWM = np.zeros(int(numTotalPoints))
         powerArrPWM = np.zeros((int(numTotalPoints), numActiveChan))
@@ -98,18 +101,17 @@ class measurementRoutines:
 
             c_numPts = c_uint32()
             c_numChanRet = c_uint32()
-            # TODO: Update values from csv
-            res = self.laser.hp816x_prepareMfLambdaScan(self.laser.hDriver, unitNum, self.sweepPower, outputNum,
+
+            res = self.laser.hp816x_prepareMfLambdaScan(self.laser.hDriver, unitNum, self.deviceDict['Sweeppower'][self.i], outputNum,
                                                         numScans, numChan, startWvlAdjusted, stopWvlAdjusted,
-                                                        self.sweepStepWvl, byref(c_numPts), byref(c_numChanRet))
+                                                        self.deviceDict['Stepsize'][self.i], byref(c_numPts), byref(c_numChanRet))
 
             self.laser.checkError(res)
             numPts = int(c_numPts.value)
 
             # Set range params
             for ii in self.laser.activeSlotIndex:
-                # TODO: update values from csv
-                self.laser.setRangeParams(ii, self.sweepInitialRange, self.sweepRangeDecrement)
+                self.laser.setRangeParams(ii, self.deviceDict['InitialRange'][self.i], self.deviceDict['RangeDec'][self.i])
 
             # This value is unused since getLambdaScanResult returns the wavelength anyways
             c_wavelengthArr = (c_double * int(numPts))()
@@ -137,14 +139,26 @@ class measurementRoutines:
             wavelengthArrPWM[pointsAccum:pointsAccum + points] = wavelengthArrTemp
             pointsAccum += points
 
+        # Update the graph on the main window
+        wx.CallAfter(self.laser.ctrlPanel.laserPanel.laserPanel.drawGraph, self.deviceDict['Wavelengths'][self.i] * 1e9,
+                     self.deviceDict['Sweeppower'][self.i])
+
         return wavelengthArrPWM, powerArrPWM
 
     def fixedWavelengthIVSweep(self):
-        #TODO: Ensure first parameter is wavelength
-        self.laser.setTLSWavelength(self.deviceDict[40], slot=self.laser.panel.getSelectedLaserSlot())
-        self.ivSweep()
+        self.laser.setTLSWavelength(self.deviceDict['Wavelengths'][self.i], slot=self.laser.panel.getSelectedLaserSlot())
+        if self.deviceDict['setwVoltsel'][self.i]:
+            self.SMU.ivsweep(self.deviceDict['SetwVoltMin'][self.i], self.deviceDict['SetwVoltMax'][self.i],
+                             self.deviceDict['SetwVoltRes'][self.i], 'Voltage')
+        if self.deviceDict['setwCurrentsel'][self.i]:
+            self.SMU.ivsweep(self.deviceDict['SetwCurrentMin'][self.i], self.deviceDict['SetwCurrentMax'][self.i],
+                             self.deviceDict['SetwCurrentRes'][self.i], 'Current')
 
     def opticalSweepWithBiasVoltages(self):
-        #TODO: First param is voltage, second is channel
-        self.SMU.setVoltage(self.deviceDict[0], self.deviceDict[0])
-        self.opticalSweep()
+        voltages = self.deviceDict['Voltages'][self.i]
+        for voltage in voltages:
+            if self.deviceDict['setvChannelA'][self.i]:
+                self.SMU.setVoltage(voltage, 'A')
+            if self.deviceDict['setvChannelB'][self.i]:
+                self.SMU.setVoltage(voltage, 'B')
+            self.opticalSweep()

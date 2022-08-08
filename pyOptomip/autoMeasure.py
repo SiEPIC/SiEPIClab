@@ -29,13 +29,15 @@ import time
 import matplotlib.pyplot as plt
 from collections import OrderedDict
 from ElectroOpticDevice import ElectroOpticDevice
+from pyOptomip.measurementRoutines import measurementRoutines
 
 
 class autoMeasure(object):
 
-    def __init__(self, laser, motor, fineAlign):
+    def __init__(self, laser, motor, smu, fineAlign):
         self.laser = laser
         self.motor = motor
+        self.smu = smu
         self.fineAlign = fineAlign
         self.saveFolder = os.getcwd()
 
@@ -78,16 +80,16 @@ class autoMeasure(object):
     def findCoordinateTransform(self, motorCoords, gdsCoords):
         """ Finds the best fit affine transform which maps the GDS coordinates to motor coordinates."""
 
-        #if len(motorCoords) != (len(gdsCoords)+1):
-            #raise CoordinateTransformException('You must have the same number of motor coordinates and GDS coordinates')
+        # if len(motorCoords) != (len(gdsCoords)+1):
+        # raise CoordinateTransformException('You must have the same number of motor coordinates and GDS coordinates')
 
         if len(motorCoords) < 3:
             raise CoordinateTransformException('You must have at least 3 device coordinates.')
 
         numTriples = len(motorCoords)
 
-        Xgds = mat(zeros((numTriples+1, numTriples)))  # 4x3
-        Xmotor = mat(zeros((numTriples+1, numTriples)))  # 4x3
+        Xgds = mat(zeros((numTriples + 1, numTriples)))  # 4x3
+        Xmotor = mat(zeros((numTriples + 1, numTriples)))  # 4x3
 
         # zip: [0,Dev1MotorCoords,Dev1gds], [1,Dev2MotorCoords,Dev2gds], [2,Dev3MotorCoords,Dev3gds]
         for i, motorCoord, gdsCoord in zip(range(numTriples), motorCoords, gdsCoords):
@@ -114,57 +116,75 @@ class autoMeasure(object):
         motorCoords = (float(motorCoordVec[0]), float(motorCoordVec[1]), float(motorCoordVec[2]))
         return motorCoords
 
-    #TODO: Update for current data storage methods
-    def beginMeasure(self, devices, abortFunction=None, updateFunction=None, updateGraph=True):
-        """ Runs an automated measurement. For each device, it moves to the interpolated motor coordinates and does a sweep.
+    def beginMeasure(self, devices, testingParameters, abortFunction=None, updateFunction=None, updateGraph=True):
+        """ Runs an automated measurement. For each device, wedge probe is moved out of the way, chip stage is moved
+        so laser in aligned, wedge probe is moved to position. Various tests are performed depending on the contents
+        of the testing parameters file.
+
         The sweep results, and metadata associated with the sweep are stored in a data file which is saved to the folder specified
         in self.saveFolder. An optional abort function can be specified which is called to determine if the measurement process should
         be stopped. Also, an update function is called which can be used to update UI elements about the measurement progress."""
-        for ii, d in enumerate(devices):
-            gdsCoord = (self.deviceCoordDict[d]['x'], self.deviceCoordDict[d]['y'])
-            motorCoord = self.gdsToMotorCoords(gdsCoord)
-            self.motor.moveAbsoluteXYZ(motorCoord[0], motorCoord[1], motorCoord[2])
-            self.fineAlign.doFineAlign()
-            sweepWavelength, sweepPower = self.laser.sweep()
-            if updateGraph:
-                # Update the graph on the main window
-                wx.CallAfter(self.laser.ctrlPanel.laserPanel.laserPanel.drawGraph, sweepWavelength * 1e9, sweepPower)
-            print('GDS: (%g,%g) Motor: (%g,%g,%g)' % (gdsCoord[0], gdsCoord[1], gdsCoord[2], motorCoord[0], motorCoord[1]))
-            matFileName = os.path.join(self.saveFolder, d + '.mat')
 
-            # Save sweep data and metadata to the mat file
-            matDict = dict()
-            matDict['scandata'] = dict()
-            matDict['metadata'] = dict()
-            matDict['scandata']['wavelength'] = sweepWavelength
-            matDict['scandata']['power'] = sweepPower
-            matDict['metadata']['device'] = d
-            matDict['metadata']['gds_x_coord'] = self.deviceCoordDict[d]['x']
-            matDict['metadata']['gds_y_coord'] = self.deviceCoordDict[d]['y']
-            matDict['metadata']['motor_x_coord'] = motorCoord[0]
-            matDict['metadata']['motor_y_coord'] = motorCoord[1]
-            matDict['metadata']['motor_z_coord'] = motorCoord[2]
-            matDict['metadata']['measured_device_number'] = ii
-            matDict['metadata']['coord_file_line'] = self.deviceCoordDict[d]['line']
-            timeSeconds = time.time()
-            matDict['metadata']['time_seconds'] = timeSeconds
-            matDict['metadata']['time_str'] = time.ctime(timeSeconds)
+        for i, d in enumerate(testingParameters['device']):
+            for device in devices:
+                if device.getDeviceID == d:
+                    gdsCoordOpt = (device.getOpticalCoordinates[0], device.getOpticalCoordinates[1])
+                    motorCoordOpt = self.gdsToMotorCoords(gdsCoordOpt)
+                    gdsCoordElec = (device.getElectricalCoordinates[0], device.getElectricalicalCoordinates[1])
+                    motorCoordElec = self.gdsToMotorCoords(gdsCoordElec)
 
-            savemat(matFileName, matDict)
+                    # TODO: Make wedge probe move out of way first
+                    self.motor.moveAbsoluteXYZElec(motorCoordElec[0], motorCoordElec[1], motorCoordElec[2])
+                    self.motor.moveAbsoluteXYZOpt(motorCoordOpt[0], motorCoordOpt[1], motorCoordOpt[2])
+                    self.motor.moveAbsoluteXYZElec(motorCoordElec[0], motorCoordElec[1], motorCoordElec[2])
 
-            pdfFileName = os.path.join(self.saveFolder, d + '.pdf')
-            plt.figure()
-            plt.plot(sweepWavelength * 1e9, sweepPower)
-            plt.xlabel('Wavelength (nm)')
-            plt.ylabel('Power (dBm)')
-            plt.savefig(pdfFileName)
-            plt.close()
+                    self.fineAlign.doFineAlign()
+
+                    if testingParameters['ELECflag'][i] is True:
+                        measurementRoutines('ELEC', testingParameters, i, self.smu, self.laser)
+                    if testingParameters['OPTICflag'][i] is True:
+                        measurementRoutines('OPT', testingParameters, i, self.smu, self.laser)
+                    if testingParameters['setwflag'] is True:
+                        measurementRoutines('FIXWAVIV', testingParameters, i, self.smu, self.laser)
+                    if testingParameters['setvflag'] is True:
+                        measurementRoutines('BIASVOPT', testingParameters, i, self.smu, self.laser)
+
+                    print('GDS: (%g,%g) Motor: (%g,%g,%g)' % (gdsCoordOpt[0], gdsCoordOpt[1], gdsCoordOpt[2],
+                                                              motorCoordOpt[0], motorCoordOpt[1]))
+                    matFileName = os.path.join(self.saveFolder, d + '.mat')
+
+                    # Save sweep data and metadata to the mat file
+                    matDict = dict()
+                    matDict['scandata'] = dict()
+                    matDict['metadata'] = dict()
+                    matDict['scandata']['wavelength'] = testingParameters['Wavelengths'][i]
+                    matDict['scandata']['power'] = testingParameters['Sweeppower'][i]
+                    matDict['metadata']['device'] = d
+                    matDict['metadata']['gds_x_coord'] = device.getOpticalCoordinates[0]
+                    matDict['metadata']['gds_y_coord'] = device.getOpticalCoordinates[1]
+                    matDict['metadata']['motor_x_coord'] = motorCoordOpt[0]
+                    matDict['metadata']['motor_y_coord'] = motorCoordOpt[1]
+                    matDict['metadata']['motor_z_coord'] = motorCoordOpt[2]
+                    matDict['metadata']['measured_device_number'] = i
+                    timeSeconds = time.time()
+                    matDict['metadata']['time_seconds'] = timeSeconds
+                    matDict['metadata']['time_str'] = time.ctime(timeSeconds)
+
+                    savemat(matFileName, matDict)
+
+                    pdfFileName = os.path.join(self.saveFolder, d + '.pdf')
+                    plt.figure()
+                    plt.plot(testingParameters['Wavelengths'][i] * 1e9, testingParameters['Sweeppower'][i])
+                    plt.xlabel('Wavelength (nm)')
+                    plt.ylabel('Power (dBm)')
+                    plt.savefig(pdfFileName)
+                    plt.close()
 
             if abortFunction is not None and abortFunction():
                 print('Aborted')
                 return
             if updateFunction is not None:
-                updateFunction(ii)
+                updateFunction(i)
 
 
 class CoordinateTransformException(Exception):
