@@ -91,45 +91,45 @@ class filterFrame(wx.Frame):
         if self.TE is True:
             for ii in range(self.checkList.GetItemCount()):
                 if self.device_list[self.checkList.GetItemData(ii)].polarization == 'TE':
-                    print('TE')
+
                     self.checkList.CheckItem(ii, True)
         else:
             for i in range(self.checkList.GetItemCount()):
                 if self.device_list[self.checkList.GetItemData(i)].polarization == 'TE':
-                    print('not TE')
+
                     self.checkList.CheckItem(i, False)
 
         if self.TM is True:
             for i in range(self.checkList.GetItemCount()):
                 if self.device_list[self.checkList.GetItemData(i)].polarization == 'TM':
-                    print('TM')
+
                     self.checkList.CheckItem(i, True)
         else:
             for i in range(self.checkList.GetItemCount()):
                 if self.device_list[self.checkList.GetItemData(i)].polarization == 'TM':
-                    print('not TM')
+
                     self.checkList.CheckItem(i, False)
 
         if self.thirteen is True:
             for i in range(self.checkList.GetItemCount()):
                 if self.device_list[self.checkList.GetItemData(i)].polarization == 1310:
-                    print(1310)
+
                     self.checkList.CheckItem(i, True)
         else:
             for i in range(self.checkList.GetItemCount()):
                 if self.device_list[self.checkList.GetItemData(i)].polarization == 1310:
-                    print('not 1310')
+
                     self.checkList.CheckItem(i, False)
 
         if self.fifteen is True:
             for i in range(self.checkList.GetItemCount()):
                 if self.device_list[self.checkList.GetItemData(i)].polarization == 1550:
-                    print('1550')
+
                     self.checkList.CheckItem(i, True)
         else:
             for i in range(self.checkList.GetItemCount()):
                 if self.device_list[self.checkList.GetItemData(i)].polarization == 1550:
-                    print('not 1550')
+
                     self.checkList.CheckItem(i, False)
 
         self.keywords.discard('')
@@ -144,7 +144,7 @@ class filterFrame(wx.Frame):
         for deselect in self.deselect:
             for i in range(self.checkList.GetItemCount()):
                 if str(deselect) in str(self.device_list[self.checkList.GetItemData(i)].device_id):
-                    print('uncheck words')
+
                     self.checkList.CheckItem(i, False)
 
         self.Destroy()

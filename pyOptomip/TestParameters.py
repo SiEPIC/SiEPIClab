@@ -100,17 +100,7 @@ class TopPanel(wx.Panel):
                      'setvStepsize': [], 'setvSweeppower': [], 'setvSweepspeed': [], 'setvLaseroutput': [],
                      'setvNumscans': [], 'setvInitialRange': [], 'setvRangeDec': [], 'setvChannelA': [],
                      'setvChannelB': [], 'Voltages': [], 'RoutineNumber': []}
-        self.dataimport = {'index': [], 'device': [], 'ELECflag': [], 'OPTICflag': [], 'setwflag': [], 'setvflag': [], 'Voltsel': [],
-                     'Currentsel': [], 'VoltMin': [], 'VoltMax': [], 'CurrentMin': [], 'CurrentMax': [],
-                     'VoltRes': [], 'CurrentRes': [], 'IV': [], 'RV': [], 'PV': [], 'ChannelA': [], 'ChannelB': [],
-                     'Start': [], 'Stop': [], 'Stepsize': [], 'Sweeppower': [], 'Sweepspeed': [], 'Laseroutput': [],
-                     'Numscans': [], 'InitialRange': [], 'RangeDec': [] ,'setwVoltsel': [],'setwCurrentsel': [],
-                     'setwVoltMin': [], 'setwVoltMax': [], 'setwCurrentMin': [], 'setwCurrentMax': [],
-                     'setwVoltRes': [], 'setwCurrentRes': [], 'setwIV': [], 'setwRV': [], 'setwPV': [],
-                     'setwChannelA': [], 'setwChannelB': [], 'Wavelengths': [], 'setvStart': [], 'setvStop': [],
-                     'setvStepsize': [], 'setvSweeppower': [], 'setvSweepspeed': [], 'setvLaseroutput': [],
-                     'setvNumscans': [], 'setvInitialRange': [], 'setvRangeDec': [], 'setvChannelA': [],
-                     'setvChannelB': [], 'Voltages': [], 'RoutineNumber': []}
+
         self.InitUI()
 
     def InitUI(self):
@@ -184,11 +174,10 @@ class TopPanel(wx.Panel):
         hbox7 = wx.BoxSizer(wx.HORIZONTAL)
         self.setBtn = wx.Button(self, label='Set', size=(50, 20))
         self.setBtn.Bind(wx.EVT_BUTTON, self.SetButton)
-        self.importBtn = wx.Button(self, label='Import', size=(50, 20))
-        self.importBtn.Bind(wx.EVT_BUTTON, self.ImportButton)
+
         self.exportBtn = wx.Button(self, label='Export', size=(50, 20))
         self.exportBtn.Bind(wx.EVT_BUTTON, self.ExportButton)
-        hbox7.AddMany([(self.setBtn, 0, wx.EXPAND), (self.importBtn, 0, wx.EXPAND), (self.exportBtn, 0, wx.EXPAND)])
+        hbox7.AddMany([(self.setBtn, 0, wx.EXPAND), (self.exportBtn, 0, wx.EXPAND)])
 
         hboxouter = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -754,95 +743,6 @@ class TopPanel(wx.Panel):
             #device = self.checkList.GetItem(index, 0)
             #self.data['device'] = device.device_id
             #print(self.data['device'])
-
-
-    def ImportButton(self, event):
-
-        ROOT_DIR = os.path.realpath(os.path.join(os.path.dirname('TestingParametersTemplate.csv'), '..'))
-        originalfile = os.path.join(ROOT_DIR, 'pyOptomip', 'TestingParameters.csv')
-        originalfile = self.importFolderTb.GetValue()
-
-        if originalfile == '':
-            print('Please select a file to import')
-            return
-
-        with open(originalfile, 'r') as file:
-            rows = []
-            for row in file:
-                rows.append(row)
-
-            rows.pop(2)
-            rows.pop(1)
-            rows.pop(0)
-
-            for c in range(len(rows)):
-                x = rows[c].split(',')
-
-                self.dataimport['device'].append(x[0])
-                self.dataimport['ELECflag'].append(x[1])
-                self.dataimport['OPTICflag'].append(x[2])
-                self.dataimport['setwflag'].append(x[3])
-                self.dataimport['setvflag'].append(x[4])
-                self.dataimport['Voltsel'].append(x[5])
-                self.dataimport['Currentsel'].append(x[6])
-                self.dataimport['VoltMin'].append(x[7])
-                self.dataimport['VoltMax'].append(x[8])
-                self.dataimport['CurrentMin'].append(x[9])
-                self.dataimport['CurrentMax'].append(x[10])
-                self.dataimport['VoltRes'].append(x[11])
-                self.dataimport['CurrentRes'].append(x[12])
-                self.dataimport['IV'].append(x[13])
-                self.dataimport['RV'].append(x[14])
-                self.dataimport['PV'].append(x[15])
-                self.dataimport['ChannelA'].append(x[16])
-                self.dataimport['ChannelB'].append(x[17])
-                self.dataimport['Start'].append(x[18])
-                self.dataimport['Stop'].append(x[19])
-                self.dataimport['Stepsize'].append(x[20])
-                self.dataimport['Sweeppower'].append(x[21])
-                self.dataimport['Sweepspeed'].append(x[22])
-                self.dataimport['Laseroutput'].append(x[23])
-                self.dataimport['Numscans'].append(x[24])
-                self.dataimport['InitialRange'].append(x[25])
-                self.dataimport['RangeDec'].append(x[26])
-                self.dataimport['setwVoltsel'].append(x[27])
-                self.dataimport['setwCurrentsel'].append(x[28])
-                self.dataimport['setwVoltMin'].append(x[29])
-                self.dataimport['setwVoltMax'].append(x[30])
-                self.dataimport['setwCurrentMin'].append(x[31])
-                self.dataimport['setwCurrentMax'].append(x[32])
-                self.dataimport['setwVoltRes'].append(x[33])
-                self.dataimport['setwCurrentRes'].append(x[34])
-                self.dataimport['setwIV'].append(x[35])
-                self.dataimport['setwRV'].append(x[36])
-                self.dataimport['setwPV'].append(x[37])
-                self.dataimport['setwChannelA'].append(x[38])
-                self.dataimport['setwChannelB'].append(x[39])
-                self.dataimport['Wavelengths'].append(x[40])
-                self.dataimport['setvStart'].append(x[41])
-                self.dataimport['setvStop'].append(x[42])
-                self.dataimport['setvStepsize'].append(x[43])
-                self.dataimport['setvSweeppower'].append(x[44])
-                self.dataimport['setvSweepspeed'].append(x[45])
-                self.dataimport['setvLaseroutput'].append(x[46])
-                self.dataimport['setvNumscans'].append(x[47])
-                self.dataimport['setvInitialRange'].append(x[48])
-                self.dataimport['setvRangeDec'].append(x[49])
-                self.dataimport['setvChannelA'].append(x[50])
-                self.dataimport['setvChannelB'].append(x[51])
-                self.dataimport['Voltages'].append(x[52])
-
-
-        for keys, values in self.dataimport.items():
-            print(keys)
-            print(values)
-
-        #self.checkList.DeleteAllItems()
-        #devicelist = []
-        #for c in range(len(self.dataimport['Device'])):
-         #   devicelist.append(self.dataimport['Device'][c])
-
-        #print(devicelist)
 
 
     def ExportButton(self, event):

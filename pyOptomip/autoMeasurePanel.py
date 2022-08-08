@@ -172,6 +172,17 @@ class autoMeasurePanel(wx.Panel):
         self.autoMeasureElec = autoMeasureE
         self.autoMeasureOpt = autoMeasureO
         self.device_list = []
+        self.dataimport = {'index': [], 'device': [], 'ELECflag': [], 'OPTICflag': [], 'setwflag': [], 'setvflag': [], 'Voltsel': [],
+                     'Currentsel': [], 'VoltMin': [], 'VoltMax': [], 'CurrentMin': [], 'CurrentMax': [],
+                     'VoltRes': [], 'CurrentRes': [], 'IV': [], 'RV': [], 'PV': [], 'ChannelA': [], 'ChannelB': [],
+                     'Start': [], 'Stop': [], 'Stepsize': [], 'Sweeppower': [], 'Sweepspeed': [], 'Laseroutput': [],
+                     'Numscans': [], 'InitialRange': [], 'RangeDec': [] ,'setwVoltsel': [],'setwCurrentsel': [],
+                     'setwVoltMin': [], 'setwVoltMax': [], 'setwCurrentMin': [], 'setwCurrentMax': [],
+                     'setwVoltRes': [], 'setwCurrentRes': [], 'setwIV': [], 'setwRV': [], 'setwPV': [],
+                     'setwChannelA': [], 'setwChannelB': [], 'Wavelengths': [], 'setvStart': [], 'setvStop': [],
+                     'setvStepsize': [], 'setvSweeppower': [], 'setvSweepspeed': [], 'setvLaseroutput': [],
+                     'setvNumscans': [], 'setvInitialRange': [], 'setvRangeDec': [], 'setvChannelA': [],
+                     'setvChannelB': [], 'Voltages': [], 'RoutineNumber': []}
         self.InitUI()
 
     def InitUI(self):
@@ -227,10 +238,6 @@ class autoMeasurePanel(wx.Panel):
         self.filterBtn = wx.Button(self, label='Filter', size=(70, 20))
         self.filterBtn.Bind(wx.EVT_BUTTON, self.OnButton_Filter)
 
-        selectBox = wx.BoxSizer(wx.HORIZONTAL)
-        selectBox.AddMany([(self.checkAllBtn, 0, wx.EXPAND), (self.uncheckAllBtn, 0, wx.EXPAND),
-                           (self.filterBtn, 0, wx.EXPAND)])
-
         # Add devices checklist
         self.checkList = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
         self.checkList.InsertColumn(0, 'Device', width=100)
@@ -260,12 +267,23 @@ class autoMeasurePanel(wx.Panel):
         elecButtonBox = wx.BoxSizer(wx.HORIZONTAL)
         elecButtonBox.AddMany([(self.calculateBtnE, 0, wx.EXPAND)])
 
-        self.startBtn = wx.Button(self, label='Start', size=(70, 20))
+        self.startBtn = wx.Button(self, label='Start Measurements', size=(120, 20))
         self.startBtn.Bind(wx.EVT_BUTTON, self.OnButton_Start)
-        self.saveBtn = wx.Button(self, label='Save', size=(70, 20))
+        self.saveBtn = wx.Button(self, label='Save Alignment', size=(120, 20))
         self.saveBtn.Bind(wx.EVT_BUTTON, self.OnButton_Save)
-        elecOptButtonBox = wx.BoxSizer(wx.HORIZONTAL)
-        elecOptButtonBox.AddMany([(self.startBtn, 0, wx.EXPAND), (self.saveBtn, 0, wx.EXPAND)])
+        self.importBtn = wx.Button(self, label='Import Alignment', size=(120, 20))
+        self.importBtn.Bind(wx.EVT_BUTTON, self.OnButton_Import)
+
+        self.importBtnCSV = wx.Button(self, label='Import Testing Parameters', size=(120, 20))
+        self.importBtnCSV.Bind(wx.EVT_BUTTON, self.OnButton_ImportTestingParameters)
+
+        selectBox = wx.BoxSizer(wx.HORIZONTAL)
+        selectBox.AddMany([(self.checkAllBtn, 0, wx.EXPAND), (self.uncheckAllBtn, 0, wx.EXPAND),
+                           (self.filterBtn, 0, wx.EXPAND), (self.importBtnCSV, 0, wx.EXPAND)])
+
+        selectBox2 = wx.BoxSizer(wx.HORIZONTAL)
+        selectBox2.AddMany([(self.saveBtn, 0, wx.EXPAND),
+                           (self.importBtn, 0, wx.EXPAND), (self.startBtn, 0, wx.EXPAND)])
 
         # Add Save folder label
         st2 = wx.StaticText(self, label='Save folder:')
@@ -306,8 +324,7 @@ class autoMeasurePanel(wx.Panel):
 
         # Populate File Upload Box with file upload, save folder selection and device checklist
         vboxUpload.AddMany([(fileLabelBox, 0, wx.EXPAND), (fileLoadBox, 0, wx.EXPAND),
-                            (saveLabelBox, 0, wx.EXPAND), (saveBox, 0, wx.EXPAND),
-                            (checkListBox, 0, wx.EXPAND), (selectBox, 0, wx.EXPAND)])
+                            (saveLabelBox, 0, wx.EXPAND), (saveBox, 0, wx.EXPAND)])
 
         # Populate Optical Box with alignment and buttons
         vboxOptical.AddMany([(opticalBox, 0, wx.EXPAND), (optButtonBox, 0, wx.EXPAND)])
@@ -317,14 +334,17 @@ class autoMeasurePanel(wx.Panel):
 
         # Populate Measurement Box with drop down menu and go button
         vboxMeasurement.AddMany(
-            [(elecOptButtonBox, 0, wx.EXPAND), (moveLabelBox, 0, wx.EXPAND), (goBoxOpt, 0, wx.EXPAND),
+            [(moveLabelBox, 0, wx.EXPAND), (goBoxOpt, 0, wx.EXPAND),
              (moveElecLabelBox, 0, wx.EXPAND), (goBoxElec, 0, wx.EXPAND)])
 
         topBox = wx.BoxSizer(wx.HORIZONTAL)
         topBox.AddMany([(vboxUpload, 0, wx.EXPAND), (vboxMeasurement, 0, wx.EXPAND)])
 
+        checkBox = wx.BoxSizer(wx.VERTICAL)
+        checkBox.AddMany([(checkListBox, 0, wx.EXPAND), (selectBox, 0, wx.EXPAND), (selectBox2, 0, wx.EXPAND)])
+
         # Add all boxes to outer box
-        vboxOuter.AddMany([(topBox, 0, wx.EXPAND), (vboxOptical, 0, wx.EXPAND),
+        vboxOuter.AddMany([(topBox, 0, wx.EXPAND), (checkBox, 0, wx.EXPAND), (vboxOptical, 0, wx.EXPAND),
                            (vboxElectrical, 0, wx.EXPAND)])
         matPlotBox.Add(vboxOuter, flag=wx.LEFT | wx.TOP | wx.ALIGN_LEFT, border=0, proportion=0)
 
@@ -357,8 +377,11 @@ class autoMeasurePanel(wx.Panel):
                                 wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
         fileDlg.ShowModal()
         self.coordFileTb.SetValue(fileDlg.GetFilenames()[0])
-        # fileDlg.Destroy()
-        self.autoMeasureOpt.readCoordFile(fileDlg.GetPath())
+        self.coordFilePath = fileDlg.GetPath()
+        self.parseCoordFile(self.coordFilePath)
+
+    def parseCoordFile(self, coordFilePath):
+        self.autoMeasureOpt.readCoordFile(coordFilePath)
         global deviceListAsObjects
         deviceListAsObjects = self.autoMeasureOpt.devices
         self.device_list = deviceListAsObjects
@@ -383,6 +406,130 @@ class autoMeasurePanel(wx.Panel):
         global fileLoaded
         fileLoaded = True
         self.Refresh()
+
+    def OnButton_Import(self, event):
+        """ Opens a file dialog to select a coordinate file. """
+        fileDlg = wx.FileDialog(self, "Open", "", "",
+                                "Text Files (*.csv)|*.csv",
+                                wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
+        fileDlg.ShowModal()
+        filePath = fileDlg.GetPath()
+        f = open(filePath, 'r', newline='')
+        reader = csv.reader(f)
+        textCoordPath = next(reader)
+        self.parseCoordFile(textCoordPath[0])
+        next(reader)
+        optDev1 = next(reader)
+        optDev1 = optDev1 #[dev name, x motor coord, y motor coord, z motor coord]
+        self.coordMapPanelOpt.tbGdsDevice1 = optDev1[0]
+        optDev2 = next(reader)
+        optDev2 = optDev2
+        self.coordMapPanelOpt.tbGdsDevice2 = optDev2[0]
+        optDev3 = next(reader)
+        optDev3 = optDev3
+        self.coordMapPanelOpt.tbGdsDevice3 = optDev3[0]
+        next(reader)
+        elecDev1 = next(reader)
+        elecDev1 = elecDev1
+        self.coordMapPanelElec.tbGdsDevice1 = elecDev1[0]
+        elecDev2 = next(reader)
+        elecDev2 = elecDev2
+        self.coordMapPanelElec.tbGdsDevice2 = elecDev2[0]
+        elecDev3 = next(reader)
+        elecDev3 = elecDev3
+        self.coordMapPanelElec.tbGdsDevice3 = elecDev3[0]
+
+    def OnButton_ImportTestingParameters(self, event):
+
+        #ROOT_DIR = os.path.realpath(os.path.join(os.path.dirname('TestingParametersTemplate.csv'), '..'))
+        #originalFile = os.path.join(ROOT_DIR, 'pyOptomip', 'TestingParameters.csv')
+        fileDlg = wx.FileDialog(self, "Open", "", "",
+                                "CSV Files (*.csv)|*.csv",
+                                wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
+        fileDlg.ShowModal()
+        originalFile = fileDlg.GetPath()
+
+        if originalFile == '':
+            print('Please select a file to import')
+            return
+
+        with open(originalFile, 'r') as file:
+            rows = []
+            for row in file:
+                rows.append(row)
+
+            rows.pop(2)
+            rows.pop(1)
+            rows.pop(0)
+
+            for c in range(len(rows)):
+                x = rows[c].split(',')
+
+                self.dataimport['device'].append(x[0])
+                self.dataimport['ELECflag'].append(x[1])
+                self.dataimport['OPTICflag'].append(x[2])
+                self.dataimport['setwflag'].append(x[3])
+                self.dataimport['setvflag'].append(x[4])
+                self.dataimport['Voltsel'].append(x[5])
+                self.dataimport['Currentsel'].append(x[6])
+                self.dataimport['VoltMin'].append(x[7])
+                self.dataimport['VoltMax'].append(x[8])
+                self.dataimport['CurrentMin'].append(x[9])
+                self.dataimport['CurrentMax'].append(x[10])
+                self.dataimport['VoltRes'].append(x[11])
+                self.dataimport['CurrentRes'].append(x[12])
+                self.dataimport['IV'].append(x[13])
+                self.dataimport['RV'].append(x[14])
+                self.dataimport['PV'].append(x[15])
+                self.dataimport['ChannelA'].append(x[16])
+                self.dataimport['ChannelB'].append(x[17])
+                self.dataimport['Start'].append(x[18])
+                self.dataimport['Stop'].append(x[19])
+                self.dataimport['Stepsize'].append(x[20])
+                self.dataimport['Sweeppower'].append(x[21])
+                self.dataimport['Sweepspeed'].append(x[22])
+                self.dataimport['Laseroutput'].append(x[23])
+                self.dataimport['Numscans'].append(x[24])
+                self.dataimport['InitialRange'].append(x[25])
+                self.dataimport['RangeDec'].append(x[26])
+                self.dataimport['setwVoltsel'].append(x[27])
+                self.dataimport['setwCurrentsel'].append(x[28])
+                self.dataimport['setwVoltMin'].append(x[29])
+                self.dataimport['setwVoltMax'].append(x[30])
+                self.dataimport['setwCurrentMin'].append(x[31])
+                self.dataimport['setwCurrentMax'].append(x[32])
+                self.dataimport['setwVoltRes'].append(x[33])
+                self.dataimport['setwCurrentRes'].append(x[34])
+                self.dataimport['setwIV'].append(x[35])
+                self.dataimport['setwRV'].append(x[36])
+                self.dataimport['setwPV'].append(x[37])
+                self.dataimport['setwChannelA'].append(x[38])
+                self.dataimport['setwChannelB'].append(x[39])
+                self.dataimport['Wavelengths'].append(x[40])
+                self.dataimport['setvStart'].append(x[41])
+                self.dataimport['setvStop'].append(x[42])
+                self.dataimport['setvStepsize'].append(x[43])
+                self.dataimport['setvSweeppower'].append(x[44])
+                self.dataimport['setvSweepspeed'].append(x[45])
+                self.dataimport['setvLaseroutput'].append(x[46])
+                self.dataimport['setvNumscans'].append(x[47])
+                self.dataimport['setvInitialRange'].append(x[48])
+                self.dataimport['setvRangeDec'].append(x[49])
+                self.dataimport['setvChannelA'].append(x[50])
+                self.dataimport['setvChannelB'].append(x[51])
+                self.dataimport['Voltages'].append(x[52])
+
+
+        for keys, values in self.dataimport.items():
+            print(keys)
+            print(values)
+
+        #self.checkList.DeleteAllItems()
+        #devicelist = []
+        #for c in range(len(self.dataimport['Device'])):
+         #   devicelist.append(self.dataimport['Device'][c])
+
+        #print(devicelist)
 
     def OnButton_CheckAll(self, event):
         """Selects all items in the devices check list"""
@@ -466,7 +613,7 @@ class autoMeasurePanel(wx.Panel):
         self.Refresh()
 
     def OnButton_Save(self, event):
-        """Saves the gds devices usied for alignment as well as motor positions"""
+        """Saves the gds devices used for alignment as well as motor positions"""
         A = self.autoMeasureOpt.findCoordinateTransform(self.coordMapPanelOpt.getMotorCoords(),
                                                         self.coordMapPanelOpt.getGdsCoordsOpt())
 
@@ -480,6 +627,8 @@ class autoMeasurePanel(wx.Panel):
 
         f = open(csvFileName, 'w', newline='')
         writer = csv.writer(f)
+        textFilePath = [self.coordFilePath]
+        writer.writerow(textFilePath)
         optCoords = self.coordMapPanelOpt.getMotorCoords()
         Opt = ['Optical Alignment']
         writer.writerow(Opt)

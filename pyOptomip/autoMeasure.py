@@ -33,8 +33,7 @@ from ElectroOpticDevice import ElectroOpticDevice
 
 class autoMeasure(object):
 
-    def __init__(self, laser, motor, fineAlign
-                 ):
+    def __init__(self, laser, motor, fineAlign):
         self.laser = laser
         self.motor = motor
         self.fineAlign = fineAlign
@@ -63,7 +62,8 @@ class autoMeasure(object):
             if reg.match(line):
                 matchRes = reg.findall(line)[0]
                 devName = matchRes[5]
-                device = ElectroOpticDevice(devName, matchRes[3], matchRes[2], float(matchRes[0]), float(matchRes[1]))
+                device = ElectroOpticDevice(devName, matchRes[3], matchRes[2], float(matchRes[0]), float(matchRes[1]),
+                                            matchRes[4])
                 self.devices.append(device)
             else:
                 if regElec.match(line):
@@ -114,6 +114,7 @@ class autoMeasure(object):
         motorCoords = (float(motorCoordVec[0]), float(motorCoordVec[1]), float(motorCoordVec[2]))
         return motorCoords
 
+    #TODO: Update for current data storage methods
     def beginMeasure(self, devices, abortFunction=None, updateFunction=None, updateGraph=True):
         """ Runs an automated measurement. For each device, it moves to the interpolated motor coordinates and does a sweep.
         The sweep results, and metadata associated with the sweep are stored in a data file which is saved to the folder specified

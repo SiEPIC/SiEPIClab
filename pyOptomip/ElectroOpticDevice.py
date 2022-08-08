@@ -1,10 +1,11 @@
 class ElectroOpticDevice:
 
-    def __init__(self, device_id, wavelength, polarization, x, y):
+    def __init__(self, device_id, wavelength, polarization, x, y, type):
         """Object used to store all information associated with an electro-optic device"""
         self.device_id = device_id
         self.wavelength = wavelength
         self.polarization = polarization
+        self.type = type
 
         self.opticalCoordinates = [x, y]
         self.electricalCoordinates = []
@@ -25,6 +26,10 @@ class ElectroOpticDevice:
     def getDeviceID(self):
         """Returns the device id of the device. IDs should be unique for each device within a chip"""
         return self.device_id
+
+    def getDeviceType(self):
+        """Returns the type of the device"""
+        return self.type
 
     def getReferenceBondPad(self):
         """Returns the name and coordinates of the left-most bond pad within
