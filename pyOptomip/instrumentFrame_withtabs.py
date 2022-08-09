@@ -270,9 +270,11 @@ class AutoMeasureTab(wx.Panel):
                                     'Error', wx.ICON_ERROR)
             dial.ShowModal()
 
-        self.autoMeasureE = autoMeasure(self.getLasers(), self.getMotors(), self.getSMUs(), self.fineAlign)
-        self.autoMeasureO = autoMeasure(self.getLasers(), self.getMotors(), self.getSMUs(), self.fineAlign)
-        self.autoMeasurePanel = autoMeasurePanel(self, self.autoMeasureE, self.autoMeasureO)
+        #TODO: Seperate electrical and optical motors
+        self.autoMeasure = autoMeasure(self.getLasers(), self.getMotors(), self.getMotors(), self.getSMUs(),
+                                       self.fineAlign)
+
+        self.autoMeasurePanel = autoMeasurePanel(self, self.autoMeasure)
 
         vbox.Add(self.autoMeasurePanel, proportion=0, flag=wx.EXPAND)
 
