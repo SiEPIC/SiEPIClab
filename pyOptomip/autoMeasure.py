@@ -34,9 +34,10 @@ from measurementRoutines import measurementRoutines
 
 class autoMeasure(object):
 
-    def __init__(self, laser, motor, smu, fineAlign):
+    def __init__(self, laser, motorOpt, motorElec, smu, fineAlign):
         self.laser = laser
-        self.motor = motor
+        self.motorOpt = motorOpt
+        self.motorElec = motorElec
         self.smu = smu
         self.fineAlign = fineAlign
         self.saveFolder = os.getcwd()
@@ -77,7 +78,7 @@ class autoMeasure(object):
                 else:
                     print('Warning: The entry\n%s\nis not formatted correctly.' % line)
 
-    def findCoordinateTransform(self, motorCoords, gdsCoords):
+    def findCoordinateTransformOpt(self, motorCoords, gdsCoords):
         """ Finds the best fit affine transform which maps the GDS coordinates to motor coordinates."""
 
         # if len(motorCoords) != (len(gdsCoords)+1):
@@ -105,14 +106,53 @@ class autoMeasure(object):
         # Do least squares fitting
         M = linalg.lstsq(Xgds, Xmotor, rcond=-1)
 
-        self.transformMatrix = M
+        self.transformMatrixOpt = M
 
         return M
 
-    def gdsToMotorCoords(self, gdsCoords):
+    def findCoordinateTransformElec(self, motorCoords, gdsCoords):
+        """ Finds the best fit affine transform which maps the GDS coordinates to motor coordinates."""
+
+        # if len(motorCoords) != (len(gdsCoords)+1):
+        # raise CoordinateTransformException('You must have the same number of motor coordinates and GDS coordinates')
+
+        if len(motorCoords) < 3:
+            raise CoordinateTransformException('You must have at least 3 device coordinates.')
+
+        numTriples = len(motorCoords)
+
+        Xgds = mat(zeros((numTriples + 1, numTriples)))  # 4x3
+        Xmotor = mat(zeros((numTriples + 1, numTriples)))  # 4x3
+
+        # zip: [0,Dev1MotorCoords,Dev1gds], [1,Dev2MotorCoords,Dev2gds], [2,Dev3MotorCoords,Dev3gds]
+        for i, motorCoord, gdsCoord in zip(range(numTriples), motorCoords, gdsCoords):
+            Xgds[0, i] = gdsCoord[0]
+            Xgds[1, i] = gdsCoord[1]
+            Xgds[2, i] = 0
+            Xgds[3, i] = 1
+            Xmotor[0, i] = motorCoord[0]
+            Xmotor[1, i] = motorCoord[1]
+            Xmotor[2, i] = motorCoord[2]
+            Xmotor[3, i] = 1
+
+        # Do least squares fitting
+        M = linalg.lstsq(Xgds, Xmotor, rcond=-1)
+
+        self.transformMatrixElec = M
+
+        return M
+
+    def gdsToMotorCoordsOpt(self, gdsCoords):
         """ Uses the calculated affine transform to map a GDS coordinate to a motor coordinate."""
         gdsCoordVec = mat([[gdsCoords[0]], [gdsCoords[1]], [0], [1]])
-        motorCoordVec = self.transformMatrix * gdsCoordVec
+        motorCoordVec = self.transformMatrixOpt * gdsCoordVec
+        motorCoords = (float(motorCoordVec[0]), float(motorCoordVec[1]), float(motorCoordVec[2]))
+        return motorCoords
+
+    def gdsToMotorCoordsElec(self, gdsCoords):
+        """ Uses the calculated affine transform to map a GDS coordinate to a motor coordinate."""
+        gdsCoordVec = mat([[gdsCoords[0]], [gdsCoords[1]], [0], [1]])
+        motorCoordVec = self.transformMatrixElec * gdsCoordVec
         motorCoords = (float(motorCoordVec[0]), float(motorCoordVec[1]), float(motorCoordVec[2]))
         return motorCoords
 
@@ -129,19 +169,19 @@ class autoMeasure(object):
             for device in devices:
                 if device.getDeviceID == d:
                     gdsCoordOpt = (device.getOpticalCoordinates[0], device.getOpticalCoordinates[1])
-                    motorCoordOpt = self.gdsToMotorCoords(gdsCoordOpt)
+                    motorCoordOpt = self.gdsToMotorCoordsOpt(gdsCoordOpt)
                     gdsCoordElec = (device.getElectricalCoordinates[0], device.getElectricalicalCoordinates[1])
-                    motorCoordElec = self.gdsToMotorCoords(gdsCoordElec)
+                    motorCoordElec = self.gdsToMotorCoordsElec(gdsCoordElec)
 
                     #move wedge probe out of the way
-                    self.motor.moveRelativeXYZElec(motorCoordElec[0], -2000, 2000)
+                    self.motorElec.moveRelativeXYZElec(motorCoordElec[0], -2000, 2000)
                     #move chip stage
-                    x = motorCoordOpt[0] - self.motor.getPosition[0]
-                    y = motorCoordOpt[1] - self.motor.getPosition[1]
-                    z = motorCoordOpt[2] - self.motor.getPosition[2]
-                    self.motor.moveAbsoluteXYZOpt(motorCoordOpt[0], motorCoordOpt[1], motorCoordOpt[2])
+                    x = motorCoordOpt[0] - self.motorOpt.getPosition[0]
+                    y = motorCoordOpt[1] - self.motorOpt.getPosition[1]
+                    z = motorCoordOpt[2] - self.motorOpt.getPosition[2]
+                    self.motorOpt.moveAbsoluteXYZOpt(motorCoordOpt[0], motorCoordOpt[1], motorCoordOpt[2])
                     #Move wedge probe and compensate for movement of chip stage
-                    self.motor.moveAbsoluteXYZElec(motorCoordElec[0]+x, motorCoordElec[1]+y, motorCoordElec[2]+z)
+                    self.motorElec.moveAbsoluteXYZElec(motorCoordElec[0]+x, motorCoordElec[1]+y, motorCoordElec[2]+z)
 
                     self.fineAlign.doFineAlign()
 
