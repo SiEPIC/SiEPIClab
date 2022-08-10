@@ -2257,7 +2257,8 @@ class autoMeasure(object):
             if reg.match(line):
                 matchRes = reg.findall(line)[0]
                 devName = matchRes[5]
-                device = ElectroOpticDevice(devName, matchRes[3], matchRes[2], float(matchRes[0]), float(matchRes[1]))
+                device = ElectroOpticDevice(devName, matchRes[3], matchRes[2], float(matchRes[0]), float(matchRes[1]),
+                                            matchRes[4])
                 self.devices.append(device)
             else:
                 if regElec.match(line):
