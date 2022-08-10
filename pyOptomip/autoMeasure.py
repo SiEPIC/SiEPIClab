@@ -19,7 +19,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-
 import wx
 from numpy import *
 import re
@@ -27,21 +26,37 @@ import os
 from scipy.io import savemat
 import time
 import matplotlib.pyplot as plt
-from collections import OrderedDict
 from ElectroOpticDevice import ElectroOpticDevice
+from measurementRoutines import measurementRoutines
 
 
 class autoMeasure(object):
 
-    def __init__(self, laser, motor, fineAlign
-                 ):
+    def __init__(self, laser, motorOpt, motorElec, smu, fineAlign):
+        """
+        Creates an autoMeasure object which is used to coordinate motors and perform automated
+        measurements.
+        Args:
+            laser: laser object
+            motorOpt: motor object controlling the chip stage
+            motorElec: motor object controlling the wedge probe stage
+            smu: smu object controls SMU
+            fineAlign:
+        """
         self.laser = laser
-        self.motor = motor
+        self.motorOpt = motorOpt
+        self.motorElec = motorElec
+        self.smu = smu
         self.fineAlign = fineAlign
         self.saveFolder = os.getcwd()
 
     def readCoordFile(self, fileName):
-
+        """
+        Reads a coordinate file generated using the automated coordinate extraction in k-layout.
+        Stores all data as a list of ElectroOpticDevice objects, self.devices.
+        Args:
+            fileName: Path to desired text file, a string
+        """
         with open(fileName, 'r') as f:
             data = f.readlines()
 
@@ -53,7 +68,7 @@ class autoMeasure(object):
             dataStrip2.append(j)
         # x,y,polarization,wavelength,type,deviceid,params
         reg = re.compile(r'(.*),(.*),(.*),([0-9]+),(.+),(.+),(.*)')
-        # x,y,deviceid,padname,params
+        # x, y, deviceid, padname, params
         regElec = re.compile(r'(.*),(.*),(.+),(.*),(.*)')
 
         self.devices = []
@@ -63,7 +78,8 @@ class autoMeasure(object):
             if reg.match(line):
                 matchRes = reg.findall(line)[0]
                 devName = matchRes[5]
-                device = ElectroOpticDevice(devName, matchRes[3], matchRes[2], float(matchRes[0]), float(matchRes[1]))
+                device = ElectroOpticDevice(devName, matchRes[3], matchRes[2], float(matchRes[0]), float(matchRes[1]),
+                                            matchRes[4])
                 self.devices.append(device)
             else:
                 if regElec.match(line):
@@ -75,19 +91,28 @@ class autoMeasure(object):
                 else:
                     print('Warning: The entry\n%s\nis not formatted correctly.' % line)
 
-    def findCoordinateTransform(self, motorCoords, gdsCoords):
-        """ Finds the best fit affine transform which maps the GDS coordinates to motor coordinates."""
+    def findCoordinateTransformOpt(self, motorCoords, gdsCoords):
+        """ Finds the best fit affine transform which maps the GDS coordinates to motor coordinates
+        for the motors controlling the chip stage.
 
-        #if len(motorCoords) != (len(gdsCoords)+1):
-            #raise CoordinateTransformException('You must have the same number of motor coordinates and GDS coordinates')
+        Args:
+            motorCoords: 
+            gdsCoords: 
+
+        Returns:
+            M: a matrix used to map gds coordinates to motor coordinates.
+        """
+
+        # if len(motorCoords) != (len(gdsCoords)+1):
+        # raise CoordinateTransformException('You must have the same number of motor coordinates and GDS coordinates')
 
         if len(motorCoords) < 3:
             raise CoordinateTransformException('You must have at least 3 device coordinates.')
 
         numTriples = len(motorCoords)
 
-        Xgds = mat(zeros((numTriples+1, numTriples)))  # 4x3
-        Xmotor = mat(zeros((numTriples+1, numTriples)))  # 4x3
+        Xgds = mat(zeros((numTriples + 1, numTriples)))  # 4x3
+        Xmotor = mat(zeros((numTriples + 1, numTriples)))  # 4x3
 
         # zip: [0,Dev1MotorCoords,Dev1gds], [1,Dev2MotorCoords,Dev2gds], [2,Dev3MotorCoords,Dev3gds]
         for i, motorCoord, gdsCoord in zip(range(numTriples), motorCoords, gdsCoords):
@@ -103,67 +128,169 @@ class autoMeasure(object):
         # Do least squares fitting
         M = linalg.lstsq(Xgds, Xmotor, rcond=-1)
 
-        self.transformMatrix = M
+        self.transformMatrixOpt = M
 
         return M
 
-    def gdsToMotorCoords(self, gdsCoords):
-        """ Uses the calculated affine transform to map a GDS coordinate to a motor coordinate."""
+    def findCoordinateTransformElec(self, motorCoords, gdsCoords):
+        """ Finds the best fit affine transform which maps the GDS coordinates to motor coordinates
+        for the motors controlling the wedge probe stage.
+
+        Args:
+            motorCoords: 
+            gdsCoords: 
+
+        Returns:
+            M: a matrix used to map gds coordinates to motor coordinates.
+        """
+        # if len(motorCoords) != (len(gdsCoords)+1):
+        # raise CoordinateTransformException('You must have the same number of motor coordinates and GDS coordinates')
+
+        if len(motorCoords) < 3:
+            raise CoordinateTransformException('You must have at least 3 device coordinates.')
+
+        numTriples = len(motorCoords)
+
+        Xgds = mat(zeros((numTriples + 1, numTriples)))  # 4x3
+        Xmotor = mat(zeros((numTriples + 1, numTriples)))  # 4x3
+
+        # zip: [0,Dev1MotorCoords,Dev1gds], [1,Dev2MotorCoords,Dev2gds], [2,Dev3MotorCoords,Dev3gds]
+        for i, motorCoord, gdsCoord in zip(range(numTriples), motorCoords, gdsCoords):
+            Xgds[0, i] = gdsCoord[0]
+            Xgds[1, i] = gdsCoord[1]
+            Xgds[2, i] = 0
+            Xgds[3, i] = 1
+            Xmotor[0, i] = motorCoord[0]
+            Xmotor[1, i] = motorCoord[1]
+            Xmotor[2, i] = motorCoord[2]
+            Xmotor[3, i] = 1
+
+        # Do least squares fitting
+        M = linalg.lstsq(Xgds, Xmotor, rcond=-1)
+
+        self.transformMatrixElec = M
+
+        return M
+
+    def gdsToMotorCoordsOpt(self, gdsCoords):
+        """ Uses the calculated affine transform to map a GDS coordinate to a motor coordinate.
+
+        Args:
+            gdsCoords: 
+
+        Returns:
+            motorCoords: the motor coordinates for the chip stage that correspond to given gds
+            coordinates.
+        """
         gdsCoordVec = mat([[gdsCoords[0]], [gdsCoords[1]], [0], [1]])
-        motorCoordVec = self.transformMatrix * gdsCoordVec
+        motorCoordVec = self.transformMatrixOpt * gdsCoordVec
         motorCoords = (float(motorCoordVec[0]), float(motorCoordVec[1]), float(motorCoordVec[2]))
         return motorCoords
 
-    def beginMeasure(self, devices, abortFunction=None, updateFunction=None, updateGraph=True):
-        """ Runs an automated measurement. For each device, it moves to the interpolated motor coordinates and does a sweep.
+    def gdsToMotorCoordsElec(self, gdsCoords):
+        """ Uses the calculated affine transform to map a GDS coordinate to a motor coordinate.
+
+        Args:
+            gdsCoords: 
+
+        Returns:
+            object: 
+        """
+        gdsCoordVec = mat([[gdsCoords[0]], [gdsCoords[1]], [0], [1]])
+        motorCoordVec = self.transformMatrixElec * gdsCoordVec
+        motorCoords = (float(motorCoordVec[0]), float(motorCoordVec[1]), float(motorCoordVec[2]))
+        return motorCoords
+
+    def beginMeasure(self, devices, testingParameters, checkList, abortFunction=None, updateFunction=None, updateGraph=True):
+        """ Runs an automated measurement. For each device, wedge probe is moved out of the way, chip stage is moved
+        so laser in aligned, wedge probe is moved to position. Various tests are performed depending on the contents
+        of the testing parameters file.
+
         The sweep results, and metadata associated with the sweep are stored in a data file which is saved to the folder specified
         in self.saveFolder. An optional abort function can be specified which is called to determine if the measurement process should
-        be stopped. Also, an update function is called which can be used to update UI elements about the measurement progress."""
-        for ii, d in enumerate(devices):
-            gdsCoord = (self.deviceCoordDict[d]['x'], self.deviceCoordDict[d]['y'])
-            motorCoord = self.gdsToMotorCoords(gdsCoord)
-            self.motor.moveAbsoluteXYZ(motorCoord[0], motorCoord[1], motorCoord[2])
-            self.fineAlign.doFineAlign()
-            sweepWavelength, sweepPower = self.laser.sweep()
-            if updateGraph:
-                # Update the graph on the main window
-                wx.CallAfter(self.laser.ctrlPanel.laserPanel.laserPanel.drawGraph, sweepWavelength * 1e9, sweepPower)
-            print('GDS: (%g,%g) Motor: (%g,%g,%g)' % (gdsCoord[0], gdsCoord[1], gdsCoord[2], motorCoord[0], motorCoord[1]))
-            matFileName = os.path.join(self.saveFolder, d + '.mat')
+        be stopped. Also, an update function is called which can be used to update UI elements about the measurement progress.
 
-            # Save sweep data and metadata to the mat file
-            matDict = dict()
-            matDict['scandata'] = dict()
-            matDict['metadata'] = dict()
-            matDict['scandata']['wavelength'] = sweepWavelength
-            matDict['scandata']['power'] = sweepPower
-            matDict['metadata']['device'] = d
-            matDict['metadata']['gds_x_coord'] = self.deviceCoordDict[d]['x']
-            matDict['metadata']['gds_y_coord'] = self.deviceCoordDict[d]['y']
-            matDict['metadata']['motor_x_coord'] = motorCoord[0]
-            matDict['metadata']['motor_y_coord'] = motorCoord[1]
-            matDict['metadata']['motor_z_coord'] = motorCoord[2]
-            matDict['metadata']['measured_device_number'] = ii
-            matDict['metadata']['coord_file_line'] = self.deviceCoordDict[d]['line']
-            timeSeconds = time.time()
-            matDict['metadata']['time_seconds'] = timeSeconds
-            matDict['metadata']['time_str'] = time.ctime(timeSeconds)
+        Args:
+            devices: 
+            testingParameters: 
+            abortFunction: 
+            updateFunction: 
+            updateGraph:
 
-            savemat(matFileName, matDict)
+        Returns:
+            object: """
 
-            pdfFileName = os.path.join(self.saveFolder, d + '.pdf')
-            plt.figure()
-            plt.plot(sweepWavelength * 1e9, sweepPower)
-            plt.xlabel('Wavelength (nm)')
-            plt.ylabel('Power (dBm)')
-            plt.savefig(pdfFileName)
-            plt.close()
+        self.checkList = checkList
+        for i, d in enumerate(testingParameters['device']):
+            for device in devices:
+                if device.getDeviceID == d:
+                    gdsCoordOpt = (device.getOpticalCoordinates[0], device.getOpticalCoordinates[1])
+                    motorCoordOpt = self.gdsToMotorCoordsOpt(gdsCoordOpt)
+                    gdsCoordElec = (device.getElectricalCoordinates[0], device.getElectricalicalCoordinates[1])
+                    motorCoordElec = self.gdsToMotorCoordsElec(gdsCoordElec)
+
+                    # move wedge probe out of the way
+                    self.motorElec.moveRelativeXYZElec(motorCoordElec[0], -2000, 2000)
+                    # move chip stage
+                    x = motorCoordOpt[0] - self.motorOpt.getPosition[0]
+                    y = motorCoordOpt[1] - self.motorOpt.getPosition[1]
+                    z = motorCoordOpt[2] - self.motorOpt.getPosition[2]
+                    self.motorOpt.moveAbsoluteXYZOpt(motorCoordOpt[0], motorCoordOpt[1], motorCoordOpt[2])
+                    # Move wedge probe and compensate for movement of chip stage
+                    self.motorElec.moveAbsoluteXYZElec(motorCoordElec[0] + x, motorCoordElec[1] + y,
+                                                       motorCoordElec[2] + z)
+
+                    res, completed = self.fineAlign.doFineAlign()
+                    if completed is False:
+                        for ii in range(self.checkList.GetItemCount()):
+                            if self.devices[self.checkList.GetItemData(ii)].getDeviceID() == device.getDeviceID:
+                                self.checkList.SetItemTextColour(ii, wx.Colour(255, 0, 0))
+
+                    if testingParameters['ELECflag'][i] is True:
+                        measurementRoutines('ELEC', testingParameters, i, self.smu, self.laser)
+                    if testingParameters['OPTICflag'][i] is True:
+                        measurementRoutines('OPT', testingParameters, i, self.smu, self.laser)
+                    if testingParameters['setwflag'] is True:
+                        measurementRoutines('FIXWAVIV', testingParameters, i, self.smu, self.laser)
+                    if testingParameters['setvflag'] is True:
+                        measurementRoutines('BIASVOPT', testingParameters, i, self.smu, self.laser)
+
+                    print('GDS: (%g,%g) Motor: (%g,%g,%g)' % (gdsCoordOpt[0], gdsCoordOpt[1], gdsCoordOpt[2],
+                                                              motorCoordOpt[0], motorCoordOpt[1]))
+                    matFileName = os.path.join(self.saveFolder, d + '.mat')
+
+                    # Save sweep data and metadata to the mat file
+                    matDict = dict()
+                    matDict['scandata'] = dict()
+                    matDict['metadata'] = dict()
+                    matDict['scandata']['wavelength'] = testingParameters['Wavelengths'][i]
+                    matDict['scandata']['power'] = testingParameters['Sweeppower'][i]
+                    matDict['metadata']['device'] = d
+                    matDict['metadata']['gds_x_coord'] = device.getOpticalCoordinates[0]
+                    matDict['metadata']['gds_y_coord'] = device.getOpticalCoordinates[1]
+                    matDict['metadata']['motor_x_coord'] = motorCoordOpt[0]
+                    matDict['metadata']['motor_y_coord'] = motorCoordOpt[1]
+                    matDict['metadata']['motor_z_coord'] = motorCoordOpt[2]
+                    matDict['metadata']['measured_device_number'] = i
+                    timeSeconds = time.time()
+                    matDict['metadata']['time_seconds'] = timeSeconds
+                    matDict['metadata']['time_str'] = time.ctime(timeSeconds)
+
+                    savemat(matFileName, matDict)
+
+                    pdfFileName = os.path.join(self.saveFolder, d + '.pdf')
+                    plt.figure()
+                    plt.plot(testingParameters['Wavelengths'][i] * 1e9, testingParameters['Sweeppower'][i])
+                    plt.xlabel('Wavelength (nm)')
+                    plt.ylabel('Power (dBm)')
+                    plt.savefig(pdfFileName)
+                    plt.close()
 
             if abortFunction is not None and abortFunction():
                 print('Aborted')
                 return
             if updateFunction is not None:
-                updateFunction(ii)
+                updateFunction(i)
 
 
 class CoordinateTransformException(Exception):

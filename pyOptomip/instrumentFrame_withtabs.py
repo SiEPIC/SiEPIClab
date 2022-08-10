@@ -42,6 +42,12 @@ from TestParameters import TopPanel
 # Define the tab content as classes:
 class HomeTab(wx.Panel):
     def __init__(self, parent, instList):
+        """
+
+        Args:
+            parent:
+            instList:
+        """
         wx.Panel.__init__(self, parent)
         self.instList = instList
         vbox = wx.BoxSizer(wx.VERTICAL)
@@ -99,18 +105,33 @@ class HomeTab(wx.Panel):
         self.Show()
 
     def motorFound(self):
+        """
+
+        Returns:
+
+        """
         motorFound = False
         for inst in self.instList:
             motorFound = motorFound | inst.isMotor
         return motorFound
 
     def laserFound(self):
+        """
+
+        Returns:
+
+        """
         laserFound = False
         for inst in self.instList:
             laserFound = laserFound | inst.isLaser
         return laserFound
 
     def getLasers(self):
+        """
+
+        Returns:
+
+        """
         laserList = []
         for inst in self.instList:
             if inst.isLaser:
@@ -118,6 +139,11 @@ class HomeTab(wx.Panel):
         return laserList
 
     def getMotors(self):
+        """
+
+        Returns:
+
+        """
         motorList = []
         for inst in self.instList:
             if inst.isMotor:
@@ -125,6 +151,11 @@ class HomeTab(wx.Panel):
         return motorList
 
     def OnExitApp(self, event):
+        """
+
+        Args:
+            event:
+        """
         for inst in self.instList:
             inst.disconnect()
         self.Destroy()
@@ -132,6 +163,12 @@ class HomeTab(wx.Panel):
 
 class ElectricalTab(wx.Panel):
     def __init__(self, parent, instList):
+        """
+
+        Args:
+            parent:
+            instList:
+        """
         wx.Panel.__init__(self, parent)
         self.instList = instList
         vbox = wx.BoxSizer(wx.VERTICAL)
@@ -162,18 +199,33 @@ class ElectricalTab(wx.Panel):
         self.Show()
 
     def motorFound(self):
+        """
+
+        Returns:
+
+        """
         motorFound = False
         for inst in self.instList:
             motorFound = motorFound | inst.isMotor
         return motorFound
 
     def laserFound(self):
+        """
+
+        Returns:
+
+        """
         laserFound = False
         for inst in self.instList:
             laserFound = laserFound | inst.isLaser
         return laserFound
 
     def getLasers(self):
+        """
+
+        Returns:
+
+        """
         laserList = []
         for inst in self.instList:
             if inst.isLaser:
@@ -181,6 +233,11 @@ class ElectricalTab(wx.Panel):
         return laserList
 
     def getMotors(self):
+        """
+
+        Returns:
+
+        """
         motorList = []
         for inst in self.instList:
             if inst.isMotor:
@@ -188,6 +245,11 @@ class ElectricalTab(wx.Panel):
         return motorList
 
     def OnExitApp(self, event):
+        """
+
+        Args:
+            event:
+        """
         for inst in self.instList:
             inst.disconnect()
         self.Destroy()
@@ -195,6 +257,12 @@ class ElectricalTab(wx.Panel):
 
 class OpticalTab(wx.Panel):
     def __init__(self, parent, instList):
+        """
+
+        Args:
+            parent:
+            instList:
+        """
         wx.Panel.__init__(self, parent)
         self.instList = instList
         vbox = wx.BoxSizer(wx.VERTICAL)
@@ -224,18 +292,33 @@ class OpticalTab(wx.Panel):
         self.Show()
 
     def motorFound(self):
+        """
+
+        Returns:
+
+        """
         motorFound = False
         for inst in self.instList:
             motorFound = motorFound | inst.isMotor
         return motorFound
 
     def laserFound(self):
+        """
+
+        Returns:
+
+        """
         laserFound = False
         for inst in self.instList:
             laserFound = laserFound | inst.isLaser
         return laserFound
 
     def getLasers(self):
+        """
+
+        Returns:
+
+        """
         laserList = []
         for inst in self.instList:
             if inst.isLaser:
@@ -243,6 +326,11 @@ class OpticalTab(wx.Panel):
         return laserList
 
     def getMotors(self):
+        """
+
+        Returns:
+
+        """
         motorList = []
         for inst in self.instList:
             if inst.isMotor:
@@ -250,6 +338,11 @@ class OpticalTab(wx.Panel):
         return motorList
 
     def OnExitApp(self, event):
+        """
+
+        Args:
+            event:
+        """
         for inst in self.instList:
             inst.disconnect()
         self.Destroy()
@@ -257,12 +350,18 @@ class OpticalTab(wx.Panel):
 
 class AutoMeasureTab(wx.Panel):
     def __init__(self, parent, instList):
+        """
+
+        Args:
+            parent:
+            instList:
+        """
         wx.Panel.__init__(self, parent)
         self.instList = instList
         vbox = wx.BoxSizer(wx.VERTICAL)
         hbox = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.fineAlign = fineAlign(self.getLasers(), self.getMotors())
+        self.fineAlign = fineAlign(self.getLasers(), self.getMotorsOpt())
         try:
             self.fineAlignPanel = fineAlignPanel(self, self.fineAlign)
         except Exception as e:
@@ -270,9 +369,10 @@ class AutoMeasureTab(wx.Panel):
                                     'Error', wx.ICON_ERROR)
             dial.ShowModal()
 
-        self.autoMeasureE = autoMeasure(self.getLasers(), self.getMotors(), self.fineAlign)
-        self.autoMeasureO = autoMeasure(self.getLasers(), self.getMotors(), self.fineAlign)
-        self.autoMeasurePanel = autoMeasurePanel(self, self.autoMeasureE, self.autoMeasureO)
+        self.autoMeasure = autoMeasure(self.getLasers(), self.getMotorsOpt(), self.getMotorsElec(), self.getSMUs(),
+                                       self.fineAlign)
+
+        self.autoMeasurePanel = autoMeasurePanel(self, self.autoMeasure)
 
         vbox.Add(self.autoMeasurePanel, proportion=0, flag=wx.EXPAND)
 
@@ -285,32 +385,81 @@ class AutoMeasureTab(wx.Panel):
         #sys.stderr = logWriterError(self.log)
 
     def motorFound(self):
+        """
+
+        Returns:
+
+        """
         motorFound = False
         for inst in self.instList:
             motorFound = motorFound | inst.isMotor
         return motorFound
 
     def laserFound(self):
+        """
+
+        Returns:
+
+        """
         laserFound = False
         for inst in self.instList:
             laserFound = laserFound | inst.isLaser
         return laserFound
 
     def getLasers(self):
+        """
+
+        Returns:
+
+        """
         laserList = []
         for inst in self.instList:
             if inst.isLaser:
                 laserList.append(inst)
         return laserList
 
-    def getMotors(self):
+    def getMotorsOpt(self):
+        """
+
+        Returns:
+
+        """
         motorList = []
         for inst in self.instList:
-            if inst.isMotor:
+            if inst.isMotor and inst.isOpt:
                 motorList.append(inst)
         return motorList
 
+    def getMotorsElec(self):
+        """
+
+        Returns:
+
+        """
+        motorList = []
+        for inst in self.instList:
+            if inst.isMotor and inst.isElec:
+                motorList.append(inst)
+        return motorList
+
+    def getSMUs(self):
+        """
+
+        Returns:
+
+        """
+        SMUList = []
+        for inst in self.instList:
+            if inst.isSMU:
+                SMUList.append(inst)
+        return SMUList
+
     def OnExitApp(self, event):
+        """
+
+        Args:
+            event:
+        """
         for inst in self.instList:
             inst.disconnect()
         self.Destroy()
@@ -318,6 +467,12 @@ class AutoMeasureTab(wx.Panel):
 
 class TestingparametersTab(wx.Panel):
     def __init__(self, parent, instList):
+        """
+
+        Args:
+            parent:
+            instList:
+        """
         wx.Panel.__init__(self, parent)
         self.instList = instList
         vbox = wx.BoxSizer(wx.VERTICAL)
@@ -336,18 +491,33 @@ class TestingparametersTab(wx.Panel):
         #sys.stderr = logWriterError(self.log)
 
     def motorFound(self):
+        """
+
+        Returns:
+
+        """
         motorFound = False
         for inst in self.instList:
             motorFound = motorFound | inst.isMotor
         return motorFound
 
     def laserFound(self):
+        """
+
+        Returns:
+
+        """
         laserFound = False
         for inst in self.instList:
             laserFound = laserFound | inst.isLaser
         return laserFound
 
     def getLasers(self):
+        """
+
+        Returns:
+
+        """
         laserList = []
         for inst in self.instList:
             if inst.isLaser:
@@ -355,6 +525,11 @@ class TestingparametersTab(wx.Panel):
         return laserList
 
     def getMotors(self):
+        """
+
+        Returns:
+
+        """
         motorList = []
         for inst in self.instList:
             if inst.isMotor:
@@ -362,6 +537,11 @@ class TestingparametersTab(wx.Panel):
         return motorList
 
     def OnExitApp(self, event):
+        """
+
+        Args:
+            event:
+        """
         for inst in self.instList:
             inst.disconnect()
         self.Destroy()
@@ -370,7 +550,12 @@ class TestingparametersTab(wx.Panel):
 class instrumentFrame_withtabs(wx.Frame):
 
     def __init__(self, parent, instList):
+        """
 
+        Args:
+            parent:
+            instList:
+        """
         displaySize = wx.DisplaySize()
         super(instrumentFrame_withtabs, self).__init__(parent, title='Instrument Control', size=(displaySize[0] * 5 / 8.0, displaySize[1] * 3 / 4.0))
 
@@ -386,6 +571,9 @@ class instrumentFrame_withtabs(wx.Frame):
         self.Show()
 
     def InitUI(self):
+        """
+
+        """
         self.Bind(wx.EVT_CLOSE, self.OnExitApp)
 
 
@@ -425,6 +613,11 @@ class instrumentFrame_withtabs(wx.Frame):
         sys.stderr = logWriterError(self.log)
 
     def OnExitApp(self, event):
+        """
+
+        Args:
+            event:
+        """
         for inst in self.instList:
             inst.disconnect()
         self.Destroy()

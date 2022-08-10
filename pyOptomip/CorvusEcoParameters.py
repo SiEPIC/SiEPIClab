@@ -26,17 +26,26 @@ import CorvusEco
 import CorvusEcoFrame
 import pyvisa as visa
 
-# Panel in the Connect Instruments window which contains the connection settings for the Corvus Eco.
 class CorvusEcoParameters(wx.Panel):
     name = 'Stage: Corvus Eco'
     def __init__(self, parent, connectPanel, **kwargs):
+        """
+        Panel in the Connect Instruments window which contains the connection settings for the Corvus Eco.
+        Args:
+            parent:
+            connectPanel:
+            **kwargs:
+        """
         super(CorvusEcoParameters, self).__init__(parent)
         self.connectPanel = connectPanel
         self.InitUI()
         
         
     def InitUI(self):
-        sb = wx.StaticBox(self, label='Corvus Eco Connection Parameters');
+        """
+
+        """
+        sb = wx.StaticBox(self, label='Corvus Eco Connection Parameters')
         vbox = wx.StaticBoxSizer(sb, wx.VERTICAL)
         hbox = wx.BoxSizer(wx.HORIZONTAL)
         
@@ -45,13 +54,13 @@ class CorvusEcoParameters(wx.Panel):
         self.para1name = wx.StaticText(self,label='Serial Port')
         self.para1tc = wx.ComboBox(self, choices=visa.ResourceManager().list_resources())
         #self.para1tc = wx.TextCtrl(self,value='ASRL5::INSTR')
-        self.para1.AddMany([(self.para1name,1,wx.EXPAND),(self.para1tc,1,wx.EXPAND)])
+        self.para1.AddMany([(self.para1name, 1, wx.EXPAND), (self.para1tc, 1, wx.EXPAND)])
         
         #Second Parameter: Number of Axis
         self.para2 = wx.BoxSizer(wx.HORIZONTAL)
-        self.para2name = wx.StaticText(self,label='Number of Axis')
-        self.para2tc = wx.TextCtrl(self,value='3')
-        self.para2.AddMany([(self.para2name,1,wx.EXPAND),(self.para2tc,1,wx.EXPAND)])
+        self.para2name = wx.StaticText(self, label='Number of Axis')
+        self.para2tc = wx.TextCtrl(self, value='3')
+        self.para2.AddMany([(self.para2name, 1, wx.EXPAND), (self.para2tc, 1, wx.EXPAND)])
         
         self.disconnectBtn = wx.Button(self, label='Disconnect')
         self.disconnectBtn.Bind( wx.EVT_BUTTON, self.disconnect)

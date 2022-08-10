@@ -42,11 +42,18 @@ softwareVersion = "1.1"
 
 devTypes = [CorvusEcoParameters, MGMotorParameters, QontrolMotorParameters,
             hp816x_N77Det_instrParameters, hp816x_instrParameters,
-            SMUParameters,]# N77Det_instrParameters]
+            SMUParameters]# N77Det_instrParameters]
 
 
 class ConnectCB(wx.Choicebook):
     def __init__(self, parent, id, connectPanel):
+        """
+        Contains pages with different connection protocols for various devices.
+        Args:
+            parent:
+            id:
+            connectPanel:
+        """
         wx.Choicebook.__init__(self, parent, id)
         self.connectPanel = connectPanel
         # Reduce load time by getting VISA addresses here and passing them to each panel
@@ -63,6 +70,10 @@ class ConnectCB(wx.Choicebook):
 
 class pyOptomip(wx.Frame):
     def __init__(self):
+        """
+        Frame which allows connection to various instruments. When closed it opens up the instrument frame
+        to control the instruments.
+        """
         wx.Frame.__init__(self, None, wx.ID_ANY,
                           "Connect instruments",
                           size=(600, 400))
@@ -86,10 +97,18 @@ class pyOptomip(wx.Frame):
         self.Show()
 
     def OnButton_Done(self, event):
+        """
+
+        Args:
+            event:
+        """
         self.createInstrumentFrame()
         self.Destroy()
 
     def createInstrumentFrame(self):
+        """
+
+        """
         try:
             instrumentFrame_withtabs(None, self.panel.instList)
             # instrumentFrame(None, self.panel.instList)

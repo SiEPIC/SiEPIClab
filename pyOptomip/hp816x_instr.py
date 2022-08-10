@@ -587,149 +587,153 @@ class hp816x(object):
 
         # ViStatus _VI_FUNC hp816x_init(ViRsrc resourceName, ViBoolean IDQuery, ViBoolean reset, ViPSession ihandle);
         self.hp816x_init = self.hLib.hp816x_init;
-        self.hp816x_init.argtypes = [c_char_p, c_uint16, c_uint16, POINTER(c_int32)];
+        self.hp816x_init.argTypes = [c_char_p, c_uint16, c_uint16, POINTER(c_int32)];
         self.hp816x_init.restype = c_int32;
 
         # ViStatus _VI_FUNC hp816x_close(ViSession ihandle);
         self.hp816x_close = self.hLib.hp816x_close;
-        self.hp816x_close.argtypes = [c_int32];
+        self.hp816x_close.argTypes = [c_int32];
         self.hp816x_close.restype = c_int32;
 
         # ViStatus _VI_FUNC hp816x_set_TLS_parameters(ViSession ihandle, ViInt32 TLSSlot, ViInt32 powerUnit, ViInt32 opticalOutput, ViBoolean turnLaser, ViReal64 power, ViReal64 attenuation, ViReal64 wavelength);
         self.hp816x_set_TLS_parameters = self.hLib.hp816x_set_TLS_parameters;
-        self.hp816x_set_TLS_parameters.argtypes = [c_int32, c_int32, c_int32, c_int32, c_uint16, c_double, c_double,
+        self.hp816x_set_TLS_parameters.argTypes = [c_int32, c_int32, c_int32, c_int32, c_uint16, c_double, c_double,
                                                    c_double];
         self.hp816x_set_TLS_parameters.restype = c_int32;
 
         # ViStatus _VI_FUNC hp816x_registerMainframe(ViSession ihandle);
         self.hp816x_registerMainframe = self.hLib.hp816x_registerMainframe;
-        self.hp816x_registerMainframe.argtypes = [c_int32]
+        self.hp816x_registerMainframe.argTypes = [c_int32]
         self.hp816x_registerMainframe.restype = c_int32;
 
         # ViStatus _VI_FUNC hp816x_prepareMfLambdaScan(ViSession ihandle, ViInt32 powerUnit, ViReal64 power, ViInt32 opticalOutput, ViInt32 numberofScans, ViInt32 PWMChannels, ViReal64 startWavelength, ViReal64 stopWavelength, ViReal64 stepSize, ViUInt32 numberofDatapoints, ViUInt32 numberofChannels);
         self.hp816x_prepareMfLambdaScan = self.hLib.hp816x_prepareMfLambdaScan;
-        self.hp816x_prepareMfLambdaScan.argtypes = [c_int32, c_int32, c_double, c_int32, c_int32, c_int32, c_double,
+        self.hp816x_prepareMfLambdaScan.argTypes = [c_int32, c_int32, c_double, c_int32, c_int32, c_int32, c_double,
                                                     c_double, c_double, POINTER(c_uint32), POINTER(c_uint32)]
         self.hp816x_prepareMfLambdaScan.restype = c_int32;
 
         # ViStatus _VI_FUNC hp816x_executeMfLambdaScan(ViSession ihandle, ViReal64wavelengthArray[]);
         self.hp816x_executeMfLambdaScan = self.hLib.hp816x_executeMfLambdaScan;
-        self.hp816x_executeMfLambdaScan.argtypes = [c_int32, POINTER(c_double)]
+        self.hp816x_executeMfLambdaScan.argTypes = [c_int32, POINTER(c_double)]
         self.hp816x_executeMfLambdaScan.restype = c_int32;
 
         # ViStatus _VI_FUNC hp816x_setSweepSpeed(ViSession ihandle, ViInt32 Sweep_Speed);
         self.hp816x_setSweepSpeed = self.hLib.hp816x_setSweepSpeed;
-        self.hp816x_setSweepSpeed.argtypes = [c_int32, c_int32]
+        self.hp816x_setSweepSpeed.argTypes = [c_int32, c_int32]
         self.hp816x_setSweepSpeed.restype = c_int32;
 
         # ViStatus _VI_FUNC hp816x_getLambdaScanResult(ViSession ihandle, ViInt32 PWMChannel, ViBoolean cliptoLimit, ViReal64 clippingLimit, ViReal64powerArray[], ViReal64lambdaArray[]);
         self.hp816x_getLambdaScanResult = self.hLib.hp816x_getLambdaScanResult;
-        self.hp816x_getLambdaScanResult.argtypes = [c_int32, c_int32, c_uint16, c_double, array_1d_double,
+        self.hp816x_getLambdaScanResult.argTypes = [c_int32, c_int32, c_uint16, c_double, array_1d_double,
                                                     array_1d_double]
         self.hp816x_getLambdaScanResult.restype = c_int32;
 
         # ViStatus _VI_FUNC hp816x_forceTransaction(ViSession ihandle, ViBoolean forceTransaction);
         self.hp816x_forceTransaction = self.hLib.hp816x_forceTransaction;
-        self.hp816x_forceTransaction.argtypes = [c_int32, c_uint16]
+        self.hp816x_forceTransaction.argTypes = [c_int32, c_uint16]
         self.hp816x_forceTransaction.restype = c_int32;
 
         # ViStatus _VI_FUNC hp816x_errorQueryDetect(ViSession ihandle, ViBoolean automaticErrorDetection);
         self.hp816x_errorQueryDetect = self.hLib.hp816x_errorQueryDetect;
-        self.hp816x_errorQueryDetect.argtypes = [c_int32, c_uint16]
+        self.hp816x_errorQueryDetect.argTypes = [c_int32, c_uint16]
         self.hp816x_errorQueryDetect.restype = c_int32;
 
         # ViStatus _VI_FUNC hp816x_error_query(ViSession ihandle, ViPInt32 instrumentErrorCode, ViChar errorMessage[]);
         self.hp816x_error_query = self.hLib.hp816x_error_query;
-        self.hp816x_error_query.argtypes = [c_int32, POINTER(c_int32), c_char_p]
+        self.hp816x_error_query.argTypes = [c_int32, POINTER(c_int32), c_char_p]
         self.hp816x_error_query.restype = c_int32;
 
         # ViStatus _VI_FUNC hp816x_error_message(ViSession ihandle, ViStatus errorCode, ViString errorMessage);
         self.hp816x_error_message = self.hLib.hp816x_error_message;
-        self.hp816x_error_message.argtypes = [c_int32, c_int32, c_char_p]
+        self.hp816x_error_message.argTypes = [c_int32, c_int32, c_char_p]
         self.hp816x_error_message.restype = c_int32;
 
-        # ViStatus _VI_FUNC hp816x_set_PWM_parameters(ViSession ihandle, ViInt32 PWMSlot, ViInt32 channelNumber, ViBoolean rangeMode, ViBoolean powerUnit, ViBoolean internalTrigger, ViReal64 wavelength, ViReal64 averagingTime, ViReal64 powerRange);
-        self.hp816x_set_PWM_parameters = self.hLib.hp816x_set_PWM_parameters;
-        self.hp816x_set_PWM_parameters.argtypes = [c_int32, c_int32, c_int32, c_uint16, c_uint16, c_uint16, c_double,
+        # ViStatus _VI_FUNC hp816x_set_PWM_parameters(ViSession ihandle, ViInt32 PWMSlot, ViInt32
+        # channelNumber, ViBoolean rangeMode, ViBoolean powerUnit, ViBoolean internalTrigger, ViReal64 wavelength, ViReal64 averagingTime, ViReal64 powerRange);
+        self.hp816x_set_PWM_parameters = self.hLib.hp816x_set_PWM_parameters
+        self.hp816x_set_PWM_parameters.argTypes = [c_int32, c_int32, c_int32, c_uint16, c_uint16, c_uint16, c_double,
                                                    c_double, c_double]
-        self.hp816x_set_PWM_parameters.restype = c_int32;
+        self.hp816x_set_PWM_parameters.restype = c_int32
 
-        # ViStatus _VI_FUNC hp816x_set_PWM_averagingTime(ViSession ihandle, ViInt32 PWMSlot, ViInt32 channelNumber, ViReal64 averagingTime);
-        self.hp816x_set_PWM_averagingTime = self.hLib.hp816x_set_PWM_averagingTime;
-        self.hp816x_set_PWM_averagingTime.argtypes = [c_int32, c_int32, c_int32, c_double]
-        self.hp816x_set_PWM_averagingTime.restype = c_int32;
+        # ViStatus _VI_FUNC hp816x_set_PWM_averagingTime(ViSession ihandle, ViInt32 PWMSlot, ViInt32
+        # channelNumber, ViReal64 averagingTime);
+        self.hp816x_set_PWM_averagingTime = self.hLib.hp816x_set_PWM_averagingTime
+        self.hp816x_set_PWM_averagingTime.argTypes = [c_int32, c_int32, c_int32, c_double]
+        self.hp816x_set_PWM_averagingTime.restype = c_int32
 
-        # ViStatus _VI_FUNC hp816x_set_PWM_wavelength(ViSession ihandle, ViInt32 PWMSlot, ViInt32 channelNumber, ViReal64 wavelength);
-        self.hp816x_set_PWM_wavelength = self.hLib.hp816x_set_PWM_wavelength;
-        self.hp816x_set_PWM_wavelength.argtypes = [c_int32, c_int32, c_int32, c_double]
-        self.hp816x_set_PWM_wavelength.restype = c_int32;
+        # ViStatus _VI_FUNC hp816x_set_PWM_wavelength(ViSession ihandle, ViInt32 PWMSlot,
+        # ViInt32 channelNumber, ViReal64 wavelength)
+        self.hp816x_set_PWM_wavelength = self.hLib.hp816x_set_PWM_wavelength
+        self.hp816x_set_PWM_wavelength.argTypes = [c_int32, c_int32, c_int32, c_double]
+        self.hp816x_set_PWM_wavelength.restype = c_int32
 
-        # ViStatus _VI_FUNC hp816x_set_PWM_powerRange(ViSession ihandle, ViInt32 PWMSlot, ViInt32 channelNumber, ViBoolean rangeMode, ViReal64 powerRange);
-        self.hp816x_set_PWM_powerRange = self.hLib.hp816x_set_PWM_powerRange;
-        self.hp816x_set_PWM_powerRange.argtypes = [c_int32, c_int32, c_int32, c_uint16, c_double]
-        self.hp816x_set_PWM_powerRange.restype = c_int32;
+        # ViStatus _VI_FUNC hp816x_set_PWM_powerRange(ViSession ihandle, ViInt32 PWMSlot, ViInt32
+        # channelNumber, ViBoolean rangeMode, ViReal64 powerRange);
+        self.hp816x_set_PWM_powerRange = self.hLib.hp816x_set_PWM_powerRange
+        self.hp816x_set_PWM_powerRange.argTypes = [c_int32, c_int32, c_int32, c_uint16, c_double]
+        self.hp816x_set_PWM_powerRange.restype = c_int32
 
         # ViStatus _VI_FUNC hp816x_set_PWM_powerUnit(ViSession ihandle, ViInt32 PWMSlot, ViInt32 channelNumber, ViInt32 powerUnit);
         self.hp816x_set_PWM_powerUnit = self.hLib.hp816x_set_PWM_powerUnit;
-        self.hp816x_set_PWM_powerUnit.argtypes = [c_int32, c_int32, c_int32, c_int32]
+        self.hp816x_set_PWM_powerUnit.argTypes = [c_int32, c_int32, c_int32, c_int32]
         self.hp816x_set_PWM_powerUnit.restype = c_int32;
 
         # ViStatus _VI_FUNC hp816x_PWM_readValue(ViSession ihandle, ViInt32 PWMSlot, ViUInt32 channelNumber, ViPReal64 measuredValue);
         self.hp816x_PWM_readValue = self.hLib.hp816x_PWM_readValue;
-        self.hp816x_PWM_readValue.argtypes = [c_int32, c_int32, c_uint32, POINTER(c_double)]
+        self.hp816x_PWM_readValue.argTypes = [c_int32, c_int32, c_uint32, POINTER(c_double)]
         self.hp816x_PWM_readValue.restype = c_int32;
 
         # ViStatus _VI_FUNC hp816x_set_TLS_opticalOutput(ViSession ihandle, ViInt32 TLSSlot, ViInt32 setOpticalOutput);
         self.hp816x_set_TLS_opticalOutput = self.hLib.hp816x_set_TLS_opticalOutput;
-        self.hp816x_set_TLS_opticalOutput.argtypes = [c_int32, c_int32, c_int32]
+        self.hp816x_set_TLS_opticalOutput.argTypes = [c_int32, c_int32, c_int32]
         self.hp816x_set_TLS_opticalOutput.restype = c_int32;
 
         # ViStatus _VI_FUNC hp816x_getSlotInformation_Q(ViSession ihandle, ViInt32 arraySize, ViInt32 slotInformation[]);
         self.hp816x_getSlotInformation_Q = self.hLib.hp816x_getSlotInformation_Q;
-        self.hp816x_getSlotInformation_Q.argtypes = [c_int32, c_int32, POINTER(c_int32)]
+        self.hp816x_getSlotInformation_Q.argTypes = [c_int32, c_int32, POINTER(c_int32)]
         self.hp816x_getSlotInformation_Q.restype = c_int32;
 
         # ViStatus _VI_FUNC hp816x_getNoOfRegPWMChannels_Q(ViSession ihandle, ViUInt32 numberofPWMChannels);
         self.hp816x_getNoOfRegPWMChannels_Q = self.hLib.hp816x_getNoOfRegPWMChannels_Q;
-        self.hp816x_getNoOfRegPWMChannels_Q.argtypes = [c_int32, POINTER(c_uint32)]
+        self.hp816x_getNoOfRegPWMChannels_Q.argTypes = [c_int32, POINTER(c_uint32)]
         self.hp816x_getNoOfRegPWMChannels_Q.restype = c_int32;
 
         # ViStatus _VI_FUNC hp816x_setInitialRangeParams(ViSession ihandle, ViInt32 PWMChannel, ViBoolean resettoDefault, ViReal64 initialRange, ViReal64 rangeDecrement);
         self.hp816x_setInitialRangeParams = self.hLib.hp816x_setInitialRangeParams;
-        self.hp816x_setInitialRangeParams.argtypes = [c_int32, c_int32, c_uint16, c_double, c_double]
+        self.hp816x_setInitialRangeParams.argTypes = [c_int32, c_int32, c_uint16, c_double, c_double]
         self.hp816x_setInitialRangeParams.restype = c_int32;
 
         self.hp816x_unregisterMainframe = self.hLib.hp816x_unregisterMainframe;
-        self.hp816x_unregisterMainframe.argtypes = [c_int32]
+        self.hp816x_unregisterMainframe.argTypes = [c_int32]
         self.hp816x_unregisterMainframe.restype = c_int32;
 
         # ViStatus _VI_FUNC hp816x_set_TLS_laserState(ViSession ihandle, ViInt32 TLSSlot, ViBoolean laserState);
         self.hp816x_set_TLS_laserState = self.hLib.hp816x_set_TLS_laserState;
-        self.hp816x_set_TLS_laserState.argtypes = [c_int32, c_int32, c_uint16]
+        self.hp816x_set_TLS_laserState.argTypes = [c_int32, c_int32, c_uint16]
         self.hp816x_set_TLS_laserState.restype = c_int32;
 
         # ViStatus _VI_FUNC hp816x_set_TLS_wavelength(ViSession ihandle, ViInt32 TLSSlot, ViInt32 wavelengthSelection, ViReal64 wavelength);
         self.hp816x_set_TLS_wavelength = self.hLib.hp816x_set_TLS_wavelength;
-        self.hp816x_set_TLS_wavelength.argtypes = [c_int32, c_int32, c_int32, c_double]
+        self.hp816x_set_TLS_wavelength.argTypes = [c_int32, c_int32, c_int32, c_double]
         self.hp816x_set_TLS_wavelength.restype = c_int32;
 
         # ViStatus _VI_FUNC hp816x_set_TLS_power(ViSession ihandle, ViInt32 TLSSlot, ViInt32 unit, ViInt32 powerSelection, ViReal64 manualPower);
         self.hp816x_set_TLS_power = self.hLib.hp816x_set_TLS_power;
-        self.hp816x_set_TLS_power.argtypes = [c_int32, c_int32, c_int32, c_int32, c_double]
+        self.hp816x_set_TLS_power.argTypes = [c_int32, c_int32, c_int32, c_int32, c_double]
         self.hp816x_set_TLS_power.restype = c_int32;
 
         # ViStatus _VI_FUNC hp816x_cmd(ViSession ihandle, ViCharcommandString[]);
         self.hp816x_cmd = self.hLib.hp816x_cmd;
-        self.hp816x_cmd.argtypes = [c_int32, c_char_p]
+        self.hp816x_cmd.argTypes = [c_int32, c_char_p]
         self.hp816x_cmd.restype = c_int32;
 
         self.hp816x_cmdString_Q = self.hLib.hp816x_cmdString_Q
-        self.hp816x_cmdString_Q.argtypes = [c_int32, c_char_p, c_int32, c_char_p]
+        self.hp816x_cmdString_Q.argTypes = [c_int32, c_char_p, c_int32, c_char_p]
         self.hp816x_cmdString_Q.restype = c_int32
 
         # ViStatus _VI_FUNC hp816x_returnEquidistantData(ViSession ihandle, ViBoolean equallySpacedDatapoints);
         self.hp816x_returnEquidistantData = self.hLib.hp816x_returnEquidistantData
-        self.hp816x_returnEquidistantData.argtypes = [c_int32, c_uint16]
+        self.hp816x_returnEquidistantData.argTypes = [c_int32, c_uint16]
         self.hp816x_returnEquidistantData.restype = c_int32
 
 
