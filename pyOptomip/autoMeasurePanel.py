@@ -19,9 +19,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-import sys
-import traceback
 
+import traceback
 import wx
 import wx.lib.mixins.listctrl
 import myMatplotlibPanel
@@ -39,13 +38,24 @@ global fileLoaded
 class coordinateMapPanel(wx.Panel):
     def __init__(self, parent, autoMeasure, numDevices):
         """Panel which is used to calculate the transformation from gds coordinates to motor coordinates.
-        Three devices must be selected and the respective motor coordinates saved."""
+        Three devices must be selected and the respective motor coordinates saved.
+
+        Args:
+            parent:
+            autoMeasure:
+            numDevices:
+
+        Returns:
+            object: """
         super(coordinateMapPanel, self).__init__(parent)
         self.autoMeasure = autoMeasure
         self.numDevices = numDevices
         self.InitUI()
 
     def InitUI(self):
+        """
+
+        """
         gbs = wx.GridBagSizer(0, 0)
 
         stMotorCoord = wx.StaticText(self, label='Motor Coordinates')
@@ -694,7 +704,8 @@ class autoMeasurePanel(wx.Panel):
             if self.checkList.IsItemChecked(device.getDeviceID):
                 checkedDevices.append(device)
 
-        self.autoMeasure.beginMeasure(checkedDevices, self.dataimport)
+        self.autoMeasure.beginMeasure(checkedDevices, self.dataimport, self.checkList)
+
 
         # Copy settings from laser panel
         self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.copySweepSettings()

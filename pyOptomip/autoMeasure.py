@@ -19,7 +19,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-
 import wx
 from numpy import *
 import re
@@ -27,7 +26,6 @@ import os
 from scipy.io import savemat
 import time
 import matplotlib.pyplot as plt
-from collections import OrderedDict
 from ElectroOpticDevice import ElectroOpticDevice
 from measurementRoutines import measurementRoutines
 
@@ -36,12 +34,13 @@ class autoMeasure(object):
 
     def __init__(self, laser, motorOpt, motorElec, smu, fineAlign):
         """
-
+        Creates an autoMeasure object which is used to coordinate motors and perform automated
+        measurements.
         Args:
-            laser:
-            motorOpt:
-            motorElec:
-            smu:
+            laser: laser object
+            motorOpt: motor object controlling the chip stage
+            motorElec: motor object controlling the wedge probe stage
+            smu: smu object controls SMU
             fineAlign:
         """
         self.laser = laser
@@ -52,7 +51,12 @@ class autoMeasure(object):
         self.saveFolder = os.getcwd()
 
     def readCoordFile(self, fileName):
-
+        """
+        Reads a coordinate file generated using the automated coordinate extraction in k-layout.
+        Stores all data as a list of ElectroOpticDevice objects, self.devices.
+        Args:
+            fileName: Path to desired text file, a string
+        """
         with open(fileName, 'r') as f:
             data = f.readlines()
 
@@ -64,7 +68,7 @@ class autoMeasure(object):
             dataStrip2.append(j)
         # x,y,polarization,wavelength,type,deviceid,params
         reg = re.compile(r'(.*),(.*),(.*),([0-9]+),(.+),(.+),(.*)')
-        # x,y,deviceid,padname,params
+        # x, y, deviceid, padname, params
         regElec = re.compile(r'(.*),(.*),(.+),(.*),(.*)')
 
         self.devices = []
@@ -88,7 +92,16 @@ class autoMeasure(object):
                     print('Warning: The entry\n%s\nis not formatted correctly.' % line)
 
     def findCoordinateTransformOpt(self, motorCoords, gdsCoords):
-        """ Finds the best fit affine transform which maps the GDS coordinates to motor coordinates."""
+        """ Finds the best fit affine transform which maps the GDS coordinates to motor coordinates
+        for the motors controlling the chip stage.
+
+        Args:
+            motorCoords: 
+            gdsCoords: 
+
+        Returns:
+            M: a matrix used to map gds coordinates to motor coordinates.
+        """
 
         # if len(motorCoords) != (len(gdsCoords)+1):
         # raise CoordinateTransformException('You must have the same number of motor coordinates and GDS coordinates')
@@ -120,8 +133,16 @@ class autoMeasure(object):
         return M
 
     def findCoordinateTransformElec(self, motorCoords, gdsCoords):
-        """ Finds the best fit affine transform which maps the GDS coordinates to motor coordinates."""
+        """ Finds the best fit affine transform which maps the GDS coordinates to motor coordinates
+        for the motors controlling the wedge probe stage.
 
+        Args:
+            motorCoords: 
+            gdsCoords: 
+
+        Returns:
+            M: a matrix used to map gds coordinates to motor coordinates.
+        """
         # if len(motorCoords) != (len(gdsCoords)+1):
         # raise CoordinateTransformException('You must have the same number of motor coordinates and GDS coordinates')
 
@@ -152,28 +173,54 @@ class autoMeasure(object):
         return M
 
     def gdsToMotorCoordsOpt(self, gdsCoords):
-        """ Uses the calculated affine transform to map a GDS coordinate to a motor coordinate."""
+        """ Uses the calculated affine transform to map a GDS coordinate to a motor coordinate.
+
+        Args:
+            gdsCoords: 
+
+        Returns:
+            motorCoords: the motor coordinates for the chip stage that correspond to given gds
+            coordinates.
+        """
         gdsCoordVec = mat([[gdsCoords[0]], [gdsCoords[1]], [0], [1]])
         motorCoordVec = self.transformMatrixOpt * gdsCoordVec
         motorCoords = (float(motorCoordVec[0]), float(motorCoordVec[1]), float(motorCoordVec[2]))
         return motorCoords
 
     def gdsToMotorCoordsElec(self, gdsCoords):
-        """ Uses the calculated affine transform to map a GDS coordinate to a motor coordinate."""
+        """ Uses the calculated affine transform to map a GDS coordinate to a motor coordinate.
+
+        Args:
+            gdsCoords: 
+
+        Returns:
+            object: 
+        """
         gdsCoordVec = mat([[gdsCoords[0]], [gdsCoords[1]], [0], [1]])
         motorCoordVec = self.transformMatrixElec * gdsCoordVec
         motorCoords = (float(motorCoordVec[0]), float(motorCoordVec[1]), float(motorCoordVec[2]))
         return motorCoords
 
-    def beginMeasure(self, devices, testingParameters, abortFunction=None, updateFunction=None, updateGraph=True):
+    def beginMeasure(self, devices, testingParameters, checkList, abortFunction=None, updateFunction=None, updateGraph=True):
         """ Runs an automated measurement. For each device, wedge probe is moved out of the way, chip stage is moved
         so laser in aligned, wedge probe is moved to position. Various tests are performed depending on the contents
         of the testing parameters file.
 
         The sweep results, and metadata associated with the sweep are stored in a data file which is saved to the folder specified
         in self.saveFolder. An optional abort function can be specified which is called to determine if the measurement process should
-        be stopped. Also, an update function is called which can be used to update UI elements about the measurement progress."""
+        be stopped. Also, an update function is called which can be used to update UI elements about the measurement progress.
 
+        Args:
+            devices: 
+            testingParameters: 
+            abortFunction: 
+            updateFunction: 
+            updateGraph:
+
+        Returns:
+            object: """
+
+        self.checkList = checkList
         for i, d in enumerate(testingParameters['device']):
             for device in devices:
                 if device.getDeviceID == d:
@@ -182,17 +229,22 @@ class autoMeasure(object):
                     gdsCoordElec = (device.getElectricalCoordinates[0], device.getElectricalicalCoordinates[1])
                     motorCoordElec = self.gdsToMotorCoordsElec(gdsCoordElec)
 
-                    #move wedge probe out of the way
+                    # move wedge probe out of the way
                     self.motorElec.moveRelativeXYZElec(motorCoordElec[0], -2000, 2000)
-                    #move chip stage
+                    # move chip stage
                     x = motorCoordOpt[0] - self.motorOpt.getPosition[0]
                     y = motorCoordOpt[1] - self.motorOpt.getPosition[1]
                     z = motorCoordOpt[2] - self.motorOpt.getPosition[2]
                     self.motorOpt.moveAbsoluteXYZOpt(motorCoordOpt[0], motorCoordOpt[1], motorCoordOpt[2])
-                    #Move wedge probe and compensate for movement of chip stage
-                    self.motorElec.moveAbsoluteXYZElec(motorCoordElec[0]+x, motorCoordElec[1]+y, motorCoordElec[2]+z)
+                    # Move wedge probe and compensate for movement of chip stage
+                    self.motorElec.moveAbsoluteXYZElec(motorCoordElec[0] + x, motorCoordElec[1] + y,
+                                                       motorCoordElec[2] + z)
 
-                    self.fineAlign.doFineAlign()
+                    res, completed = self.fineAlign.doFineAlign()
+                    if completed is False:
+                        for ii in range(self.checkList.GetItemCount()):
+                            if self.devices[self.checkList.GetItemData(ii)].getDeviceID() == device.getDeviceID:
+                                self.checkList.SetItemTextColour(ii, wx.Colour(255, 0, 0))
 
                     if testingParameters['ELECflag'][i] is True:
                         measurementRoutines('ELEC', testingParameters, i, self.smu, self.laser)

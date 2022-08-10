@@ -5,6 +5,8 @@ class QontrolMotor:
     name = 'Qontrol'
     isQontrol = True
     isMotor = False
+    isOpt = False
+    isElec = True
     isLaser = False
 
     def __init__(self):

@@ -41,6 +41,8 @@ class CorvusEcoClass():
     name = 'CorvusEco'
     isSMU = False
     isMotor = True
+    isOpt = True
+    isElec = False
     isLaser = False
     isQontrol = False
     isDetect = False
