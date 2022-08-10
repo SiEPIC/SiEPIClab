@@ -29,7 +29,8 @@ class ElectroOpticDevice:
 
     def getDeviceType(self):
         """Returns the type of the device"""
-        return self.type
+        x = self.type.split(',')
+        return x[0]
 
     def getReferenceBondPad(self):
         """Returns the name and coordinates of the left-most bond pad within

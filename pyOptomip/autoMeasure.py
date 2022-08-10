@@ -35,6 +35,15 @@ from measurementRoutines import measurementRoutines
 class autoMeasure(object):
 
     def __init__(self, laser, motorOpt, motorElec, smu, fineAlign):
+        """
+
+        Args:
+            laser:
+            motorOpt:
+            motorElec:
+            smu:
+            fineAlign:
+        """
         self.laser = laser
         self.motorOpt = motorOpt
         self.motorElec = motorElec

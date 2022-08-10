@@ -17,6 +17,7 @@ class filterFrame(wx.Frame):
         self.fifteen = False
         self.keywords = set()
         self.deselect = set()
+        self.devTypes = set()
 
         #Checklist object
         self.checkList = checklist
@@ -39,6 +40,8 @@ class filterFrame(wx.Frame):
         wavelength = wx.StaticText(self, label='Wavelength')
 
         keywords = wx.StaticText(self, label='Keywords')
+
+        devType = wx.StaticText(self, label='Device Type')
 
         self.selTE = wx.CheckBox(self, label='TE', pos=(20, 20))
         self.selTE.SetValue(False)
@@ -68,6 +71,13 @@ class filterFrame(wx.Frame):
         hbox2 = wx.BoxSizer(wx.HORIZONTAL)
         hbox2.AddMany([(wavelength, 1, wx.EXPAND), (self.sel1310, 1, wx.EXPAND), (self.sel1550, 1, wx.EXPAND)])
 
+        self.selDeviceType = wx.ComboBox(self, size=(80, 20), choices=[], style=wx.CB_DROPDOWN)
+        self.selDeviceType.Bind(wx.EVT_COMBOBOX_DROPDOWN, self.on_drop_down)
+        btnSelDev = wx.Button(self, label='Select', size=(50, 20))
+        btnSelDev.Bind(wx.EVT_BUTTON, self.on_choose_device_type)
+        hbox5 = wx.BoxSizer(wx.HORIZONTAL)
+        hbox5.AddMany([(devType, 1, wx.EXPAND), (self.selDeviceType, 1, wx.EXPAND), (btnSelDev, 1, wx.EXPAND)])
+
         self.keyword = wx.TextCtrl(self)
         hbox3 = wx.BoxSizer(wx.HORIZONTAL)
         btnSelect = wx.Button(self, label='Select', size=(50, 20))
@@ -78,7 +88,8 @@ class filterFrame(wx.Frame):
                        (btnUnSelect, 1, wx.EXPAND)])
 
         vbox = wx.BoxSizer(wx.VERTICAL)
-        vbox.AddMany([(hbox1, 1, wx.EXPAND), (hbox2, 1, wx.EXPAND), (hbox3, 0, wx.EXPAND), (hbox4, 0, wx.EXPAND)])
+        vbox.AddMany([(hbox1, 1, wx.EXPAND), (hbox2, 1, wx.EXPAND), (hbox5, 0, wx.EXPAND), (hbox3, 0, wx.EXPAND),
+                      (hbox4, 0, wx.EXPAND)])
 
         self.SetSizer(vbox)
 
@@ -132,6 +143,12 @@ class filterFrame(wx.Frame):
 
                     self.checkList.CheckItem(i, False)
 
+        self.devTypes.discard('')
+        for select in self.devTypes:
+            for i in range(self.checkList.GetItemCount()):
+                if select == str(self.device_list[self.checkList.GetItemData(i)].getDeviceType()):
+                    self.checkList.CheckItem(i, True)
+
         self.keywords.discard('')
         for select in self.keywords:
             print(select)
@@ -172,3 +189,15 @@ class filterFrame(wx.Frame):
     def OnDeSelect(self, event):
         """Adds the word typed in to the textctrl object to a set of words to deselect"""
         self.deselect.add(self.keyword.GetValue())
+
+    def on_drop_down(self, event):
+        """Populates drop down menu with types of devices used in layout"""
+        devTypes = set()
+        for device in self.device_list:
+            devTypes.add(device.getDeviceType())
+        for type_ in devTypes:
+            self.selDeviceType.Append(type_)
+
+    def on_choose_device_type(self, event):
+        """Adds selected device type to a list containing the type of devices to select"""
+        self.devTypes.add(self.selDeviceType.GetValue())

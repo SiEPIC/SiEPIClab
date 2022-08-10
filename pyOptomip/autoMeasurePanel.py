@@ -79,29 +79,6 @@ class coordinateMapPanel(wx.Panel):
 
         self.GDSDevList = [self.tbGdsDevice1, self.tbGdsDevice2, self.tbGdsDevice3]
 
-        global fileLoaded
-        if fileLoaded is True:
-
-            global deviceListAsObjects
-            for dev in deviceListAsObjects:
-                if self.GDSDevList[0] == dev.getDeviceID():
-                    self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
-                    self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
-                    self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
-                    self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
-
-                if self.GDSDevList[1] == dev.getDeviceID():
-                    self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
-                    self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
-                    self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
-                    self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
-
-                if self.GDSDevList[2] == dev.getDeviceID():
-                    self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
-                    self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
-                    self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
-                    self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
-
         # Get Info of first Device
         stDevice1 = wx.StaticText(self, label='Device %d' % (1))
         self.tbxMotorCoord1 = wx.TextCtrl(self, size=(80, 20))
@@ -109,11 +86,6 @@ class coordinateMapPanel(wx.Panel):
         self.tbzMotorCoord1 = wx.TextCtrl(self, size=(80, 20))
 
         btnGetMotorCoord = wx.Button(self, label='Get Pos.', size=(50, 20))
-
-        self.stxMotorCoordLst.append(self.tbxMotorCoord1)
-
-        self.styMotorCoordLst.append(self.tbyMotorCoord1)
-        self.stzMotorCoordLst.append(self.tbzMotorCoord1)
 
         gbs.Add(stDevice1, pos=(2, 0), span=(1, 1))
         gbs.Add(self.tbxMotorCoord1, pos=(2, 2), span=(1, 1))
@@ -136,11 +108,6 @@ class coordinateMapPanel(wx.Panel):
 
         btnGetMotorCoord = wx.Button(self, label='Get Pos.', size=(50, 20))
 
-        self.stxMotorCoordLst.append(self.tbxMotorCoord2)
-
-        self.styMotorCoordLst.append(self.tbyMotorCoord2)
-        self.stzMotorCoordLst.append(self.tbzMotorCoord2)
-
         gbs.Add(stDevice2, pos=(3, 0), span=(1, 1))
         gbs.Add(self.tbxMotorCoord2, pos=(3, 2), span=(1, 1))
         gbs.Add(self.tbyMotorCoord2, pos=(3, 3), span=(1, 1))
@@ -161,11 +128,6 @@ class coordinateMapPanel(wx.Panel):
 
         btnGetMotorCoord = wx.Button(self, label='Get Pos.', size=(50, 20))
 
-        self.stxMotorCoordLst.append(self.tbxMotorCoord3)
-
-        self.styMotorCoordLst.append(self.tbyMotorCoord3)
-        self.stzMotorCoordLst.append(self.tbzMotorCoord3)
-
         # Get Info of third Device
         gbs.Add(stDevice3, pos=(4, 0), span=(1, 1))
         gbs.Add(self.tbxMotorCoord3, pos=(4, 2), span=(1, 1))
@@ -179,6 +141,38 @@ class coordinateMapPanel(wx.Panel):
                               lambda event, xcoord=self.tbxMotorCoord3, ycoord=self.tbyMotorCoord3,
                                      zcoord=self.tbzMotorCoord3: self.Event_OnCoordButton(
                                   event, xcoord, ycoord, zcoord))
+
+        global fileLoaded
+        if fileLoaded is True:
+
+            global deviceListAsObjects
+            for dev in deviceListAsObjects:
+                if self.GDSDevList[0] == dev.getDeviceID():
+                    self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
+                    self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
+                    self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
+                    self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
+                    self.stxMotorCoordLst.append(self.tbxMotorCoord1)
+                    self.styMotorCoordLst.append(self.tbyMotorCoord1)
+                    self.stzMotorCoordLst.append(self.tbzMotorCoord1)
+
+                if self.GDSDevList[1] == dev.getDeviceID():
+                    self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
+                    self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
+                    self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
+                    self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
+                    self.stxMotorCoordLst.append(self.tbxMotorCoord2)
+                    self.styMotorCoordLst.append(self.tbyMotorCoord2)
+                    self.stzMotorCoordLst.append(self.tbzMotorCoord2)
+
+                if self.GDSDevList[2] == dev.getDeviceID():
+                    self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
+                    self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
+                    self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
+                    self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
+                    self.stxMotorCoordLst.append(self.tbxMotorCoord3)
+                    self.styMotorCoordLst.append(self.tbyMotorCoord3)
+                    self.stzMotorCoordLst.append(self.tbzMotorCoord3)
 
         gbs.AddGrowableCol(1)
         gbs.AddGrowableCol(2)
