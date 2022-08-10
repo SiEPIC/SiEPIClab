@@ -166,13 +166,6 @@ class TopPanel(wx.Panel):
         self.outputFolderBtn.Bind(wx.EVT_BUTTON, self.OnButton_SelectOutputFolder)
         hbox6.AddMany([(st2, 1, wx.EXPAND), (self.outputFolderTb, 1, wx.EXPAND), (self.outputFolderBtn, 0, wx.EXPAND)])
 
-        #Import file select
-        hbox6_5 = wx.BoxSizer(wx.HORIZONTAL)
-        st10 = wx.StaticText(self, label='Import file:')
-        self.importFolderTb = wx.TextCtrl(self, style=wx.TE_READONLY)
-        self.importFolderBtn = wx.Button(self, wx.ID_OPEN, size=(50, 20))
-        self.importFolderBtn.Bind(wx.EVT_BUTTON, self.OnButton_SelectImportFolder)
-        hbox6_5.AddMany([(st10, 1, wx.EXPAND), (self.importFolderTb, 1, wx.EXPAND), (self.importFolderBtn, 0, wx.EXPAND)])
 
         #set button, import button and export button
         hbox7 = wx.BoxSizer(wx.HORIZONTAL)
@@ -190,7 +183,7 @@ class TopPanel(wx.Panel):
         #hboxouter.Add(vboxdevices, 0, wx.EXPAND)
 
         vboxOuter.AddMany([(hbox, 0, wx.EXPAND), (hbox2, 0, wx.EXPAND), (hboxouter, 0, wx.EXPAND),
-                           (hbox6, 0, wx.ALIGN_LEFT), (hbox6_5, 0, wx.ALIGN_LEFT), (hbox7, 0, wx.ALIGN_RIGHT)])
+                           (hbox6, 0, wx.ALIGN_LEFT), (hbox7, 0, wx.ALIGN_RIGHT)])
 
         self.SetSizer(vboxOuter)
 
@@ -381,6 +374,7 @@ class TopPanel(wx.Panel):
                 d = self.data['index'][c]
                 self.checkList.SetItemBackgroundColour(d, wx.Colour(255, 255, 0))
 
+
     def retrieveunhighlight(self, index):
 
         num = []
@@ -400,7 +394,6 @@ class TopPanel(wx.Panel):
                 if self.data['RoutineNumber'][c] == self.data['RoutineNumber'][index]:
                     d = self.data['index'][c]
                     self.checkList.SetItemBackgroundColour(d, wx.Colour(255, 255, 255))
-
 
 
     def SearchDevices(self, event):
@@ -1119,6 +1112,7 @@ class TopPanel(wx.Panel):
                             + ',' + str(self.data['setvSweepspeed'][c]) + ',' + str(self.data['setvLaseroutput'][c]) + ','
                             + str(self.data['setvNumscans'][c]) + ',' + str(self.data['setvInitialRange'][c]) + ',' + str(self.data['setvRangeDec'][c]) + ',' + str(self.data['setvChannelA'][c]) + ',' + str(self.data['setvChannelB'][c]) + ',' + str(self.data['Voltages'][c]) + ',' + '\n')
                 print('Data exported to ' + savefilestring)
+
 
 
 class InstructPanel(wx.Panel):
