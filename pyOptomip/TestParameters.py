@@ -188,6 +188,13 @@ class TopPanel(wx.Panel):
         self.SetSizer(vboxOuter)
 
     def OnButton_ChooseCoordFile(self, event):
+        """
+        When event is triggered this function opens the chosen coordinate file and displays the devices in a checklist
+        :param event:
+        :type event:
+        :return:
+        :rtype:
+        """
         """ Opens a file dialog to select a coordinate file. """
         fileDlg = wx.FileDialog(self, "Open", "", "",
                                 "Text Files (*.txt)|*.txt",
@@ -283,7 +290,13 @@ class TopPanel(wx.Panel):
 
 
     def OnButton_CheckAll(self, event):
-        # self.checkList.CheckAll()
+        """
+        Checks all the devices in the checklist, will not check the devices that have already been set
+        :param event:
+        :type event:
+        :return:
+        :rtype:
+        """
         if self.retrievedataflag == False:
             for ii in range(self.checkList.GetItemCount()):
                 if self.set[ii] == False:
@@ -293,6 +306,13 @@ class TopPanel(wx.Panel):
 
 
     def retrievedata(self, event):
+        """
+        configures the switch from set data mode to retrieve data mode by setting or unsetting various flags
+        :param event:
+        :type event:
+        :return:
+        :rtype:
+        """
 
         if self.retrievedataflag == False:
             print("Entering routine extraction mode")
@@ -328,14 +348,27 @@ class TopPanel(wx.Panel):
 
 
     def OnButton_UncheckAll(self, event):
+        """
+        Uncheck all items in the checklist
+        :param event:
+        :type event:
+        :return:
+        :rtype:
+        """
 
         for ii in range(self.checkList.GetItemCount()):
             self.checkList.CheckItem(ii, False)
 
 
     def highlight(self, event):
+        """
+        Highlights the items in the checklist that contain the string in the searchfile textctrl box
+        :param event:
+        :type event:
+        :return:
+        :rtype:
+        """
 
-            #for c in range(len(self.data['device'])):
         for c in range(self.checkList.GetItemCount()):
             if self.set[c] != True and self.searchFile.GetValue() != None and self.searchFile.GetValue() in self.checkList.GetItemText(c, 0):
                 self.checkList.SetItemBackgroundColour(c, wx.Colour(255, 255, 0))
@@ -347,6 +380,13 @@ class TopPanel(wx.Panel):
 
 
     def retrievehighlight(self, index):
+        """
+        When an item is selected while in retreive data mode this function highlights all the items that have the same routine (routine similarity is based on when the routine was orginally set, not whether of not the routines are the same)
+        :param index:
+        :type index:
+        :return:
+        :rtype:
+        """
 
         flag = False
         if self.set[index] == True:
@@ -376,6 +416,13 @@ class TopPanel(wx.Panel):
 
 
     def retrieveunhighlight(self, index):
+        """
+        When the device that was previosuly selected becomes unselected this function unhighlights all similar routine devices
+        :param index: the index of the device being unselected
+        :type index: int
+        :return:
+        :rtype:
+        """
 
         num = []
         for d in self.highlightchecked:
@@ -397,33 +444,42 @@ class TopPanel(wx.Panel):
 
 
     def SearchDevices(self, event):
-
+        """
+        When the search devices button is clicked this function selects all devices in the checklist that contain the string in searchfile textctrl box
+        :param event: event triggered by pressing the search devices button
+        :type event:
+        :return:
+        :rtype:
+        """
         for c in range(len(self.set)):
-            #print(self.checkList.GetItemText(c, 0))
-            #print(self.searchFile.GetValue())
             if self.set[c] != True and self.searchFile.GetValue() != '' and self.searchFile.GetValue() in self.checkList.GetItemText(c, 0):
                 self.checkList.CheckItem(c, True)
-                #self.checkList.SetItemBackgroundColour(c, wx.Colour(255, 0, 0))
 
-            #if self.checkList.GetItemText(c, 0) == self.searchFile.GetValue():
-              #  self.checkList.CheckItem(c, True)
 
 
     def unSearchDevices(self, event):
-
-        #for c in range(len(self.data['device'])):
+        """
+        Unselects all devices in checklist that contain the string in searchfile textctrl box
+        :param event: the event triggered on pressing the unselect keyword button
+        :type event: event
+        :return:
+        :rtype:
+        """
         for c in range(len(self.set)):
-                # print(self.checkList.GetItemText(c, 0))
-                # print(self.searchFile.GetValue())
             if self.set[c] != True and self.searchFile.GetValue() != '' and self.searchFile.GetValue() in self.checkList.GetItemText(c, 0):
                 self.checkList.CheckItem(c, False)
-            #print(self.checkList.GetItemText(c, 0))
-            #print(self.searchFile.GetValue())
-            #if self.checkList.GetItemText(c, 0) == self.searchFile.GetValue():
-               # self.checkList.CheckItem(c, False)
 
 
     def checkListSort(self, item1, item2):
+        """
+        Sorts two items passed to it, used to sort the items in the checklist on creation
+        :param item1:
+        :type item1:
+        :param item2:
+        :type item2:
+        :return:
+        :rtype:
+        """
         # Items are the client data associated with each entry
         if item2 < item2:
             return -1
@@ -434,6 +490,13 @@ class TopPanel(wx.Panel):
 
 
     def checkListchecked(self, event):
+        """
+        If in sedt data mode this function adds the now checked device to a list of selected devices, if in retrieve data mode this function calls reteivedataswap beginning the data reteival process for the device in quuestion
+        :param event: on selecting a device in the checklist
+        :type event: event
+        :return:
+        :rtype:
+        """
         c = event.GetIndex()
 
         if self.retrievedataflag == False:
@@ -446,6 +509,13 @@ class TopPanel(wx.Panel):
 
 
     def retrievedataswap(self, c):
+        """
+
+        :param c:
+        :type c:
+        :return:
+        :rtype:
+        """
 
         self.retrievedataselected.append(c)
 
@@ -652,12 +722,14 @@ class TopPanel(wx.Panel):
                 self.setpanel.setvflagholder = self.data['setvflag'][number[p]]
 
 
-    def checkListcheckedmanual(self, Index):
-        self.checkList.CheckItem(Index, True)
-        self.selected.append(Index)
-
-
     def checkListunchecked(self, event):
+        """
+
+        :param event:
+        :type event:
+        :return:
+        :rtype:
+        """
         x = event.GetIndex()
         if self.setflag == False and self.retrievedataflag == False:
             self.selected.remove(x)
@@ -669,7 +741,13 @@ class TopPanel(wx.Panel):
 
 
     def OnButton_SelectOutputFolder(self, event):
-        """ Opens a file dialog to select an output directory for automatic measurement. """
+        """
+
+        :param event:
+        :type event:
+        :return:
+        :rtype:
+        """
         dirDlg = wx.DirDialog(self, "Open", "", wx.DD_DEFAULT_STYLE)
         dirDlg.ShowModal()
         self.outputFolderTb.SetValue(dirDlg.GetPath())
@@ -677,18 +755,27 @@ class TopPanel(wx.Panel):
 
 
     def OnButton_SelectImportFolder(self, event):
-        """ Opens a file dialog to select an output directory for automatic measurement. """
+        """
+
+        :param event:
+        :type event:
+        :return:
+        :rtype:
+        """
         fileDlg = wx.FileDialog(self, "Open", "")
         fileDlg.ShowModal()
         self.importFolderTb.SetValue(fileDlg.GetPath())
         fileDlg.Destroy()
 
 
-    def changeColour(self, index):
-        self.checkList.SetItemTextColour(index, wx.Colour(255, 0, 0))
-
-
     def SetButton(self, event):
+        """
+        This function converts the data input by the user into the various parameter locations and loads it into a dictionary that can then be used to either export the data or directly control the equipment
+        :param event: The event set by clicking the set button
+        :type event: event
+        :return:
+        :rtype:
+        """
 
         if self.retrievedataflag == True:
             print('Cannot set data while in retrieve data mode, please change to set data mode to set data')
@@ -698,7 +785,6 @@ class TopPanel(wx.Panel):
         self.setflag = True
         self.routinenum = self.routinenum + 1
 
-        #self.findbiggest(self.panel.elecroutine.GetValue(), self.panel.optroutine.GetValue(), self.panel.setwroutine.GetValue(), self.panel.setvroutine.GetValue())
 
         self.big = max([self.instructpanel.elecroutine.GetValue(), self.instructpanel.optroutine.GetValue(), self.instructpanel.setwroutine.GetValue(), self.instructpanel.setvroutine.GetValue()])
 
@@ -1043,6 +1129,23 @@ class TopPanel(wx.Panel):
 
 
     def ExportButton(self, event):
+        """
+
+        Parameters
+        ----------
+        event :
+
+        Returns
+        -------
+
+        """
+        """
+        This function takes the data contained in the data dictionary and formats it into a csv file
+        :param event: The event triggered by clicking the export button
+        :type event: event
+        :return:
+        :rtype:
+        """
 
         ROOT_DIR = format(os.getcwd())
         primarysavefile = ROOT_DIR + '\TestParameters.csv'
@@ -1114,6 +1217,7 @@ class TopPanel(wx.Panel):
                 print('Data exported to ' + savefilestring)
 
 
+#This panel class contains the instructions for going about inputting the routine data for the devices as well as the selection menu for the number of different routines
 
 class InstructPanel(wx.Panel):
 
@@ -1223,12 +1327,14 @@ class InstructPanel(wx.Panel):
 
 
     def setnumroutine(self, event):
-        """ When the user hits the electrical panel save button this function saves the data in the panel to a list with a size equal to the number of routines
-                                                    Arguments:
+        """
+`       Based on the input for number of different routines this function will create lists for each routine with the length equal to the number of routines input
+        :param event: the event created on input of number into number of routine menu
+        :type event:
+        :return:
+        :rtype:
+        """
 
-                                                    Returns:
-
-                                                    """
         c = event.GetEventObject()
 
         optionsblank = []
@@ -1319,7 +1425,7 @@ class InstructPanel(wx.Panel):
             if c.name == 'setvroutine':
                 self.setpanel.routineselectsetv.SetItems(optionsblank)
 
-
+#the Panel resposnible for the user input of parameters
 
 class SetPanel(wx.Panel):
 
@@ -1384,6 +1490,11 @@ class SetPanel(wx.Panel):
 
 
     def InitUI(self):
+        """
+
+        :return:
+        :rtype:
+        """
 
         ##CREATE ELECTRICAL PANEL#######################################################################################
 
@@ -1812,6 +1923,13 @@ class SetPanel(wx.Panel):
 
 
     def cleartext(self, event):
+        """
+        Clears the text in the textctrl boxes on user clicking the box
+        :param event: The event triggered when the user clicks the textctrl box
+        :type event: event
+        :return:
+        :rtype:
+        """
         e = event.GetEventObject()
         if e.GetValue() == 'mA' or e.GetValue() == 'mV' or e.GetValue() == 'V':
             e.SetValue('')
@@ -1822,12 +1940,13 @@ class SetPanel(wx.Panel):
 
 
     def setnumroutine(self, event):
-        """ When the user hits the electrical panel save button this function saves the data in the panel to a list with a size equal to the number of routines
-                                                    Arguments:
+        """
 
-                                                    Returns:
-
-                                                    """
+        :param event:
+        :type event:
+        :return:
+        :rtype:
+        """
         c = event.GetEventObject()
 
         optionsblank = []
@@ -1916,12 +2035,13 @@ class SetPanel(wx.Panel):
 
 
     def trueorfalse(self, event):
-        """ When the user hits the electrcial panel save button this function saves the data in the panel to a list with a size equal to the number of routines
-                                                    Arguments:
-
-                                                    Returns:
-
-                                                    """
+        """
+        For selections that can only be one or the other this function deselects the other option on the selection of one of the parameters
+        :param event: event triggered by any one of the parameters that are exclusive
+        :type event: event
+        :return:
+        :rtype:
+        """
         e = event.GetEventObject()
 
         if e == self.Asel and self.Asel.GetValue() == True:
@@ -1958,12 +2078,13 @@ class SetPanel(wx.Panel):
 
 
     def routinesaveelec(self, event):
-        """ When the user hits the electrcial panel save button this function saves the data in the panel to a list with a size equal to the number of routines
-                                            Arguments:
-
-                                            Returns:
-
-                                            """
+        """
+        When the user hits the electrical panel save button this function saves the data in the panel to a list with a size equal to the number of routines
+        :param event: event triggered by user clicking the save button in the electrical panel
+        :type event: event
+        :return:
+        :rtype:
+        """
 
         if self.routineselectelec.GetValue() != '':
             value = int(self.routineselectelec.GetValue()) - 1
@@ -1985,12 +2106,13 @@ class SetPanel(wx.Panel):
 
 
     def routinesaveopt(self, event):
-        """ When the user hits the optical panel save button this function saves the data in the panel to a list with a size equal to the number of routines
-                                                    Arguments:
-
-                                                    Returns:
-
-                                                    """
+        """
+        When the user hits the optical panel save button this function saves the data in the panel to a list with a size equal to the number of routines
+        :param event: event triggered by user clicking the save button in the optical panel
+        :type event:
+        :return:
+        :rtype:
+        """
 
         if self.routineselectopt.GetValue() != '':
             value = int(self.routineselectopt.GetValue()) - 1
@@ -2008,12 +2130,13 @@ class SetPanel(wx.Panel):
 
 
     def routinesavesetw(self, event):
-        """ When the user hits the set wavelength, voltage sweep panel save button this function saves the data in the panel to a list with a size equal to the number of routines
-                                                    Arguments:
-
-                                                    Returns:
-
-                                                    """
+        """
+        When the user hits the set wavelength, voltage sweep panel save button this function saves the data in the panel to a list with a size equal to the number of routines
+        :param event: event triggered by user clicking the save button in the set wavelength, voltage sweep panel
+        :type event:
+        :return:
+        :rtype:
+        """
 
         if self.routineselectsetw.GetValue() != '':
             value = int(self.routineselectsetw.GetValue()) - 1
@@ -2036,12 +2159,13 @@ class SetPanel(wx.Panel):
 
 
     def routinesavesetv(self, event):
-        """ When the user hits the set voltage, wavelength sweep panel save button this function saves the data in the panel to a list with a size equal to the number of routines
-                                                    Arguments:
-
-                                                    Returns:
-
-                                                    """
+        """
+        When the user hits the set voltage, wavelength sweep panel save button this function saves the data in the panel to a list with a size equal to the number of routines
+        :param event:
+        :type event:
+        :return:
+        :rtype:
+        """
 
         if self.routineselectsetv.GetValue() != '':
             value = int(self.routineselectsetv.GetValue()) - 1
@@ -2062,12 +2186,14 @@ class SetPanel(wx.Panel):
 
 
     def routinepanel(self, event):
-        """ When the user opens the routine select dropdown this function saves the data in the panel to a list with a size equal to the number of routines
-                                    Arguments:
+        """
+         When the user opens the routine select dropdown this function saves the data in the panel to a list with a size equal to the number of routines
+        :param event:
+        :type event:
+        :return:
+        :rtype:
+        """
 
-                                    Returns:
-
-                                    """
         e = event.GetEventObject()
         name = e.name
 
@@ -2149,12 +2275,13 @@ class SetPanel(wx.Panel):
 
 
     def swaproutine(self, event):
-        """ When the user selects a new routine number in the dropdown menu of the routine panels, this function swaps the saved routine values shown
-                                            Arguments:
-
-                                            Returns:
-
-                                            """
+        """
+        When the user selects a new routine number in the dropdown menu of the routine panels, this function swaps the saved routine values shown
+        :param event:
+        :type event:
+        :return:
+        :rtype:
+        """
 
         c = event.GetEventObject()
         name = c.name

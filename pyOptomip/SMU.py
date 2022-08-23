@@ -256,33 +256,41 @@ class SMUClass():
 
 
     def getvoltageA(self):
-        """ Queries the smu and returns the voltage measured at channel A
-                            Arguments:
-
-                            Returns:
-                                the voltage seen at channel A in volts
-                            """
+        """
+        Queries the smu and returns the voltage measured at channel A
+        :return: the voltage seen at channel A in volts
+        :rtype: float
+        """
         v = self.inst.query("print(smua.measure.v())")
         return v
 
 
     def getcurrentA(self):
-        """ Queries the smu and returns the current measured at channel A
-                            Arguments:
-
-                            Returns:
-                                the current seen at channel A in Amps
-                            """
+        """
+        Queries the smu and returns the current measured at channel A
+        :return: the current seen at channel A in Amps
+        :rtype: float
+        """
         i = self.inst.query("print(smua.measure.i())")
         return i
 
 
     def getvoltageB(self):
+        """
+        Queries the smu and returns the voltage measured at channel B
+        :return: the voltage seen at channel B in Volts
+        :rtype: float
+        """
         v = self.inst.query("print(smub.measure.v())")
         return v
 
 
     def getcurrentB(self):
+        """
+
+        :return:
+        :rtype:
+        """
         i = self.inst.query("print(smub.measure.r())")
         return i
 
