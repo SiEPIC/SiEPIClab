@@ -39,7 +39,7 @@ class myToolbar(NavigationToolbar):
         default_file = self.canvas.get_default_filename()
         dlg = wx.FileDialog(self, "Save to file", "", default_file,
                             filetypes,
-                            wx.SAVE|wx.OVERWRITE_PROMPT)
+                            wx.FD_SAVE|wx.FD_OVERWRITE_PROMPT)
         dlg.SetFilterIndex(filter_index)
         if dlg.ShowModal() == wx.ID_OK:
             dirname  = dlg.GetDirectory()
