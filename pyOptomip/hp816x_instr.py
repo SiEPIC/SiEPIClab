@@ -29,53 +29,55 @@ import string
 
 
 class hp816x(object):
+    
     # Constants
     name = 'hp816x'
-    isSMU = False
-    isMotor = False
-    isLaser = True
-    isQontrol = False
+    isMotor=False
+    isLaser=True
     # Slot info
-    hp816x_UNDEF = 0
-    hp816x_SINGLE_SENSOR = 1
-    hp816x_DUAL_SENSOR = 2
-    hp816x_FIXED_SINGLE_SOURCE = 3
-    hp816x_FIXED_DUAL_SOURCE = 4
-    hp816x_TUNABLE_SOURCE = 5
-    hp816x_SUCCESS = 0
-    hp816x_ERROR = int('0x80000000', 16)
-    hp816x_INSTR_ERROR_DETECTED = -1074000633  # 0xBFFC0D07
-
-    maxPWMPoints = 20001
-
-    sweepStartWvl = 1530e-9
-    sweepStopWvl = 1570e-9
-    sweepStepWvl = 1e-9
-    sweepSpeed = '10nm'
+    hp816x_UNDEF = 0;
+    hp816x_SINGLE_SENSOR = 1;
+    hp816x_DUAL_SENSOR = 2;
+    hp816x_FIXED_SINGLE_SOURCE = 3;
+    hp816x_FIXED_DUAL_SOURCE = 4;
+    hp816x_TUNABLE_SOURCE = 5;
+    hp816x_SUCCESS = 0;
+    hp816x_ERROR = int('0x80000000', 16);
+    hp816x_INSTR_ERROR_DETECTED = -1074000633; # 0xBFFC0D07
+    
+    maxPWMPoints = 20001;
+    
+    
+    sweepStartWvl = 1530e-9;
+    sweepStopWvl = 1570e-9;
+    sweepStepWvl = 1e-9;
+    sweepSpeed = '10nm';
     sweepUnit = 'dBm'
-    sweepPower = 0
-    sweepLaserOutput = 'lowsse'
-    sweepNumScans = 3
-    sweepPWMChannel = 'all'
-    sweepInitialRange = -20
-    sweepRangeDecrement = 20
-    sweepUseClipping = 1
-    sweepClipLimit = -100
+    sweepPower = 0;
+    sweepLaserOutput = 'lowsse';
+    sweepNumScans = 3;
+    sweepPWMChannel = 'all';
+    sweepInitialRange = -20;
+    sweepRangeDecrement = 20;
+    sweepUseClipping = 1;
+    sweepClipLimit = -100;
+    
 
-    rangeModeDict = dict([('auto', 1), ('manual', 0)])
-    sweepSpeedDict = dict([('80nm', -1), ('40nm', 0), ('20nm', 1), ('10nm', 2), ('5nm', 3), ('0.5nm', 4), ('auto', 5)]);
-    laserOutputDict = dict([('highpower', 0), ('lowsse', 1)])
-    laserStateDict = dict([('off', 0), ('on', 1)])
-    sweepUnitDict = dict([('dBm', 0), ('W', 1)])
-    sweepNumScansDict = dict([(1, 0), (2, 1), (3, 2)])
-    laserSelModeDict = dict([('min', 0), ('default', 1), ('max', 2), ('manual', 3)])
-    mainframePortDict = dict([('8163', 3), ('8164', 5), ('none', 1)])
-
+    rangeModeDict = dict([('auto',1), ('manual',0)]);
+    sweepSpeedDict = dict([('80nm',-1), ('40nm',0), ('20nm',1), ('10nm',2), ('5nm',3), ('0.5nm',4), ('auto',5)]);
+    laserOutputDict = dict([('highpower',0), ('lowsse',1)]);
+    laserStateDict = dict([('off',0), ('on',1)]);
+    sweepUnitDict = dict([('dBm',0), ('W',1)]);
+    sweepNumScansDict = dict([(1,0), (2,1), (3,2)]);
+    laserSelModeDict = dict([('min',0), ('default',1), ('max',2), ('manual',3)]);
+    mainframePortDict = dict([('8163',3), ('8164',5), ('none',1)]);
+    
+    
     def __init__(self, libLocation='hp816x_32.dll'):
         """ Initializes the driver.
         libLocation -- Location of hp816x_32.dll library. It will search the system's PATH variable by default.
         """
-
+        
         self.hLib = WinDLL('hp816x_32.dll');
         self.createPrototypes();
         self.connected = False
