@@ -73,12 +73,12 @@ class hp816x(object):
     mainframePortDict = dict([('8163',3), ('8164',5), ('none',1)]);
     
     
-    def __init__(self, libLocation='hp816x_32.dll'):
+    def __init__(self, libLocation='hp816x_64.dll'):
         """ Initializes the driver.
         libLocation -- Location of hp816x_32.dll library. It will search the system's PATH variable by default.
         """
         
-        self.hLib = WinDLL('hp816x_32.dll');
+        self.hLib = WinDLL('hp816x_64.dll');
         self.createPrototypes();
         self.connected = False
         
