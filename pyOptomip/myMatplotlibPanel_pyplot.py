@@ -31,6 +31,7 @@ class myMatplotlibPanel(wx.Panel):
         wx.Panel.__init__(self, parent)
         self.figure = mpl.figure.Figure()
         self.canvas = FigureCanvas(self, -1, self.figure)
+        self.canvas.filetypes['mat'] = 'MATLAB'  # Add mat filetype to save file dialog
         self.axes = self.figure.add_subplot(111)
         self.points = self.axes.plot([0, 0])
         self.toolbar = NavigationToolbar(self.canvas)

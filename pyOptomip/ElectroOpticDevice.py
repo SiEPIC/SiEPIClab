@@ -1,11 +1,11 @@
 class ElectroOpticDevice:
 
-    def __init__(self, device_id, wavelength, polarization, x, y, type):
+    def __init__(self, device_id, wavelength, polarization, x, y, type_):
         """Object used to store all information associated with an electro-optic device"""
         self.device_id = device_id
         self.wavelength = wavelength
         self.polarization = polarization
-        self.type = type
+        self.type = type_
 
         self.opticalCoordinates = [x, y]
         self.electricalCoordinates = []
@@ -34,10 +34,10 @@ class ElectroOpticDevice:
 
     def getReferenceBondPad(self):
         """Returns the name and coordinates of the left-most bond pad within
-        an electro-optic device in the form of a list [bondpad name, x coordinates, y coordinates]"""
+        an electro-optic device in the form of a list [bond pad name, x coordinates, y coordinates]"""
         reference = self.electricalCoordinates[0]
-        for bondpad in self.electricalCoordinates:
-            if bondpad[1] < reference[1]:
-                reference = bondpad
+        for bondPad in self.electricalCoordinates:
+            if bondPad[1] < reference[1]:
+                reference = bondPad
         return reference
 

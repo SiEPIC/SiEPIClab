@@ -4,7 +4,7 @@ from itertools import repeat
 import numpy as np
 import wx
 
-
+#TODO: Plot figures
 class measurementRoutines:
 
     def __init__(self, flag, deviceInfo, i, smu, laser):

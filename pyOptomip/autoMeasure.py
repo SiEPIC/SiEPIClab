@@ -1,5 +1,6 @@
 # The MIT License (MIT)
 
+
 # Copyright (c) 2015 Michael Caverley
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,6 +24,7 @@ import wx
 from numpy import *
 import re
 import os
+import numpy as np
 from scipy.io import savemat
 import time
 import matplotlib.pyplot as plt
@@ -91,6 +93,71 @@ class autoMeasure(object):
                 else:
                     print('Warning: The entry\n%s\nis not formatted correctly.' % line)
 
+    def findCoordinateTransform(self, motorCoords, gdsCoords):
+        """ Finds the best fit affine transform which maps the GDS coordinates to motor coordinates."""
+
+        if len(motorCoords) != len(gdsCoords):
+            raise CoordinateTransformException('You must have the same number of motor coordinates and GDS coordinates')
+
+        if len(motorCoords) < 3:
+            raise CoordinateTransformException('You must have at least 3 coordinate pairs.')
+
+        numPairs = len(motorCoords)
+
+        X = mat(zeros((2 * numPairs, 2 * numPairs)))
+        Xp = mat(zeros((2 * numPairs, 1)))
+
+        for ii, motorCoord, gdsCoord in zip(range(numPairs), motorCoords, gdsCoords):
+            X[2 * ii, 0:3] = mat([gdsCoord[0], gdsCoord[1], 1])
+            X[2 * ii + 1, 3:6] = mat([gdsCoord[0], gdsCoord[1], 1])
+            Xp[2 * ii:2 * ii + 2] = mat([[motorCoord[0]], [motorCoord[1]]])
+
+        # Do least squares fitting
+        a = linalg.lstsq(X, Xp)
+
+        A = vstack((a[0][0:3].T, a[0][3:6].T, mat([0, 0, 1])))
+
+        self.transformMatrix = A
+
+        return A
+
+    def gdsToMotor(self, gdsCoords):
+        """ Uses the calculated affine transform to map a GDS coordinate to a motor coordinate."""
+        gdsCoordVec = mat([[gdsCoords[0]], [gdsCoords[1]], [1]])
+        motorCoordVec = self.transformMatrix*gdsCoordVec
+        motorCoords = (float(motorCoordVec[0]), float(motorCoordVec[1]))
+        return motorCoords
+
+    def coordinate_transform_matrix(self, motorCoords, gdsCoords):
+
+        motorMatrix = np.array([[motorCoords[0][0], motorCoords[1][0], motorCoords[2][0]],
+                                [motorCoords[0][1], motorCoords[1][1], motorCoords[2][1]],
+                                [motorCoords[0][2], motorCoords[1][2], motorCoords[2][2]]])
+
+        gdsMatrix = np.array([[gdsCoords[0][0], gdsCoords[1][0], gdsCoords[2][0]],
+                              [gdsCoords[0][1], gdsCoords[1][1], gdsCoords[2][1]],
+                              [1, 1, 1]])
+
+
+        transpose = gdsMatrix.T
+
+        row1 = np.linalg.solve(transpose, motorMatrix[0])
+        row2 = np.linalg.solve(transpose, motorMatrix[1])
+        row3 = np.linalg.solve(transpose, motorMatrix[2])
+
+        self.T = vstack((row1, row2, row3))
+
+        print(self.T)
+        return self.T
+
+    def perform_transform(self, gdsCoords):
+
+        gdsVector = np.array([[gdsCoords[0]], [gdsCoords[1]], [1]])
+
+        newMotorCoords = self.T@gdsVector
+
+        return newMotorCoords
+
     def findCoordinateTransformOpt(self, motorCoords, gdsCoords):
         """ Finds the best fit affine transform which maps the GDS coordinates to motor coordinates
         for the motors controlling the chip stage.
@@ -102,35 +169,25 @@ class autoMeasure(object):
         Returns:
             M: a matrix used to map gds coordinates to motor coordinates.
         """
+        motorMatrix = np.array([[motorCoords[0][0], motorCoords[1][0], motorCoords[2][0]],
+                                [motorCoords[0][1], motorCoords[1][1], motorCoords[2][1]],
+                                [motorCoords[0][2], motorCoords[1][2], motorCoords[2][2]]])
 
-        # if len(motorCoords) != (len(gdsCoords)+1):
-        # raise CoordinateTransformException('You must have the same number of motor coordinates and GDS coordinates')
+        gdsMatrix = np.array([[gdsCoords[0][0], gdsCoords[1][0], gdsCoords[2][0]],
+                              [gdsCoords[0][1], gdsCoords[1][1], gdsCoords[2][1]],
+                              [1, 1, 1]])
 
-        if len(motorCoords) < 3:
-            raise CoordinateTransformException('You must have at least 3 device coordinates.')
 
-        numTriples = len(motorCoords)
+        transpose = gdsMatrix.T
 
-        Xgds = mat(zeros((numTriples + 1, numTriples)))  # 4x3
-        Xmotor = mat(zeros((numTriples + 1, numTriples)))  # 4x3
+        row1 = np.linalg.solve(transpose, motorMatrix[0])
+        row2 = np.linalg.solve(transpose, motorMatrix[1])
+        row3 = np.linalg.solve(transpose, motorMatrix[2])
 
-        # zip: [0,Dev1MotorCoords,Dev1gds], [1,Dev2MotorCoords,Dev2gds], [2,Dev3MotorCoords,Dev3gds]
-        for i, motorCoord, gdsCoord in zip(range(numTriples), motorCoords, gdsCoords):
-            Xgds[0, i] = gdsCoord[0]
-            Xgds[1, i] = gdsCoord[1]
-            Xgds[2, i] = 0
-            Xgds[3, i] = 1
-            Xmotor[0, i] = motorCoord[0]
-            Xmotor[1, i] = motorCoord[1]
-            Xmotor[2, i] = motorCoord[2]
-            Xmotor[3, i] = 1
+        self.TMopt = vstack((row1, row2, row3))
 
-        # Do least squares fitting
-        M = linalg.lstsq(Xgds, Xmotor, rcond=-1)
-
-        self.transformMatrixOpt = M
-
-        return M
+        print(self.TMopt)
+        return self.TMopt
 
     def findCoordinateTransformElec(self, motorCoords, gdsCoords):
         """ Finds the best fit affine transform which maps the GDS coordinates to motor coordinates
@@ -143,34 +200,25 @@ class autoMeasure(object):
         Returns:
             M: a matrix used to map gds coordinates to motor coordinates.
         """
-        # if len(motorCoords) != (len(gdsCoords)+1):
-        # raise CoordinateTransformException('You must have the same number of motor coordinates and GDS coordinates')
+        motorMatrix = np.array([[motorCoords[0][0], motorCoords[1][0], motorCoords[2][0]],
+                                [motorCoords[0][1], motorCoords[1][1], motorCoords[2][1]],
+                                [motorCoords[0][2], motorCoords[1][2], motorCoords[2][2]]])
 
-        if len(motorCoords) < 3:
-            raise CoordinateTransformException('You must have at least 3 device coordinates.')
+        gdsMatrix = np.array([[gdsCoords[0][0], gdsCoords[1][0], gdsCoords[2][0]],
+                              [gdsCoords[0][1], gdsCoords[1][1], gdsCoords[2][1]],
+                              [1, 1, 1]])
 
-        numTriples = len(motorCoords)
 
-        Xgds = mat(zeros((numTriples + 1, numTriples)))  # 4x3
-        Xmotor = mat(zeros((numTriples + 1, numTriples)))  # 4x3
+        transpose = gdsMatrix.T
 
-        # zip: [0,Dev1MotorCoords,Dev1gds], [1,Dev2MotorCoords,Dev2gds], [2,Dev3MotorCoords,Dev3gds]
-        for i, motorCoord, gdsCoord in zip(range(numTriples), motorCoords, gdsCoords):
-            Xgds[0, i] = gdsCoord[0]
-            Xgds[1, i] = gdsCoord[1]
-            Xgds[2, i] = 0
-            Xgds[3, i] = 1
-            Xmotor[0, i] = motorCoord[0]
-            Xmotor[1, i] = motorCoord[1]
-            Xmotor[2, i] = motorCoord[2]
-            Xmotor[3, i] = 1
+        row1 = np.linalg.solve(transpose, motorMatrix[0])
+        row2 = np.linalg.solve(transpose, motorMatrix[1])
+        row3 = np.linalg.solve(transpose, motorMatrix[2])
 
-        # Do least squares fitting
-        M = linalg.lstsq(Xgds, Xmotor, rcond=-1)
+        self.TMelec = vstack((row1, row2, row3))
 
-        self.transformMatrixElec = M
-
-        return M
+        print(self.TMelec)
+        return self.TMelec
 
     def gdsToMotorCoordsOpt(self, gdsCoords):
         """ Uses the calculated affine transform to map a GDS coordinate to a motor coordinate.
@@ -182,10 +230,11 @@ class autoMeasure(object):
             motorCoords: the motor coordinates for the chip stage that correspond to given gds
             coordinates.
         """
-        gdsCoordVec = mat([[gdsCoords[0]], [gdsCoords[1]], [0], [1]])
-        motorCoordVec = self.transformMatrixOpt * gdsCoordVec
-        motorCoords = (float(motorCoordVec[0]), float(motorCoordVec[1]), float(motorCoordVec[2]))
-        return motorCoords
+        gdsVector = np.array([[gdsCoords[0]], [gdsCoords[1]], [1]])
+
+        newMotorCoords = self.TMopt@gdsVector
+
+        return newMotorCoords
 
     def gdsToMotorCoordsElec(self, gdsCoords):
         """ Uses the calculated affine transform to map a GDS coordinate to a motor coordinate.
@@ -196,12 +245,14 @@ class autoMeasure(object):
         Returns:
             object: 
         """
-        gdsCoordVec = mat([[gdsCoords[0]], [gdsCoords[1]], [0], [1]])
-        motorCoordVec = self.transformMatrixElec * gdsCoordVec
-        motorCoords = (float(motorCoordVec[0]), float(motorCoordVec[1]), float(motorCoordVec[2]))
-        return motorCoords
+        gdsVector = np.array([[gdsCoords[0]], [gdsCoords[1]], [1]])
 
-    def beginMeasure(self, devices, testingParameters, checkList, abortFunction=None, updateFunction=None, updateGraph=True):
+        newMotorCoords = self.TMelec@gdsVector
+
+        return newMotorCoords
+
+    def beginMeasure(self, devices, testingParameters, checkList, abortFunction=None, updateFunction=None,
+                     updateGraph=True):
         """ Runs an automated measurement. For each device, wedge probe is moved out of the way, chip stage is moved
         so laser in aligned, wedge probe is moved to position. Various tests are performed depending on the contents
         of the testing parameters file.

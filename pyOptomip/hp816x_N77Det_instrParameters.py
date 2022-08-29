@@ -69,7 +69,7 @@ class hp816x_N77Det_instrParameters(wx.Panel):
         
         
     def connect(self, event):
-        self.laser = hp816x_N77Det()
+        self.laser = hp816x_N77Det();
         self.laser.connect(self.para1tc.GetValue(), self.para2tc.GetValue(), reset=0, forceTrans=1)
         self.laser.panelClass = laserPanel.laserTopPanel # Give the laser its panel class
         self.connectPanel.instList.append(self.laser)
