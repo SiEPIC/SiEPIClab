@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-#Version 1.1
 import math
 import numpy as np
 import hp816x_instr
@@ -45,14 +44,12 @@ class fineAlign(object):
     numGradientIter = 50;
     
     useCrosshair = 0 # Set to 1 to use crosshair search after gradient. Doesn't work very well.
-
+    
     abort = False # Can set to true to self.abort a fine align
     
     NO_ERROR = 0
     DEVICE_NOT_FOUND = 1
     FINE_ALIGN_ABORTED = 2
-    
-    
     
     def __init__(self, laser, stage):
         self.laser = laser
@@ -61,8 +58,7 @@ class fineAlign(object):
     def doFineAlign(self):
         xStartPos = self.stage.getPosition()[0];
         yStartPos = self.stage.getPosition()[1];
-
-                
+        
         for det in self.detectorPriority:
             maxSteps = math.ceil(self.scanWindowSize/float(self.stepSize))
             # Get the detector slot number and channel for the chosen detector index
@@ -73,7 +69,6 @@ class fineAlign(object):
             self.laser.setPWMPowerRange(detSlot, detChan, 'auto', 0)
             # Try to set laser output. If the laser only has one output, an error is thrown
             # which will be ignored here
-            
             try:
                 self.laser.setTLSOutput(self.laserOutput, slot=self.laserSlot)
             except hp816x_instr.InstrumentError:
@@ -89,13 +84,12 @@ class fineAlign(object):
                 xStopPos = self.stage.getPosition()[0];
                 yStopPos = self.stage.getPosition()[1];
                 self.stage.moveRelative(xStartPos-xStopPos, yStartPos-yStopPos)
-                print ('Could not find a device using this detector.')
+                print 'Could not find a device using this detector.'
                 continue
             elif res == self.FINE_ALIGN_ABORTED:
-                print ('Fine align self.aborted.')
+                print 'Fine align self.aborted.'
                 break
-            print ('Found a device. Optimizing power...')   
-            
+            print 'Found a device. Optimizing power...'   
             # Gradient search stage      
             res = self.gradientSearch(detSlot, detChan)
               
@@ -103,11 +97,10 @@ class fineAlign(object):
             if self.useCrosshair:
                 res = self.crosshairSearch(maxSteps, detSlot, detChan)
             self.laser.setAutorangeAll()
-            print ('Fine align completed.')
+            print 'Fine align completed.'
             return res
-            
         # Fine align failed  
-        print ('Fine align failed.')
+        print 'Fine align failed.'
         xStopPos = self.stage.getPosition()[0];
         yStopPos = self.stage.getPosition()[1];
         self.stage.moveRelative(xStartPos-xStopPos, yStartPos-yStopPos)
@@ -129,7 +122,7 @@ class fineAlign(object):
         while power <= self.threshold and numSteps < maxSteps:
             
             # X movement
-            for ii in range(1, numSteps+1):
+            for ii in xrange(1, numSteps+1):
                 self.stage.moveRelative(self.stepSize*direction,0)
                 power = self.laser.readPWM(detSlot, detChan)
                 if self.abort:
@@ -138,14 +131,14 @@ class fineAlign(object):
                     return self.NO_ERROR
                     
             # Y movement
-            for ii in range(1, numSteps+1):
+            for ii in xrange(1, numSteps+1):
                 self.stage.moveRelative(0,self.stepSize*direction)
                 power = self.laser.readPWM(detSlot, detChan)
                 if self.abort:
                     return self.FINE_ALIGN_ABORTED
                 elif power > self.threshold:
                     return self.NO_ERROR
-
+                    
             numSteps += 1
             
             # Swap sweep direction
@@ -161,7 +154,7 @@ class fineAlign(object):
     def gradientSearch(self, detSlot, detChan):
         peakFoundCount = 0; # Count how many consective peaks are found
         numConsecutivePeaks = 1; # Need this many consecutive peaks to conclude the peak was found  
-        for ii in range(self.numGradientIter):
+        for ii in xrange(self.numGradientIter):
             if self.abort:
                 return self.FINE_ALIGN_ABORTED
             # Always move in the direction of increasing power
@@ -176,37 +169,30 @@ class fineAlign(object):
             
             self.stage.moveRelative(-2*self.stepSize,0)
             power_negx = self.laser.readPWM(detSlot, detChan)
-
-                    
+            
             if power_negx > power:
                 peakFoundCount = 0
                 continue
             
             self.stage.moveRelative(self.stepSize,self.stepSize)
             power_posy = self.laser.readPWM(detSlot, detChan)
-                     
-                    
+            
             if power_posy > power:
                 peakFoundCount = 0
                 continue
             
             self.stage.moveRelative(0,-2*self.stepSize)
             power_negy = self.laser.readPWM(detSlot, detChan)
-                      
             
             if power_negy > power:
                 peakFoundCount = 0
-
                 continue
             
-
             self.stage.moveRelative(0,self.stepSize)
             if peakFoundCount == numConsecutivePeaks:
                 return self.NO_ERROR
             
             peakFoundCount += 1
-
-
             
         return self.NO_ERROR
             
@@ -219,7 +205,7 @@ class fineAlign(object):
         powerXVals = np.zeros(numSteps)    
         sweepXCoords = np.zeros(numSteps)  
         
-        for ii in range(numSteps):
+        for ii in xrange(numSteps):
             if self.abort:
                 return self.FINE_ALIGN_ABORTED
             powerXVals[ii] = self.laser.readPWM(detSlot, detChan)
@@ -240,7 +226,7 @@ class fineAlign(object):
         powerYVals = np.zeros(numSteps)  
         sweepYCoords = np.zeros(numSteps)    
         
-        for ii in range(numSteps):
+        for ii in xrange(numSteps):
            if self.abort:
               return self.FINE_ALIGN_ABORTED
            powerYVals[ii] = self.laser.readPWM(detSlot, detChan)
@@ -256,3 +242,4 @@ class fineAlign(object):
         
 
         return self.NO_ERROR        
+                         
