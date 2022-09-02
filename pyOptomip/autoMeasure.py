@@ -82,7 +82,7 @@ class autoMeasure(object):
                 matchRes = reg.findall(line)[0]
                 devName = matchRes[6]
                 if devName in self.devSet:
-                    devName = devName+"X:"+matchRes[0]+"Y:"+matchRes[1]
+                    devName = "X:"+matchRes[0]+"Y:"+matchRes[1]+devName
                 self.devSet.add(devName)
                 device = ElectroOpticDevice(devName, matchRes[3], matchRes[2], float(matchRes[0]), float(matchRes[1]),
                                             matchRes[5])
