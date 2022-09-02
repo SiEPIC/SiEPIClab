@@ -26,7 +26,7 @@ import wx
 class topQontrolMotorPanel(wx.Panel):
     def __init__(self, parent, motor):
         super(topQontrolMotorPanel, self).__init__(parent)
-        self.qontrol = motor[0]
+        self.qontrol = motor
         self.numAxes = self.qontrol.numAxes
         self.maxAxis = self.numAxes + 1
         self.InitUI()
