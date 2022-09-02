@@ -1,5 +1,5 @@
 import qontrol
-
+import re
 
 class QontrolMotor:
     name = 'Qontrol'
@@ -14,7 +14,9 @@ class QontrolMotor:
         self.numAxes = 0
 
     def connect(self, SerialPortName, NumberOfAxis):
-        self.q = qontrol.MXMotor(serial_port_name=SerialPortName)
+        numbers = re.findall('[0-9]+', SerialPortName)
+        COM = "COM" + numbers[0]
+        self.q = qontrol.MXMotor(serial_port_name=COM)
         self.numAxes = NumberOfAxis
         print('Connected\n')
 
