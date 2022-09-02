@@ -26,7 +26,7 @@ import sys
 from fineAlign import fineAlign
 from fineAlignPanel import fineAlignPanel
 import traceback
-from logWriter import logWriter,logWriterError
+from logWriter import logWriter, logWriterError
 from autoMeasurePanel import autoMeasurePanel
 from autoMeasure import autoMeasure
 import laserPanel
@@ -58,9 +58,9 @@ class HomeTab(wx.Panel):
         hbox.Add(self.graph, flag=wx.EXPAND, border=0, proportion=1)
 
         for inst in self.instList:
-            #if inst.isSMU:
-               # panel = inst.panelClass(self)
-           # else:
+            # if inst.isSMU:
+            # panel = inst.panelClass(self)
+            # else:
             if inst.isDetect:
                 panel = inst.panelClass(self, inst, True, False)
             elif inst.isLaser:
@@ -68,7 +68,7 @@ class HomeTab(wx.Panel):
             else:
                 panel = inst.panelClass(self, inst)
 
-            #homeVbox = wx.BoxSizer(wx.VERTICAL)
+            # homeVbox = wx.BoxSizer(wx.VERTICAL)
 
             if inst.isMotor:
                 homeVbox.Add(panel, proportion=0, border=0, flag=wx.EXPAND)
@@ -80,22 +80,22 @@ class HomeTab(wx.Panel):
                                             'Error', wx.ICON_ERROR)
                     dial.ShowModal()
                 homeVbox.Add(self.fineAlignPanel, proportion=0, flag=wx.EXPAND)
-                #if self.motorFound():
-                 #   hbox.Add(homeVbox)
+                # if self.motorFound():
+                #   hbox.Add(homeVbox)
             if inst.isDetect:
                 homeVbox.Add(panel, proportion=0, border=0, flag=wx.EXPAND)
-                #self.detectorPanel = detectorPanel(panel, inst.getNumPWMChannels(), inst)
-                #detectVbox.Add(self.detectorPanel, proportion=0, border=0, flag=wx.EXPAND)
-                #hbox.Add(homeVbox, flag=wx.EXPAND)
-            #if inst.isQontrol:
+                # self.detectorPanel = detectorPanel(panel, inst.getNumPWMChannels(), inst)
+                # detectVbox.Add(self.detectorPanel, proportion=0, border=0, flag=wx.EXPAND)
+                # hbox.Add(homeVbox, flag=wx.EXPAND)
+            # if inst.isQontrol:
 
-               # self.laser = hp816x_N77Det()
-              #  detectVbox = wx.BoxSizer(wx.VERTICAL)
-              #  detPanel = detectorPanel(tlsPanel, self.laser.getNumPWMChannels(), self.laser)
-              #  detectVbox.Add(detPanel, proportion=0, border=0, flag=wx.EXPAND)
-              #  hbox.Add(detectVbox)
-            #else:
-             #   hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
+            # self.laser = hp816x_N77Det()
+            #  detectVbox = wx.BoxSizer(wx.VERTICAL)
+            #  detPanel = detectorPanel(tlsPanel, self.laser.getNumPWMChannels(), self.laser)
+            #  detectVbox.Add(detPanel, proportion=0, border=0, flag=wx.EXPAND)
+            #  hbox.Add(detectVbox)
+            # else:
+            #   hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
         hbox.Add(homeVbox)
         vbox.Add(hbox, 3, wx.EXPAND)
         # self.log = outputlogPanel(self)
@@ -188,12 +188,12 @@ class ElectricalTab(wx.Panel):
 
             if inst.isSMU:
                 hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
-            #else:
-               #  hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
+            # else:
+            #  hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
 
         vbox.Add(hbox, 3, wx.EXPAND)
-        #self.log = outputlogPanel(self)
-        #vbox.Add(self.log, 1, wx.EXPAND)
+        # self.log = outputlogPanel(self)
+        # vbox.Add(self.log, 1, wx.EXPAND)
         self.SetSizer(vbox)
         self.Layout()
         self.Show()
@@ -275,14 +275,12 @@ class OpticalTab(wx.Panel):
             else:
                 panel = inst.panelClass(self, inst)
 
-
-
             if inst.isLaser:
                 laserVbox = wx.BoxSizer(wx.VERTICAL)
                 laserVbox.Add(panel, proportion=0, border=0, flag=wx.EXPAND)
                 hbox.Add(laserVbox)
-            #else:
-             #   hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
+            # else:
+            #   hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
 
         vbox.Add(hbox, 3, wx.EXPAND)
         # self.log = outputlogPanel(self)
@@ -377,12 +375,12 @@ class AutoMeasureTab(wx.Panel):
         vbox.Add(self.autoMeasurePanel, proportion=0, flag=wx.EXPAND)
 
         vbox.Add(hbox, 3, wx.EXPAND)
-        #self.log = outputlogPanel(self)
-        #vbox.Add(self.log, 1, wx.EXPAND)
+        # self.log = outputlogPanel(self)
+        # vbox.Add(self.log, 1, wx.EXPAND)
         self.SetSizer(vbox)
 
-        #sys.stdout = logWriter(self.log)
-        #sys.stderr = logWriterError(self.log)
+        # sys.stdout = logWriter(self.log)
+        # sys.stderr = logWriterError(self.log)
 
     def motorFound(self):
         """
@@ -483,12 +481,12 @@ class TestingparametersTab(wx.Panel):
         vbox.Add(self.testingParameters, proportion=0, flag=wx.EXPAND)
 
         vbox.Add(hbox, 3, wx.EXPAND)
-        #self.log = outputlogPanel(self)
-        #vbox.Add(self.log, 1, wx.EXPAND)
+        # self.log = outputlogPanel(self)
+        # vbox.Add(self.log, 1, wx.EXPAND)
         self.SetSizer(vbox)
 
-        #sys.stdout = logWriter(self.log)
-        #sys.stderr = logWriterError(self.log)
+        # sys.stdout = logWriter(self.log)
+        # sys.stderr = logWriterError(self.log)
 
     def motorFound(self):
         """
@@ -557,7 +555,8 @@ class instrumentFrame_withtabs(wx.Frame):
             instList:
         """
         displaySize = wx.DisplaySize()
-        super(instrumentFrame_withtabs, self).__init__(parent, title='Instrument Control', size=(displaySize[0] * 5 / 8.0, displaySize[1] * 3 / 4.0))
+        super(instrumentFrame_withtabs, self).__init__(parent, title='Instrument Control',
+                                                       size=(displaySize[0] * 5 / 8.0, displaySize[1] * 3 / 4.0))
 
         self.instList = instList
         try:
@@ -576,8 +575,7 @@ class instrumentFrame_withtabs(wx.Frame):
         """
         self.Bind(wx.EVT_CLOSE, self.OnExitApp)
 
-
-        #c = wx.Panel(self)
+        # c = wx.Panel(self)
         self.p = wx.Panel(self)
         nb = wx.Notebook(self.p)
 
@@ -601,13 +599,12 @@ class instrumentFrame_withtabs(wx.Frame):
 
         print(self.instList)
 
-
         # Set notebook in a sizer to create the layout
         sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(nb, 2, wx.ALL | wx.EXPAND, 5)
+        sizer.Add(nb, 1, wx.ALL | wx.EXPAND)
 
         self.log = outputlogPanel(self.p)
-        sizer.Add(self.log, 1, wx.ALL|wx.EXPAND)
+        sizer.Add(self.log, 0, wx.ALL | wx.EXPAND)
         self.p.SetSizer(sizer)
         sys.stdout = logWriter(self.log)
         sys.stderr = logWriterError(self.log)
