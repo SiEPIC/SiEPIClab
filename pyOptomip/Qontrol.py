@@ -9,6 +9,7 @@ class QontrolMotor:
     isElec = True
     isLaser = False
     isDetect = False
+    isSMU = False
 
     def __init__(self):
         self.q = None
