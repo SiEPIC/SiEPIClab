@@ -69,29 +69,37 @@ class autoMeasure(object):
             j = x.replace(" ", "")
             dataStrip2.append(j)
         # x,y,polarization,wavelength,type,deviceid,params
-        reg = re.compile(r'(.*),(.*),(.*),([0-9]+),(.+),(.+),(.*)')
+        reg = re.compile(r'([0-9]+),([0-9]+),(T(E|M)),([0-9]+),(.+?),(.+),(.*)')
         # x, y, deviceid, padname, params
-        regElec = re.compile(r'(.*),(.*),(.+),(.*),(.*)')
+        regElec = re.compile(r'([0-9]+),([0-9]+),(.+),(.+),(.*)')
 
         self.devices = []
+        self.devSet = set()
 
         # Parse the data in each line and put it into a list of devices
         for ii, line in enumerate(dataStrip2):
             if reg.match(line):
                 matchRes = reg.findall(line)[0]
-                devName = matchRes[5]
+                devName = matchRes[6]
+                if devName in self.devSet:
+                    devName = devName+"X:"+matchRes[0]+"Y:"+matchRes[1]
+                self.devSet.add(devName)
                 device = ElectroOpticDevice(devName, matchRes[3], matchRes[2], float(matchRes[0]), float(matchRes[1]),
-                                            matchRes[4])
+                                            matchRes[5])
                 self.devices.append(device)
             else:
                 if regElec.match(line):
+                    print(line)
                     matchRes = reg.findall(line)[0]
                     devName = matchRes[2]
                     for device in self.devices:
                         if device.getDeviceID() == devName:
                             device.addElectricalCoordinates(matchRes[3], float(matchRes[0]), float(matchRes[1]))
                 else:
-                    print('Warning: The entry\n%s\nis not formatted correctly.' % line)
+                    if line == "" or line == "%X-coord,Y-coord,deviceID,padName,params":
+                        pass
+                    else:
+                        print('Warning: The entry\n%s\nis not formatted correctly.' % line)
 
     def findCoordinateTransform(self, motorCoords, gdsCoords):
         """ Finds the best fit affine transform which maps the GDS coordinates to motor coordinates."""
