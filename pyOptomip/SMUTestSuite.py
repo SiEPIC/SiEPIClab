@@ -10,11 +10,16 @@ from pyOptomip.fineAlign import fineAlign
 class TestSMU(unittest.TestCase):
 
     def SetUp(self):
+        Current =
+        Voltage =
+
         laser = dummyLaserParameters
         motor = dummyMotorParameters
         fineA = fineAlign(laser, motor)
         motorCoords = []
         gdsCoords = []
+
+        self.
 
         self.autoMeasure = autoMeasure(laser, motor, fineA)
         self.TestMatrix1 = autoMeasure.findCoordinateTransform(motorCoords, gdsCoords)
