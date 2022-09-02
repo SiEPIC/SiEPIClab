@@ -70,7 +70,7 @@ class HomeTab(wx.Panel):
 
             # homeVbox = wx.BoxSizer(wx.VERTICAL)
 
-            if inst.isMotor:
+            if inst.isMotor and not inst.isQontrol:
                 homeVbox.Add(panel, proportion=0, border=0, flag=wx.EXPAND)
                 self.fineAlign = fineAlign(self.getLasers()[0], self.getMotors()[0])
                 try:
@@ -87,8 +87,8 @@ class HomeTab(wx.Panel):
                 # self.detectorPanel = detectorPanel(panel, inst.getNumPWMChannels(), inst)
                 # detectVbox.Add(self.detectorPanel, proportion=0, border=0, flag=wx.EXPAND)
                 # hbox.Add(homeVbox, flag=wx.EXPAND)
-            # if inst.isQontrol:
-
+            if inst.isQontrol:
+                homeVbox.Add(panel, proportion=0, border=0, flag=wx.EXPAND)
             # self.laser = hp816x_N77Det()
             #  detectVbox = wx.BoxSizer(wx.VERTICAL)
             #  detPanel = detectorPanel(tlsPanel, self.laser.getNumPWMChannels(), self.laser)
