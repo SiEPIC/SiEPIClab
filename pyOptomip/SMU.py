@@ -34,21 +34,16 @@ Last updated: July 15, 2014
 
 
 import time
-import numpy as np
 from keithley2600 import Keithley2600
 
 
 from keithley2600 import ResultTable
 
 
-class SMUClass():
-    """ The overarching class containing all functions needed to control a connected SMU
-                        Arguments:
-
-                        Returns:
-
-                        """
-
+class SMUClass:
+    """
+    The overarching class containing all functions needed to connect to and control the SMU
+    """
     name = 'SMU'
     isSMU = True
     isMotor = False
@@ -61,42 +56,41 @@ class SMUClass():
         self.Bflag = False
 
     def connect(self, visaName, rm):
-        """ Connects to the SMU via pyvisa, resets outputs
-                    Arguments:
-                        visaName: the visa address of the selected SMU
-                        rm: an instance of pyvisa.resourcemanager used to connect to the device
-                    Returns:
-                        A print statement indicating that the SMU is connected
-                    """
+        """
+        Connects to the SMU via pyvisa, resets outputs
+        Parameters
+        ----------
+        visaName : the visa address of the selected SMU
+        rm : an instance of pyvisa.resourcemanager used to connect to the device
+
+        Returns
+        -------
+        A print statement indicating that the SMU is connected
+        """
         self.k = Keithley2600(visaName)
-        #self.k.smua.source.output = self.k.smua.OUTPUT_ON  #turns on SMUA
-        #self.setCurrent(0)
 
         self.inst = rm.open_resource(visaName)
         print(self.inst.query("*IDN?\n"))
         self.inst.write("beeper.beep(0.1,2400)")
         self.inst.write("delay(0.250)")
         self.inst.write("beeper.beep(0.1,2400)")
-        #self.inst.write("read_error_queue()")
 
         self.inst.write("smua.reset()") #Reset channel A
         self.inst.write("smub.reset()") #Reset channel B
         self.inst.write("dataqueue.clear()")
         self.inst.write("errorqueue.clear()")
 
-        #v = self.inst.query("errorqueue.clear()")
-        #errorCode, message, severity, errorNode = v
-        #print(v)
+
         print('Connected\n')
 
 
     def disconnect(self):
-        """ Turns off and disconnects the outputs of the SMU
-                    Arguments:
-                        N/A
-                    Returns:
-                        N/A
-                    """
+        """
+        Turns off and disconnects the outputs of the SMU
+        Returns
+        -------
+        Print statement indicating that SMU is disconnected
+        """
 
         self.inst.write("smua.source.output = smua.OUTPUT_OFF") #Turn off output A
         self.inst.write("smub.source.output = smub.OUTPUT_OFF") #Turn off output B
@@ -104,13 +98,18 @@ class SMUClass():
         print('SMU Disconnected')
 
 
-    def setVoltage(self, voltage, channel):#, outputA, outputB):
-        """ Sets the source of the SMU to a specified voltage
-            Arguments:
-                voltage: a float representing the voltage to set the SMU to
-            Returns:
-                A print statement indicating that the voltage has been set
-            """
+    def setVoltage(self, voltage, channel):
+        """
+        Sets the source of the SMU to a specified voltage
+        Parameters
+        ----------
+        voltage : a float representing the voltage to set the SMU to
+        channel : which channel is being set
+
+        Returns
+        -------
+        A print statement indicating that the voltage has been set
+        """
         if channel == 'A':
             self.inst.write("smua.source.func = smua.OUTPUT_DCVOLTS")
             setvoltstring = "smua.source.levelv = " + str(voltage)
@@ -136,13 +135,18 @@ class SMUClass():
 
 
     def setCurrent(self, current, channel):
-        """ Sets the source of the SMU to a specified current
-                    Arguments:
-                        current: a float representing the current to set the SMU to
-                        channel: specifies which channel to set current in
-                    Returns:
-                        A print statement indicating that the current has been set
-                    """
+        """
+        Sets the source of the SMU to a specified current
+        Parameters
+        ----------
+        current : a float representing the current to set the SMU to
+        channel : specifies which channel to set current in
+
+        Returns
+        -------
+        A print statement indicating that the current has been set
+        """
+
         if channel == 'A':
             self.inst.write("smua.source.func = smua.OUTPUT_DCAMPS")
             setcurrentstring = "smua.source.leveli = " + str(current)
@@ -168,13 +172,17 @@ class SMUClass():
 
 
     def setcurrentlimit(self, currentlimit, channel):
-        """ Sets the current limit of the smu
-                            Arguments:
-                                currentlimit: a float representing the current limit in mA
-                                channel: specifies which channel to set current in
-                            Returns:
-                                A print statement indicating that the current limit has been set
-                            """
+        """
+        Sets the current limit of the smu
+        Parameters
+        ----------
+        currentlimit : a float representing the current limit in mA
+        channel : specifies which channel to set current in
+
+        Returns
+        -------
+        A print statement indicating that the current limit has been set
+        """
 
         if channel == 'A':
             currentlimitstring = "smua.source.limiti = " + str(float(currentlimit / 1000))
@@ -197,13 +205,17 @@ class SMUClass():
 
 
     def setvoltagelimit(self, voltagelimit, channel):
-        """ Sets the voltage limit of the smu
-                            Arguments:
-                                voltage limit : a float representing the voltage limit to set
-                                channel: specifies which channel to set voltage in
-                            Returns:
-                                A print statement indicating that the voltage has been set
-                            """
+        """
+        Sets the voltage limit of the smu
+        Parameters
+        ----------
+        voltagelimit : a float representing the voltage limit to set
+        channel : specifies which channel to set voltage in
+
+        Returns
+        -------
+        A print statement indicating that the voltage has been set
+        """
 
         if channel == 'A':
             voltagelimitstring = "smua.source.limitv = " + str(voltagelimit)
@@ -226,14 +238,17 @@ class SMUClass():
 
 
     def setpowerlimit(self, powerlimit, channel):
-        """ Sets the power limit of the smu
-                            Arguments:
-                                power: a float representing the powerlimit to set the SMU to
-                                channel: specifies which channel to set current in
-                            Returns:
-                                A print statement indicating that the powerlimit has been set
-                            """
+        """
+        Sets the power limit of the smu
+        Parameters
+        ----------
+        powerlimit : a float representing the powerlimit to set the SMU to
+        channel : specifies which channel to set current in
 
+        Returns
+        -------
+        A print statement indicating that the powerlimit has been set
+        """
 
         if channel == 'A':
             powerlimitstring = "smua.source.limitp = " + str(float(powerlimit / 1000))
@@ -258,8 +273,9 @@ class SMUClass():
     def getvoltageA(self):
         """
         Queries the smu and returns the voltage measured at channel A
-        :return: the voltage seen at channel A in volts
-        :rtype: float
+        Returns
+        -------
+        the voltage seen at channel A in volts
         """
         v = self.inst.query("print(smua.measure.v())")
         return v
@@ -268,9 +284,11 @@ class SMUClass():
     def getcurrentA(self):
         """
         Queries the smu and returns the current measured at channel A
-        :return: the current seen at channel A in Amps
-        :rtype: float
+        Returns
+        -------
+        the current seen at channel A in Amps
         """
+
         i = self.inst.query("print(smua.measure.i())")
         return i
 
@@ -278,34 +296,62 @@ class SMUClass():
     def getvoltageB(self):
         """
         Queries the smu and returns the voltage measured at channel B
-        :return: the voltage seen at channel B in Volts
-        :rtype: float
+        Returns
+        -------
+        the voltage seen at channel B in Volts
         """
+
         v = self.inst.query("print(smub.measure.v())")
         return v
 
 
     def getcurrentB(self):
         """
-
-        :return:
-        :rtype:
+        Queries the smu and returns the current measured at channel B
+        Returns
+        -------
+        the current seen at channel B in Amps
         """
         i = self.inst.query("print(smub.measure.r())")
         return i
 
 
     def getresistanceA(self):
+        """
+        Queries the smu for resistance seen at channel A
+        Returns
+        -------
+        The resistance seen at channel A in ohms
+        """
         r = self.inst.query("print(smua.measure.r())")
         return r
 
 
     def getresistanceB(self):
+        """
+        Queries the smu for resistance seen at channel A
+        Returns
+        -------
+        The resistance seen at channel A in ohms
+        """
         r = self.inst.query("print(smub.measure.r())")
         return r
 
 
     def ivsweep(self, min:float, max:float, resolution:float, independantvar):
+        """
+        Performs a current sweep or a voltage sweep depending on inputs
+        Parameters
+        ----------
+        min : the minimum value for the independent variable
+        max : the maximum value for the independent variable
+        resolution : the resolution to sweep with
+        independantvar : whether or not the independent variable is current or voltage, string
+
+        Returns
+        -------
+
+        """
 
         self.voltageresultA = []
         self.currentresultA = []
@@ -451,6 +497,16 @@ class SMUClass():
 
 
     def turnchannelon(self, channel):
+        """
+        Configures the specified channel to be on
+        Parameters
+        ----------
+        channel : the channel that wants to be turned on
+
+        Returns
+        -------
+        A print statement indicating that the channel specified has been turned on
+        """
 
         if channel == 'A':
             self.inst.write("smua.source.output = smua.OUTPUT_ON")
@@ -472,6 +528,16 @@ class SMUClass():
 
 
     def turnchanneloff(self, channel):
+        """
+        Configures the specified channel to be off
+        Parameters
+        ----------
+        channel : the channel that wants to be turned off
+
+        Returns
+        -------
+        A print statement indicating that the channel specified has been turned off
+        """
 
         if channel == 'A':
             self.inst.write("smua.source.output = smua.OUTPUT_OFF")
@@ -489,6 +555,16 @@ class SMUClass():
 
 
     def setoutputflagon(self, channel):
+        """
+        Sets the channel for use in sweep
+        Parameters
+        ----------
+        channel : the channel to be used in the sweep
+
+        Returns
+        -------
+        A print statement letting the user know the channel has been set for use with sweep
+        """
 
         if channel == 'A':
             self.Aflag = True
@@ -504,6 +580,16 @@ class SMUClass():
 
 
     def setoutputflagoff(self, channel):
+        """
+        Unsets a channel for use in sweep
+        Parameters
+        ----------
+        channel : the channel to be unset for use in the sweep
+
+        Returns
+        -------
+        A print statement letting the user know the channel has been unset for use with sweep
+        """
 
         if channel == 'A':
             self.Aflag = False

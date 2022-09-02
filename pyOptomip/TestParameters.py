@@ -21,21 +21,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 import os
-import myMatplotlibPanel
-import myMatplotlibPanel_pyplot
 import wx
-import csv
 import re
-import csv
-import shutil
 from outputlogPanel import outputlogPanel
 from logWriter import logWriter, logWriterError
 import sys
 from ElectroOpticDevice import ElectroOpticDevice
-from config import ROOT_DIR
-import numpy as np
-from keithley2600 import Keithley2600
-from SMU import SMUClass
 
 
 class testParameters(wx.Frame):
@@ -53,30 +44,43 @@ class testParameters(wx.Frame):
         self.Centre()
         self.Show()
 
+
     def InitUI(self):
+        """
+        Creates the highest level formatting for the testing parameters frame
+        Returns
+        -------
+
+        """
         self.Bind(wx.EVT_CLOSE, self.OnExitApp)
         vbox = wx.BoxSizer(wx.VERTICAL)
-        hbox = wx.BoxSizer(wx.HORIZONTAL)
-
         panel = TopPanel(self)
-
         vbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
-
-        #vbox.Add(hbox, 3, wx.EXPAND)
         self.log = outputlogPanel(self)
         vbox.Add(self.log, 1, wx.EXPAND)
         self.SetSizer(vbox)
-
         sys.stdout = logWriter(self.log)
         sys.stderr = logWriterError(self.log)
 
+
     def OnExitApp(self, event):
+        """
+        Terminates the window on close
+        Parameters
+        ----------
+        event :
+
+        Returns
+        -------
+
+        """
         self.Destroy()
 
 
+# Panel which contains the panels used for controlling the laser and detectors. It also
+# contains the graph.
 class TopPanel(wx.Panel):
-    # Panel which contains the panels used for controlling the laser and detectors. It also
-    # contains the graph.
+
     def __init__(self, parent):
         super(TopPanel, self).__init__(parent)
         self.routineflag = ""
@@ -105,6 +109,7 @@ class TopPanel(wx.Panel):
                      'setvChannelB': [], 'Voltages': [], 'RoutineNumber': []}
 
         self.InitUI()
+
 
     def InitUI(self):
 
@@ -187,14 +192,19 @@ class TopPanel(wx.Panel):
 
         self.SetSizer(vboxOuter)
 
+
     def OnButton_ChooseCoordFile(self, event):
         """
         When event is triggered this function opens the chosen coordinate file and displays the devices in a checklist
-        :param event:
-        :type event:
-        :return:
-        :rtype:
+        Parameters
+        ----------
+        event : the event triggered by clicking the open button to choose the auto-coordinate file
+
+        Returns
+        -------
+
         """
+
         """ Opens a file dialog to select a coordinate file. """
         fileDlg = wx.FileDialog(self, "Open", "", "",
                                 "Text Files (*.txt)|*.txt",
@@ -292,11 +302,15 @@ class TopPanel(wx.Panel):
     def OnButton_CheckAll(self, event):
         """
         Checks all the devices in the checklist, will not check the devices that have already been set
-        :param event:
-        :type event:
-        :return:
-        :rtype:
+        Parameters
+        ----------
+        event : the event triggered when the select all button is pushed
+
+        Returns
+        -------
+
         """
+
         if self.retrievedataflag == False:
             for ii in range(self.checkList.GetItemCount()):
                 if self.set[ii] == False:
@@ -308,10 +322,13 @@ class TopPanel(wx.Panel):
     def retrievedata(self, event):
         """
         configures the switch from set data mode to retrieve data mode by setting or unsetting various flags
-        :param event:
-        :type event:
-        :return:
-        :rtype:
+        Parameters
+        ----------
+        event : the event triggered when the user presses the retrieve data button
+
+        Returns
+        -------
+
         """
 
         if self.retrievedataflag == False:
@@ -350,10 +367,13 @@ class TopPanel(wx.Panel):
     def OnButton_UncheckAll(self, event):
         """
         Uncheck all items in the checklist
-        :param event:
-        :type event:
-        :return:
-        :rtype:
+        Parameters
+        ----------
+        event : the event triggered by pressing the unselect all button
+
+        Returns
+        -------
+
         """
 
         for ii in range(self.checkList.GetItemCount()):
@@ -363,10 +383,13 @@ class TopPanel(wx.Panel):
     def highlight(self, event):
         """
         Highlights the items in the checklist that contain the string in the searchfile textctrl box
-        :param event:
-        :type event:
-        :return:
-        :rtype:
+        Parameters
+        ----------
+        event : the event triggered by pressing the select keyword button
+
+        Returns
+        -------
+
         """
 
         for c in range(self.checkList.GetItemCount()):
@@ -381,11 +404,16 @@ class TopPanel(wx.Panel):
 
     def retrievehighlight(self, index):
         """
-        When an item is selected while in retreive data mode this function highlights all the items that have the same routine (routine similarity is based on when the routine was orginally set, not whether of not the routines are the same)
-        :param index:
-        :type index:
-        :return:
-        :rtype:
+        When an item is selected while in retrieve data mode this function highlights all the items that have the same
+        routine (routine similarity is based on when the routine was originally set, not whether of not the routines are
+        numerically the same)
+        Parameters
+        ----------
+        index : the index of the checklist device chosen while in retrieve data mode
+
+        Returns
+        -------
+
         """
 
         flag = False
@@ -418,10 +446,13 @@ class TopPanel(wx.Panel):
     def retrieveunhighlight(self, index):
         """
         When the device that was previosuly selected becomes unselected this function unhighlights all similar routine devices
-        :param index: the index of the device being unselected
-        :type index: int
-        :return:
-        :rtype:
+        Parameters
+        ----------
+        index : the index of the checklist device being unselected
+
+        Returns
+        -------
+
         """
 
         num = []
@@ -446,25 +477,32 @@ class TopPanel(wx.Panel):
     def SearchDevices(self, event):
         """
         When the search devices button is clicked this function selects all devices in the checklist that contain the string in searchfile textctrl box
-        :param event: event triggered by pressing the search devices button
-        :type event:
-        :return:
-        :rtype:
+        Parameters
+        ----------
+        event : the event triggered by pressing the search keyword button
+
+        Returns
+        -------
+
         """
+
         for c in range(len(self.set)):
             if self.set[c] != True and self.searchFile.GetValue() != '' and self.searchFile.GetValue() in self.checkList.GetItemText(c, 0):
                 self.checkList.CheckItem(c, True)
 
 
-
     def unSearchDevices(self, event):
         """
         Unselects all devices in checklist that contain the string in searchfile textctrl box
-        :param event: the event triggered on pressing the unselect keyword button
-        :type event: event
-        :return:
-        :rtype:
+        Parameters
+        ----------
+        event : the event triggered on pressing the unselect keyword button
+
+        Returns
+        -------
+
         """
+
         for c in range(len(self.set)):
             if self.set[c] != True and self.searchFile.GetValue() != '' and self.searchFile.GetValue() in self.checkList.GetItemText(c, 0):
                 self.checkList.CheckItem(c, False)
@@ -473,12 +511,15 @@ class TopPanel(wx.Panel):
     def checkListSort(self, item1, item2):
         """
         Sorts two items passed to it, used to sort the items in the checklist on creation
-        :param item1:
-        :type item1:
-        :param item2:
-        :type item2:
-        :return:
-        :rtype:
+        Parameters
+        ----------
+        item1 : integer value
+        item2 : integer value
+
+        Returns
+        -------
+        A -1, a 1 or a 0 depending on the size of the items
+
         """
         # Items are the client data associated with each entry
         if item2 < item2:
@@ -491,11 +532,15 @@ class TopPanel(wx.Panel):
 
     def checkListchecked(self, event):
         """
-        If in sedt data mode this function adds the now checked device to a list of selected devices, if in retrieve data mode this function calls reteivedataswap beginning the data reteival process for the device in quuestion
-        :param event: on selecting a device in the checklist
-        :type event: event
-        :return:
-        :rtype:
+        If in set data mode this function adds the now checked device to a list of selected devices, if in retrieve
+        data mode this function calls reteivedataswap beginning the data reteival process for the device in quuestion
+        Parameters
+        ----------
+        event : the event triggered by selecting a device in the list
+
+        Returns
+        -------
+
         """
         c = event.GetIndex()
 
@@ -510,11 +555,14 @@ class TopPanel(wx.Panel):
 
     def retrievedataswap(self, c):
         """
+        Swaps the data in the parameters menu to that of the selected device when in retrieve data mode
+        Parameters
+        ----------
+        c : the index of the selected device in the checklist
 
-        :param c:
-        :type c:
-        :return:
-        :rtype:
+        Returns
+        -------
+
         """
 
         self.retrievedataselected.append(c)
@@ -724,11 +772,16 @@ class TopPanel(wx.Panel):
 
     def checkListunchecked(self, event):
         """
+        If in set data mode this function removes the now unchecked device from the list of selected devices, if in
+        retrieve data mode this function removes the device from the list of selected retrieve data devices and
+        unhighlights the similar routine devices
+        Parameters
+        ----------
+        event : the event triggered by unselecting a device in the list
 
-        :param event:
-        :type event:
-        :return:
-        :rtype:
+        Returns
+        -------
+
         """
         x = event.GetIndex()
         if self.setflag == False and self.retrievedataflag == False:
@@ -742,11 +795,14 @@ class TopPanel(wx.Panel):
 
     def OnButton_SelectOutputFolder(self, event):
         """
+        Opens the file explorer and allows user to choose the location to save the exported csv file
+        Parameters
+        ----------
+        event : the event triggered by pressing the "open" button to choose the output save location
 
-        :param event:
-        :type event:
-        :return:
-        :rtype:
+        Returns
+        -------
+
         """
         dirDlg = wx.DirDialog(self, "Open", "", wx.DD_DEFAULT_STYLE)
         dirDlg.ShowModal()
@@ -754,27 +810,17 @@ class TopPanel(wx.Panel):
         dirDlg.Destroy()
 
 
-    def OnButton_SelectImportFolder(self, event):
-        """
-
-        :param event:
-        :type event:
-        :return:
-        :rtype:
-        """
-        fileDlg = wx.FileDialog(self, "Open", "")
-        fileDlg.ShowModal()
-        self.importFolderTb.SetValue(fileDlg.GetPath())
-        fileDlg.Destroy()
-
-
     def SetButton(self, event):
         """
-        This function converts the data input by the user into the various parameter locations and loads it into a dictionary that can then be used to either export the data or directly control the equipment
-        :param event: The event set by clicking the set button
-        :type event: event
-        :return:
-        :rtype:
+        This function converts the data input by the user into the various parameter locations and loads it into a
+        dictionary that can then be used to either export the data or directly control the equipment
+        Parameters
+        ----------
+        event : the event triggered by pressing the set button
+
+        Returns
+        -------
+
         """
 
         if self.retrievedataflag == True:
@@ -789,10 +835,6 @@ class TopPanel(wx.Panel):
         self.big = max([self.instructpanel.elecroutine.GetValue(), self.instructpanel.optroutine.GetValue(), self.instructpanel.setwroutine.GetValue(), self.instructpanel.setvroutine.GetValue()])
 
         #to ensure all lists are the same length we find the largest list and append blank strings to the other lists until they match the largest string
-
-        print(self.retrievedataflag)
-        print(self.setpanel.elecvolt)
-        print(self.big)
 
         while len(self.setpanel.elecvolt) < int(self.big):
             self.setpanel.elecvolt.append('')
@@ -1121,30 +1163,24 @@ class TopPanel(wx.Panel):
         self.setpanel.Bsel2.SetValue(False)
         self.setpanel.wavesetTc2.SetValue('')
 
-        for keys, values in self.data.items():
-            print(keys)
-            print(values)
+        #if want to see items in dictionary uncommment code below
+        #for keys, values in self.data.items():
+         #   print(keys)
+          #  print(values)
 
         print('Data has been set')
 
 
     def ExportButton(self, event):
         """
-
+        This function takes the data contained in the data dictionary and formats it into a csv file
         Parameters
         ----------
-        event :
+        event : The event triggered by clicking the export button
 
         Returns
         -------
 
-        """
-        """
-        This function takes the data contained in the data dictionary and formats it into a csv file
-        :param event: The event triggered by clicking the export button
-        :type event: event
-        :return:
-        :rtype:
         """
 
         ROOT_DIR = format(os.getcwd())
@@ -1153,8 +1189,13 @@ class TopPanel(wx.Panel):
         with open(primarysavefile, 'w', newline='') as f:
             f.write(',,,,,,,,,,,,,,,,\n')
             f.write(',,,,,,IV Sweep,,,,,,,,,,,,,Optical Sweep,,,,,,,,,Set Wavelength,,,,,,,,,,,,,,SetVoltage\n')
-            f.write(
-                'RoutineNumber, Device ID, ELECFlag, OPTICflag, setwflag, setvflag, Volt Select, Current Select, Volt Min,Volt Max,Current Min,Current Max,Volt Resolution,Current Resolution,IV/VI,RV/RI,PV/PI, Channel A, Channel B,Start,Stop,Stepsize,Sweep power,Sweep speed,Laser Output,Number of scans, Initial Range, Range Dec, Volt Select, Current Select, Volt Min,Volt Max,Current Min,Current Max,Volt Resolution,Current Resolution,IV/VI,RV/RI,PV/PI, Channel A, Channel B, Wavelength, Start, Stop, Stepsize, Sweep power,Sweep speed,Laser Output,Number of scans, Initial Range, Range Dec, Channel A, Channel B, Voltages \n')
+            f.write('RoutineNumber, Device ID, ELECFlag, OPTICflag, setwflag, setvflag, Volt Select, Current Select,'
+                    ' Volt Min,Volt Max,Current Min,Current Max,Volt Resolution,Current Resolution,IV/VI,RV/RI,PV/PI, '
+                    'Channel A, Channel B,Start,Stop,Stepsize,Sweep power,Sweep speed,Laser Output,Number of scans,'
+                    ' Initial Range, Range Dec, Volt Select, Current Select, Volt Min,Volt Max,Current Min,Current Max,'
+                    'Volt Resolution,Current Resolution,IV/VI,RV/RI,PV/PI, Channel A, Channel B, Wavelength, Start, Stop,'
+                    ' Stepsize, Sweep power,Sweep speed,Laser Output,Number of scans, Initial Range, Range Dec,'
+                    ' Channel A, Channel B, Voltages \n')
 
             for c in range(len(self.data['device'])):
                 f.write(str(self.data['RoutineNumber'][c]) + ',' + str(self.data['device'][c]) + ',' + str(
@@ -1197,34 +1238,55 @@ class TopPanel(wx.Panel):
             with open(savefile, 'w', newline='') as f:
                 f.write(',,,,,,,,,,,,,,,,\n')
                 f.write(',,,,,,IV Sweep,,,,,,,,,,,,,Optical Sweep,,,,,,,,,Set Wavelength,,,,,,,,,,,,,,SetVoltage\n')
-                f.write('RoutineNumber, Device ID, ELECFlag, OPTICflag, setwflag, setvflag, Volt Select, Current Select, Volt Min,Volt Max,Current Min,Current Max,Volt Resolution,Current Resolution,IV/VI,RV/RI,PV/PI, Channel A, Channel B,Start,Stop,Stepsize,Sweep power,Sweep speed,Laser Output,Number of scans, Initial Range, Range Dec, Volt Select, Current Select, Volt Min,Volt Max,Current Min,Current Max,Volt Resolution,Current Resolution,IV/VI,RV/RI,PV/PI, Channel A, Channel B, Wavelength, Start, Stop, Stepsize, Sweep power,Sweep speed,Laser Output,Number of scans, Initial Range, Range Dec, Channel A, Channel B, Voltages \n')
+                f.write('RoutineNumber, Device ID, ELECFlag, OPTICflag, setwflag, setvflag, Volt Select,'
+                        ' Current Select, Volt Min,Volt Max,Current Min,Current Max,Volt Resolution,Current Resolution,'
+                        'IV/VI,RV/RI,PV/PI, Channel A, Channel B,Start,Stop,Stepsize,Sweep power,Sweep speed,'
+                        'Laser Output,Number of scans, Initial Range, Range Dec, Volt Select, Current Select, Volt Min,'
+                        'Volt Max,Current Min,Current Max,Volt Resolution,Current Resolution,IV/VI,RV/RI,PV/PI,'
+                        ' Channel A, Channel B, Wavelength, Start, Stop, Stepsize, Sweep power,Sweep speed,Laser Output,'
+                        'Number of scans, Initial Range, Range Dec, Channel A, Channel B, Voltages \n')
 
                 for c in range(len(self.data['device'])):
 
-                    f.write(str(self.data['RoutineNumber'][c]) + ',' + str(self.data['device'][c]) + ',' + str(self.data['ELECflag'][c]) + ',' + str(self.data['OPTICflag'][c]) + ',' + str(self.data['setwflag'][c]) + ',' + str(self.data['setvflag'][c]) + ',' + str(self.data['Voltsel'][c]) + ',' + str(self.data['Currentsel'][c]) + ',' + str(self.data['VoltMin'][c]) + ',' + str(self.data['VoltMax'][c])
+                    f.write(str(self.data['RoutineNumber'][c]) + ',' + str(self.data['device'][c]) + ',' +
+                            str(self.data['ELECflag'][c]) + ',' + str(self.data['OPTICflag'][c]) + ',' +
+                            str(self.data['setwflag'][c]) + ',' + str(self.data['setvflag'][c]) + ',' +
+                            str(self.data['Voltsel'][c]) + ',' + str(self.data['Currentsel'][c]) + ',' +
+                            str(self.data['VoltMin'][c]) + ',' + str(self.data['VoltMax'][c])
                             + ',' + str(self.data['CurrentMin'][c]) + ',' + str(self.data['CurrentMax'][c]) + ',' +
-                            str(self.data['VoltRes'][c]) + ',' + str(self.data['CurrentRes'][c]) + ',' + str(self.data['IV'][c]) + ','
-                            + str(self.data['RV'][c]) + ',' + str(self.data['PV'][c]) + ',' + str(self.data['ChannelA'][c]) + ',' + str(self.data['ChannelB'][c]) + ',' + str(self.data['Start'][c]) + ','
-                            + str(self.data['Stop'][c]) + ',' + str(self.data['Stepsize'][c]) + ',' + str(self.data['Sweeppower'][c])
-                            + ',' + str(self.data['Sweepspeed'][c]) + ',' + str(self.data['Laseroutput'][c]) + ','
-                            + str(self.data['Numscans'][c]) + ',' + str(self.data['InitialRange'][c]) + ',' + str(self.data['RangeDec'][c]) + ',' + str(self.data['setwVoltsel'][c]) + ',' + str(self.data['setwCurrentsel'][c]) + ',' + str(self.data['setwVoltMin'][c]) + ',' + str(self.data['setwVoltMax'][c])
-                            + ',' + str(self.data['setwCurrentMin'][c]) + ',' + str(self.data['setwCurrentMax'][c]) + ',' +
-                            str(self.data['setwVoltRes'][c]) + ',' + str(self.data['setwCurrentRes'][c]) + ',' + str(self.data['setwIV'][c]) + ','
-                            + str(self.data['setwRV'][c]) + ',' + str(self.data['setwPV'][c]) + ',' + str(self.data['setwChannelA'][c]) + ',' + str(self.data['setwChannelB'][c]) + ',' + str(self.data['Wavelengths'][c]) + ',' + str(self.data['setvStart'][c]) + ','
-                            + str(self.data['setvStop'][c]) + ',' + str(self.data['setvStepsize'][c]) + ',' + str(self.data['setvSweeppower'][c])
-                            + ',' + str(self.data['setvSweepspeed'][c]) + ',' + str(self.data['setvLaseroutput'][c]) + ','
-                            + str(self.data['setvNumscans'][c]) + ',' + str(self.data['setvInitialRange'][c]) + ',' + str(self.data['setvRangeDec'][c]) + ',' + str(self.data['setvChannelA'][c]) + ',' + str(self.data['setvChannelB'][c]) + ',' + str(self.data['Voltages'][c]) + ',' + '\n')
+                            str(self.data['VoltRes'][c]) + ',' + str(self.data['CurrentRes'][c]) + ',' +
+                            str(self.data['IV'][c]) + ',' + str(self.data['RV'][c]) + ',' + str(self.data['PV'][c]) +
+                            ',' + str(self.data['ChannelA'][c]) + ',' + str(self.data['ChannelB'][c]) + ',' +
+                            str(self.data['Start'][c]) + ',' + str(self.data['Stop'][c]) + ',' +
+                            str(self.data['Stepsize'][c]) + ',' + str(self.data['Sweeppower'][c]) + ',' +
+                            str(self.data['Sweepspeed'][c]) + ',' + str(self.data['Laseroutput'][c]) + ',' +
+                            str(self.data['Numscans'][c]) + ',' + str(self.data['InitialRange'][c]) + ',' +
+                            str(self.data['RangeDec'][c]) + ',' + str(self.data['setwVoltsel'][c]) + ',' +
+                            str(self.data['setwCurrentsel'][c]) + ',' + str(self.data['setwVoltMin'][c]) + ',' +
+                            str(self.data['setwVoltMax'][c]) + ',' + str(self.data['setwCurrentMin'][c]) + ',' +
+                            str(self.data['setwCurrentMax'][c]) + ',' + str(self.data['setwVoltRes'][c]) + ',' +
+                            str(self.data['setwCurrentRes'][c]) + ',' + str(self.data['setwIV'][c]) + ',' +
+                            str(self.data['setwRV'][c]) + ',' + str(self.data['setwPV'][c]) + ',' +
+                            str(self.data['setwChannelA'][c]) + ',' + str(self.data['setwChannelB'][c]) + ',' +
+                            str(self.data['Wavelengths'][c]) + ',' + str(self.data['setvStart'][c]) + ',' +
+                            str(self.data['setvStop'][c]) + ',' + str(self.data['setvStepsize'][c]) + ',' +
+                            str(self.data['setvSweeppower'][c]) + ',' + str(self.data['setvSweepspeed'][c]) + ',' +
+                            str(self.data['setvLaseroutput'][c]) + ',' + str(self.data['setvNumscans'][c]) + ',' +
+                            str(self.data['setvInitialRange'][c]) + ',' + str(self.data['setvRangeDec'][c]) + ',' +
+                            str(self.data['setvChannelA'][c]) + ',' + str(self.data['setvChannelB'][c]) + ',' +
+                            str(self.data['Voltages'][c]) + ',' + '\n')
                 print('Data exported to ' + savefilestring)
 
 
-#This panel class contains the instructions for going about inputting the routine data for the devices as well as the selection menu for the number of different routines
-
+#This panel class contains the instructions for going about inputting the routine data for the devices as well as the
+#selection menu for the number of different routines
 class InstructPanel(wx.Panel):
 
     def __init__(self, parent, setpanel):
         super(InstructPanel, self).__init__(parent)
         self.setpanel = setpanel
         self.InitUI()
+
 
     def InitUI(self):
 
@@ -1328,17 +1390,20 @@ class InstructPanel(wx.Panel):
 
     def setnumroutine(self, event):
         """
-`       Based on the input for number of different routines this function will create lists for each routine with the length equal to the number of routines input
+        Based on the input for number of different routines this function will create lists for each routine with
+        the length equal to the number of routines input
         :param event: the event created on input of number into number of routine menu
-        :type event:
-        :return:
-        :rtype:
-        """
+        Parameters
+        ----------
+        event : the event triggered on input of number into number of routine menu
 
+        Returns
+        -------
+
+        """
         c = event.GetEventObject()
 
         optionsblank = []
-        #if c == self.elecroutine:
 
         if c.GetValue().isdigit() != True and c.GetValue() != '':
             c.SetValue('')
@@ -1425,8 +1490,8 @@ class InstructPanel(wx.Panel):
             if c.name == 'setvroutine':
                 self.setpanel.routineselectsetv.SetItems(optionsblank)
 
-#the Panel resposnible for the user input of parameters
 
+#the Panel responsible for the user input of parameters
 class SetPanel(wx.Panel):
 
     def __init__(self, parent):
@@ -1490,11 +1555,6 @@ class SetPanel(wx.Panel):
 
 
     def InitUI(self):
-        """
-
-        :return:
-        :rtype:
-        """
 
         ##CREATE ELECTRICAL PANEL#######################################################################################
 
@@ -1925,10 +1985,13 @@ class SetPanel(wx.Panel):
     def cleartext(self, event):
         """
         Clears the text in the textctrl boxes on user clicking the box
-        :param event: The event triggered when the user clicks the textctrl box
-        :type event: event
-        :return:
-        :rtype:
+        Parameters
+        ----------
+        event : The event triggered when the user clicks the textctrl box
+
+        Returns
+        -------
+
         """
         e = event.GetEventObject()
         if e.GetValue() == 'mA' or e.GetValue() == 'mV' or e.GetValue() == 'V':
@@ -2037,10 +2100,13 @@ class SetPanel(wx.Panel):
     def trueorfalse(self, event):
         """
         For selections that can only be one or the other this function deselects the other option on the selection of one of the parameters
-        :param event: event triggered by any one of the parameters that are exclusive
-        :type event: event
-        :return:
-        :rtype:
+        Parameters
+        ----------
+        event : event triggered by any one of the parameters that are exclusive
+
+        Returns
+        -------
+
         """
         e = event.GetEventObject()
 
@@ -2080,12 +2146,14 @@ class SetPanel(wx.Panel):
     def routinesaveelec(self, event):
         """
         When the user hits the electrical panel save button this function saves the data in the panel to a list with a size equal to the number of routines
-        :param event: event triggered by user clicking the save button in the electrical panel
-        :type event: event
-        :return:
-        :rtype:
-        """
+        Parameters
+        ----------
+        event : the event triggered by user clicking the save button in the electrical panel
 
+        Returns
+        -------
+
+        """
         if self.routineselectelec.GetValue() != '':
             value = int(self.routineselectelec.GetValue()) - 1
             self.elecvolt[value] = self.voltsel.GetValue()
@@ -2108,12 +2176,14 @@ class SetPanel(wx.Panel):
     def routinesaveopt(self, event):
         """
         When the user hits the optical panel save button this function saves the data in the panel to a list with a size equal to the number of routines
-        :param event: event triggered by user clicking the save button in the optical panel
-        :type event:
-        :return:
-        :rtype:
-        """
+        Parameters
+        ----------
+        event : event triggered by user clicking the save button in the optical panel
 
+        Returns
+        -------
+
+        """
         if self.routineselectopt.GetValue() != '':
             value = int(self.routineselectopt.GetValue()) - 1
             self.start[value] = self.startWvlTc.GetValue()
@@ -2131,11 +2201,15 @@ class SetPanel(wx.Panel):
 
     def routinesavesetw(self, event):
         """
-        When the user hits the set wavelength, voltage sweep panel save button this function saves the data in the panel to a list with a size equal to the number of routines
-        :param event: event triggered by user clicking the save button in the set wavelength, voltage sweep panel
-        :type event:
-        :return:
-        :rtype:
+        When the user hits the set wavelength, voltage sweep panel save button this function saves the data in the
+        panel to a list with a size equal to the number of routines
+        Parameters
+        ----------
+        event : event triggered by user clicking the save button in the set wavelength, voltage sweep panel
+
+        Returns
+        -------
+
         """
 
         if self.routineselectsetw.GetValue() != '':
@@ -2160,11 +2234,15 @@ class SetPanel(wx.Panel):
 
     def routinesavesetv(self, event):
         """
-        When the user hits the set voltage, wavelength sweep panel save button this function saves the data in the panel to a list with a size equal to the number of routines
-        :param event:
-        :type event:
-        :return:
-        :rtype:
+        When the user hits the set voltage, wavelength sweep panel save button this function saves the data in the
+        panel to a list with a size equal to the number of routines
+        Parameters
+        ----------
+        event : event triggered by user clicking the save button in the set voltage, wavelength sweep panel
+
+        Returns
+        -------
+
         """
 
         if self.routineselectsetv.GetValue() != '':
@@ -2187,13 +2265,16 @@ class SetPanel(wx.Panel):
 
     def routinepanel(self, event):
         """
-         When the user opens the routine select dropdown this function saves the data in the panel to a list with a size equal to the number of routines
-        :param event:
-        :type event:
-        :return:
-        :rtype:
-        """
+        When the user opens the routine select dropdown this function saves the data in the panel to a list with a size
+        equal to the number of routines
+        Parameters
+        ----------
+        event : the event triggered by the user opening the dropdown selection on any of the panels
 
+        Returns
+        -------
+
+        """
         e = event.GetEventObject()
         name = e.name
 
@@ -2275,6 +2356,17 @@ class SetPanel(wx.Panel):
 
 
     def swaproutine(self, event):
+        """
+        When the user selects a new routine number in the dropdown menu of the routine panels, this function swaps the
+        saved routine values shown
+        Parameters
+        ----------
+        event : the event triggered by the user opening the dropdown selection on any of the panels
+
+        Returns
+        -------
+
+        """
         """
         When the user selects a new routine number in the dropdown menu of the routine panels, this function swaps the saved routine values shown
         :param event:
