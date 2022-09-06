@@ -78,13 +78,13 @@ class coordinateMapPanel(wx.Panel):
         self.elecxGdsCoordLst = []
         self.elecyGdsCoordLst = []
 
-        self.tbGdsDevice1 = wx.ComboBox(self, size=(80, 20), choices=[], style=wx.CB_DROPDOWN)
+        self.tbGdsDevice1 = wx.ComboBox(self, size=(150, 20), choices=[], style=wx.CB_DROPDOWN)
         self.tbGdsDevice1.Bind(wx.EVT_COMBOBOX_DROPDOWN, self.on_drop_down)
 
-        self.tbGdsDevice2 = wx.ComboBox(self, size=(80, 20), choices=[], style=wx.CB_DROPDOWN)
+        self.tbGdsDevice2 = wx.ComboBox(self, size=(150, 20), choices=[], style=wx.CB_DROPDOWN)
         self.tbGdsDevice2.Bind(wx.EVT_COMBOBOX_DROPDOWN, self.on_drop_down)
 
-        self.tbGdsDevice3 = wx.ComboBox(self, size=(80, 20), choices=[], style=wx.CB_DROPDOWN)
+        self.tbGdsDevice3 = wx.ComboBox(self, size=(150, 20), choices=[], style=wx.CB_DROPDOWN)
         self.tbGdsDevice3.Bind(wx.EVT_COMBOBOX_DROPDOWN, self.on_drop_down)
 
         self.GDSDevList = [self.tbGdsDevice1, self.tbGdsDevice2, self.tbGdsDevice3]
@@ -314,7 +314,7 @@ class autoMeasurePanel(wx.Panel):
 
         # Add devices checklist
         self.checkList = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
-        self.checkList.InsertColumn(0, 'Device', width=100)
+        self.checkList.InsertColumn(0, 'Device', width=500)
         checkListBox = wx.BoxSizer(wx.HORIZONTAL)
         checkListBox.Add(self.checkList, proportion=1, flag=wx.EXPAND)
 
