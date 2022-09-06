@@ -492,19 +492,22 @@ class autoMeasurePanel(wx.Panel):
         next(reader)
         optDev1 = next(reader)
         optDev1 = optDev1  # [dev name, x motor coord, y motor coord, z motor coord]
-        self.coordMapPanelOpt.tbGdsDevice1.SetValue(optDev1[0])
+        self.coordMapPanelOpt.tbGdsDevice1.SetString(0, optDev1[0])
+        self.coordMapPanelOpt.tbGdsDevice1.SetSelection(0)
         self.coordMapPanelOpt.tbxMotorCoord1.SetValue(optDev1[1])
         self.coordMapPanelOpt.tbyMotorCoord1.SetValue(optDev1[2])
         self.coordMapPanelOpt.tbzMotorCoord1.SetValue(optDev1[3])
         optDev2 = next(reader)
         optDev2 = optDev2
-        self.coordMapPanelOpt.tbGdsDevice2.SetValue(optDev2[0])
+        self.coordMapPanelOpt.tbGdsDevice2.SetString(0, optDev2[0])
+        self.coordMapPanelOpt.tbGdsDevice2.SetSelection(0)
         self.coordMapPanelOpt.tbxMotorCoord2.SetValue(optDev2[1])
         self.coordMapPanelOpt.tbyMotorCoord2.SetValue(optDev2[2])
         self.coordMapPanelOpt.tbzMotorCoord2.SetValue(optDev2[3])
         optDev3 = next(reader)
         optDev3 = optDev3
-        self.coordMapPanelOpt.tbGdsDevice3.SetValue(optDev3[0])
+        self.coordMapPanelOpt.tbGdsDevice3.SetString(0, optDev3[0])
+        self.coordMapPanelOpt.tbGdsDevice3.SetSelection(0)
         self.coordMapPanelOpt.tbxMotorCoord3.SetValue(optDev3[1])
         self.coordMapPanelOpt.tbyMotorCoord3.SetValue(optDev3[2])
         self.coordMapPanelOpt.tbzMotorCoord3.SetValue(optDev3[3])
@@ -512,19 +515,22 @@ class autoMeasurePanel(wx.Panel):
         next(reader)
         elecDev1 = next(reader)
         elecDev1 = elecDev1
-        self.coordMapPanelElec.tbGdsDevice1.SetValue(elecDev1[0])
+        self.coordMapPanelElec.tbGdsDevice1.SetString(0, elecDev1[0])
+        self.coordMapPanelElec.tbGdsDevice1.SetSelection(0)
         self.coordMapPanelElec.tbxMotorCoord1.SetValue(elecDev1[1])
         self.coordMapPanelElec.tbyMotorCoord1.SetValue(elecDev1[2])
         self.coordMapPanelElec.tbzMotorCoord1.SetValue(elecDev1[3])
         elecDev2 = next(reader)
         elecDev2 = elecDev2
-        self.coordMapPanelElec.tbGdsDevice2.SetValue(elecDev2[0])
+        self.coordMapPanelElec.tbGdsDevice2.SetString(0, elecDev2[0])
+        self.coordMapPanelElec.tbGdsDevice2.SetSelection(0)
         self.coordMapPanelElec.tbxMotorCoord2.SetValue(elecDev2[1])
         self.coordMapPanelElec.tbyMotorCoord2.SetValue(elecDev2[2])
         self.coordMapPanelElec.tbzMotorCoord2.SetValue(elecDev2[3])
         elecDev3 = next(reader)
         elecDev3 = elecDev3
-        self.coordMapPanelElec.tbGdsDevice3.SetValue(elecDev3[0])
+        self.coordMapPanelElec.tbGdsDevice3.SetString(0, elecDev3[0])
+        self.coordMapPanelElec.tbGdsDevice3.SetSelection(0)
         self.coordMapPanelElec.tbxMotorCoord3.SetValue(elecDev3[1])
         self.coordMapPanelElec.tbyMotorCoord3.SetValue(elecDev3[2])
         self.coordMapPanelElec.tbzMotorCoord3.SetValue(elecDev3[3])
@@ -738,13 +744,13 @@ class autoMeasurePanel(wx.Panel):
         writer.writerow(Opt)
         Opt = ['Device', 'Motor x', 'Motor y', 'Motor z']
         writer.writerow(Opt)
-        dev1 = [self.coordMapPanelOpt.tbGdsDevice1.GetValue(),
+        dev1 = [self.coordMapPanelOpt.tbGdsDevice1.GetSelection(),
                 optCoords[0][0], optCoords[0][1], optCoords[0][2]]
         writer.writerow(dev1)
-        dev2 = [self.coordMapPanelOpt.tbGdsDevice2.GetValue(),
+        dev2 = [self.coordMapPanelOpt.tbGdsDevice2.GetSelection(),
                 optCoords[1][0], optCoords[1][1], optCoords[1][2]]
         writer.writerow(dev2)
-        dev3 = [self.coordMapPanelOpt.tbGdsDevice3.GetValue(),
+        dev3 = [self.coordMapPanelOpt.tbGdsDevice3.GetSelection(),
                 optCoords[2][0], optCoords[2][1], optCoords[2][2]]
         writer.writerow(dev3)
         elecCoords = self.coordMapPanelElec.getMotorCoords()
@@ -752,13 +758,13 @@ class autoMeasurePanel(wx.Panel):
         writer.writerow(Elec)
         elec = ['Device', 'Motor x', 'Motor y', 'Motor z']
         writer.writerow(elec)
-        dev1 = [self.coordMapPanelElec.tbGdsDevice1.GetValue(),
+        dev1 = [self.coordMapPanelElec.tbGdsDevice1.GetSelection(),
                 elecCoords[0][0], elecCoords[0][1], elecCoords[0][2]]
         writer.writerow(dev1)
-        dev2 = [self.coordMapPanelElec.tbGdsDevice2.GetValue(),
+        dev2 = [self.coordMapPanelElec.tbGdsDevice2.GetSelection(),
                 elecCoords[1][0], elecCoords[1][1], elecCoords[1][2]]
         writer.writerow(dev2)
-        dev3 = [self.coordMapPanelElec.tbGdsDevice3.GetValue(),
+        dev3 = [self.coordMapPanelElec.tbGdsDevice3.GetSelection(),
                 elecCoords[2][0], elecCoords[2][1], elecCoords[2][2]]
         writer.writerow(dev3)
         f.close()

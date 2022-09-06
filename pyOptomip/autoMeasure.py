@@ -102,7 +102,8 @@ class autoMeasure(object):
                         print('Warning: The entry\n%s\nis not formatted correctly.' % line)
 
     def findCoordinateTransform(self, motorCoords, gdsCoords):
-        """ Finds the best fit affine transform which maps the GDS coordinates to motor coordinates."""
+        ##OLD METHOD: USED FOR TESTING
+        """ Finds the affine transform matrix which maps the GDS coordinates to motor coordinates."""
 
         if len(motorCoords) != len(gdsCoords):
             raise CoordinateTransformException('You must have the same number of motor coordinates and GDS coordinates')
@@ -130,6 +131,7 @@ class autoMeasure(object):
         return A
 
     def gdsToMotor(self, gdsCoords):
+        ##OLD METHOD: USED FOR TESTING
         """ Uses the calculated affine transform to map a GDS coordinate to a motor coordinate."""
         gdsCoordVec = mat([[gdsCoords[0]], [gdsCoords[1]], [1]])
         motorCoordVec = self.transformMatrix*gdsCoordVec
@@ -137,7 +139,7 @@ class autoMeasure(object):
         return motorCoords
 
     def coordinate_transform_matrix(self, motorCoords, gdsCoords):
-
+        """ Finds the affine transform matrix which maps the GDS coordinates to motor coordinates."""
         motorMatrix = np.array([[motorCoords[0][0], motorCoords[1][0], motorCoords[2][0]],
                                 [motorCoords[0][1], motorCoords[1][1], motorCoords[2][1]],
                                 [motorCoords[0][2], motorCoords[1][2], motorCoords[2][2]]])
@@ -155,11 +157,11 @@ class autoMeasure(object):
 
         self.T = vstack((row1, row2, row3))
 
-        print(self.T)
         return self.T
 
     def perform_transform(self, gdsCoords):
-
+        ##FOR TESTING PURPOSES
+        """ Uses the calculated affine transform to map a GDS coordinate to a motor coordinate."""
         gdsVector = np.array([[gdsCoords[0]], [gdsCoords[1]], [1]])
 
         newMotorCoords = self.T@gdsVector
@@ -194,7 +196,6 @@ class autoMeasure(object):
 
         self.TMopt = vstack((row1, row2, row3))
 
-        print(self.TMopt)
         return self.TMopt
 
     def findCoordinateTransformElec(self, motorCoords, gdsCoords):
@@ -225,7 +226,6 @@ class autoMeasure(object):
 
         self.TMelec = vstack((row1, row2, row3))
 
-        print(self.TMelec)
         return self.TMelec
 
     def gdsToMotorCoordsOpt(self, gdsCoords):
