@@ -32,7 +32,6 @@ import csv
 
 global deviceList
 global deviceListAsObjects
-global fileLoaded
 
 
 class coordinateMapPanel(wx.Panel):
@@ -78,14 +77,14 @@ class coordinateMapPanel(wx.Panel):
         self.elecxGdsCoordLst = []
         self.elecyGdsCoordLst = []
 
-        self.tbGdsDevice1 = wx.ComboBox(self, size=(150, 20), choices=[], style=wx.CB_DROPDOWN)
-        self.tbGdsDevice1.Bind(wx.EVT_COMBOBOX_DROPDOWN, self.on_drop_down)
+        self.tbGdsDevice1 = wx.Choice(self, size=(150, 20), choices=[])
+        self.tbGdsDevice1.Bind(wx.EVT_CHOICE, self.on_drop_down1)
 
-        self.tbGdsDevice2 = wx.ComboBox(self, size=(150, 20), choices=[], style=wx.CB_DROPDOWN)
-        self.tbGdsDevice2.Bind(wx.EVT_COMBOBOX_DROPDOWN, self.on_drop_down)
+        self.tbGdsDevice2 = wx.Choice(self, size=(150, 20), choices=[])
+        self.tbGdsDevice2.Bind(wx.EVT_CHOICE, self.on_drop_down2)
 
-        self.tbGdsDevice3 = wx.ComboBox(self, size=(150, 20), choices=[], style=wx.CB_DROPDOWN)
-        self.tbGdsDevice3.Bind(wx.EVT_COMBOBOX_DROPDOWN, self.on_drop_down)
+        self.tbGdsDevice3 = wx.Choice(self, size=(150, 20), choices=[])
+        self.tbGdsDevice3.Bind(wx.EVT_CHOICE, self.on_drop_down3)
 
         self.GDSDevList = [self.tbGdsDevice1, self.tbGdsDevice2, self.tbGdsDevice3]
 
@@ -152,50 +151,45 @@ class coordinateMapPanel(wx.Panel):
                                      zcoord=self.tbzMotorCoord3: self.Event_OnCoordButton(
                                   event, xcoord, ycoord, zcoord))
 
-        global fileLoaded
-        if fileLoaded is True:
-
-            global deviceListAsObjects
-            for dev in deviceListAsObjects:
-                if self.GDSDevList[0] == dev.getDeviceID():
-                    self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
-                    self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
-                    self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
-                    self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
-                    self.stxMotorCoordLst.append(self.tbxMotorCoord1)
-                    self.styMotorCoordLst.append(self.tbyMotorCoord1)
-                    self.stzMotorCoordLst.append(self.tbzMotorCoord1)
-
-                if self.GDSDevList[1] == dev.getDeviceID():
-                    self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
-                    self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
-                    self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
-                    self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
-                    self.stxMotorCoordLst.append(self.tbxMotorCoord2)
-                    self.styMotorCoordLst.append(self.tbyMotorCoord2)
-                    self.stzMotorCoordLst.append(self.tbzMotorCoord2)
-
-                if self.GDSDevList[2] == dev.getDeviceID():
-                    self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
-                    self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
-                    self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
-                    self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
-                    self.stxMotorCoordLst.append(self.tbxMotorCoord3)
-                    self.styMotorCoordLst.append(self.tbyMotorCoord3)
-                    self.stzMotorCoordLst.append(self.tbzMotorCoord3)
-
         gbs.AddGrowableCol(1)
         gbs.AddGrowableCol(2)
         gbs.AddGrowableCol(3)
         gbs.AddGrowableCol(4)
         self.SetSizerAndFit(gbs)
 
-    def on_drop_down(self, event):
-        """Populates drop down menu for device selection within the coordinate map panel"""
-        global deviceList
-        for GDSDevice in self.GDSDevList:
-            for dev in deviceList:
-                GDSDevice.Append(dev)
+    def on_drop_down1(self, event):
+        for dev in deviceListAsObjects:
+            if self.GDSDevList[0].GetSelection() == dev.getDeviceID():
+                self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
+                self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
+                self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
+                self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
+                self.stxMotorCoordLst.append(self.tbxMotorCoord1)
+                self.styMotorCoordLst.append(self.tbyMotorCoord1)
+                self.stzMotorCoordLst.append(self.tbzMotorCoord1)
+
+    def on_drop_down2(self, event):
+        for dev in deviceListAsObjects:
+            if self.GDSDevList[1].GetSelection() == dev.getDeviceID():
+                self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
+                self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
+                self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
+                self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
+                self.stxMotorCoordLst.append(self.tbxMotorCoord2)
+                self.styMotorCoordLst.append(self.tbyMotorCoord2)
+                self.stzMotorCoordLst.append(self.tbzMotorCoord2)
+
+    def on_drop_down3(self, event):
+
+        for dev in deviceListAsObjects:
+            if self.GDSDevList[2].GetSelection() == dev.getDeviceID():
+                self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
+                self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
+                self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
+                self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
+                self.stxMotorCoordLst.append(self.tbxMotorCoord3)
+                self.styMotorCoordLst.append(self.tbyMotorCoord3)
+                self.stzMotorCoordLst.append(self.tbzMotorCoord3)
 
     def Event_OnCoordButton(self, event, xcoord, ycoord, zcoord):
         """ Called when the button is pressed to get the current motor coordinates, and put it into the text box. """
@@ -235,6 +229,12 @@ class coordinateMapPanel(wx.Panel):
                 coordsLst.append((float(xval), float(yval)))
         return coordsLst
 
+    def PopulateDropDowns(self):
+        """Populates drop down menu for device selection within the coordinate map panel"""
+        global deviceList
+        for GDSDevice in self.GDSDevList:
+            GDSDevice.AppendItems(deviceList)
+
 
 class autoMeasurePanel(wx.Panel):
 
@@ -261,8 +261,6 @@ class autoMeasurePanel(wx.Panel):
 
     def InitUI(self):
 
-        global fileLoaded
-        fileLoaded = False  # list of devices is currently empty
         global deviceListAsObjects
         deviceListAsObjects = []
 
@@ -476,9 +474,8 @@ class autoMeasurePanel(wx.Panel):
                     self.checkList.SetItemData(ii, index)
         self.checkList.SortItems(self.checkListSort)  # Make sure items in list are sorted
         self.checkList.EnableCheckBoxes()
-        global fileLoaded
-        fileLoaded = True
-        self.Refresh()
+        self.coordMapPanelOpt.PopulateDropDowns()
+        self.coordMapPanelElec.PopulateDropDowns()
 
     def OnButton_Import(self, event):
         """ Opens a file dialog to select a csv alignment file and populates all position fields"""
@@ -685,7 +682,6 @@ class autoMeasurePanel(wx.Panel):
         """ Starts an automatic measurement. """
 
         if self.parametersImported is False:
-
             path = os.path.realpath(__file__)
             originalFile = os.path.join(path, 'pyOptomip', 'TestingParameters.csv')
             self.readCSV(originalFile)
@@ -705,7 +701,6 @@ class autoMeasurePanel(wx.Panel):
                 checkedDevices.append(device)
 
         self.autoMeasure.beginMeasure(checkedDevices, self.dataimport, self.checkList)
-
 
         # Copy settings from laser panel
         self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.copySweepSettings()
