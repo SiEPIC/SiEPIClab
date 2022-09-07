@@ -13,18 +13,29 @@ import fineAlign
 class TestTransformMatrix(unittest.TestCase):
 
     def __init__(self, parent):
+        """
+        Set up for testing accuracy of transform matrix calculations.
+        Args:
+            parent: unittest.TestCase
+        """
         super(TestTransformMatrix, self).__init__(parent)
         laser = dummyLaserParameters
         motor = dummyMotorParameters
         smu = SMUParameters
         fineA = fineAlign
+        # Setting up test motor and gds coordinates
         self.motorCoords = [[-10, 10, 300], [-10, -10, 1000], [10, -10, 10]]
         self.gdsCoords = [[-10, 10, 1], [-10, -10, 1], [10, -10, 1]]
 
+        # Auto measure object used for testing
         self.autoMeasure = autoMeasure(laser, motor, motor, smu, fineA)
+
+        # Create test matrix
         self.TestMatrix1 = self.autoMeasure.findCoordinateTransformOpt(self.motorCoords, self.gdsCoords)
 
     def test_Matrix_Redo(self):
+        """Plots the motor and gds plane as well as the given and transformed point."""
+
         plt.rcParams["figure.figsize"] = [7.00, 3.50]
         plt.rcParams["figure.autolayout"] = True
 
@@ -75,6 +86,7 @@ class TestTransformMatrix(unittest.TestCase):
         plt.show()
 
     def test_in_plane(self):
+        """Check whether the transformed point is within the motor plane."""
 
         # motor plane
         D = [self.motorCoords[0][0], self.motorCoords[0][1], self.motorCoords[0][2]]
@@ -94,6 +106,7 @@ class TestTransformMatrix(unittest.TestCase):
         self.assertEqual(k2, newEq)
 
     def test_new_vs_old(self):
+        """Check the x and y coordinates for the motor against those calculated using the old method."""
         T = self.autoMeasure.coordinate_transform_matrix(self.motorCoords, self.gdsCoords)
         newCoords = self.autoMeasure.perform_transform(self.gdsCoords[0])
         print(newCoords)
