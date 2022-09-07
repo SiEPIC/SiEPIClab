@@ -70,7 +70,7 @@ class HomeTab(wx.Panel):
 
             # homeVbox = wx.BoxSizer(wx.VERTICAL)
 
-            if inst.isMotor and not inst.isQontrol:
+            if (inst.isMotor and not inst.isQontrol) and self.laserFound():
                 homeVbox.Add(panel, proportion=0, border=0, flag=wx.EXPAND)
                 self.fineAlign = fineAlign(self.getLasers()[0], self.getMotors()[0])
                 try:
