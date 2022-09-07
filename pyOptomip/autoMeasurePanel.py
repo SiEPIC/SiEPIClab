@@ -35,40 +35,40 @@ global deviceListAsObjects
 
 
 class coordinateMapPanel(wx.Panel):
-    def __init__(self, parent, autoMeasure, numDevices):
-        """Panel which is used to calculate the transformation from gds coordinates to motor coordinates.
-        Three devices must be selected and the respective motor coordinates saved.
+    def __init__(self, parent, autoMeasure):
+        """Panel which is used to obtain the necessary parameters to calculate the transformation from
+        gds coordinates to motor coordinates. Three devices must be selected and the respective motor
+        coordinates saved.
 
         Args:
-            parent:
-            autoMeasure:
-            numDevices:
+            parent: wx Panel
+            autoMeasure: The automeasure object used for the automeasure panel"""
 
-        Returns:
-            object: """
         super(coordinateMapPanel, self).__init__(parent)
         self.autoMeasure = autoMeasure
-        self.numDevices = numDevices
         self.InitUI()
 
     def InitUI(self):
         """
-
+        Sets up the layout for the coordinate map panel.
         """
         gbs = wx.GridBagSizer(0, 0)
 
+        # Create text labels for the panel
         stMotorCoord = wx.StaticText(self, label='Motor Coordinates')
 
         stxMotorCoord = wx.StaticText(self, label='X')
         styMotorCoord = wx.StaticText(self, label='Y')
         stzMotorCoord = wx.StaticText(self, label='Z')
 
+        # Add text labels into grid bag sizer
         gbs.Add(stMotorCoord, pos=(0, 2), span=(1, 2), flag=wx.ALIGN_CENTER)
 
         gbs.Add(stxMotorCoord, pos=(1, 2), span=(1, 1), flag=wx.ALIGN_CENTER)
         gbs.Add(styMotorCoord, pos=(1, 3), span=(1, 1), flag=wx.ALIGN_CENTER)
         gbs.Add(stzMotorCoord, pos=(1, 4), span=(1, 1), flag=wx.ALIGN_CENTER)
 
+        # Create empty lists to store all necessary coordinates
         self.stxMotorCoordLst = []
         self.styMotorCoordLst = []
         self.stzMotorCoordLst = []
@@ -77,6 +77,7 @@ class coordinateMapPanel(wx.Panel):
         self.elecxGdsCoordLst = []
         self.elecyGdsCoordLst = []
 
+        # Create drop down menus to select devices
         self.tbGdsDevice1 = wx.Choice(self, size=(150, 20), choices=[])
         self.tbGdsDevice1.Bind(wx.EVT_CHOICE, self.on_drop_down1)
 
@@ -86,9 +87,10 @@ class coordinateMapPanel(wx.Panel):
         self.tbGdsDevice3 = wx.Choice(self, size=(150, 20), choices=[])
         self.tbGdsDevice3.Bind(wx.EVT_CHOICE, self.on_drop_down3)
 
+        # List of all drop down menus
         self.GDSDevList = [self.tbGdsDevice1, self.tbGdsDevice2, self.tbGdsDevice3]
 
-        # Get Info of first Device
+        # Get motor coordinates of first device from text box
         stDevice1 = wx.StaticText(self, label='Device %d' % (1))
         self.tbxMotorCoord1 = wx.TextCtrl(self, size=(80, 20))
         self.tbyMotorCoord1 = wx.TextCtrl(self, size=(80, 20))
@@ -96,6 +98,7 @@ class coordinateMapPanel(wx.Panel):
 
         btnGetMotorCoord = wx.Button(self, label='Get Pos.', size=(50, 20))
 
+        # Add text boxes to grid bag sizer
         gbs.Add(stDevice1, pos=(2, 0), span=(1, 1))
         gbs.Add(self.tbxMotorCoord1, pos=(2, 2), span=(1, 1))
         gbs.Add(self.tbyMotorCoord1, pos=(2, 3), span=(1, 1))
@@ -103,13 +106,13 @@ class coordinateMapPanel(wx.Panel):
         gbs.Add(self.GDSDevList[0], pos=(2, 1), span=(1, 1))
         gbs.Add(btnGetMotorCoord, pos=(2, 6), span=(1, 1))
 
-        # For each button map a function which is called when it is pressed
+        # For "Get Position" button map a function which is called when it is pressed
         btnGetMotorCoord.Bind(wx.EVT_BUTTON,
                               lambda event, xcoord=self.tbxMotorCoord1, ycoord=self.tbyMotorCoord1,
                                      zcoord=self.tbzMotorCoord1: self.Event_OnCoordButton(
                                   event, xcoord, ycoord, zcoord))
 
-        # Get Info of second Device
+        # Get motor coordinates of second device from text box
         stDevice2 = wx.StaticText(self, label='Device %d' % (2))
         self.tbxMotorCoord2 = wx.TextCtrl(self, size=(80, 20))
         self.tbyMotorCoord2 = wx.TextCtrl(self, size=(80, 20))
@@ -117,6 +120,7 @@ class coordinateMapPanel(wx.Panel):
 
         btnGetMotorCoord = wx.Button(self, label='Get Pos.', size=(50, 20))
 
+        # Add text boxes to grid bag sizer
         gbs.Add(stDevice2, pos=(3, 0), span=(1, 1))
         gbs.Add(self.tbxMotorCoord2, pos=(3, 2), span=(1, 1))
         gbs.Add(self.tbyMotorCoord2, pos=(3, 3), span=(1, 1))
@@ -124,12 +128,13 @@ class coordinateMapPanel(wx.Panel):
         gbs.Add(self.GDSDevList[1], pos=(3, 1), span=(1, 1))
         gbs.Add(btnGetMotorCoord, pos=(3, 6), span=(1, 1))
 
-        # For each button map a function which is called when it is pressed
+        # For "Get Position" button map a function which is called when it is pressed
         btnGetMotorCoord.Bind(wx.EVT_BUTTON,
                               lambda event, xcoord=self.tbxMotorCoord2, ycoord=self.tbyMotorCoord2,
                                      zcoord=self.tbzMotorCoord2: self.Event_OnCoordButton(
                                   event, xcoord, ycoord, zcoord))
 
+        # Get motor coordinates of first device from text box
         stDevice3 = wx.StaticText(self, label='Device %d' % (3))
         self.tbxMotorCoord3 = wx.TextCtrl(self, size=(80, 20))
         self.tbyMotorCoord3 = wx.TextCtrl(self, size=(80, 20))
@@ -137,7 +142,7 @@ class coordinateMapPanel(wx.Panel):
 
         btnGetMotorCoord = wx.Button(self, label='Get Pos.', size=(50, 20))
 
-        # Get Info of third Device
+        # Add text boxes to grid bag sizer
         gbs.Add(stDevice3, pos=(4, 0), span=(1, 1))
         gbs.Add(self.tbxMotorCoord3, pos=(4, 2), span=(1, 1))
         gbs.Add(self.tbyMotorCoord3, pos=(4, 3), span=(1, 1))
@@ -145,7 +150,7 @@ class coordinateMapPanel(wx.Panel):
         gbs.Add(self.GDSDevList[2], pos=(4, 1), span=(1, 1))
         gbs.Add(btnGetMotorCoord, pos=(4, 6), span=(1, 1))
 
-        # For each button map a function which is called when it is pressed
+        # For "Get Position" button map a function which is called when it is pressed
         btnGetMotorCoord.Bind(wx.EVT_BUTTON,
                               lambda event, xcoord=self.tbxMotorCoord3, ycoord=self.tbyMotorCoord3,
                                      zcoord=self.tbzMotorCoord3: self.Event_OnCoordButton(
@@ -158,6 +163,8 @@ class coordinateMapPanel(wx.Panel):
         self.SetSizerAndFit(gbs)
 
     def on_drop_down1(self, event):
+        """Drop down menu for the first device. When a device is selected, its coordinates are added to the
+        gds coordinates list and associated motor coordinates are added to the motor coordinates list"""
         for dev in deviceListAsObjects:
             if self.GDSDevList[0].GetSelection() == dev.getDeviceID():
                 self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
@@ -169,6 +176,8 @@ class coordinateMapPanel(wx.Panel):
                 self.stzMotorCoordLst.append(self.tbzMotorCoord1)
 
     def on_drop_down2(self, event):
+        """Drop down menu for the second device. When a device is selected, its coordinates are added to the
+        gds coordinates list and associated motor coordinates are added to the motor coordinates list"""
         for dev in deviceListAsObjects:
             if self.GDSDevList[1].GetSelection() == dev.getDeviceID():
                 self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
@@ -180,7 +189,8 @@ class coordinateMapPanel(wx.Panel):
                 self.stzMotorCoordLst.append(self.tbzMotorCoord2)
 
     def on_drop_down3(self, event):
-
+        """Drop down menu for the third device. When a device is selected, its coordinates are added to the
+        gds coordinates list and associated motor coordinates are added to the motor coordinates list"""
         for dev in deviceListAsObjects:
             if self.GDSDevList[2].GetSelection() == dev.getDeviceID():
                 self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
@@ -199,7 +209,7 @@ class coordinateMapPanel(wx.Panel):
         zcoord.SetValue(str(motorPosition[2]))
 
     def getMotorCoords(self):
-        """ Reads the motor coordinates from all completed text fields. """
+        """ Returns a list of motor coordinates for each entered device. """
         coordsLst = []
         for tcx, tcy, tcz in zip(self.stxMotorCoordLst, self.styMotorCoordLst, self.stzMotorCoordLst):
             xval = tcx.GetValue()
@@ -210,7 +220,8 @@ class coordinateMapPanel(wx.Panel):
         return coordsLst
 
     def getGdsCoordsOpt(self):
-        """ Reads the GDS coordinates from all completed text fields. """
+        """ Returns a list of the GDS coordinates where the laser is to be aligned for each entered
+        device. """
         coordsLst = []
         for tcx, tcy in zip(self.stxGdsCoordLst, self.styGdsCoordLst):
             xval = tcx.GetValue()
@@ -220,7 +231,8 @@ class coordinateMapPanel(wx.Panel):
         return coordsLst
 
     def getGdsCoordsElec(self):
-        """ Reads the GDS coordinates from all completed text fields. """
+        """ Returns a list of the GDS coordinates of the left-most bond pad for each entered
+        device.  """
         coordsLst = []
         for tcx, tcy in zip(self.elecxGdsCoordLst, self.elecyGdsCoordLst):
             xval = tcx.GetValue()
@@ -236,13 +248,41 @@ class coordinateMapPanel(wx.Panel):
             GDSDevice.AppendItems(deviceList)
 
 
+def checkListSort(item1, item2):
+    """Used for sorting the checklist of devices on the chip"""
+    # Items are the client data associated with each entry
+    if item2 < item2:
+        return -1
+    elif item1 > item2:
+        return 1
+    else:
+        return 0
+
+
 class autoMeasurePanel(wx.Panel):
 
     def __init__(self, parent, autoMeasure):
+        """
+        Creates the panel used to automate measurement of chips. Users must upload a text file created
+        using the automated coordinate extraction from the Si-EPIC tools k-layout package. Then, three devices
+        must be used to create a transform matrix which allows automatic location of specific devices. This
+        involves selecting the device from a drop-down menu as well as aligning with the device and recording
+        the motor coordinates. Finally, a testing parameters file must either be uploaded or created in the
+        testing parameters tab after which automatic measurements can begin.
+
+        Args:
+            parent: wx Panel
+            autoMeasure: The automeasure object to be used for this panel.
+        """
         super(autoMeasurePanel, self).__init__(parent)
+        # autoMeasure object used to upload the coordinate file, calculate transform matrices and perform
+        # automated measurements
         self.autoMeasure = autoMeasure
+        # List of all the names of devices on the chip
         self.device_list = []
+        # No testing parameters have been uploaded
         self.parametersImported = False
+        # Parameters to be imported from the testing parameters tab or uploaded file
         self.dataimport = {'index': [], 'device': [], 'ELECflag': [], 'OPTICflag': [], 'setwflag': [], 'setvflag': [],
                            'Voltsel': [],
                            'Currentsel': [], 'VoltMin': [], 'VoltMax': [], 'CurrentMin': [], 'CurrentMax': [],
@@ -260,7 +300,9 @@ class autoMeasurePanel(wx.Panel):
         self.InitUI()
 
     def InitUI(self):
+        """Sets up the layout for the autoMeasurePanel"""
 
+        # List of devices as ElectroOpticDevice objects
         global deviceListAsObjects
         deviceListAsObjects = []
 
@@ -317,12 +359,12 @@ class autoMeasurePanel(wx.Panel):
         checkListBox.Add(self.checkList, proportion=1, flag=wx.EXPAND)
 
         # Add Optical Alignment set up
-        self.coordMapPanelOpt = coordinateMapPanel(self, self.autoMeasure, 3)
+        self.coordMapPanelOpt = coordinateMapPanel(self, self.autoMeasure)
         opticalBox = wx.BoxSizer(wx.HORIZONTAL)
         opticalBox.Add(self.coordMapPanelOpt, proportion=1, flag=wx.EXPAND)
 
         # Add Electrical Alignment set up
-        self.coordMapPanelElec = coordinateMapPanel(self, self.autoMeasure, 3)
+        self.coordMapPanelElec = coordinateMapPanel(self, self.autoMeasure)
         electricalBox = wx.BoxSizer(wx.HORIZONTAL)
         electricalBox.Add(self.coordMapPanelElec, proportion=1, flag=wx.EXPAND)
 
@@ -420,15 +462,6 @@ class autoMeasurePanel(wx.Panel):
 
         self.SetSizer(matPlotBox)
 
-    def checkListSort(self, item1, item2):
-        # Items are the client data associated with each entry
-        if item2 < item2:
-            return -1
-        elif item1 > item2:
-            return 1
-        else:
-            return 0
-
     def createFilterFrame(self):
         """Opens up a frame to facilitate filtering of devices within the checklist."""
         try:
@@ -438,6 +471,11 @@ class autoMeasurePanel(wx.Panel):
             dial = wx.MessageDialog(None, 'Could not initiate filter. ' + traceback.format_exc(),
                                     'Error', wx.ICON_ERROR)
             dial.ShowModal()
+
+    def OnButton_Filter(self, event):
+        """Creates filter frame when filter button is pressed"""
+        self.createFilterFrame()
+        self.Refresh()
 
     def OnButton_ChooseCoordFile(self, event):
         """ Opens a file dialog to select a coordinate file. """
@@ -450,7 +488,7 @@ class autoMeasurePanel(wx.Panel):
         self.parseCoordFile(self.coordFilePath)
 
     def parseCoordFile(self, coordFilePath):
-        """Parses given coordinate files and stores all info as a list of electro-Optic Device
+        """Parses given coordinate files and stores all info as a list of electro-Optic Devices
         as well as a list of device ids and populates checklist of devices"""
         self.autoMeasure.readCoordFile(coordFilePath)
         global deviceListAsObjects
@@ -472,10 +510,57 @@ class autoMeasurePanel(wx.Panel):
                 if dev.getDeviceID() == device:
                     index = deviceListAsObjects.index(dev)  # Stores index of device in list
                     self.checkList.SetItemData(ii, index)
-        self.checkList.SortItems(self.checkListSort)  # Make sure items in list are sorted
+        self.checkList.SortItems(checkListSort)  # Make sure items in list are sorted
         self.checkList.EnableCheckBoxes()
         self.coordMapPanelOpt.PopulateDropDowns()
         self.coordMapPanelElec.PopulateDropDowns()
+
+    def OnButton_Save(self, event):
+        """Saves the gds devices used for alignment as well as motor positions to a csv file"""
+        A = self.autoMeasure.findCoordinateTransformOpt(self.coordMapPanelOpt.getMotorCoords(),
+                                                        self.coordMapPanelOpt.getGdsCoordsOpt())
+
+        B = self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
+                                                         self.coordMapPanelElec.getGdsCoordsElec())
+
+        # Make a folder with the current time
+        fileName = self.coordFileTb.GetValue()
+        timeStr = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
+        csvFileName = os.path.join(self.outputFolderTb.GetValue(), timeStr + '_{}.csv'.format(fileName))
+
+        f = open(csvFileName, 'w', newline='')
+        writer = csv.writer(f)
+        textFilePath = [self.coordFilePath]
+        writer.writerow(textFilePath)
+        optCoords = self.coordMapPanelOpt.getMotorCoords()
+        Opt = ['Optical Alignment']
+        writer.writerow(Opt)
+        Opt = ['Device', 'Motor x', 'Motor y', 'Motor z']
+        writer.writerow(Opt)
+        dev1 = [self.coordMapPanelOpt.tbGdsDevice1.GetSelection(),
+                optCoords[0][0], optCoords[0][1], optCoords[0][2]]
+        writer.writerow(dev1)
+        dev2 = [self.coordMapPanelOpt.tbGdsDevice2.GetSelection(),
+                optCoords[1][0], optCoords[1][1], optCoords[1][2]]
+        writer.writerow(dev2)
+        dev3 = [self.coordMapPanelOpt.tbGdsDevice3.GetSelection(),
+                optCoords[2][0], optCoords[2][1], optCoords[2][2]]
+        writer.writerow(dev3)
+        elecCoords = self.coordMapPanelElec.getMotorCoords()
+        Elec = ['Electrical Alignment']
+        writer.writerow(Elec)
+        elec = ['Device', 'Motor x', 'Motor y', 'Motor z']
+        writer.writerow(elec)
+        dev1 = [self.coordMapPanelElec.tbGdsDevice1.GetSelection(),
+                elecCoords[0][0], elecCoords[0][1], elecCoords[0][2]]
+        writer.writerow(dev1)
+        dev2 = [self.coordMapPanelElec.tbGdsDevice2.GetSelection(),
+                elecCoords[1][0], elecCoords[1][1], elecCoords[1][2]]
+        writer.writerow(dev2)
+        dev3 = [self.coordMapPanelElec.tbGdsDevice3.GetSelection(),
+                elecCoords[2][0], elecCoords[2][1], elecCoords[2][2]]
+        writer.writerow(dev3)
+        f.close()
 
     def OnButton_Import(self, event):
         """ Opens a file dialog to select a csv alignment file and populates all position fields"""
@@ -624,17 +709,15 @@ class autoMeasurePanel(wx.Panel):
             print(keys)
             print(values)
 
-        # self.checkList.DeleteAllItems()
-        # devicelist = []
-        # for c in range(len(self.dataimport['Device'])):
-        #   devicelist.append(self.dataimport['Device'][c])
-
-        # print(devicelist)
-
     def OnButton_CheckAll(self, event):
         """Selects all items in the devices check list"""
         for ii in range(self.checkList.GetItemCount()):
             self.checkList.CheckItem(ii, True)
+
+    def OnButton_UncheckAll(self, event):
+        """Deselects all items in the devices checklist"""
+        for ii in range(self.checkList.GetItemCount()):
+            self.checkList.CheckItem(ii, False)
 
     # TODO: Modify to move probe out of the way and keep track of chip stage movement
     def OnButton_GotoDeviceOpt(self, event):
@@ -658,35 +741,33 @@ class autoMeasurePanel(wx.Panel):
                 motorCoord = self.autoMeasure.gdsToMotorCoordsElec(gdsCoord)
                 self.autoMeasure.motorElec.moveAbsoluteXYZ(motorCoord[0], motorCoord[1], motorCoord[2])
 
-    def OnButton_UncheckAll(self, event):
-        """Deselects all items in the devices checklist"""
-        for ii in range(self.checkList.GetItemCount()):
-            self.checkList.CheckItem(ii, False)
-
-    def OnButton_SelectOutputFolder(self, event):
-        """ Opens a file dialog to select an output directory for automatic measurement. """
-        dirDlg = wx.DirDialog(self, "Open", "", wx.DD_DEFAULT_STYLE)
-        dirDlg.ShowModal()
-        self.outputFolderTb.SetValue(dirDlg.GetPath())
-        dirDlg.Destroy()
-
     def OnButton_CalculateOpt(self, event):
-        """ Computes the optical coordinate transformation matrix. """
+        """ Computes the optical coordinate transformation matrix. Used to align the laser with the stage.
+        Used for debugging."""
         A = self.autoMeasure.findCoordinateTransformOpt(self.coordMapPanelOpt.getMotorCoords(),
                                                         self.coordMapPanelOpt.getGdsCoordsOpt())
         print('Coordinate transform matrix')
         print(A)
 
     def OnButton_CalculateElec(self, event):
-        """ Computes the electrical coordinate transformation matrix. """
+        """ Computes the electrical coordinate transformation matrix. Used to align the wedge probe with the
+        stage. Used for debugging."""
         A = self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
                                                          self.coordMapPanelElec.getGdsCoordsElec())
         print('Coordinate transform matrix')
         print(A)
 
-    def OnButton_Start(self, event):
-        """ Starts an automatic measurement. """
+    def OnButton_SelectOutputFolder(self, event):
+        """ Opens a file dialog to select an output directory for automatic measurement results. """
+        dirDlg = wx.DirDialog(self, "Open", "", wx.DD_DEFAULT_STYLE)
+        dirDlg.ShowModal()
+        self.outputFolderTb.SetValue(dirDlg.GetPath())
+        dirDlg.Destroy()
 
+    def OnButton_Start(self, event):
+        """ Starts an automatic measurement routine. """
+
+        # Reads parameters from testingParameters tab if no testing parameters file has been uploaded
         if self.parametersImported is False:
             path = os.path.realpath(__file__)
             originalFile = os.path.join(path, 'pyOptomip', 'TestingParameters.csv')
@@ -701,11 +782,13 @@ class autoMeasurePanel(wx.Panel):
         if not os.path.exists(self.autoMeasure.saveFolder):
             os.makedirs(self.autoMeasure.saveFolder)
 
+        # Create list of all devices which are selected for measurement from the checklist
         checkedDevices = []
         for device in self.device_list:
             if self.checkList.IsItemChecked(device.getDeviceID):
                 checkedDevices.append(device)
 
+        # Start measurement using the autoMeasure device
         self.autoMeasure.beginMeasure(checkedDevices, self.dataimport, self.checkList)
 
         # Copy settings from laser panel
@@ -717,54 +800,3 @@ class autoMeasurePanel(wx.Panel):
         # Enable detector auto measurement
         self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.startDetTimer()
 
-    def OnButton_Filter(self, event):
-        """Creates filter frame when filter button is pressed"""
-        self.createFilterFrame()
-        self.Refresh()
-
-    def OnButton_Save(self, event):
-        """Saves the gds devices used for alignment as well as motor positions"""
-        A = self.autoMeasure.findCoordinateTransformOpt(self.coordMapPanelOpt.getMotorCoords(),
-                                                        self.coordMapPanelOpt.getGdsCoordsOpt())
-
-        B = self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
-                                                         self.coordMapPanelElec.getGdsCoordsElec())
-
-        # Make a folder with the current time
-        fileName = self.coordFileTb.GetValue()
-        timeStr = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
-        csvFileName = os.path.join(self.outputFolderTb.GetValue(), timeStr + '_{}.csv'.format(fileName))
-
-        f = open(csvFileName, 'w', newline='')
-        writer = csv.writer(f)
-        textFilePath = [self.coordFilePath]
-        writer.writerow(textFilePath)
-        optCoords = self.coordMapPanelOpt.getMotorCoords()
-        Opt = ['Optical Alignment']
-        writer.writerow(Opt)
-        Opt = ['Device', 'Motor x', 'Motor y', 'Motor z']
-        writer.writerow(Opt)
-        dev1 = [self.coordMapPanelOpt.tbGdsDevice1.GetSelection(),
-                optCoords[0][0], optCoords[0][1], optCoords[0][2]]
-        writer.writerow(dev1)
-        dev2 = [self.coordMapPanelOpt.tbGdsDevice2.GetSelection(),
-                optCoords[1][0], optCoords[1][1], optCoords[1][2]]
-        writer.writerow(dev2)
-        dev3 = [self.coordMapPanelOpt.tbGdsDevice3.GetSelection(),
-                optCoords[2][0], optCoords[2][1], optCoords[2][2]]
-        writer.writerow(dev3)
-        elecCoords = self.coordMapPanelElec.getMotorCoords()
-        Elec = ['Electrical Alignment']
-        writer.writerow(Elec)
-        elec = ['Device', 'Motor x', 'Motor y', 'Motor z']
-        writer.writerow(elec)
-        dev1 = [self.coordMapPanelElec.tbGdsDevice1.GetSelection(),
-                elecCoords[0][0], elecCoords[0][1], elecCoords[0][2]]
-        writer.writerow(dev1)
-        dev2 = [self.coordMapPanelElec.tbGdsDevice2.GetSelection(),
-                elecCoords[1][0], elecCoords[1][1], elecCoords[1][2]]
-        writer.writerow(dev2)
-        dev3 = [self.coordMapPanelElec.tbGdsDevice3.GetSelection(),
-                elecCoords[2][0], elecCoords[2][1], elecCoords[2][2]]
-        writer.writerow(dev3)
-        f.close()
