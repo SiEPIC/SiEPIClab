@@ -43,7 +43,7 @@ class autoMeasure(object):
             motorOpt: motor object controlling the chip stage
             motorElec: motor object controlling the wedge probe stage
             smu: smu object controls SMU
-            fineAlign:
+            fineAlign: fineAlign object
         """
         self.laser = laser
         self.motorOpt = motorOpt
@@ -102,7 +102,7 @@ class autoMeasure(object):
                         print('Warning: The entry\n%s\nis not formatted correctly.' % line)
 
     def findCoordinateTransform(self, motorCoords, gdsCoords):
-        ##OLD METHOD: USED FOR TESTING
+        ## OLD METHOD: USED FOR TESTING
         """ Finds the affine transform matrix which maps the GDS coordinates to motor coordinates."""
 
         if len(motorCoords) != len(gdsCoords):
@@ -131,7 +131,7 @@ class autoMeasure(object):
         return A
 
     def gdsToMotor(self, gdsCoords):
-        ##OLD METHOD: USED FOR TESTING
+        ## OLD METHOD: USED FOR TESTING
         """ Uses the calculated affine transform to map a GDS coordinate to a motor coordinate."""
         gdsCoordVec = mat([[gdsCoords[0]], [gdsCoords[1]], [1]])
         motorCoordVec = self.transformMatrix*gdsCoordVec
@@ -139,6 +139,7 @@ class autoMeasure(object):
         return motorCoords
 
     def coordinate_transform_matrix(self, motorCoords, gdsCoords):
+        ## FOR TESTING PURPOSES
         """ Finds the affine transform matrix which maps the GDS coordinates to motor coordinates."""
         motorMatrix = np.array([[motorCoords[0][0], motorCoords[1][0], motorCoords[2][0]],
                                 [motorCoords[0][1], motorCoords[1][1], motorCoords[2][1]],
@@ -160,7 +161,7 @@ class autoMeasure(object):
         return self.T
 
     def perform_transform(self, gdsCoords):
-        ##FOR TESTING PURPOSES
+        ## FOR TESTING PURPOSES
         """ Uses the calculated affine transform to map a GDS coordinate to a motor coordinate."""
         gdsVector = np.array([[gdsCoords[0]], [gdsCoords[1]], [1]])
 
@@ -173,8 +174,8 @@ class autoMeasure(object):
         for the motors controlling the chip stage.
 
         Args:
-            motorCoords: 
-            gdsCoords: 
+            motorCoords: A list of motor coordinates from the three devices used for alignment
+            gdsCoords: A list of gds coordinates from the three devices used for alignment
 
         Returns:
             M: a matrix used to map gds coordinates to motor coordinates.
@@ -203,8 +204,8 @@ class autoMeasure(object):
         for the motors controlling the wedge probe stage.
 
         Args:
-            motorCoords: 
-            gdsCoords: 
+            motorCoords: A list of motor coordinates from the three devices used for alignment
+            gdsCoords: A list of gds coordinates from the three devices used for alignment
 
         Returns:
             M: a matrix used to map gds coordinates to motor coordinates.
@@ -232,7 +233,7 @@ class autoMeasure(object):
         """ Uses the calculated affine transform to map a GDS coordinate to a motor coordinate.
 
         Args:
-            gdsCoords: 
+            gdsCoords: The gds coordinates of a device
 
         Returns:
             motorCoords: the motor coordinates for the chip stage that correspond to given gds
@@ -248,10 +249,11 @@ class autoMeasure(object):
         """ Uses the calculated affine transform to map a GDS coordinate to a motor coordinate.
 
         Args:
-            gdsCoords: 
+            gdsCoords: The gds coordinates of a device
 
         Returns:
-            object: 
+            object: the motor coordinates for the wedge probe stage that correspond to given gds
+            coordinates.
         """
         gdsVector = np.array([[gdsCoords[0]], [gdsCoords[1]], [1]])
 
@@ -270,19 +272,21 @@ class autoMeasure(object):
         be stopped. Also, an update function is called which can be used to update UI elements about the measurement progress.
 
         Args:
-            devices: 
-            testingParameters: 
-            abortFunction: 
-            updateFunction: 
-            updateGraph:
-
-        Returns:
-            object: """
+            devices: list of device ids for devices to be tested
+            testingParameters: testing parameters dictionary created from testing parameters tab or csv upload
+            checkList: checklist object from autoMeasurePanel
+            abortFunction: optional function used to determine when to stop measurement
+            updateFunction: optional function can be used to update UI elements
+            updateGraph: Whether to update the graph in the autoMeasurePanel with each measurement."""
 
         self.checkList = checkList
+
+        # For each device
         for i, d in enumerate(testingParameters['device']):
             for device in devices:
                 if device.getDeviceID == d:
+
+                    # Find motor coordinates for desired device
                     gdsCoordOpt = (device.getOpticalCoordinates[0], device.getOpticalCoordinates[1])
                     motorCoordOpt = self.gdsToMotorCoordsOpt(gdsCoordOpt)
                     gdsCoordElec = (device.getElectricalCoordinates[0], device.getElectricalicalCoordinates[1])
@@ -290,21 +294,27 @@ class autoMeasure(object):
 
                     # move wedge probe out of the way
                     self.motorElec.moveRelativeXYZElec(motorCoordElec[0], -2000, 2000)
+
                     # move chip stage
                     x = motorCoordOpt[0] - self.motorOpt.getPosition[0]
                     y = motorCoordOpt[1] - self.motorOpt.getPosition[1]
                     z = motorCoordOpt[2] - self.motorOpt.getPosition[2]
                     self.motorOpt.moveAbsoluteXYZOpt(motorCoordOpt[0], motorCoordOpt[1], motorCoordOpt[2])
+
                     # Move wedge probe and compensate for movement of chip stage
                     self.motorElec.moveAbsoluteXYZElec(motorCoordElec[0] + x, motorCoordElec[1] + y,
                                                        motorCoordElec[2] + z)
 
+                    # Fine align to device
                     res, completed = self.fineAlign.doFineAlign()
+
+                    # If fine align fails change text colour of device to red in the checklist
                     if completed is False:
                         for ii in range(self.checkList.GetItemCount()):
                             if self.devices[self.checkList.GetItemData(ii)].getDeviceID() == device.getDeviceID:
                                 self.checkList.SetItemTextColour(ii, wx.Colour(255, 0, 0))
 
+                    # Check which type of measurement is to be completed
                     if testingParameters['ELECflag'][i] is True:
                         measurementRoutines('ELEC', testingParameters, i, self.smu, self.laser)
                     if testingParameters['OPTICflag'][i] is True:
@@ -316,6 +326,8 @@ class autoMeasure(object):
 
                     print('GDS: (%g,%g) Motor: (%g,%g,%g)' % (gdsCoordOpt[0], gdsCoordOpt[1], gdsCoordOpt[2],
                                                               motorCoordOpt[0], motorCoordOpt[1]))
+
+                    # Create matlab file
                     matFileName = os.path.join(self.saveFolder, d + '.mat')
 
                     # Save sweep data and metadata to the mat file
@@ -334,9 +346,9 @@ class autoMeasure(object):
                     timeSeconds = time.time()
                     matDict['metadata']['time_seconds'] = timeSeconds
                     matDict['metadata']['time_str'] = time.ctime(timeSeconds)
-
                     savemat(matFileName, matDict)
 
+                    # Create pdf file
                     pdfFileName = os.path.join(self.saveFolder, d + '.pdf')
                     plt.figure()
                     plt.plot(testingParameters['Wavelengths'][i] * 1e9, testingParameters['Sweeppower'][i])
