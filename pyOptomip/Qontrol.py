@@ -32,7 +32,7 @@ class QontrolMotor:
 
     # Moves all the axis together
     # can be used regardless of how many axis are enabled
-    def moveAbsoluteXYZ(self, x, y=0, z=0):
+    def moveAbsoluteXYZ(self, x, y, z):
         self.q[0] = x
         self.q[1] = y
         self.q[2] = z
