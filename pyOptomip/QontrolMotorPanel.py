@@ -85,19 +85,27 @@ class QontrolPanel(wx.Panel):
             val = float(self.tc.GetValue())
         except ValueError:
             self.tc.SetValue('0')
+            print("Value Error")
             return 0.0
+        print(val)
         return val
 
     def OnButton_MinusButtonHandler(self, event):
 
         if self.axis == 1:
             current_position = self.parent.qontrol.q.x[0]
+            print(current_position)
             self.parent.qontrol.q.x[0] = (-1 * (current_position+self.getMoveValue()))
+            current_position = self.parent.qontrol.q.x[0]
+            print(current_position)
             print("Axis 1 Moved")
 
         if self.axis == 2:
             current_position = self.parent.qontrol.q.x[1]
+            print(current_position)
             self.parent.qontrol.q.x[1] = (-1 * (current_position + self.getMoveValue()))
+            current_position = self.parent.qontrol.q.x[1]
+            print(current_position)
             print("Axis 2 Moved")
 
         if self.axis == 3:
@@ -109,11 +117,17 @@ class QontrolPanel(wx.Panel):
 
         if self.axis == 1:
             current_position = self.parent.qontrol.q.x[0]
+            print(current_position)
             self.parent.qontrol.q.x[0] = (current_position + self.getMoveValue())
+            current_position = self.parent.qontrol.q.x[0]
+            print(current_position)
             print("Axis 1 Moved")
         if self.axis == 2:
             current_position = self.parent.qontrol.q.x[1]
+            print(current_position)
             self.parent.qontrol.q.x[1] = (current_position + self.getMoveValue())
+            current_position = self.parent.qontrol.q.x[1]
+            print(current_position)
             print("Axis 2 Moved")
         if self.axis == 3:
             current_position = self.parent.qontrol.q.x[2]
