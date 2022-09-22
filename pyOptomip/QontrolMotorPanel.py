@@ -116,7 +116,6 @@ class QontrolPanel(wx.Panel):
             print(current_position)
 
     def OnButton_PlusButtonHandler(self, event):
-
         if self.axis == 1:
             current_position = self.parent.qontrol.q.x[0]
             new_position = (current_position + (0.315*self.getMoveValue()))
