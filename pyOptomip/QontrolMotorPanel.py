@@ -85,7 +85,9 @@ class QontrolPanel(wx.Panel):
             val = float(self.tc.GetValue())
         except ValueError:
             self.tc.SetValue('0')
+            print("Value Error")
             return 0.0
+        print(val)
         return val
 
     def OnButton_MinusButtonHandler(self, event):
