@@ -53,12 +53,12 @@ class CorvusEcoClass:
 
         Args:
             visaName: visa address of the corvus
-            rm:
+            rm: the visa resource being used 
             Velocity:
             Acceleration:
             NumberOfAxis:
         """
-        self.ser = rm.get_instrument(visaName)  # Connects to device with pyVisa
+        self.ser = rm.open_resource(visaName)  # Connects to device with pyVisa
         self.ser.baud_rate = 57600  # Sets baudrate
         self.ser.write('identify')  # Asks for identification
         print((self.ser.read() + ' [Model Name][Hardware Ver][Software Ver][Internal Use][Dip-Switch]'))

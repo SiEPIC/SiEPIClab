@@ -19,6 +19,7 @@ class QontrolMotor:
         numbers = re.findall('[0-9]+', SerialPortName)
         COM = "COM" + numbers[0]
         self.q = qontrol.MXMotor(serial_port_name=COM)
+        self.q.ustep[:] = 7
         self.numAxes = NumberOfAxis
         print('Connected\n')
 
