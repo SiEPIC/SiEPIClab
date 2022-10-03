@@ -237,11 +237,13 @@ class coordinateMapPanel(wx.Panel):
         """ Returns a list of the GDS coordinates where the laser is to be aligned for each entered
         device. """
         coordsLst = []
+        print(self.stxGdsCoordLst)
         for tcx, tcy in zip(self.stxGdsCoordLst, self.styGdsCoordLst):
             xval = tcx.GetValue()
             yval = tcy.GetValue()
             if xval != '' and yval != '':
                 coordsLst.append((float(xval), float(yval)))
+        print(coordsLst)
         return coordsLst
 
     def getGdsCoordsElec(self):
