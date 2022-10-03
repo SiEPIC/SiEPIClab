@@ -264,17 +264,6 @@ class coordinateMapPanel(wx.Panel):
             GDSDevice.AppendItems(deviceList)
 
 
-def checkListSort(item1, item2):
-    """Used for sorting the checklist of devices on the chip"""
-    # Items are the client data associated with each entry
-    if item2 < item2:
-        return -1
-    elif item1 > item2:
-        return 1
-    else:
-        return 0
-
-
 class autoMeasurePanel(wx.Panel):
 
     def __init__(self, parent, autoMeasure):
@@ -374,6 +363,12 @@ class autoMeasurePanel(wx.Panel):
         checkListBox = wx.BoxSizer(wx.HORIZONTAL)
         checkListBox.Add(self.checkList, proportion=1, flag=wx.EXPAND)
 
+        # CheckList Search
+        self.search = wx.SearchCtrl(self, -1)
+        self.search.Bind(wx.EVT_SEARCH, self.OnButton_SearchChecklist)
+        searchListBox = wx.BoxSizer(wx.HORIZONTAL)
+        searchListBox.Add(self.search, proportion=1, flag=wx.EXPAND)
+
         # Add Optical Alignment set up
         self.coordMapPanelOpt = coordinateMapPanel(self, self.autoMeasure)
         opticalBox = wx.BoxSizer(wx.HORIZONTAL)
@@ -469,7 +464,8 @@ class autoMeasurePanel(wx.Panel):
         topBox.AddMany([(vboxUpload, 0, wx.EXPAND), (vboxMeasurement, 0, wx.EXPAND)])
 
         checkBox = wx.BoxSizer(wx.VERTICAL)
-        checkBox.AddMany([(checkListBox, 0, wx.EXPAND), (selectBox, 0, wx.EXPAND), (selectBox2, 0, wx.EXPAND)])
+        checkBox.AddMany([(checkListBox, 0, wx.EXPAND), (searchListBox, 0, wx.EXPAND), (selectBox, 0, wx.EXPAND),
+                          (selectBox2, 0, wx.EXPAND)])
 
         # Add all boxes to outer box
         vboxOuter.AddMany([(topBox, 0, wx.EXPAND), (checkBox, 0, wx.EXPAND), (vboxOptical, 0, wx.EXPAND),
@@ -492,6 +488,24 @@ class autoMeasurePanel(wx.Panel):
         """Creates filter frame when filter button is pressed"""
         self.createFilterFrame()
         self.Refresh()
+
+    def OnButton_SearchChecklist(self, event):
+        """Moves devices with searched term present in ID to the top of the checklist. Have to double click
+        magnifying glass for search to proceed."""
+        term = self.search.GetStringSelection()
+
+        def checkListSort(item1, item2):
+            """Used for sorting the checklist of devices on the chip"""
+            # Items are the client data associated with each entry
+            if term in deviceListAsObjects[item2].getDeviceID() and term not in deviceListAsObjects[item1].getDeviceID():
+                return 1
+            elif term in deviceListAsObjects[item1].getDeviceID() and term not in deviceListAsObjects[item2].getDeviceID():
+                return -1
+            else:
+                return 0
+
+        self.checkList.SortItems(checkListSort)  # Make sure items in list are sorted
+        self.checkList.Refresh()
 
     def OnButton_ChooseCoordFile(self, event):
         """ Opens a file dialog to select a coordinate file. """
@@ -526,7 +540,6 @@ class autoMeasurePanel(wx.Panel):
                 if dev.getDeviceID() == device:
                     index = deviceListAsObjects.index(dev)  # Stores index of device in list
                     self.checkList.SetItemData(ii, index)
-        self.checkList.SortItems(checkListSort)  # Make sure items in list are sorted
         self.checkList.EnableCheckBoxes()
         self.coordMapPanelOpt.PopulateDropDowns()
         self.coordMapPanelElec.PopulateDropDowns()
@@ -815,4 +828,3 @@ class autoMeasurePanel(wx.Panel):
 
         # Enable detector auto measurement
         self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.startDetTimer()
-
