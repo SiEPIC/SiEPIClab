@@ -426,7 +426,10 @@ class AutoMeasureTab(wx.Panel):
         for inst in self.instList:
             if inst.isMotor and inst.isOpt:
                 motorList.append(inst)
-        return motorList
+        if not motorList:
+            return [0]
+        else:
+            return motorList[0]
 
     def getMotorsElec(self):
         """
@@ -438,7 +441,10 @@ class AutoMeasureTab(wx.Panel):
         for inst in self.instList:
             if inst.isMotor and inst.isElec:
                 motorList.append(inst)
-        return motorList
+        if not motorList:
+            return [0]
+        else:
+            return motorList[0]
 
     def getSMUs(self):
         """

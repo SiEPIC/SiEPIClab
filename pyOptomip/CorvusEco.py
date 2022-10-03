@@ -58,7 +58,7 @@ class CorvusEcoClass:
             Acceleration:
             NumberOfAxis:
         """
-        self.ser = rm.get_instrument(visaName)  # Connects to device with pyVisa
+        self.ser = rm.open_resource(visaName)  # Connects to device with pyVisa
         self.ser.baud_rate = 57600  # Sets baudrate
         self.ser.write('identify')  # Asks for identification
         print((self.ser.read() + ' [Model Name][Hardware Ver][Software Ver][Internal Use][Dip-Switch]'))
@@ -308,7 +308,7 @@ class CorvusEcoClass:
         self.moveRelative(x - xCurrentPos, y - yCurrentPos, z - zCurrentPos)
 
     def waitMoveComplete(self):
-        while int(self.ser.ask('st')) & 1:
+        while int(self.ser.query('st')) & 1:
             time.sleep(0.001)
 
     # Absolute MOve
