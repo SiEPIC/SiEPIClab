@@ -186,24 +186,26 @@ class autoMeasure(object):
         Returns:
             M: a matrix used to map gds coordinates to motor coordinates.
         """
-        motorMatrix = np.array([[motorCoords[0][0], motorCoords[1][0], motorCoords[2][0]],
-                                [motorCoords[0][1], motorCoords[1][1], motorCoords[2][1]],
-                                [motorCoords[0][2], motorCoords[1][2], motorCoords[2][2]]])
 
-        gdsMatrix = np.array([[gdsCoords[0][0], gdsCoords[1][0], gdsCoords[2][0]],
-                              [gdsCoords[0][1], gdsCoords[1][1], gdsCoords[2][1]],
-                              [1, 1, 1]])
+        if motorCoords and gdsCoords:
+            motorMatrix = np.array([[motorCoords[0][0], motorCoords[1][0], motorCoords[2][0]],
+                                    [motorCoords[0][1], motorCoords[1][1], motorCoords[2][1]],
+                                    [motorCoords[0][2], motorCoords[1][2], motorCoords[2][2]]])
+
+            gdsMatrix = np.array([[gdsCoords[0][0], gdsCoords[1][0], gdsCoords[2][0]],
+                                [gdsCoords[0][1], gdsCoords[1][1], gdsCoords[2][1]],
+                                [1, 1, 1]])
 
 
-        transpose = gdsMatrix.T
+            transpose = gdsMatrix.T
 
-        row1 = np.linalg.solve(transpose, motorMatrix[0])
-        row2 = np.linalg.solve(transpose, motorMatrix[1])
-        row3 = np.linalg.solve(transpose, motorMatrix[2])
+            row1 = np.linalg.solve(transpose, motorMatrix[0])
+            row2 = np.linalg.solve(transpose, motorMatrix[1])
+            row3 = np.linalg.solve(transpose, motorMatrix[2])
 
-        self.TMopt = vstack((row1, row2, row3))
+            self.TMopt = vstack((row1, row2, row3))
 
-        return self.TMopt
+            return self.TMopt
 
     def findCoordinateTransformElec(self, motorCoords, gdsCoords):
         """ Finds the best fit affine transform which maps the GDS coordinates to motor coordinates
@@ -216,24 +218,26 @@ class autoMeasure(object):
         Returns:
             M: a matrix used to map gds coordinates to motor coordinates.
         """
-        motorMatrix = np.array([[motorCoords[0][0], motorCoords[1][0], motorCoords[2][0]],
-                                [motorCoords[0][1], motorCoords[1][1], motorCoords[2][1]],
-                                [motorCoords[0][2], motorCoords[1][2], motorCoords[2][2]]])
 
-        gdsMatrix = np.array([[gdsCoords[0][0], gdsCoords[1][0], gdsCoords[2][0]],
-                              [gdsCoords[0][1], gdsCoords[1][1], gdsCoords[2][1]],
-                              [1, 1, 1]])
+        if motorCoords and gdsCoords:
+            motorMatrix = np.array([[motorCoords[0][0], motorCoords[1][0], motorCoords[2][0]],
+                                    [motorCoords[0][1], motorCoords[1][1], motorCoords[2][1]],
+                                    [motorCoords[0][2], motorCoords[1][2], motorCoords[2][2]]])
+
+            gdsMatrix = np.array([[gdsCoords[0][0], gdsCoords[1][0], gdsCoords[2][0]],
+                                [gdsCoords[0][1], gdsCoords[1][1], gdsCoords[2][1]],
+                                [1, 1, 1]])
 
 
-        transpose = gdsMatrix.T
+            transpose = gdsMatrix.T
 
-        row1 = np.linalg.solve(transpose, motorMatrix[0])
-        row2 = np.linalg.solve(transpose, motorMatrix[1])
-        row3 = np.linalg.solve(transpose, motorMatrix[2])
+            row1 = np.linalg.solve(transpose, motorMatrix[0])
+            row2 = np.linalg.solve(transpose, motorMatrix[1])
+            row3 = np.linalg.solve(transpose, motorMatrix[2])
 
-        self.TMelec = vstack((row1, row2, row3))
+            self.TMelec = vstack((row1, row2, row3))
 
-        return self.TMelec
+            return self.TMelec
 
     def gdsToMotorCoordsOpt(self, gdsCoords):
         """ Uses the calculated affine transform to map a GDS coordinate to a motor coordinate.

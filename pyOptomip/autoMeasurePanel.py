@@ -179,30 +179,36 @@ class coordinateMapPanel(wx.Panel):
         gds coordinates list and associated motor coordinates are added to the motor coordinates list"""
         for dev in deviceListAsObjects:
             if self.GDSDevList[0].GetString(self.GDSDevList[0].GetSelection()) == dev.getDeviceID():
-                self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
-                self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
-                self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
-                self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
+                if dev.getOpticalCoordinates() is not None:
+                    self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
+                    self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
+                if dev.getReferenceBondPad() is not None:
+                    self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
+                    self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
 
     def on_drop_down2(self, event):
         """Drop down menu for the second device. When a device is selected, its coordinates are added to the
         gds coordinates list and associated motor coordinates are added to the motor coordinates list"""
         for dev in deviceListAsObjects:
             if self.GDSDevList[1].GetString(self.GDSDevList[1].GetSelection()) == dev.getDeviceID():
-                self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
-                self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
-                self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
-                self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
+                if dev.getOpticalCoordinates() is not None:
+                    self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
+                    self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
+                if dev.getReferenceBondPad() is not None:
+                    self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
+                    self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
 
     def on_drop_down3(self, event):
         """Drop down menu for the third device. When a device is selected, its coordinates are added to the
         gds coordinates list and associated motor coordinates are added to the motor coordinates list"""
         for dev in deviceListAsObjects:
             if self.GDSDevList[2].GetString(self.GDSDevList[2].GetSelection()) == dev.getDeviceID():
-                self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
-                self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
-                self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
-                self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
+                if dev.getOpticalCoordinates() is not None:
+                    self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
+                    self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
+                if dev.getReferenceBondPad() is not None:
+                    self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
+                    self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
 
     def Event_OnCoordButton1(self, event, xcoord, ycoord, zcoord):
         """ Called when the button is pressed to get the current motor coordinates, and put it into the text box. """
@@ -560,7 +566,7 @@ class autoMeasurePanel(wx.Panel):
         self.devSelectCb.AppendItems(deviceList)
         self.devSelectCbOpt.Clear()
         self.devSelectCbOpt.AppendItems(deviceList)
-        # Adds items to the check list
+        # Adds items to the checklist
         self.checkList.DeleteAllItems()
         for ii, device in enumerate(deviceList):
             self.checkList.InsertItem(ii, device)
@@ -594,28 +600,56 @@ class autoMeasurePanel(wx.Panel):
         writer.writerow(Opt)
         Opt = ['Device', 'Motor x', 'Motor y', 'Motor z']
         writer.writerow(Opt)
-        dev1 = [self.coordMapPanelOpt.tbGdsDevice1.GetSelection(),
-                optCoords[0][0], optCoords[0][1], optCoords[0][2]]
+        if optCoords:
+            if optCoords[0]:
+                dev1 = [self.coordMapPanelOpt.tbGdsDevice1.GetString(self.coordMapPanelOpt.tbGdsDevice1.GetSelection()),
+                        optCoords[0][0], optCoords[0][1], optCoords[0][2]]
+            else:
+                dev1 = [self.coordMapPanelOpt.tbGdsDevice1.GetString(self.coordMapPanelOpt.tbGdsDevice1.GetSelection())]
+            if optCoords[1]:
+                dev2 = [self.coordMapPanelOpt.tbGdsDevice2.GetString(self.coordMapPanelOpt.tbGdsDevice2.GetSelection()),
+                        optCoords[1][0], optCoords[1][1], optCoords[1][2]]
+            else:
+                dev2 = [self.coordMapPanelOpt.tbGdsDevice2.GetString(self.coordMapPanelOpt.tbGdsDevice2.GetSelection())]
+            if optCoords[2]:
+                dev3 = [self.coordMapPanelOpt.tbGdsDevice3.GetString(self.coordMapPanelOpt.tbGdsDevice3.GetSelection()),
+                        optCoords[2][0], optCoords[2][1], optCoords[2][2]]
+            else:
+                dev3 = [self.coordMapPanelOpt.tbGdsDevice3.GetString(self.coordMapPanelOpt.tbGdsDevice3.GetSelection())]
+        else:
+            dev1 = [self.coordMapPanelOpt.tbGdsDevice1.GetString(self.coordMapPanelOpt.tbGdsDevice1.GetSelection())]
+            dev2 = [self.coordMapPanelOpt.tbGdsDevice2.GetString(self.coordMapPanelOpt.tbGdsDevice2.GetSelection())]
+            dev3 = [self.coordMapPanelOpt.tbGdsDevice3.GetString(self.coordMapPanelOpt.tbGdsDevice3.GetSelection())]
         writer.writerow(dev1)
-        dev2 = [self.coordMapPanelOpt.tbGdsDevice2.GetSelection(),
-                optCoords[1][0], optCoords[1][1], optCoords[1][2]]
         writer.writerow(dev2)
-        dev3 = [self.coordMapPanelOpt.tbGdsDevice3.GetSelection(),
-                optCoords[2][0], optCoords[2][1], optCoords[2][2]]
         writer.writerow(dev3)
         elecCoords = self.coordMapPanelElec.getMotorCoords()
         Elec = ['Electrical Alignment']
         writer.writerow(Elec)
         elec = ['Device', 'Motor x', 'Motor y', 'Motor z']
         writer.writerow(elec)
-        dev1 = [self.coordMapPanelElec.tbGdsDevice1.GetSelection(),
-                elecCoords[0][0], elecCoords[0][1], elecCoords[0][2]]
+        if elecCoords:
+            if elecCoords[0]:
+                dev1 = [self.coordMapPanelElec.tbGdsDevice1.GetString(self.coordMapPanelElec.tbGdsDevice1.GetSelection()),
+                        elecCoords[0][0], elecCoords[0][1], elecCoords[0][2]]
+            else:
+                dev1 = [self.coordMapPanelElec.tbGdsDevice1.GetString(self.coordMapPanelElec.tbGdsDevice1.GetSelection())]
+            if elecCoords[1]:
+                dev2 = [self.coordMapPanelElec.tbGdsDevice2.GetString(self.coordMapPanelElec.tbGdsDevice2.GetSelection()),
+                        elecCoords[1][0], elecCoords[1][1], elecCoords[1][2]]
+            else:
+                dev2 = [self.coordMapPanelElec.tbGdsDevice2.GetString(self.coordMapPanelElec.tbGdsDevice2.GetSelection())]
+            if elecCoords[2]:
+                dev3 = [self.coordMapPanelElec.tbGdsDevice3.GetString(self.coordMapPanelElec.tbGdsDevice3.GetSelection()),
+                        elecCoords[2][0], elecCoords[2][1], elecCoords[2][2]]
+            else:
+                dev3 = [self.coordMapPanelElec.tbGdsDevice3.GetString(self.coordMapPanelElec.tbGdsDevice3.GetSelection())]
+        else:
+            dev1 = [self.coordMapPanelElec.tbGdsDevice1.GetString(self.coordMapPanelElec.tbGdsDevice1.GetSelection())]
+            dev2 = [self.coordMapPanelElec.tbGdsDevice2.GetString(self.coordMapPanelElec.tbGdsDevice2.GetSelection())]
+            dev3 = [self.coordMapPanelElec.tbGdsDevice3.GetString(self.coordMapPanelElec.tbGdsDevice3.GetSelection())]
         writer.writerow(dev1)
-        dev2 = [self.coordMapPanelElec.tbGdsDevice2.GetSelection(),
-                elecCoords[1][0], elecCoords[1][1], elecCoords[1][2]]
         writer.writerow(dev2)
-        dev3 = [self.coordMapPanelElec.tbGdsDevice3.GetSelection(),
-                elecCoords[2][0], elecCoords[2][1], elecCoords[2][2]]
         writer.writerow(dev3)
         f.close()
 
