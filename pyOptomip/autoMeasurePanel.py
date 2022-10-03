@@ -78,13 +78,13 @@ class coordinateMapPanel(wx.Panel):
         self.elecyGdsCoordLst = []
 
         # Create drop down menus to select devices
-        self.tbGdsDevice1 = wx.Choice(self, size=(150, 20), choices=[])
+        self.tbGdsDevice1 = wx.Choice(self, size=(200, 20), choices=[])
         self.tbGdsDevice1.Bind(wx.EVT_CHOICE, self.on_drop_down1)
 
-        self.tbGdsDevice2 = wx.Choice(self, size=(150, 20), choices=[])
+        self.tbGdsDevice2 = wx.Choice(self, size=(200, 20), choices=[])
         self.tbGdsDevice2.Bind(wx.EVT_CHOICE, self.on_drop_down2)
 
-        self.tbGdsDevice3 = wx.Choice(self, size=(150, 20), choices=[])
+        self.tbGdsDevice3 = wx.Choice(self, size=(200, 20), choices=[])
         self.tbGdsDevice3.Bind(wx.EVT_CHOICE, self.on_drop_down3)
 
         # List of all drop down menus
@@ -261,6 +261,13 @@ class coordinateMapPanel(wx.Panel):
         for GDSDevice in self.GDSDevList:
             GDSDevice.AppendItems(deviceList)
 
+    def SortDropDowns(self, term):
+        """Sort drop downs based on search"""
+        global deviceList
+        for GDSDevice in self.GDSDevList:
+            GDSDevice.Clear()
+            deviceList.sort(key=lambda x: term not in x)
+            GDSDevice.AppendItems(deviceList)
 
 class autoMeasurePanel(wx.Panel):
 
@@ -495,15 +502,19 @@ class autoMeasurePanel(wx.Panel):
         def checkListSort(item1, item2):
             """Used for sorting the checklist of devices on the chip"""
             # Items are the client data associated with each entry
-            if term in deviceListAsObjects[item2].getDeviceID() and term not in deviceListAsObjects[item1].getDeviceID():
+            if term in deviceListAsObjects[item2].getDeviceID() and term not in deviceListAsObjects[
+                item1].getDeviceID():
                 return 1
-            elif term in deviceListAsObjects[item1].getDeviceID() and term not in deviceListAsObjects[item2].getDeviceID():
+            elif term in deviceListAsObjects[item1].getDeviceID() and term not in deviceListAsObjects[
+                item2].getDeviceID():
                 return -1
             else:
                 return 0
 
         self.checkList.SortItems(checkListSort)  # Make sure items in list are sorted
         self.checkList.Refresh()
+        self.coordMapPanelOpt.SortDropDowns(term)
+        self.coordMapPanelElec.SortDropDowns(term)
 
     def OnButton_ChooseCoordFile(self, event):
         """ Opens a file dialog to select a coordinate file. """

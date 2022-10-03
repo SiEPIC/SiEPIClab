@@ -76,6 +76,12 @@ class autoMeasure(object):
         self.devices = []
         self.devSet = set()
 
+        for ii, line in enumerate(dataStrip2):
+            if reg.match(line):
+                matchRes = reg.findall(line)[0]
+                devName = matchRes[6]
+                self.devSet.add(devName)
+
         # Parse the data in each line and put it into a list of devices
         for ii, line in enumerate(dataStrip2):
             if reg.match(line):
