@@ -77,15 +77,27 @@ class coordinateMapPanel(wx.Panel):
         self.elecxGdsCoordLst = []
         self.elecyGdsCoordLst = []
 
-        # Create drop down menus to select devices
-        self.tbGdsDevice1 = wx.Choice(self, size=(200, 20), choices=[])
+
+        self.tbGdsDevice1 = wx.ComboBox(self, size=(200,20), choices=[])
         self.tbGdsDevice1.Bind(wx.EVT_CHOICE, self.on_drop_down1)
 
-        self.tbGdsDevice2 = wx.Choice(self, size=(200, 20), choices=[])
+        # Create drop down menus to select devices
+        #self.tbGdsDevice1 = wx.Choice(self, size=(200, 20), choices=[])
+        #self.tbGdsDevice1.Bind(wx.EVT_CHOICE, self.on_drop_down1)
+
+        #self.tbGdsDevice2 = wx.Choice(self, size=(200, 20), choices=[])
+        #self.tbGdsDevice2.Bind(wx.EVT_CHOICE, self.on_drop_down2)
+
+        self.tbGdsDevice2 = wx.ComboBox(self, size=(200, 20), choices=[])
         self.tbGdsDevice2.Bind(wx.EVT_CHOICE, self.on_drop_down2)
 
-        self.tbGdsDevice3 = wx.Choice(self, size=(200, 20), choices=[])
+        #self.tbGdsDevice3 = wx.Choice(self, size=(200, 20), choices=[])
+        #self.tbGdsDevice3.Bind(wx.EVT_CHOICE, self.on_drop_down3)
+
+        self.tbGdsDevice3 = wx.ComboBox(self, size=(200, 20), choices=[])
         self.tbGdsDevice3.Bind(wx.EVT_CHOICE, self.on_drop_down3)
+
+
 
         # List of all drop down menus
         self.GDSDevList = [self.tbGdsDevice1, self.tbGdsDevice2, self.tbGdsDevice3]
@@ -225,12 +237,16 @@ class coordinateMapPanel(wx.Panel):
     def getMotorCoords(self):
         """ Returns a list of motor coordinates for each entered device. """
         coordsLst = []
+        print("stxMotorCoordlist = ")
+        print(self.stxMotorCoordLst)
         for tcx, tcy, tcz in zip(self.stxMotorCoordLst, self.styMotorCoordLst, self.stzMotorCoordLst):
-            xval = tcx.GetValue()
-            yval = tcy.GetValue()
-            zval = tcz.GetValue()
+            xval = tcx
+            yval = tcy
+            zval = tcz
             if xval != '' and yval != '' and zval != '':
                 coordsLst.append((float(xval), float(yval), float(zval)))
+        print("getMotorCoords = ")
+        print(coordsLst)
         return coordsLst
 
     def getGdsCoordsOpt(self):
@@ -239,10 +255,11 @@ class coordinateMapPanel(wx.Panel):
         coordsLst = []
         print(self.stxGdsCoordLst)
         for tcx, tcy in zip(self.stxGdsCoordLst, self.styGdsCoordLst):
-            xval = tcx.GetValue()
-            yval = tcy.GetValue()
+            xval = tcx
+            yval = tcy
             if xval != '' and yval != '':
                 coordsLst.append((float(xval), float(yval)))
+        print("GDScoordOpt = ")
         print(coordsLst)
         return coordsLst
 
@@ -251,8 +268,8 @@ class coordinateMapPanel(wx.Panel):
         device.  """
         coordsLst = []
         for tcx, tcy in zip(self.elecxGdsCoordLst, self.elecyGdsCoordLst):
-            xval = tcx.GetValue()
-            yval = tcy.GetValue()
+            xval = tcx
+            yval = tcy
             if xval != '' and yval != '':
                 coordsLst.append((float(xval), float(yval)))
         return coordsLst
