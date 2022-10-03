@@ -604,7 +604,7 @@ class instrumentFrame_withtabs(wx.Frame):
         sizer.Add(nb, 1, wx.ALL | wx.EXPAND)
 
         self.log = outputlogPanel(self.p)
-        sizer.Add(self.log, 1, wx.ALL | wx.EXPAND)
+        sizer.Add(self.log, 0, wx.ALL | wx.EXPAND)
         self.p.SetSizer(sizer)
         sys.stdout = logWriter(self.log)
         sys.stderr = logWriterError(self.log)
