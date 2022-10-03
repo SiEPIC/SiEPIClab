@@ -241,6 +241,7 @@ class coordinateMapPanel(wx.Panel):
         ycoord.SetValue(str(motorPosition[1]))
         zcoord.SetValue(str(motorPosition[2]))
 
+
     def getMotorCoords(self):
         """ Returns a list of motor coordinates for each entered device. """
         coordsLst = []
