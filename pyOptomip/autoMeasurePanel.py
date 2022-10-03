@@ -109,7 +109,7 @@ class coordinateMapPanel(wx.Panel):
         # For "Get Position" button map a function which is called when it is pressed
         btnGetMotorCoord.Bind(wx.EVT_BUTTON,
                               lambda event, xcoord=self.tbxMotorCoord1, ycoord=self.tbyMotorCoord1,
-                                     zcoord=self.tbzMotorCoord1: self.Event_OnCoordButton(
+                                     zcoord=self.tbzMotorCoord1: self.Event_OnCoordButton1(
                                   event, xcoord, ycoord, zcoord))
 
         # Get motor coordinates of second device from text box
@@ -131,7 +131,7 @@ class coordinateMapPanel(wx.Panel):
         # For "Get Position" button map a function which is called when it is pressed
         btnGetMotorCoord.Bind(wx.EVT_BUTTON,
                               lambda event, xcoord=self.tbxMotorCoord2, ycoord=self.tbyMotorCoord2,
-                                     zcoord=self.tbzMotorCoord2: self.Event_OnCoordButton(
+                                     zcoord=self.tbzMotorCoord2: self.Event_OnCoordButton2(
                                   event, xcoord, ycoord, zcoord))
 
         # Get motor coordinates of first device from text box
@@ -153,7 +153,7 @@ class coordinateMapPanel(wx.Panel):
         # For "Get Position" button map a function which is called when it is pressed
         btnGetMotorCoord.Bind(wx.EVT_BUTTON,
                               lambda event, xcoord=self.tbxMotorCoord3, ycoord=self.tbyMotorCoord3,
-                                     zcoord=self.tbzMotorCoord3: self.Event_OnCoordButton(
+                                     zcoord=self.tbzMotorCoord3: self.Event_OnCoordButton3(
                                   event, xcoord, ycoord, zcoord))
 
         gbs.AddGrowableCol(1)
@@ -171,9 +171,6 @@ class coordinateMapPanel(wx.Panel):
                 self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
                 self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
                 self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
-                self.stxMotorCoordLst.append(self.tbxMotorCoord1)
-                self.styMotorCoordLst.append(self.tbyMotorCoord1)
-                self.stzMotorCoordLst.append(self.tbzMotorCoord1)
 
     def on_drop_down2(self, event):
         """Drop down menu for the second device. When a device is selected, its coordinates are added to the
@@ -184,9 +181,6 @@ class coordinateMapPanel(wx.Panel):
                 self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
                 self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
                 self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
-                self.stxMotorCoordLst.append(self.tbxMotorCoord2)
-                self.styMotorCoordLst.append(self.tbyMotorCoord2)
-                self.stzMotorCoordLst.append(self.tbzMotorCoord2)
 
     def on_drop_down3(self, event):
         """Drop down menu for the third device. When a device is selected, its coordinates are added to the
@@ -197,16 +191,36 @@ class coordinateMapPanel(wx.Panel):
                 self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
                 self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
                 self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
-                self.stxMotorCoordLst.append(self.tbxMotorCoord3)
-                self.styMotorCoordLst.append(self.tbyMotorCoord3)
-                self.stzMotorCoordLst.append(self.tbzMotorCoord3)
 
-    def Event_OnCoordButton(self, event, xcoord, ycoord, zcoord):
+    def Event_OnCoordButton1(self, event, xcoord, ycoord, zcoord):
         """ Called when the button is pressed to get the current motor coordinates, and put it into the text box. """
         motorPosition = self.autoMeasure.motor.getPosition()
         xcoord.SetValue(str(motorPosition[0]))
         ycoord.SetValue(str(motorPosition[1]))
         zcoord.SetValue(str(motorPosition[2]))
+        self.stxMotorCoordLst.append(self.tbxMotorCoord1)
+        self.styMotorCoordLst.append(self.tbyMotorCoord1)
+        self.stzMotorCoordLst.append(self.tbzMotorCoord1)
+
+    def Event_OnCoordButton2(self, event, xcoord, ycoord, zcoord):
+        """ Called when the button is pressed to get the current motor coordinates, and put it into the text box. """
+        motorPosition = self.autoMeasure.motor.getPosition()
+        xcoord.SetValue(str(motorPosition[0]))
+        ycoord.SetValue(str(motorPosition[1]))
+        zcoord.SetValue(str(motorPosition[2]))
+        self.stxMotorCoordLst.append(self.tbxMotorCoord2)
+        self.styMotorCoordLst.append(self.tbyMotorCoord2)
+        self.stzMotorCoordLst.append(self.tbzMotorCoord2)
+
+    def Event_OnCoordButton3(self, event, xcoord, ycoord, zcoord):
+        """ Called when the button is pressed to get the current motor coordinates, and put it into the text box. """
+        motorPosition = self.autoMeasure.motor.getPosition()
+        xcoord.SetValue(str(motorPosition[0]))
+        ycoord.SetValue(str(motorPosition[1]))
+        zcoord.SetValue(str(motorPosition[2]))
+        self.stxMotorCoordLst.append(self.tbxMotorCoord3)
+        self.styMotorCoordLst.append(self.tbyMotorCoord3)
+        self.stzMotorCoordLst.append(self.tbzMotorCoord3)
 
     def getMotorCoords(self):
         """ Returns a list of motor coordinates for each entered device. """
