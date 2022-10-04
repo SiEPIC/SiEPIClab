@@ -48,7 +48,6 @@ class SMUClass:
     isSMU = True
     isMotor = False
     isLaser = False
-    isQontrol = False
     isDetect = False
 
     def __init__(self):

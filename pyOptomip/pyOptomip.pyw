@@ -30,6 +30,7 @@ from hp816x_N77Det_instrParameters import hp816x_N77Det_instrParameters
 from hp816x_instrParameters import hp816x_instrParameters
 from QontrolMotorParameters import QontrolMotorParameters
 from dummyCorvusParameters import dummyCorvusParameters
+from BSC203MotorParameters import BSC203MotorParameters
 
 from SMUParameters import SMUParameters
 from outputlogPanel import outputlogPanel
@@ -37,13 +38,14 @@ from logWriter import logWriter, logWriterError
 import sys
 import pyvisa as visa
 from instrumentFrame_withtabs import instrumentFrame_withtabs
+from pylablib.devices import Thorlabs
 
 
 softwareVersion = "1.1"
 
 devTypes = [CorvusEcoParameters, MGMotorParameters, QontrolMotorParameters,
             hp816x_N77Det_instrParameters, hp816x_instrParameters,
-            SMUParameters, dummyCorvusParameters]# N77Det_instrParameters]
+            SMUParameters, dummyCorvusParameters, BSC203MotorParameters]# N77Det_instrParameters]
 
 
 class ConnectCB(wx.Choicebook):
@@ -60,6 +62,7 @@ class ConnectCB(wx.Choicebook):
         # Reduce load time by getting VISA addresses here and passing them to each panel
         rm = visa.ResourceManager()
         visaAddrLst = rm.list_resources()
+        visaAddrLst = visaAddrLst + Thorlabs.list_kinesis_devices()[0]
         for c in devTypes:
             win = wx.Panel(self)
             vbox = wx.BoxSizer(wx.VERTICAL)

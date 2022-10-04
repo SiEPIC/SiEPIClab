@@ -45,7 +45,6 @@ class CorvusEcoClass:
     isOpt = True
     isElec = False
     isLaser = False
-    isQontrol = False
     isDetect = False
 
     def connect(self, visaName, rm, Velocity, Acceleration, NumberOfAxis):
