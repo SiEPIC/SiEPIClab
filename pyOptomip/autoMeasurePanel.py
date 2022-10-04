@@ -219,9 +219,9 @@ class coordinateMapPanel(wx.Panel):
         xcoord.SetValue(str(motorPosition[0]))
         ycoord.SetValue(str(motorPosition[1]))
         zcoord.SetValue(str(motorPosition[2]))
-        self.stxMotorCoordLst.append(self.tbxMotorCoord1)
-        self.styMotorCoordLst.append(self.tbyMotorCoord1)
-        self.stzMotorCoordLst.append(self.tbzMotorCoord1)
+        self.stxMotorCoordLst.append(self.tbxMotorCoord1.GetValue())
+        self.styMotorCoordLst.append(self.tbyMotorCoord1.GetValue())
+        self.stzMotorCoordLst.append(self.tbzMotorCoord1.GetValue())
 
     def Event_OnCoordButton2(self, event, xcoord, ycoord, zcoord):
         """ Called when the button is pressed to get the current motor coordinates, and put it into the text box. """
@@ -229,9 +229,9 @@ class coordinateMapPanel(wx.Panel):
         xcoord.SetValue(str(motorPosition[0]))
         ycoord.SetValue(str(motorPosition[1]))
         zcoord.SetValue(str(motorPosition[2]))
-        self.stxMotorCoordLst.append(self.tbxMotorCoord2)
-        self.styMotorCoordLst.append(self.tbyMotorCoord2)
-        self.stzMotorCoordLst.append(self.tbzMotorCoord2)
+        self.stxMotorCoordLst.append(self.tbxMotorCoord2.GetValue())
+        self.styMotorCoordLst.append(self.tbyMotorCoord2.GetValue())
+        self.stzMotorCoordLst.append(self.tbzMotorCoord2.GetValue())
 
     def Event_OnCoordButton3(self, event, xcoord, ycoord, zcoord):
         """ Called when the button is pressed to get the current motor coordinates, and put it into the text box. """
@@ -239,9 +239,9 @@ class coordinateMapPanel(wx.Panel):
         xcoord.SetValue(str(motorPosition[0]))
         ycoord.SetValue(str(motorPosition[1]))
         zcoord.SetValue(str(motorPosition[2]))
-        self.stxMotorCoordLst.append(self.tbxMotorCoord3)
-        self.styMotorCoordLst.append(self.tbyMotorCoord3)
-        self.stzMotorCoordLst.append(self.tbzMotorCoord3)
+        self.stxMotorCoordLst.append(self.tbxMotorCoord3.GetValue())
+        self.styMotorCoordLst.append(self.tbyMotorCoord3.GetValue())
+        self.stzMotorCoordLst.append(self.tbzMotorCoord3.GetValue())
 
     def getMotorCoords(self):
         """ Returns a list of motor coordinates for each entered device. """
@@ -268,8 +268,6 @@ class coordinateMapPanel(wx.Panel):
             yval = tcy
             if xval != '' and yval != '':
                 coordsLst.append((float(xval), float(yval)))
-        print("GDScoordOpt = ")
-        print(coordsLst)
         return coordsLst
 
     def getGdsCoordsElec(self):
