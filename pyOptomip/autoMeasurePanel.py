@@ -828,6 +828,8 @@ class autoMeasurePanel(wx.Panel):
             if device.getDeviceID == selectedDevice:
                 gdsCoord = (device.getOpticalCoordinates[0], device.getOpticalCoordinates[1])
                 motorCoord = self.autoMeasure.gdsToMotorCoordsOpt(gdsCoord)
+                # Get wedge probe coordinates
+                # Calculate laser coordinates
                 self.autoMeasure.motorOpt.moveAbsoluteXYZ(motorCoord[0], motorCoord[1], motorCoord[2])
 
     # TODO: Modify to move laser out of the way
