@@ -29,7 +29,6 @@ import os
 import time
 from filterFrame import filterFrame
 import csv
-import numpy as np
 
 global deviceList
 global deviceListAsObjects
@@ -72,38 +71,23 @@ class coordinateMapPanel(wx.Panel):
         gbs.Add(stzMotorCoord, pos=(1, 4), span=(1, 1), flag=wx.ALIGN_CENTER)
 
         # Create empty lists to store all necessary coordinates
-        self.stxMotorCoordLst = np.zeros(3)
-        self.styMotorCoordLst = np.zeros(3)
-        self.stzMotorCoordLst = np.zeros(3)
+        self.stxMotorCoordLst = []
+        self.styMotorCoordLst = []
+        self.stzMotorCoordLst = []
         self.stxGdsCoordLst = []
         self.styGdsCoordLst = []
         self.elecxGdsCoordLst = []
         self.elecyGdsCoordLst = []
 
-
-        self.tbGdsDevice1 = wx.ComboBox(self, size=(200,20), choices=[], style = wx.TE_PROCESS_ENTER)
-        self.tbGdsDevice1.Bind(wx.EVT_CHOICE, self.on_drop_down1)
-        self.tbGdsDevice1.Bind(wx.EVT_TEXT_ENTER, self.SortDropDowns1)
-
         # Create drop down menus to select devices
-        #self.tbGdsDevice1 = wx.Choice(self, size=(200, 20), choices=[])
-        #self.tbGdsDevice1.Bind(wx.EVT_CHOICE, self.on_drop_down1)
+        self.tbGdsDevice1 = wx.Choice(self, size=(150, 20), choices=[])
+        self.tbGdsDevice1.Bind(wx.EVT_CHOICE, self.on_drop_down1)
 
-        #self.tbGdsDevice2 = wx.Choice(self, size=(200, 20), choices=[])
-        #self.tbGdsDevice2.Bind(wx.EVT_CHOICE, self.on_drop_down2)
-
-        self.tbGdsDevice2 = wx.ComboBox(self, size=(200, 20), choices=[], style = wx.TE_PROCESS_ENTER)
+        self.tbGdsDevice2 = wx.Choice(self, size=(150, 20), choices=[])
         self.tbGdsDevice2.Bind(wx.EVT_CHOICE, self.on_drop_down2)
-        self.tbGdsDevice2.Bind(wx.EVT_TEXT_ENTER, self.SortDropDowns2)
 
-        #self.tbGdsDevice3 = wx.Choice(self, size=(200, 20), choices=[])
-        #self.tbGdsDevice3.Bind(wx.EVT_CHOICE, self.on_drop_down3)
-
-        self.tbGdsDevice3 = wx.ComboBox(self, size=(200, 20), choices=[], style = wx.TE_PROCESS_ENTER)
+        self.tbGdsDevice3 = wx.Choice(self, size=(150, 20), choices=[])
         self.tbGdsDevice3.Bind(wx.EVT_CHOICE, self.on_drop_down3)
-        self.tbGdsDevice3.Bind(wx.EVT_TEXT_ENTER, self.SortDropDowns3)
-
-
 
         # List of all drop down menus
         self.GDSDevList = [self.tbGdsDevice1, self.tbGdsDevice2, self.tbGdsDevice3]
@@ -124,13 +108,19 @@ class coordinateMapPanel(wx.Panel):
         gbs.Add(self.GDSDevList[0], pos=(2, 1), span=(1, 1))
         gbs.Add(btnGetMotorCoord, pos=(2, 6), span=(1, 1))
 
+        if self.type == "opt":
+            # For "Get Position" button map a function which is called when it is pressed
+            btnGetMotorCoord.Bind(wx.EVT_BUTTON,
+                                lambda event, xcoord=self.tbxMotorCoord1, ycoord=self.tbyMotorCoord1,
+                                        zcoord=self.tbzMotorCoord1: self.Event_OnCoordButtonOpt(
+                                    event, xcoord, ycoord, zcoord))
 
-        # For "Get Position" button map a function which is called when it is pressed
-        btnGetMotorCoord.Bind(wx.EVT_BUTTON,
-                            lambda event, xcoord=self.tbxMotorCoord1, ycoord=self.tbyMotorCoord1,
-                                    zcoord=self.tbzMotorCoord1: self.Event_OnCoordButton1(
-                                event, xcoord, ycoord, zcoord))
-
+        else:
+            # For "Get Position" button map a function which is called when it is pressed
+            btnGetMotorCoord.Bind(wx.EVT_BUTTON,
+                                lambda event, xcoord=self.tbxMotorCoord1, ycoord=self.tbyMotorCoord1,
+                                        zcoord=self.tbzMotorCoord1: self.Event_OnCoordButtonElec(
+                                    event, xcoord, ycoord, zcoord))
 
         # Get motor coordinates of second device from text box
         stDevice2 = wx.StaticText(self, label='Device %d' % (2))
@@ -148,12 +138,19 @@ class coordinateMapPanel(wx.Panel):
         gbs.Add(self.GDSDevList[1], pos=(3, 1), span=(1, 1))
         gbs.Add(btnGetMotorCoord, pos=(3, 6), span=(1, 1))
 
-        # For "Get Position" button map a function which is called when it is pressed
-        btnGetMotorCoord.Bind(wx.EVT_BUTTON,
-                            lambda event, xcoord=self.tbxMotorCoord2, ycoord=self.tbyMotorCoord2,
-                                    zcoord=self.tbzMotorCoord2: self.Event_OnCoordButton2(
-                                event, xcoord, ycoord, zcoord))
+        if self.type == "opt":
+            # For "Get Position" button map a function which is called when it is pressed
+            btnGetMotorCoord.Bind(wx.EVT_BUTTON,
+                                lambda event, xcoord=self.tbxMotorCoord2, ycoord=self.tbyMotorCoord2,
+                                        zcoord=self.tbzMotorCoord2: self.Event_OnCoordButtonOpt(
+                                    event, xcoord, ycoord, zcoord))
 
+        else:
+            # For "Get Position" button map a function which is called when it is pressed
+            btnGetMotorCoord.Bind(wx.EVT_BUTTON,
+                                lambda event, xcoord=self.tbxMotorCoord2, ycoord=self.tbyMotorCoord2,
+                                        zcoord=self.tbzMotorCoord2: self.Event_OnCoordButtonElec(
+                                    event, xcoord, ycoord, zcoord))
 
         # Get motor coordinates of first device from text box
         stDevice3 = wx.StaticText(self, label='Device %d' % (3))
@@ -171,12 +168,19 @@ class coordinateMapPanel(wx.Panel):
         gbs.Add(self.GDSDevList[2], pos=(4, 1), span=(1, 1))
         gbs.Add(btnGetMotorCoord, pos=(4, 6), span=(1, 1))
 
-        # For "Get Position" button map a function which is called when it is pressed
-        btnGetMotorCoord.Bind(wx.EVT_BUTTON,
-                            lambda event, xcoord=self.tbxMotorCoord3, ycoord=self.tbyMotorCoord3,
-                                    zcoord=self.tbzMotorCoord3: self.Event_OnCoordButton3(
-                                event, xcoord, ycoord, zcoord))
+        if self.type == "opt":
+            # For "Get Position" button map a function which is called when it is pressed
+            btnGetMotorCoord.Bind(wx.EVT_BUTTON,
+                                lambda event, xcoord=self.tbxMotorCoord3, ycoord=self.tbyMotorCoord3,
+                                        zcoord=self.tbzMotorCoord3: self.Event_OnCoordButtonOpt(
+                                    event, xcoord, ycoord, zcoord))
 
+        else:
+            # For "Get Position" button map a function which is called when it is pressed
+            btnGetMotorCoord.Bind(wx.EVT_BUTTON,
+                                lambda event, xcoord=self.tbxMotorCoord3, ycoord=self.tbyMotorCoord3,
+                                        zcoord=self.tbzMotorCoord3: self.Event_OnCoordButtonElec(
+                                    event, xcoord, ycoord, zcoord))
 
         gbs.AddGrowableCol(1)
         gbs.AddGrowableCol(2)
@@ -186,79 +190,61 @@ class coordinateMapPanel(wx.Panel):
 
     def on_drop_down1(self, event):
         """Drop down menu for the first device. When a device is selected, its coordinates are added to the
-        gds coordinates list"""
+        gds coordinates list and associated motor coordinates are added to the motor coordinates list"""
         for dev in deviceListAsObjects:
-            if self.GDSDevList[0].GetString(self.GDSDevList[0].GetSelection()) == dev.getDeviceID():
-                if dev.getOpticalCoordinates() is not None:
-                    self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
-                    self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
-                if dev.getReferenceBondPad() is not None:
-                    self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
-                    self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
-
+            if self.GDSDevList[0].GetString(self.GDSDevList[1].GetSelection()) == dev.getDeviceID():#self.GDSDevList[0].GetSelection() == dev.getDeviceID():
+                self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
+                self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
+                self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
+                self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
+                self.stxMotorCoordLst.append(self.tbxMotorCoord1.GetValue())
+                self.styMotorCoordLst.append(self.tbyMotorCoord1.GetValue())
+                self.stzMotorCoordLst.append(self.tbzMotorCoord1.GetValue())
 
     def on_drop_down2(self, event):
         """Drop down menu for the second device. When a device is selected, its coordinates are added to the
         gds coordinates list and associated motor coordinates are added to the motor coordinates list"""
         for dev in deviceListAsObjects:
-            if self.GDSDevList[1].GetString(self.GDSDevList[1].GetSelection()) == dev.getDeviceID():
-                if dev.getOpticalCoordinates() is not None:
-                    self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
-                    self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
-                if dev.getReferenceBondPad() is not None:
-                    self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
-                    self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
-
+            if self.GDSDevList[1].GetString(self.GDSDevList[1].GetSelection()) == dev.getDeviceID():#self.GDSDevList[1].GetSelection() == dev.getDeviceID():
+                self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
+                self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
+                self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
+                self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
+                self.stxMotorCoordLst.append(self.tbxMotorCoord2.GetValue())
+                self.styMotorCoordLst.append(self.tbyMotorCoord2.GetValue())
+                self.stzMotorCoordLst.append(self.tbzMotorCoord2.GetValue())
 
     def on_drop_down3(self, event):
         """Drop down menu for the third device. When a device is selected, its coordinates are added to the
         gds coordinates list and associated motor coordinates are added to the motor coordinates list"""
         for dev in deviceListAsObjects:
-            if self.GDSDevList[2].GetString(self.GDSDevList[2].GetSelection()) == dev.getDeviceID():
-                if dev.getOpticalCoordinates() is not None:
-                    self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
-                    self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
-                if dev.getReferenceBondPad() is not None:
-                    self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
-                    self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
+            if self.GDSDevList[2].GetString(self.GDSDevList[1].GetSelection()) == dev.getDeviceID():#self.GDSDevList[2].GetSelection() == dev.getDeviceID():
+                self.stxGdsCoordLst.append(dev.getOpticalCoordinates()[0])
+                self.styGdsCoordLst.append(dev.getOpticalCoordinates()[1])
+                self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
+                self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
+                self.stxMotorCoordLst.append(self.tbxMotorCoord3.GetValue())
+                self.styMotorCoordLst.append(self.tbyMotorCoord3.GetValue())
+                self.stzMotorCoordLst.append(self.tbzMotorCoord3.GetValue())
 
-
-    def Event_OnCoordButton1(self, event, xcoord, ycoord, zcoord):
+    def Event_OnCoordButtonOpt(self, event, xcoord, ycoord, zcoord):
         """ Called when the button is pressed to get the current motor coordinates, and put it into the text box. """
         motorPosition = self.autoMeasure.motorOpt.getPosition()
         xcoord.SetValue(str(motorPosition[0]))
         ycoord.SetValue(str(motorPosition[1]))
         zcoord.SetValue(str(motorPosition[2]))
-        self.stxMotorCoordLst[0] = self.tbxMotorCoord1.GetValue()
-        self.styMotorCoordLst[0] = self.tbyMotorCoord1.GetValue()
-        self.stzMotorCoordLst[0] = self.tbzMotorCoord1.GetValue()
 
-    def Event_OnCoordButton2(self, event, xcoord, ycoord, zcoord):
+    def Event_OnCoordButtonElec(self, event, xcoord, ycoord, zcoord):
         """ Called when the button is pressed to get the current motor coordinates, and put it into the text box. """
-        motorPosition = self.autoMeasure.motorOpt.getPosition()
+        motorPosition = self.autoMeasure.motorElec.getPosition()
         xcoord.SetValue(str(motorPosition[0]))
         ycoord.SetValue(str(motorPosition[1]))
         zcoord.SetValue(str(motorPosition[2]))
-        self.stxMotorCoordLst[1] = self.tbxMotorCoord2.GetValue()
-        self.styMotorCoordLst[1] = self.tbyMotorCoord2.GetValue()
-        self.stzMotorCoordLst[1] = self.tbzMotorCoord2.GetValue()
-
-    def Event_OnCoordButton3(self, event, xcoord, ycoord, zcoord):
-        """ Called when the button is pressed to get the current motor coordinates, and put it into the text box. """
-        motorPosition = self.autoMeasure.motorOpt.getPosition()
-        xcoord.SetValue(str(motorPosition[0]))
-        ycoord.SetValue(str(motorPosition[1]))
-        zcoord.SetValue(str(motorPosition[2]))
-        self.stxMotorCoordLst[2] = self.tbxMotorCoord3.GetValue()
-        self.styMotorCoordLst[2] = self.tbyMotorCoord3.GetValue()
-        self.stzMotorCoordLst[2] = self.tbzMotorCoord3.GetValue()
 
 
     def getMotorCoords(self):
         """ Returns a list of motor coordinates for each entered device. """
         coordsLst = []
-
-        print("stxMotorCoordlist = ")
         print(self.stxMotorCoordLst)
         for tcx, tcy, tcz in zip(self.stxMotorCoordLst, self.styMotorCoordLst, self.stzMotorCoordLst):
             xval = tcx#.GetValue()
@@ -297,35 +283,17 @@ class coordinateMapPanel(wx.Panel):
         for GDSDevice in self.GDSDevList:
             GDSDevice.AppendItems(deviceList)
 
-    def SortDropDowns1(self, event):
-        """Sort drop downs based on search"""
-        global deviceList
-        GDSDevice = self.GDSDevList[0]
 
-        print(GDSDevice.GetValue())
-        deviceList.sort(key=lambda x: 1 if GDSDevice.GetValue() not in x else 0)
-        GDSDevice.Clear()
-        GDSDevice.AppendItems(deviceList)
+def checkListSort(item1, item2):
+    """Used for sorting the checklist of devices on the chip"""
+    # Items are the client data associated with each entry
+    if item2 < item2:
+        return -1
+    elif item1 > item2:
+        return 1
+    else:
+        return 0
 
-    def SortDropDowns2(self, event):
-        """Sort drop downs based on search"""
-        global deviceList
-        GDSDevice = self.GDSDevList[1]
-
-        print(GDSDevice.GetValue())
-        deviceList.sort(key=lambda x: 1 if GDSDevice.GetValue() not in x else 0)
-        GDSDevice.Clear()
-        GDSDevice.AppendItems(deviceList)
-
-    def SortDropDowns3(self, event):
-        """Sort drop downs based on search"""
-        global deviceList
-        GDSDevice = self.GDSDevList[2]
-
-        print(GDSDevice.GetValue())
-        deviceList.sort(key=lambda x: 1 if GDSDevice.GetValue() not in x else 0)
-        GDSDevice.Clear()
-        GDSDevice.AppendItems(deviceList)
 
 class autoMeasurePanel(wx.Panel):
 
@@ -426,12 +394,6 @@ class autoMeasurePanel(wx.Panel):
         checkListBox = wx.BoxSizer(wx.HORIZONTAL)
         checkListBox.Add(self.checkList, proportion=1, flag=wx.EXPAND)
 
-        # CheckList Search
-        self.search = wx.SearchCtrl(self, -1)
-        self.search.Bind(wx.EVT_SEARCH, self.OnButton_SearchChecklist)
-        searchListBox = wx.BoxSizer(wx.HORIZONTAL)
-        searchListBox.Add(self.search, proportion=1, flag=wx.EXPAND)
-
         # Add Optical Alignment set up
         self.coordMapPanelOpt = coordinateMapPanel(self, self.autoMeasure, "opt")
         opticalBox = wx.BoxSizer(wx.HORIZONTAL)
@@ -527,8 +489,7 @@ class autoMeasurePanel(wx.Panel):
         topBox.AddMany([(vboxUpload, 0, wx.EXPAND), (vboxMeasurement, 0, wx.EXPAND)])
 
         checkBox = wx.BoxSizer(wx.VERTICAL)
-        checkBox.AddMany([(checkListBox, 0, wx.EXPAND), (searchListBox, 0, wx.EXPAND), (selectBox, 0, wx.EXPAND),
-                          (selectBox2, 0, wx.EXPAND)])
+        checkBox.AddMany([(checkListBox, 0, wx.EXPAND), (selectBox, 0, wx.EXPAND), (selectBox2, 0, wx.EXPAND)])
 
         # Add all boxes to outer box
         vboxOuter.AddMany([(topBox, 0, wx.EXPAND), (checkBox, 0, wx.EXPAND), (vboxOptical, 0, wx.EXPAND),
@@ -551,28 +512,6 @@ class autoMeasurePanel(wx.Panel):
         """Creates filter frame when filter button is pressed"""
         self.createFilterFrame()
         self.Refresh()
-
-    def OnButton_SearchChecklist(self, event):
-        """Moves devices with searched term present in ID to the top of the checklist. Have to double click
-        magnifying glass for search to proceed."""
-        term = self.search.GetStringSelection()
-
-        def checkListSort(item1, item2):
-            """Used for sorting the checklist of devices on the chip"""
-            # Items are the client data associated with each entry
-            if term in deviceListAsObjects[item2].getDeviceID() and term not in deviceListAsObjects[
-                item1].getDeviceID():
-                return 1
-            elif term in deviceListAsObjects[item1].getDeviceID() and term not in deviceListAsObjects[
-                item2].getDeviceID():
-                return -1
-            else:
-                return 0
-
-        self.checkList.SortItems(checkListSort)  # Make sure items in list are sorted
-        self.checkList.Refresh()
-        self.coordMapPanelOpt.SortDropDowns(term)
-        self.coordMapPanelElec.SortDropDowns(term)
 
     def OnButton_ChooseCoordFile(self, event):
         """ Opens a file dialog to select a coordinate file. """
@@ -599,7 +538,7 @@ class autoMeasurePanel(wx.Panel):
         self.devSelectCb.AppendItems(deviceList)
         self.devSelectCbOpt.Clear()
         self.devSelectCbOpt.AppendItems(deviceList)
-        # Adds items to the checklist
+        # Adds items to the check list
         self.checkList.DeleteAllItems()
         for ii, device in enumerate(deviceList):
             self.checkList.InsertItem(ii, device)
@@ -607,6 +546,7 @@ class autoMeasurePanel(wx.Panel):
                 if dev.getDeviceID() == device:
                     index = deviceListAsObjects.index(dev)  # Stores index of device in list
                     self.checkList.SetItemData(ii, index)
+        self.checkList.SortItems(checkListSort)  # Make sure items in list are sorted
         self.checkList.EnableCheckBoxes()
         self.coordMapPanelOpt.PopulateDropDowns()
         self.coordMapPanelElec.PopulateDropDowns()
@@ -633,56 +573,28 @@ class autoMeasurePanel(wx.Panel):
         writer.writerow(Opt)
         Opt = ['Device', 'Motor x', 'Motor y', 'Motor z']
         writer.writerow(Opt)
-        if optCoords:
-            if optCoords[0]:
-                dev1 = [self.coordMapPanelOpt.tbGdsDevice1.GetString(self.coordMapPanelOpt.tbGdsDevice1.GetSelection()),
-                        optCoords[0][0], optCoords[0][1], optCoords[0][2]]
-            else:
-                dev1 = [self.coordMapPanelOpt.tbGdsDevice1.GetString(self.coordMapPanelOpt.tbGdsDevice1.GetSelection())]
-            if optCoords[1]:
-                dev2 = [self.coordMapPanelOpt.tbGdsDevice2.GetString(self.coordMapPanelOpt.tbGdsDevice2.GetSelection()),
-                        optCoords[1][0], optCoords[1][1], optCoords[1][2]]
-            else:
-                dev2 = [self.coordMapPanelOpt.tbGdsDevice2.GetString(self.coordMapPanelOpt.tbGdsDevice2.GetSelection())]
-            if optCoords[2]:
-                dev3 = [self.coordMapPanelOpt.tbGdsDevice3.GetString(self.coordMapPanelOpt.tbGdsDevice3.GetSelection()),
-                        optCoords[2][0], optCoords[2][1], optCoords[2][2]]
-            else:
-                dev3 = [self.coordMapPanelOpt.tbGdsDevice3.GetString(self.coordMapPanelOpt.tbGdsDevice3.GetSelection())]
-        else:
-            dev1 = [self.coordMapPanelOpt.tbGdsDevice1.GetString(self.coordMapPanelOpt.tbGdsDevice1.GetSelection())]
-            dev2 = [self.coordMapPanelOpt.tbGdsDevice2.GetString(self.coordMapPanelOpt.tbGdsDevice2.GetSelection())]
-            dev3 = [self.coordMapPanelOpt.tbGdsDevice3.GetString(self.coordMapPanelOpt.tbGdsDevice3.GetSelection())]
+        dev1 = [self.coordMapPanelOpt.tbGdsDevice1.GetSelection(),
+                optCoords[0][0], optCoords[0][1], optCoords[0][2]]
         writer.writerow(dev1)
+        dev2 = [self.coordMapPanelOpt.tbGdsDevice2.GetSelection(),
+                optCoords[1][0], optCoords[1][1], optCoords[1][2]]
         writer.writerow(dev2)
+        dev3 = [self.coordMapPanelOpt.tbGdsDevice3.GetSelection(),
+                optCoords[2][0], optCoords[2][1], optCoords[2][2]]
         writer.writerow(dev3)
         elecCoords = self.coordMapPanelElec.getMotorCoords()
         Elec = ['Electrical Alignment']
         writer.writerow(Elec)
         elec = ['Device', 'Motor x', 'Motor y', 'Motor z']
         writer.writerow(elec)
-        if elecCoords:
-            if elecCoords[0]:
-                dev1 = [self.coordMapPanelElec.tbGdsDevice1.GetString(self.coordMapPanelElec.tbGdsDevice1.GetSelection()),
-                        elecCoords[0][0], elecCoords[0][1], elecCoords[0][2]]
-            else:
-                dev1 = [self.coordMapPanelElec.tbGdsDevice1.GetString(self.coordMapPanelElec.tbGdsDevice1.GetSelection())]
-            if elecCoords[1]:
-                dev2 = [self.coordMapPanelElec.tbGdsDevice2.GetString(self.coordMapPanelElec.tbGdsDevice2.GetSelection()),
-                        elecCoords[1][0], elecCoords[1][1], elecCoords[1][2]]
-            else:
-                dev2 = [self.coordMapPanelElec.tbGdsDevice2.GetString(self.coordMapPanelElec.tbGdsDevice2.GetSelection())]
-            if elecCoords[2]:
-                dev3 = [self.coordMapPanelElec.tbGdsDevice3.GetString(self.coordMapPanelElec.tbGdsDevice3.GetSelection()),
-                        elecCoords[2][0], elecCoords[2][1], elecCoords[2][2]]
-            else:
-                dev3 = [self.coordMapPanelElec.tbGdsDevice3.GetString(self.coordMapPanelElec.tbGdsDevice3.GetSelection())]
-        else:
-            dev1 = [self.coordMapPanelElec.tbGdsDevice1.GetString(self.coordMapPanelElec.tbGdsDevice1.GetSelection())]
-            dev2 = [self.coordMapPanelElec.tbGdsDevice2.GetString(self.coordMapPanelElec.tbGdsDevice2.GetSelection())]
-            dev3 = [self.coordMapPanelElec.tbGdsDevice3.GetString(self.coordMapPanelElec.tbGdsDevice3.GetSelection())]
+        dev1 = [self.coordMapPanelElec.tbGdsDevice1.GetSelection(),
+                elecCoords[0][0], elecCoords[0][1], elecCoords[0][2]]
         writer.writerow(dev1)
+        dev2 = [self.coordMapPanelElec.tbGdsDevice2.GetSelection(),
+                elecCoords[1][0], elecCoords[1][1], elecCoords[1][2]]
         writer.writerow(dev2)
+        dev3 = [self.coordMapPanelElec.tbGdsDevice3.GetSelection(),
+                elecCoords[2][0], elecCoords[2][1], elecCoords[2][2]]
         writer.writerow(dev3)
         f.close()
 
@@ -703,52 +615,46 @@ class autoMeasurePanel(wx.Panel):
         optDev1 = optDev1  # [dev name, x motor coord, y motor coord, z motor coord]
         self.coordMapPanelOpt.tbGdsDevice1.SetString(0, optDev1[0])
         self.coordMapPanelOpt.tbGdsDevice1.SetSelection(0)
-        if len(optDev1)>1:
-            self.coordMapPanelOpt.tbxMotorCoord1.SetValue(optDev1[1])
-            self.coordMapPanelOpt.tbyMotorCoord1.SetValue(optDev1[2])
-            self.coordMapPanelOpt.tbzMotorCoord1.SetValue(optDev1[3])
+        self.coordMapPanelOpt.tbxMotorCoord1.SetValue(optDev1[1])
+        self.coordMapPanelOpt.tbyMotorCoord1.SetValue(optDev1[2])
+        self.coordMapPanelOpt.tbzMotorCoord1.SetValue(optDev1[3])
         optDev2 = next(reader)
         optDev2 = optDev2
         self.coordMapPanelOpt.tbGdsDevice2.SetString(0, optDev2[0])
         self.coordMapPanelOpt.tbGdsDevice2.SetSelection(0)
-        if len(optDev2)>1:
-            self.coordMapPanelOpt.tbxMotorCoord2.SetValue(optDev2[1])
-            self.coordMapPanelOpt.tbyMotorCoord2.SetValue(optDev2[2])
-            self.coordMapPanelOpt.tbzMotorCoord2.SetValue(optDev2[3])
+        self.coordMapPanelOpt.tbxMotorCoord2.SetValue(optDev2[1])
+        self.coordMapPanelOpt.tbyMotorCoord2.SetValue(optDev2[2])
+        self.coordMapPanelOpt.tbzMotorCoord2.SetValue(optDev2[3])
         optDev3 = next(reader)
         optDev3 = optDev3
         self.coordMapPanelOpt.tbGdsDevice3.SetString(0, optDev3[0])
         self.coordMapPanelOpt.tbGdsDevice3.SetSelection(0)
-        if len(optDev3)>1:
-            self.coordMapPanelOpt.tbxMotorCoord3.SetValue(optDev3[1])
-            self.coordMapPanelOpt.tbyMotorCoord3.SetValue(optDev3[2])
-            self.coordMapPanelOpt.tbzMotorCoord3.SetValue(optDev3[3])
+        self.coordMapPanelOpt.tbxMotorCoord3.SetValue(optDev3[1])
+        self.coordMapPanelOpt.tbyMotorCoord3.SetValue(optDev3[2])
+        self.coordMapPanelOpt.tbzMotorCoord3.SetValue(optDev3[3])
         next(reader)
         next(reader)
         elecDev1 = next(reader)
         elecDev1 = elecDev1
         self.coordMapPanelElec.tbGdsDevice1.SetString(0, elecDev1[0])
         self.coordMapPanelElec.tbGdsDevice1.SetSelection(0)
-        if len(elecDev1) > 1:
-            self.coordMapPanelElec.tbxMotorCoord1.SetValue(elecDev1[1])
-            self.coordMapPanelElec.tbyMotorCoord1.SetValue(elecDev1[2])
-            self.coordMapPanelElec.tbzMotorCoord1.SetValue(elecDev1[3])
+        self.coordMapPanelElec.tbxMotorCoord1.SetValue(elecDev1[1])
+        self.coordMapPanelElec.tbyMotorCoord1.SetValue(elecDev1[2])
+        self.coordMapPanelElec.tbzMotorCoord1.SetValue(elecDev1[3])
         elecDev2 = next(reader)
         elecDev2 = elecDev2
         self.coordMapPanelElec.tbGdsDevice2.SetString(0, elecDev2[0])
         self.coordMapPanelElec.tbGdsDevice2.SetSelection(0)
-        if len(elecDev2) >1:
-            self.coordMapPanelElec.tbxMotorCoord2.SetValue(elecDev2[1])
-            self.coordMapPanelElec.tbyMotorCoord2.SetValue(elecDev2[2])
-            self.coordMapPanelElec.tbzMotorCoord2.SetValue(elecDev2[3])
+        self.coordMapPanelElec.tbxMotorCoord2.SetValue(elecDev2[1])
+        self.coordMapPanelElec.tbyMotorCoord2.SetValue(elecDev2[2])
+        self.coordMapPanelElec.tbzMotorCoord2.SetValue(elecDev2[3])
         elecDev3 = next(reader)
         elecDev3 = elecDev3
         self.coordMapPanelElec.tbGdsDevice3.SetString(0, elecDev3[0])
         self.coordMapPanelElec.tbGdsDevice3.SetSelection(0)
-        if len(elecDev3)>1:
-            self.coordMapPanelElec.tbxMotorCoord3.SetValue(elecDev3[1])
-            self.coordMapPanelElec.tbyMotorCoord3.SetValue(elecDev3[2])
-            self.coordMapPanelElec.tbzMotorCoord3.SetValue(elecDev3[3])
+        self.coordMapPanelElec.tbxMotorCoord3.SetValue(elecDev3[1])
+        self.coordMapPanelElec.tbyMotorCoord3.SetValue(elecDev3[2])
+        self.coordMapPanelElec.tbzMotorCoord3.SetValue(elecDev3[3])
 
     def OnButton_ImportTestingParameters(self, event):
         """Imports a testing parameters file and stores data as a dictionary"""
@@ -781,60 +687,59 @@ class autoMeasurePanel(wx.Panel):
             for c in range(len(rows)):
                 x = rows[c].split(',')
 
-
-                self.dataimport['device'].append(x[1])
-                self.dataimport['ELECflag'].append(x[2])
-                self.dataimport['OPTICflag'].append(x[3])
-                self.dataimport['setwflag'].append(x[4])
-                self.dataimport['setvflag'].append(x[5])
-                self.dataimport['Voltsel'].append(x[6])
-                self.dataimport['Currentsel'].append(x[7])
-                self.dataimport['VoltMin'].append(x[8])
-                self.dataimport['VoltMax'].append(x[9])
-                self.dataimport['CurrentMin'].append(x[10])
-                self.dataimport['CurrentMax'].append(x[11])
-                self.dataimport['VoltRes'].append(x[12])
-                self.dataimport['CurrentRes'].append(x[13])
-                self.dataimport['IV'].append(x[14])
-                self.dataimport['RV'].append(x[15])
-                self.dataimport['PV'].append(x[16])
-                self.dataimport['ChannelA'].append(x[17])
-                self.dataimport['ChannelB'].append(x[18])
-                self.dataimport['Start'].append(x[19])
-                self.dataimport['Stop'].append(x[20])
-                self.dataimport['Stepsize'].append(x[21])
-                self.dataimport['Sweeppower'].append(x[22])
-                self.dataimport['Sweepspeed'].append(x[23])
-                self.dataimport['Laseroutput'].append(x[24])
-                self.dataimport['Numscans'].append(x[25])
-                self.dataimport['InitialRange'].append(x[26])
-                self.dataimport['RangeDec'].append(x[27])
-                self.dataimport['setwVoltsel'].append(x[28])
-                self.dataimport['setwCurrentsel'].append(x[29])
-                self.dataimport['setwVoltMin'].append(x[30])
-                self.dataimport['setwVoltMax'].append(x[31])
-                self.dataimport['setwCurrentMin'].append(x[32])
-                self.dataimport['setwCurrentMax'].append(x[33])
-                self.dataimport['setwVoltRes'].append(x[34])
-                self.dataimport['setwCurrentRes'].append(x[35])
-                self.dataimport['setwIV'].append(x[36])
-                self.dataimport['setwRV'].append(x[37])
-                self.dataimport['setwPV'].append(x[38])
-                self.dataimport['setwChannelA'].append(x[39])
-                self.dataimport['setwChannelB'].append(x[40])
-                self.dataimport['Wavelengths'].append(x[41])
-                self.dataimport['setvStart'].append(x[42])
-                self.dataimport['setvStop'].append(x[43])
-                self.dataimport['setvStepsize'].append(x[44])
-                self.dataimport['setvSweeppower'].append(x[45])
-                self.dataimport['setvSweepspeed'].append(x[46])
-                self.dataimport['setvLaseroutput'].append(x[47])
-                self.dataimport['setvNumscans'].append(x[48])
-                self.dataimport['setvInitialRange'].append(x[49])
-                self.dataimport['setvRangeDec'].append(x[50])
-                self.dataimport['setvChannelA'].append(x[51])
-                self.dataimport['setvChannelB'].append(x[52])
-                self.dataimport['Voltages'].append(x[53])
+                self.dataimport['device'].append(x[0])
+                self.dataimport['ELECflag'].append(x[1])
+                self.dataimport['OPTICflag'].append(x[2])
+                self.dataimport['setwflag'].append(x[3])
+                self.dataimport['setvflag'].append(x[4])
+                self.dataimport['Voltsel'].append(x[5])
+                self.dataimport['Currentsel'].append(x[6])
+                self.dataimport['VoltMin'].append(x[7])
+                self.dataimport['VoltMax'].append(x[8])
+                self.dataimport['CurrentMin'].append(x[9])
+                self.dataimport['CurrentMax'].append(x[10])
+                self.dataimport['VoltRes'].append(x[11])
+                self.dataimport['CurrentRes'].append(x[12])
+                self.dataimport['IV'].append(x[13])
+                self.dataimport['RV'].append(x[14])
+                self.dataimport['PV'].append(x[15])
+                self.dataimport['ChannelA'].append(x[16])
+                self.dataimport['ChannelB'].append(x[17])
+                self.dataimport['Start'].append(x[18])
+                self.dataimport['Stop'].append(x[19])
+                self.dataimport['Stepsize'].append(x[20])
+                self.dataimport['Sweeppower'].append(x[21])
+                self.dataimport['Sweepspeed'].append(x[22])
+                self.dataimport['Laseroutput'].append(x[23])
+                self.dataimport['Numscans'].append(x[24])
+                self.dataimport['InitialRange'].append(x[25])
+                self.dataimport['RangeDec'].append(x[26])
+                self.dataimport['setwVoltsel'].append(x[27])
+                self.dataimport['setwCurrentsel'].append(x[28])
+                self.dataimport['setwVoltMin'].append(x[29])
+                self.dataimport['setwVoltMax'].append(x[30])
+                self.dataimport['setwCurrentMin'].append(x[31])
+                self.dataimport['setwCurrentMax'].append(x[32])
+                self.dataimport['setwVoltRes'].append(x[33])
+                self.dataimport['setwCurrentRes'].append(x[34])
+                self.dataimport['setwIV'].append(x[35])
+                self.dataimport['setwRV'].append(x[36])
+                self.dataimport['setwPV'].append(x[37])
+                self.dataimport['setwChannelA'].append(x[38])
+                self.dataimport['setwChannelB'].append(x[39])
+                self.dataimport['Wavelengths'].append(x[40])
+                self.dataimport['setvStart'].append(x[41])
+                self.dataimport['setvStop'].append(x[42])
+                self.dataimport['setvStepsize'].append(x[43])
+                self.dataimport['setvSweeppower'].append(x[44])
+                self.dataimport['setvSweepspeed'].append(x[45])
+                self.dataimport['setvLaseroutput'].append(x[46])
+                self.dataimport['setvNumscans'].append(x[47])
+                self.dataimport['setvInitialRange'].append(x[48])
+                self.dataimport['setvRangeDec'].append(x[49])
+                self.dataimport['setvChannelA'].append(x[50])
+                self.dataimport['setvChannelB'].append(x[51])
+                self.dataimport['Voltages'].append(x[52])
 
         for keys, values in self.dataimport.items():
             print(keys)
@@ -859,8 +764,6 @@ class autoMeasurePanel(wx.Panel):
             if device.getDeviceID == selectedDevice:
                 gdsCoord = (device.getOpticalCoordinates[0], device.getOpticalCoordinates[1])
                 motorCoord = self.autoMeasure.gdsToMotorCoordsOpt(gdsCoord)
-                # Get wedge probe coordinates
-                # Calculate laser coordinates
                 self.autoMeasure.motorOpt.moveAbsoluteXYZ(motorCoord[0], motorCoord[1], motorCoord[2])
 
     # TODO: Modify to move laser out of the way

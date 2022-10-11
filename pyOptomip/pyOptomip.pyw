@@ -62,7 +62,7 @@ class ConnectCB(wx.Choicebook):
         # Reduce load time by getting VISA addresses here and passing them to each panel
         rm = visa.ResourceManager()
         visaAddrLst = rm.list_resources()
-        visaAddrLst = visaAddrLst + Thorlabs.list_kinesis_devices()[0]
+        #visaAddrLst = visaAddrLst + Thorlabs.list_kinesis_devices()
         for c in devTypes:
             win = wx.Panel(self)
             vbox = wx.BoxSizer(wx.VERTICAL)

@@ -33,6 +33,7 @@ class hp816x_N77Det(hp816x_instr.hp816x):
     maxPWMPoints = 100000
     isDetect = True
     isSMU = False
+    isElec = False
 
     def connect(self, visaAddr, n77DetAddr, reset=0, forceTrans=1, autoErrorCheck=1):
         super(hp816x_N77Det, self).connect(visaAddr, reset, forceTrans, autoErrorCheck)
