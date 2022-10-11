@@ -2,7 +2,7 @@ import numpy as np
 from autoMeasure import *
 import unittest
 
-from pyOptomip.dummyMotorParameters import dummyMotorParameters
+from pyOptomip.dummyCorvusParameters import dummyMotorParameters
 from pyOptomip.dummyLaserParameters import dummyLaserParameters
 from pyOptomip.fineAlign import fineAlign
 

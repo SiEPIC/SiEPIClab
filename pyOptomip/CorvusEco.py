@@ -45,7 +45,6 @@ class CorvusEcoClass:
     isOpt = True
     isElec = False
     isLaser = False
-    isQontrol = False
     isDetect = False
 
     def connect(self, visaName, rm, Velocity, Acceleration, NumberOfAxis):
@@ -308,7 +307,7 @@ class CorvusEcoClass:
         self.moveRelative(x - xCurrentPos, y - yCurrentPos, z - zCurrentPos)
 
     def waitMoveComplete(self):
-        while int(self.ser.ask('st')) & 1:
+        while int(self.ser.query('st')) & 1:
             time.sleep(0.001)
 
     # Absolute MOve

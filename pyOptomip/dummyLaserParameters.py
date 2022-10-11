@@ -50,7 +50,7 @@ class dummyLaserParameters(wx.Panel):
         self.SetSizer(hbox)
         
     def connect(self, event):
-        laser = hp816x();
+        laser = hp816x()
         laser.pwmSlotIndex = [0,1]
         laser.pwmSlotMap = [(0,0),(1,0)]
         laser.panelClass = laserPanel.laserTopPanel # Give the laser its panel class

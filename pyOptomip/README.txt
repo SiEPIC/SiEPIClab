@@ -17,6 +17,9 @@ Installation instructions:
 
     In a command prompt, run
         pip install comtypes
+       
+ 5. Install pylablib
+ pip install pylablib
         
 Instructions for running the GUI software:
 
