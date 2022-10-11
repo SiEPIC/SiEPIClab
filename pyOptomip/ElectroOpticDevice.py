@@ -16,7 +16,8 @@ class ElectroOpticDevice:
 
     def getOpticalCoordinates(self):
         """Returns the coordinates of the optical input for the device as [x coordinate, y coordinate]"""
-        return self.opticalCoordinates
+        if self.opticalCoordinates:
+            return self.opticalCoordinates
 
     def getElectricalCoordinates(self):
         """Return a list of electrical bondpads. Bondpads are stored as lists in the form [pad name,
@@ -35,9 +36,10 @@ class ElectroOpticDevice:
     def getReferenceBondPad(self):
         """Returns the name and coordinates of the left-most bond pad within
         an electro-optic device in the form of a list [bond pad name, x coordinates, y coordinates]"""
-        reference = self.electricalCoordinates[0]
-        for bondPad in self.electricalCoordinates:
-            if bondPad[1] < reference[1]:
-                reference = bondPad
-        return reference
+        if self.electricalCoordinates:
+            reference = self.electricalCoordinates[0]
+            for bondPad in self.electricalCoordinates:
+                if bondPad[1] < reference[1]:
+                    reference = bondPad
+            return reference
 

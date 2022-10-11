@@ -4,7 +4,7 @@ import unittest
 import numpy as np
 import matplotlib.pyplot as plt
 
-import dummyMotorParameters
+import dummyCorvusParameters
 import dummyLaserParameters
 import SMUParameters
 import fineAlign
