@@ -81,6 +81,8 @@ class coordinateMapPanel(wx.Panel):
         self.tbGdsDevice1 = wx.ComboBox(self, size=(200,20), choices=[])
         self.tbGdsDevice1.Bind(wx.EVT_CHOICE, self.on_drop_down1)
 
+
+
         # Create drop down menus to select devices
         #self.tbGdsDevice1 = wx.Choice(self, size=(200, 20), choices=[])
         #self.tbGdsDevice1.Bind(wx.EVT_CHOICE, self.on_drop_down1)
@@ -101,6 +103,10 @@ class coordinateMapPanel(wx.Panel):
 
         # List of all drop down menus
         self.GDSDevList = [self.tbGdsDevice1, self.tbGdsDevice2, self.tbGdsDevice3]
+
+        #self.tbGdsDevice1.Bind(wx.EVT_TEXT, self.PopulateDropDowns())
+        #self.tbGdsDevice2.Bind(wx.EVT_TEXT, self.PopulateDropDowns())
+        #self.tbGdsDevice3.Bind(wx.EVT_TEXT, self.PopulateDropDowns())
 
         # Get motor coordinates of first device from text box
         stDevice1 = wx.StaticText(self, label='Device %d' % (1))
@@ -167,6 +173,12 @@ class coordinateMapPanel(wx.Panel):
                               lambda event, xcoord=self.tbxMotorCoord3, ycoord=self.tbyMotorCoord3,
                                      zcoord=self.tbzMotorCoord3: self.Event_OnCoordButton3(
                                   event, xcoord, ycoord, zcoord))
+
+        self.tbGdsDevice1.Bind(wx.EVT_TEXT, self.SortDropDowns2)
+
+
+
+
 
         gbs.AddGrowableCol(1)
         gbs.AddGrowableCol(2)
@@ -287,6 +299,9 @@ class coordinateMapPanel(wx.Panel):
         for GDSDevice in self.GDSDevList:
             GDSDevice.AppendItems(deviceList)
 
+
+
+
     def SortDropDowns(self, term):
         """Sort drop downs based on search"""
         global deviceList
@@ -294,6 +309,25 @@ class coordinateMapPanel(wx.Panel):
             GDSDevice.Clear()
             deviceList.sort(key=lambda x: term not in x)
             GDSDevice.AppendItems(deviceList)
+
+    def SortDropDowns2(self, event):
+
+        global deviceList
+
+        devlist1 = deviceList
+        list = []
+
+        for dev in devlist1:
+            if self.tbGdsDevice1.GetLabel() in dev:
+                list.append(dev)
+                devlist1.remove(dev)
+
+        self.GDSDevList[0].Clear()
+        self.GDSDevList[0].AppendItems(list)
+
+
+
+
 
 class autoMeasurePanel(wx.Panel):
 
