@@ -85,6 +85,8 @@ class coordinateMapPanel(wx.Panel):
         self.tbGdsDevice1.Bind(wx.EVT_CHOICE, self.on_drop_down1)
         self.tbGdsDevice1.Bind(wx.EVT_TEXT_ENTER, self.SortDropDowns1)
 
+
+
         # Create drop down menus to select devices
         #self.tbGdsDevice1 = wx.Choice(self, size=(200, 20), choices=[])
         #self.tbGdsDevice1.Bind(wx.EVT_CHOICE, self.on_drop_down1)

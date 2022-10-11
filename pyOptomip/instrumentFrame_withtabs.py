@@ -34,10 +34,77 @@ from laserPanel import detectorPanel
 from laserPanel import tlsPanel
 from hp816x_N77Det_instr import hp816x_N77Det
 import myMatplotlibPanel
+from matplotlib import pyplot as plt
 import pyvisa as visa
 from TestParameters import testParameters
 from TestParameters import TopPanel
+import cv
+import cv2
+import numpy as np
+from PIL import Image
+import multiprocessing
+import threading
+import time
 
+homebox = wx.BoxSizer(wx.HORIZONTAL)
+
+
+class BackgroundTasks(threading.Thread):
+    def run(self, *args, **kwargs):
+        cap = cv2.VideoCapture(0)
+        a = 0
+        b = 0
+        while cap.isOpened():
+            ret, frame = cap.read()
+
+            hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+            h, s, v = cv2.split(hsv)
+
+
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                if a <= 254:
+                    a = a + 1
+                print(a)
+
+            if cv2.waitKey(1) & 0xFF == ord('w'):
+                if a > 0:
+                    a = a - 1
+                print(a)
+
+            if cv2.waitKey(1) & 0xFF == ord('e'):
+                b = b - 1
+                cap.set(cv2.CAP_PROP_EXPOSURE, b)
+                print(b)
+
+            if cv2.waitKey(1) & 0xFF == ord('r'):
+                b = b + 1
+                cap.set(cv2.CAP_PROP_EXPOSURE, b)
+                print(b)
+
+            #hsv[:, 2, :] = s  # Changes the V value
+
+            s = s + a
+
+            #print(s)
+
+            hsv = cv2.merge([h,s,v])
+
+            frame = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+
+            # show Image
+            cv2.imshow('Webcam', frame)
+
+            #im_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            #x = im_rgb.shape
+
+            #bitmap1 = wx.Bitmap.FromBuffer(x[1], x[0], im_rgb)
+            #bitmap = wx.StaticBitmap(HomeTab, bitmap=bitmap1)
+            #homebox.Add(bitmap, flag=wx.EXPAND, border=0, proportion=1)
+
+            # checks whether q has been hit and stops the loop
+            if cv2.waitKey(1) & 0xFF == ord('f'):
+                break
 
 # Define the tab content as classes:
 class HomeTab(wx.Panel):
@@ -51,11 +118,23 @@ class HomeTab(wx.Panel):
         wx.Panel.__init__(self, parent)
         self.instList = instList
         vbox = wx.BoxSizer(wx.VERTICAL)
-        hbox = wx.BoxSizer(wx.HORIZONTAL)
+        self.hbox = wx.BoxSizer(wx.HORIZONTAL)
         homeVbox = wx.BoxSizer(wx.VERTICAL)
 
-        self.graph = myMatplotlibPanel.myMatplotlibPanel(self)  # use for regular mymatplotlib file
-        hbox.Add(self.graph, flag=wx.EXPAND, border=0, proportion=1)
+        #p1 = multiprocessing.Process(target=self.test)
+        #p1 = multiprocessing.Process(target=self.camerarunning(self.hbox))
+        #p1.start()
+
+        #x = threading.Thread(target=BackgroundTasks, args=(self.hbox,), daemon=True)
+        #x.start()
+
+        t = BackgroundTasks()
+        t.start()
+
+
+        #self.graph = myMatplotlibPanel.myMatplotlibPanel(self)  # use for regular mymatplotlib file
+        #hbox.Add(self.graph, flag=wx.EXPAND, border=0, proportion=1)
+        #self.hbox.Add(self.bitmap, flag=wx.EXPAND, border=0, proportion=1)
 
         for inst in self.instList:
             # if inst.isSMU:
@@ -97,13 +176,51 @@ class HomeTab(wx.Panel):
             #  hbox.Add(detectVbox)
             # else:
             #   hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
-        hbox.Add(homeVbox)
-        vbox.Add(hbox, 3, wx.EXPAND)
+        self.hbox.Add(homeVbox)
+        vbox.Add(self.hbox, 3, wx.EXPAND)
         # self.log = outputlogPanel(self)
         # vbox.Add(self.log, 1, wx.EXPAND)
         self.SetSizer(vbox)
         self.Layout()
         self.Show()
+
+    def test(self):
+        cap = cv2.VideoCapture(0)
+        while cap.isOpened():
+            ret, frame = cap.read()
+
+            # show Image
+            cv2.imshow('Webcam', frame)
+
+            # checks whether q has been hit and stops the loop
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+
+
+    def camerarunning(self, hbox):
+
+        # connect to capture device
+        cap = cv2.VideoCapture(1)
+
+        while cap.isOpened():
+            ret, frame = cap.read()
+
+            # show Image
+            cv2.imshow('Webcam', frame)
+            #im_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            #x = im_rgb.shape
+
+            ##self.bitmap1 = wx.Bitmap.FromBuffer(x[1], x[0], im_rgb)
+            #self.bitmap = wx.StaticBitmap(self, bitmap=self.bitmap1)
+            #hbox.Add(self.bitmap, flag=wx.EXPAND, border=0, proportion=1)
+            #print('Hello')
+
+            # checks whether q has been hit and stops the loop
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+
+        #cap.release()
+        #cv2.destroyAllWindows()
 
     def motorFound(self):
         """
