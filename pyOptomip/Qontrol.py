@@ -19,6 +19,7 @@ class QontrolMotor:
         numbers = re.findall('[0-9]+', SerialPortName)
         COM = "COM" + numbers[0]
         self.q = qontrol.MXMotor(serial_port_name=COM)
+        self.q.ustep[:] = 7
         self.numAxes = NumberOfAxis
         print('Connected\n')
 
@@ -32,8 +33,6 @@ class QontrolMotor:
 
     # Moves all the axis together
     # can be used regardless of how many axis are enabled
-
-        
     def moveAbsoluteXYZ(self, x, y, z):
         print("Absolute")
         self.q[0] = x
@@ -43,7 +42,7 @@ class QontrolMotor:
         self.q[2] = z
         self.q.wait_until_stopped()
 
-    def moveRelativeXYZ(self, x, y, z=0):
+    def moveRelativeXYZ(self, x, y, z):
         xCurrentPos = self.q[0]
         yCurrentPos = self.q[1]
         zCurrentPos = self.q[2]

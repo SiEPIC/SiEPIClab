@@ -53,7 +53,7 @@ class CorvusEcoClass:
 
         Args:
             visaName: visa address of the corvus
-            rm:
+            rm: the visa resource being used 
             Velocity:
             Acceleration:
             NumberOfAxis:

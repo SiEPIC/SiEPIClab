@@ -78,7 +78,7 @@ class QontrolPanel(wx.Panel):
         btn2 = wx.Button(self, label='+', size=(20, 20))
         hbox.Add(btn2, proportion=0, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=8)
         btn2.Bind(wx.EVT_BUTTON, self.OnButton_PlusButtonHandler)
-        self.SetSizer(hbox);
+        self.SetSizer(hbox)
 
     def getMoveValue(self):
         try:
@@ -94,42 +94,49 @@ class QontrolPanel(wx.Panel):
 
         if self.axis == 1:
             current_position = self.parent.qontrol.q.x[0]
-            print(current_position)
-            self.parent.qontrol.q.x[0] = (-1 * (current_position+self.getMoveValue()))
-            current_position = self.parent.qontrol.q.x[0]
-            print(current_position)
-            print("Axis 1 Moved")
+            new_position = current_position - (0.315*self.getMoveValue())
+            if new_position <= -588:
+                print("Out of Range.")
+            else:
+                self.parent.qontrol.q.x[0] = new_position
+                current_position = self.parent.qontrol.q.x[0]
+                print("Axis 1 Moved")
+                print(current_position)
 
         if self.axis == 2:
             current_position = self.parent.qontrol.q.x[1]
-            print(current_position)
-            self.parent.qontrol.q.x[1] = (-1 * (current_position + self.getMoveValue()))
+            self.parent.qontrol.q.x[1] = current_position - (0.315*self.getMoveValue())
             current_position = self.parent.qontrol.q.x[1]
-            print(current_position)
             print("Axis 2 Moved")
+            print(current_position)
 
         if self.axis == 3:
             current_position = self.parent.qontrol.q.x[2]
-            self.parent.qontrol.q.x[2] = (-1 * (current_position + self.getMoveValue()))
+            self.parent.qontrol.q.x[2] = current_position - (0.315*self.getMoveValue())
+            current_position = self.parent.qontrol.q.x[2]
             print("Axis 3 Moved")
+            print(current_position)
 
     def OnButton_PlusButtonHandler(self, event):
-
         if self.axis == 1:
             current_position = self.parent.qontrol.q.x[0]
-            print(current_position)
-            self.parent.qontrol.q.x[0] = (current_position + self.getMoveValue())
-            current_position = self.parent.qontrol.q.x[0]
-            print(current_position)
-            print("Axis 1 Moved")
+            new_position = (current_position + (0.315*self.getMoveValue()))
+            if new_position >= 664:
+                print("Out of Range.")
+            else:
+                self.parent.qontrol.q.x[0] = new_position
+                current_position = self.parent.qontrol.q.x[0]
+                print("Axis 1 Moved")
+                print(current_position)
         if self.axis == 2:
             current_position = self.parent.qontrol.q.x[1]
-            print(current_position)
-            self.parent.qontrol.q.x[1] = (current_position + self.getMoveValue())
+            self.parent.qontrol.q.x[1] = (current_position + (0.315*self.getMoveValue()))
             current_position = self.parent.qontrol.q.x[1]
-            print(current_position)
             print("Axis 2 Moved")
+            print(current_position)
         if self.axis == 3:
             current_position = self.parent.qontrol.q.x[2]
-            self.parent.qontrol.q.x[2] = (current_position + self.getMoveValue())
+            self.parent.qontrol.q.x[2] = (current_position + (0.315*self.getMoveValue()))
+            current_position = self.parent.qontrol.q.x[2]
             print("Axis 3 Moved")
+            print(current_position)
