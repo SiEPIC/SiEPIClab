@@ -271,8 +271,7 @@ class autoMeasure(object):
 
         return newMotorCoords
 
-    def beginMeasure(self, devices, testingParameters, checkList, abortFunction=None, updateFunction=None,
-                     updateGraph=True):
+    def beginMeasure(self, devices, testingParameters, checkList, abortFunction=None, updateFunction=None, updateGraph=True):
         """ Runs an automated measurement. For each device, wedge probe is moved out of the way, chip stage is moved
         so laser in aligned, wedge probe is moved to position. Various tests are performed depending on the contents
         of the testing parameters file.
@@ -294,7 +293,7 @@ class autoMeasure(object):
         # For each device
         for i, d in enumerate(testingParameters['device']):
             for device in devices:
-                if device.getDeviceID == d:
+                if device.getDeviceID() == d:
 
                     # Find motor coordinates for desired device
                     gdsCoordOpt = (device.getOpticalCoordinates[0], device.getOpticalCoordinates[1])

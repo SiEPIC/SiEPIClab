@@ -910,6 +910,7 @@ class autoMeasurePanel(wx.Panel):
 
         # Disable detector auto measurement
         self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.haltDetTimer()
+        #self.autoMeasure.laser.laserPanel.laserPanel.haltDetTimer()
 
         # Make a folder with the current time
         timeStr = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
@@ -918,13 +919,21 @@ class autoMeasurePanel(wx.Panel):
             os.makedirs(self.autoMeasure.saveFolder)
 
         # Create list of all devices which are selected for measurement from the checklist
+        checkedDevicesText = []
+
+        for i in range(self.checkList.GetItemCount()):#self.device_list:
+            if self.checkList.IsItemChecked(i):
+                checkedDevicesText.append(self.checkList.GetItemText(i))
+
         checkedDevices = []
-        for device in self.device_list:
-            if self.checkList.IsItemChecked(device.getDeviceID):
+        for device in deviceListAsObjects:
+            if device.getDeviceID() in checkedDevicesText:
                 checkedDevices.append(device)
 
         # Start measurement using the autoMeasure device
-        self.autoMeasure.beginMeasure(checkedDevices, self.dataimport, self.checkList)
+        print(checkedDevices)
+        print(self.dataimport)
+        self.autoMeasure.beginMeasure(checkedDevices, self.dataimport, self.checkList, None, None, True)
 
         # Copy settings from laser panel
         self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.copySweepSettings()

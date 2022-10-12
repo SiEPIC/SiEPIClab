@@ -32,8 +32,10 @@ class hp816x_N77Det(hp816x_instr.hp816x):
     numPWMSlots = 5
     maxPWMPoints = 100000
     isDetect = True
+    isLaser = True
     isSMU = False
     isElec = False
+    hasDetector = True
 
     def connect(self, visaAddr, n77DetAddr, reset=0, forceTrans=1, autoErrorCheck=1):
         super(hp816x_N77Det, self).connect(visaAddr, reset, forceTrans, autoErrorCheck)
@@ -247,6 +249,8 @@ class hp816x_N77Det(hp816x_instr.hp816x):
                 powerArrPWM[pointsAccum:pointsAccum + points, zeroIdx] = powerArrTemp
             wavelengthArrPWM[pointsAccum:pointsAccum + points] = wavelengthArrTemp
             pointsAccum += points
+
+        print("Sweep Completed")
 
         return wavelengthArrPWM, powerArrPWM
 

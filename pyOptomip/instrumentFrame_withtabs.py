@@ -128,8 +128,8 @@ class HomeTab(wx.Panel):
         #x = threading.Thread(target=BackgroundTasks, args=(self.hbox,), daemon=True)
         #x.start()
 
-        t = BackgroundTasks()
-        t.start()
+        #t = BackgroundTasks()
+        #t.start()
 
 
         #self.graph = myMatplotlibPanel.myMatplotlibPanel(self)  # use for regular mymatplotlib file
@@ -141,9 +141,9 @@ class HomeTab(wx.Panel):
             # panel = inst.panelClass(self)
             # else:
             if inst.isDetect:
-                panel = inst.panelClass(self, inst, True, False)
-            elif inst.isLaser:
-                panel = inst.panelClass(self, inst, True, True)
+                panel = inst.panelClass(self, inst, False, True, True)
+            elif inst.isLaser and not inst.hasDetector:
+                panel = inst.panelClass(self, inst, False, False, True)
             else:
                 panel = inst.panelClass(self, inst)
 
@@ -298,9 +298,9 @@ class ElectricalTab(wx.Panel):
             # else:
 
             if inst.isDetect:
-                panel = inst.panelClass(self, inst, True, True)
+                panel = inst.panelClass(self, inst, False, True, False)
             elif inst.isLaser:
-                panel = inst.panelClass(self, inst, True, True)
+                panel = inst.panelClass(self, inst, False, True, False)
             else:
                 panel = inst.panelClass(self, inst)
 
@@ -389,14 +389,16 @@ class OpticalTab(wx.Panel):
 
         for inst in instList:
             if inst.isLaser:
-                panel = inst.panelClass(self, inst, False, True)
-            else:
-                panel = inst.panelClass(self, inst)
+                if inst.hasDetector:
+                    panel = inst.panelClass(self, inst, True, False, False)
+                else:
+                    panel = inst.panelClass(self, inst, True, False, False)
 
-            if inst.isLaser:
                 laserVbox = wx.BoxSizer(wx.VERTICAL)
                 laserVbox.Add(panel, proportion=0, border=0, flag=wx.EXPAND)
                 hbox.Add(laserVbox)
+            else:
+                panel = inst.panelClass(self, inst)
             # else:
             #   hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
 
@@ -477,7 +479,7 @@ class AutoMeasureTab(wx.Panel):
         vbox = wx.BoxSizer(wx.VERTICAL)
         hbox = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.fineAlign = fineAlign(self.getLasers(), self.getMotorsOpt())
+        self.fineAlign = fineAlign(self.getLasers()[0], self.getMotorsOpt())
         try:
             self.fineAlignPanel = fineAlignPanel(self, self.fineAlign)
         except Exception as e:
@@ -485,7 +487,7 @@ class AutoMeasureTab(wx.Panel):
                                     'Error', wx.ICON_ERROR)
             dial.ShowModal()
 
-        self.autoMeasure = autoMeasure(self.getLasers(), self.getMotorsOpt(), self.getMotorsElec(), self.getSMUs(),
+        self.autoMeasure = autoMeasure(self.getLasers()[0], self.getMotorsOpt(), self.getMotorsElec(), self.getSMUs(),
                                        self.fineAlign)
 
         self.autoMeasurePanel = autoMeasurePanel(self, self.autoMeasure)
