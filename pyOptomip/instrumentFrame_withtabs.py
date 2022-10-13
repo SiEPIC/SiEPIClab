@@ -478,26 +478,26 @@ class AutoMeasureTab(wx.Panel):
         self.instList = instList
         vbox = wx.BoxSizer(wx.VERTICAL)
         hbox = wx.BoxSizer(wx.HORIZONTAL)
-
-        self.fineAlign = fineAlign(self.getLasers()[0], self.getMotorsOpt())
-        try:
-            self.fineAlignPanel = fineAlignPanel(self, self.fineAlign)
-        except Exception as e:
-            dial = wx.MessageDialog(None, 'Could not initiate instrument control. ' + traceback.format_exc(),
+        if self.getLasers():
+            self.fineAlign = fineAlign(self.getLasers()[0], self.getMotorsOpt())
+            try:
+                self.fineAlignPanel = fineAlignPanel(self, self.fineAlign)
+            except Exception as e:
+                dial = wx.MessageDialog(None, 'Could not initiate instrument control. ' + traceback.format_exc(),
                                     'Error', wx.ICON_ERROR)
-            dial.ShowModal()
+                dial.ShowModal()
 
-        self.autoMeasure = autoMeasure(self.getLasers()[0], self.getMotorsOpt(), self.getMotorsElec(), self.getSMUs(),
+            self.autoMeasure = autoMeasure(self.getLasers()[0], self.getMotorsOpt(), self.getMotorsElec()[0], self.getSMUs(),
                                        self.fineAlign)
 
-        self.autoMeasurePanel = autoMeasurePanel(self, self.autoMeasure)
+            self.autoMeasurePanel = autoMeasurePanel(self, self.autoMeasure)
 
-        vbox.Add(self.autoMeasurePanel, proportion=0, flag=wx.EXPAND)
+            vbox.Add(self.autoMeasurePanel, proportion=0, flag=wx.EXPAND)
 
-        vbox.Add(hbox, 3, wx.EXPAND)
+            vbox.Add(hbox, 3, wx.EXPAND)
         # self.log = outputlogPanel(self)
         # vbox.Add(self.log, 1, wx.EXPAND)
-        self.SetSizer(vbox)
+            self.SetSizer(vbox)
 
         # sys.stdout = logWriter(self.log)
         # sys.stderr = logWriterError(self.log)

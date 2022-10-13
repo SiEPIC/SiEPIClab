@@ -1,3 +1,0 @@
-# recorded: Mon Jul 18 11:08:33 2022
-# sweep_type: iv
-# Voltage [V]	Current [A]

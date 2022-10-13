@@ -34,11 +34,10 @@ from autoMeasure import autoMeasure
 class instrumentFrame(wx.Frame):
 
     def __init__(self, parent, instList):
+
         displaySize = wx.DisplaySize()
-        super(instrumentFrame, self).__init__(parent, title='Instrument Control',
-                                              size=(displaySize[0] * 3 / 4.0, displaySize[
-                                                  1] * 3 / 4.0))
-        # creates mainframe entire instrument control is housed in
+        super(instrumentFrame, self).__init__(parent, title='Instrument Control', \
+                                              size=(displaySize[0] * 3 / 4.0, displaySize[1] * 3 / 4.0))
 
         self.instList = instList;
         try:
@@ -65,7 +64,7 @@ class instrumentFrame(wx.Frame):
             else:
                 hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
 
-        if self.laserFound() and self.motorFound:
+        if self.laserFound() and self.motorFound():
             self.fineAlign = fineAlign(self.getLasers()[0], self.getMotors()[0])
             try:
                 self.fineAlignPanel = fineAlignPanel(self, self.fineAlign)
@@ -80,7 +79,7 @@ class instrumentFrame(wx.Frame):
             self.autoMeasurePanel = autoMeasurePanel(self, self.autoMeasure)
             motorVbox.Add(self.autoMeasurePanel, proportion=0, flag=wx.EXPAND)
 
-        if self.motorFound:
+        if self.motorFound():
             hbox.Add(motorVbox)
 
         vbox.Add(hbox, 3, wx.EXPAND)
@@ -91,7 +90,6 @@ class instrumentFrame(wx.Frame):
         sys.stdout = logWriter(self.log)
         sys.stderr = logWriterError(self.log)
 
-    @property
     def motorFound(self):
         motorFound = False
         for inst in self.instList:

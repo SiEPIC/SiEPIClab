@@ -95,7 +95,6 @@ class autoMeasure(object):
                 self.devices.append(device)
             else:
                 if regElec.match(line):
-                    print(line)
                     matchRes = reg.findall(line)[0]
                     devName = matchRes[2]
                     for device in self.devices:
@@ -192,13 +191,13 @@ class autoMeasure(object):
                                     [motorCoords[0][1], motorCoords[1][1], motorCoords[2][1]],
                                     [motorCoords[0][2], motorCoords[1][2], motorCoords[2][2]]])
 
+
             gdsMatrix = np.array([[gdsCoords[0][0], gdsCoords[1][0], gdsCoords[2][0]],
                                 [gdsCoords[0][1], gdsCoords[1][1], gdsCoords[2][1]],
                                 [1, 1, 1]])
 
 
             transpose = gdsMatrix.T
-
             row1 = np.linalg.solve(transpose, motorMatrix[0])
             row2 = np.linalg.solve(transpose, motorMatrix[1])
             row3 = np.linalg.solve(transpose, motorMatrix[2])
@@ -290,29 +289,40 @@ class autoMeasure(object):
 
         self.checkList = checkList
 
+        checkedDevices = []
+        for device in self.devices:
+            if device.getDeviceID() in devices:
+                checkedDevices.append(device)
+
+        devices = checkedDevices
+
+
         # For each device
         for i, d in enumerate(testingParameters['device']):
             for device in devices:
                 if device.getDeviceID() == d:
-
                     # Find motor coordinates for desired device
-                    gdsCoordOpt = (device.getOpticalCoordinates[0], device.getOpticalCoordinates[1])
+                    gdsCoordOpt = (device.getOpticalCoordinates()[0], device.getOpticalCoordinates()[1])
                     motorCoordOpt = self.gdsToMotorCoordsOpt(gdsCoordOpt)
-                    gdsCoordElec = (device.getElectricalCoordinates[0], device.getElectricalicalCoordinates[1])
-                    motorCoordElec = self.gdsToMotorCoordsElec(gdsCoordElec)
+                    if device.getElectricalCoordinates():
+                        gdsCoordElec = (device.getElectricalCoordinates()[0], device.getElectricalCoordinates()[1])
+                        motorCoordElec = self.gdsToMotorCoordsElec(gdsCoordElec)
 
-                    # move wedge probe out of the way
-                    self.motorElec.moveRelativeXYZElec(motorCoordElec[0], -2000, 2000)
+                    if self.motorElec:
+                        # move wedge probe out of the way
+                        self.motorElec.moveRelativeXYZElec(0, -2000, 2000)
 
                     # move chip stage
-                    x = motorCoordOpt[0] - self.motorOpt.getPosition[0]
-                    y = motorCoordOpt[1] - self.motorOpt.getPosition[1]
-                    z = motorCoordOpt[2] - self.motorOpt.getPosition[2]
-                    self.motorOpt.moveAbsoluteXYZOpt(motorCoordOpt[0], motorCoordOpt[1], motorCoordOpt[2])
+                    x = motorCoordOpt[0] - self.motorOpt.getPosition()[0]
+                    y = motorCoordOpt[1] - self.motorOpt.getPosition()[1]
+                    z = motorCoordOpt[2] - self.motorOpt.getPosition()[2]
+                    self.motorOpt.moveAbsoluteXYZ(motorCoordOpt[0], motorCoordOpt[1], motorCoordOpt[2])
 
-                    # Move wedge probe and compensate for movement of chip stage
-                    self.motorElec.moveAbsoluteXYZElec(motorCoordElec[0] + x, motorCoordElec[1] + y,
-                                                       motorCoordElec[2] + z)
+                    if device.getElectricalCoordinates():
+                        if self.motorElec:
+                        # Move wedge probe and compensate for movement of chip stage
+                            self.motorElec.moveAbsoluteXYZElec(motorCoordElec[0] + x, motorCoordElec[1] + y,
+                                                            motorCoordElec[2] + z)
 
                     # Fine align to device
                     res, completed = self.fineAlign.doFineAlign()
@@ -320,51 +330,60 @@ class autoMeasure(object):
                     # If fine align fails change text colour of device to red in the checklist
                     if completed is False:
                         for ii in range(self.checkList.GetItemCount()):
-                            if self.devices[self.checkList.GetItemData(ii)].getDeviceID() == device.getDeviceID:
+                            if self.checkList.GetItemText(ii) == device.getDeviceID():
                                 self.checkList.SetItemTextColour(ii, wx.Colour(255, 0, 0))
+                    else:
+                        #Set text to green if FineAlign Completes
+                        for ii in range(self.checkList.GetItemCount()):
+                            if self.checkList.GetItemText(ii) == device.getDeviceID():
+                                self.checkList.SetItemTextColour(ii, wx.Colour(0, 255, 0))
 
-                    # Check which type of measurement is to be completed
-                    if testingParameters['ELECflag'][i] is True:
-                        measurementRoutines('ELEC', testingParameters, i, self.smu, self.laser)
-                    if testingParameters['OPTICflag'][i] is True:
-                        measurementRoutines('OPT', testingParameters, i, self.smu, self.laser)
-                    if testingParameters['setwflag'] is True:
-                        measurementRoutines('FIXWAVIV', testingParameters, i, self.smu, self.laser)
-                    if testingParameters['setvflag'] is True:
-                        measurementRoutines('BIASVOPT', testingParameters, i, self.smu, self.laser)
+                        # Check which type of measurement is to be completed
+                        if testingParameters['ELECflag'][i] is True:
+                            measurementRoutines('ELEC', testingParameters, i, self.smu, self.laser)
+                        if testingParameters['OPTICflag'][i] is True:
+                            print("Performing Optical Test")
+                            measurementRoutines('OPT', testingParameters, i, self.smu, self.laser)
+                        if testingParameters['setwflag'] is True:
+                            measurementRoutines('FIXWAVIV', testingParameters, i, self.smu, self.laser)
+                        if testingParameters['setvflag'] is True:
+                            measurementRoutines('BIASVOPT', testingParameters, i, self.smu, self.laser)
 
-                    print('GDS: (%g,%g) Motor: (%g,%g,%g)' % (gdsCoordOpt[0], gdsCoordOpt[1], gdsCoordOpt[2],
-                                                              motorCoordOpt[0], motorCoordOpt[1]))
+                    #print('GDS: (%g,%g) Motor: (%g,%g,%g)' % (gdsCoordOpt[0], gdsCoordOpt[1], gdsCoordOpt[2],
+                                                              #motorCoordOpt[0], motorCoordOpt[1]))
 
-                    # Create matlab file
-                    matFileName = os.path.join(self.saveFolder, d + '.mat')
 
-                    # Save sweep data and metadata to the mat file
-                    matDict = dict()
-                    matDict['scandata'] = dict()
-                    matDict['metadata'] = dict()
-                    matDict['scandata']['wavelength'] = testingParameters['Wavelengths'][i]
-                    matDict['scandata']['power'] = testingParameters['Sweeppower'][i]
-                    matDict['metadata']['device'] = d
-                    matDict['metadata']['gds_x_coord'] = device.getOpticalCoordinates[0]
-                    matDict['metadata']['gds_y_coord'] = device.getOpticalCoordinates[1]
-                    matDict['metadata']['motor_x_coord'] = motorCoordOpt[0]
-                    matDict['metadata']['motor_y_coord'] = motorCoordOpt[1]
-                    matDict['metadata']['motor_z_coord'] = motorCoordOpt[2]
-                    matDict['metadata']['measured_device_number'] = i
-                    timeSeconds = time.time()
-                    matDict['metadata']['time_seconds'] = timeSeconds
-                    matDict['metadata']['time_str'] = time.ctime(timeSeconds)
-                    savemat(matFileName, matDict)
+                        path = self.saveFolder
+                        d1 = d.replace(":","")
+                        matFileName = os.path.join(path, self.saveFolder + "\\" + d1 + ".mat")
 
-                    # Create pdf file
-                    pdfFileName = os.path.join(self.saveFolder, d + '.pdf')
-                    plt.figure()
-                    plt.plot(testingParameters['Wavelengths'][i] * 1e9, testingParameters['Sweeppower'][i])
-                    plt.xlabel('Wavelength (nm)')
-                    plt.ylabel('Power (dBm)')
-                    plt.savefig(pdfFileName)
-                    plt.close()
+                        # Save sweep data and metadata to the mat file
+                        matDict = dict()
+                        matDict['scandata'] = dict()
+                        matDict['metadata'] = dict()
+                        matDict['scandata']['wavelength'] = testingParameters['Wavelengths'][i]
+                        matDict['scandata']['power'] = testingParameters['Sweeppower'][i]
+                        matDict['metadata']['device'] = d
+                        matDict['metadata']['gds_x_coord'] = device.getOpticalCoordinates()[0]
+                        matDict['metadata']['gds_y_coord'] = device.getOpticalCoordinates()[1]
+                        matDict['metadata']['motor_x_coord'] = motorCoordOpt[0]
+                        matDict['metadata']['motor_y_coord'] = motorCoordOpt[1]
+                        matDict['metadata']['motor_z_coord'] = motorCoordOpt[2]
+                        matDict['metadata']['measured_device_number'] = i
+                        timeSeconds = time.time()
+                        matDict['metadata']['time_seconds'] = timeSeconds
+                        matDict['metadata']['time_str'] = time.ctime(timeSeconds)
+                        savemat(matFileName, matDict)
+
+                        # Create pdf file
+                        pdfFileName = os.path.join(self.saveFolder, d + '.pdf')
+                        plt.figure()
+                        print(testingParameters['Wavelengths'][i])
+                        plt.plot(testingParameters['Wavelengths'][i], testingParameters['Sweeppower'][i])
+                        plt.xlabel('Wavelength (nm)')
+                        plt.ylabel('Power (dBm)')
+                        plt.savefig(pdfFileName)
+                        plt.close()
 
             if abortFunction is not None and abortFunction():
                 print('Aborted')

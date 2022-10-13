@@ -1,4 +1,3 @@
-
 # This module modifies some of the routines in the matplotlib module. The code
 # for the modified routines are copied here and modified.
 # Copyright (c) 2012-2013 Matplotlib Development Team; All Rights Reserved
@@ -41,5 +40,3 @@ class myMatplotlibPanel(wx.Panel):
         sizer.Add(self.canvas, 1, wx.EXPAND)
         sizer.Add(self.toolbar, 0, wx.LEFT | wx.EXPAND)
         self.SetSizer(sizer)
-
-

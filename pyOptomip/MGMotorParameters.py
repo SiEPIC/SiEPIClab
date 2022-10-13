@@ -25,37 +25,39 @@ import wx
 import MGMotorPanel
 from MGMotor_inst import MGMotor
 
+
 # Panel in the Connect Instruments window which contains the connection settings for the MG motor.
 class MGMotorParameters(wx.Panel):
-    name='Stage: Thorlabs BBD203'
+    name = 'Stage: Thorlabs BBD203'
+
     def __init__(self, parent, connectPanel, **kwargs):
         super(MGMotorParameters, self).__init__(parent)
         self.connectPanel = connectPanel
-        self.InitUI()   
+        self.InitUI()
 
     def InitUI(self):
         hbox = wx.BoxSizer(wx.HORIZONTAL)
         fgs = wx.FlexGridSizer(3, 2, 8, 25)
-        
+
         st1 = wx.StaticText(self, label='Serial Number 1:')
-        self.tc_serial1 = wx.TextCtrl(self, value = '94833200') 
+        self.tc_serial1 = wx.TextCtrl(self, value='94833200')
         st2 = wx.StaticText(self, label='Serial Number 2:')
-        self.tc_serial2 = wx.TextCtrl(self, value = '94833201') 
-        
+        self.tc_serial2 = wx.TextCtrl(self, value='94833201')
+
         self.disconnectBtn = wx.Button(self, label='Disconnect')
-        self.disconnectBtn.Bind( wx.EVT_BUTTON, self.disconnect)
+        self.disconnectBtn.Bind(wx.EVT_BUTTON, self.disconnect)
         self.disconnectBtn.Disable()
-        
+
         self.connectBtn = wx.Button(self, label='Connect')
-        self.connectBtn.Bind( wx.EVT_BUTTON, self.connect)
-        
-        fgs.AddMany([(st1, 1, wx.EXPAND), (self.tc_serial1, 1, wx.EXPAND),\
+        self.connectBtn.Bind(wx.EVT_BUTTON, self.connect)
+
+        fgs.AddMany([(st1, 1, wx.EXPAND), (self.tc_serial1, 1, wx.EXPAND), \
                      (st2, 1, wx.EXPAND), (self.tc_serial2, 1, wx.EXPAND),
-                     (self.disconnectBtn, 0, wx.ALIGN_BOTTOM),(self.connectBtn, 0, wx.ALIGN_BOTTOM)])
-        fgs.AddGrowableCol(1,2)
+                     (self.disconnectBtn, 0, wx.ALIGN_BOTTOM), (self.connectBtn, 0, wx.ALIGN_BOTTOM)])
+        fgs.AddGrowableCol(1, 2)
         hbox.Add(fgs, proportion=1, flag=wx.EXPAND)
         self.SetSizer(hbox)
-        
+
     def connect(self, event):
         serialNumList = []
         serial1 = self.tc_serial1.GetValue()
@@ -64,16 +66,16 @@ class MGMotorParameters(wx.Panel):
             serialNumList.append(serial1)
         if serial2 != '':
             serialNumList.append(serial2)
-        
+
         self.stage = MGMotor(serialNumList);
-        self.stage.panelClass = MGMotorPanel.topMGMotorPanel # Give the laser its panel class
+        self.stage.panelClass = MGMotorPanel.topMGMotorPanel  # Give the laser its panel class
         self.connectPanel.instList.append(self.stage)
         self.disconnectBtn.Enable()
-        self.connectBtn.Disable()   
-        
+        self.connectBtn.Disable()
+
     def disconnect(self, event):
         self.stage.disconnect()
         if self.stage in self.connectPanel.instList:
             self.connectPanel.instList.remove(self.stage)
         self.disconnectBtn.Disable()
-        self.connectBtn.Enable()   
+        self.connectBtn.Enable()

@@ -334,8 +334,8 @@ class laserPanel(wx.Panel):
 
             hbox.Add(self.laserPanel, border=0, proportion=0, flag=wx.EXPAND)
             hbox1.Add(self.detectorPanel, border=0, proportion=0, flag=wx.EXPAND)
-            vbox.AddMany([(hbox, 1, wx.EXPAND), (hbox1, 1, wx.EXPAND)])
-            self.SetSizer(vbox)
+            vbox1.AddMany([(hbox, 1, wx.EXPAND), (hbox1, 0, wx.EXPAND)])
+            self.SetSizer(vbox1)
         else:
             self.laserPanel = tlsPanel(self, self.laser, self.graphPanel)
             self.detectorPanelLst = list()
