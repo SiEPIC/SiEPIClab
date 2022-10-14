@@ -34,19 +34,7 @@ class measurementRoutines:
                              self.deviceDict['CurrentRes'][self.i], 'Current')
 
     def opticalSweep(self):
-        self.haltDetTimer()
-        try:
-            self.copySweepSettings()
-            self.lastSweepWavelength, self.lastSweepPower = self.laser.sweep();
-            self.graphPanel.canvas.sweepResultDict = {}
-            self.graphPanel.canvas.sweepResultDict['wavelength'] = self.lastSweepWavelength
-            self.graphPanel.canvas.sweepResultDict['power'] = self.lastSweepPower
 
-            self.drawGraph(self.lastSweepWavelength * 1e9, self.lastSweepPower)
-        except Exception as e:
-            print(e)
-        self.laser.setAutorangeAll()
-        self.startDetTimer()
 
     def fixedWavelengthIVSweep(self):
         self.laser.setTLSWavelength(self.deviceDict['Wavelengths'][self.i], slot=self.laser.panel.getSelectedLaserSlot())

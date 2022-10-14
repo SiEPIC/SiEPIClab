@@ -53,8 +53,8 @@ class CorvusPanel(wx.Panel):
 
     def __init__(self, parent, motorCtrl, axis):
         super(CorvusPanel, self).__init__(parent)
-        self.motorCtrl = motorCtrl;
-        self.axis = axis;
+        self.motorCtrl = motorCtrl
+        self.axis = axis
         self.InitUI()
 
     def InitUI(self):

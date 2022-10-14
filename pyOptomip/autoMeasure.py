@@ -30,11 +30,13 @@ import time
 import matplotlib.pyplot as plt
 from ElectroOpticDevice import ElectroOpticDevice
 from measurementRoutines import measurementRoutines
+import myMatplotlibPanel
+import myMatplotlibPanel_pyplot
 
 
 class autoMeasure(object):
 
-    def __init__(self, laser, motorOpt, motorElec, smu, fineAlign):
+    def __init__(self, laser, motorOpt, motorElec, smu, fineAlign, graph):
         """
         Creates an autoMeasure object which is used to coordinate motors and perform automated
         measurements.
@@ -51,6 +53,7 @@ class autoMeasure(object):
         self.smu = smu
         self.fineAlign = fineAlign
         self.saveFolder = os.getcwd()
+        self.graphPanel = graph
 
     def readCoordFile(self, fileName):
         """
@@ -357,12 +360,19 @@ class autoMeasure(object):
                         d1 = d.replace(":","")
                         matFileName = os.path.join(path, self.saveFolder + "\\" + d1 + ".mat")
 
+                        self.lastSweepWavelength, self.lastSweepPower = self.laser.sweep()
+                        self.graphPanel.canvas.sweepResultDict = {}
+                        self.graphPanel.canvas.sweepResultDict['wavelength'] = self.lastSweepWavelength
+                        self.graphPanel.canvas.sweepResultDict['power'] = self.lastSweepPower
+
+                        self.drawGraph(self.lastSweepWavelength * 1e9, self.lastSweepPower)
+
                         # Save sweep data and metadata to the mat file
                         matDict = dict()
                         matDict['scandata'] = dict()
                         matDict['metadata'] = dict()
-                        matDict['scandata']['wavelength'] = testingParameters['Wavelengths'][i]
-                        matDict['scandata']['power'] = testingParameters['Sweeppower'][i]
+                        matDict['scandata']['wavelength'] = self.lastSweepWavelength
+                        matDict['scandata']['power'] = self.lastSweepPower
                         matDict['metadata']['device'] = d
                         matDict['metadata']['gds_x_coord'] = device.getOpticalCoordinates()[0]
                         matDict['metadata']['gds_y_coord'] = device.getOpticalCoordinates()[1]
@@ -390,6 +400,12 @@ class autoMeasure(object):
                 return
             if updateFunction is not None:
                 updateFunction(i)
+
+    def drawGraph(self, wavelength, power):
+        self.graphPanel.axes.cla()
+        self.graphPanel.axes.plot(wavelength, power)
+        self.graphPanel.axes.ticklabel_format(useOffset=False)
+        self.graphPanel.canvas.draw()
 
 
 class CoordinateTransformException(Exception):
