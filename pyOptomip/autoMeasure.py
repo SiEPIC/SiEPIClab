@@ -273,7 +273,7 @@ class autoMeasure(object):
 
         return newMotorCoords
 
-    def beginMeasure(self, devices, testingParameters, checkList, abortFunction=None, updateFunction=None, updateGraph=True):
+    def beginMeasure(self, devices, testingParameters, checkList, activeDetectors, graph, abortFunction=None, updateFunction=None, updateGraph=True):
         """ Runs an automated measurement. For each device, wedge probe is moved out of the way, chip stage is moved
         so laser in aligned, wedge probe is moved to position. Various tests are performed depending on the contents
         of the testing parameters file.
@@ -291,6 +291,8 @@ class autoMeasure(object):
             updateGraph: Whether to update the graph in the autoMeasurePanel with each measurement."""
 
         self.checkList = checkList
+        self.activeDetectors = activeDetectors
+        self.graph = graph
 
         checkedDevices = []
         for device in self.devices:
@@ -298,7 +300,6 @@ class autoMeasure(object):
                 checkedDevices.append(device)
 
         devices = checkedDevices
-
 
         # For each device
         for i, d in enumerate(testingParameters['device']):
@@ -340,17 +341,34 @@ class autoMeasure(object):
                         for ii in range(self.checkList.GetItemCount()):
                             if self.checkList.GetItemText(ii) == device.getDeviceID():
                                 self.checkList.SetItemTextColour(ii, wx.Colour(0, 255, 0))
-
+                        print("Flag:")
+                        print(testingParameters['OPTICflag'][i])
                         # Check which type of measurement is to be completed
-                        if testingParameters['ELECflag'][i] is True:
-                            measurementRoutines('ELEC', testingParameters, i, self.smu, self.laser)
-                        if testingParameters['OPTICflag'][i] is True:
+                        if testingParameters['ELECflag'][i] == "True":
+                            measurementRoutines('ELEC', testingParameters, i, self.smu, self.laser, self, self.activeDetectors)
+                        if testingParameters['OPTICflag'][i] == "True":
                             print("Performing Optical Test")
-                            measurementRoutines('OPT', testingParameters, i, self.smu, self.laser)
-                        if testingParameters['setwflag'] is True:
-                            measurementRoutines('FIXWAVIV', testingParameters, i, self.smu, self.laser)
-                        if testingParameters['setvflag'] is True:
-                            measurementRoutines('BIASVOPT', testingParameters, i, self.smu, self.laser)
+                            self.measure = measurementRoutines('OPT', testingParameters, i, self.smu, self.laser, self,
+                                                self.activeDetectors)
+                            self.graph.canvas.sweepResultDict = {}
+                            self.graph.canvas.sweepResultDict['wavelength'] = self.measure.wav
+                            self.graph.canvas.sweepResultDict['power'] = self.measure.pow
+                            self.drawGraph(self.measure.wav * 1e9, self.measure.pow, self.graph)
+                            # Create pdf file
+                            path = self.saveFolder
+                            d1 = d.replace(":", "")
+                            pdfFileName = os.path.join(path, self.saveFolder + "\\" + d1 + ".pdf")
+                            plt.figure()
+                            print(testingParameters['Wavelengths'][i])
+                            plt.plot(self.measure.wav, self.measure.pow)
+                            plt.xlabel('Wavelength (nm)')
+                            plt.ylabel('Power (dBm)')
+                            plt.savefig(pdfFileName)
+                            plt.close()
+                        if testingParameters['setwflag'] == "True":
+                            measurementRoutines('FIXWAVIV', testingParameters, i, self.smu, self.laser, self, self.activeDetectors)
+                        if testingParameters['setvflag'] == "True":
+                            measurementRoutines('BIASVOPT', testingParameters, i, self.smu, self.laser, self, self.activeDetectors)
 
                     #print('GDS: (%g,%g) Motor: (%g,%g,%g)' % (gdsCoordOpt[0], gdsCoordOpt[1], gdsCoordOpt[2],
                                                               #motorCoordOpt[0], motorCoordOpt[1]))
@@ -360,19 +378,14 @@ class autoMeasure(object):
                         d1 = d.replace(":","")
                         matFileName = os.path.join(path, self.saveFolder + "\\" + d1 + ".mat")
 
-                        self.lastSweepWavelength, self.lastSweepPower = self.laser.sweep()
-                        self.graphPanel.canvas.sweepResultDict = {}
-                        self.graphPanel.canvas.sweepResultDict['wavelength'] = self.lastSweepWavelength
-                        self.graphPanel.canvas.sweepResultDict['power'] = self.lastSweepPower
 
-                        self.drawGraph(self.lastSweepWavelength * 1e9, self.lastSweepPower)
 
                         # Save sweep data and metadata to the mat file
                         matDict = dict()
                         matDict['scandata'] = dict()
                         matDict['metadata'] = dict()
-                        matDict['scandata']['wavelength'] = self.lastSweepWavelength
-                        matDict['scandata']['power'] = self.lastSweepPower
+                        matDict['scandata']['wavelength'] = testingParameters['Wavelengths'][i]
+                        matDict['scandata']['power'] = testingParameters['Sweeppower'][i]
                         matDict['metadata']['device'] = d
                         matDict['metadata']['gds_x_coord'] = device.getOpticalCoordinates()[0]
                         matDict['metadata']['gds_y_coord'] = device.getOpticalCoordinates()[1]
@@ -385,15 +398,6 @@ class autoMeasure(object):
                         matDict['metadata']['time_str'] = time.ctime(timeSeconds)
                         savemat(matFileName, matDict)
 
-                        # Create pdf file
-                        pdfFileName = os.path.join(self.saveFolder, d + '.pdf')
-                        plt.figure()
-                        print(testingParameters['Wavelengths'][i])
-                        plt.plot(testingParameters['Wavelengths'][i], testingParameters['Sweeppower'][i])
-                        plt.xlabel('Wavelength (nm)')
-                        plt.ylabel('Power (dBm)')
-                        plt.savefig(pdfFileName)
-                        plt.close()
 
             if abortFunction is not None and abortFunction():
                 print('Aborted')
@@ -401,11 +405,11 @@ class autoMeasure(object):
             if updateFunction is not None:
                 updateFunction(i)
 
-    def drawGraph(self, wavelength, power):
-        self.graphPanel.axes.cla()
-        self.graphPanel.axes.plot(wavelength, power)
-        self.graphPanel.axes.ticklabel_format(useOffset=False)
-        self.graphPanel.canvas.draw()
+    def drawGraph(self, wavelength, power, graphPanel):
+        graphPanel.axes.cla()
+        graphPanel.axes.plot(wavelength, power)
+        graphPanel.axes.ticklabel_format(useOffset=False)
+        graphPanel.canvas.draw()
 
 
 class CoordinateTransformException(Exception):

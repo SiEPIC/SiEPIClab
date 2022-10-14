@@ -103,9 +103,10 @@ class instrumentFrame_withtabs(wx.Frame):
                 self.SMU = inst
 
         self.camera = self.Camera()
+        self.camera.start()
 
         # Create the tab windows
-        tab1 = self.HomeTab(nb, self.instList)
+        tab1 = self.HomeTab(nb, self.instList, self.camera)
         tab2 = self.ElectricalTab(nb, self.instList)
         tab3 = self.OpticalTab(nb, self.instList)
 
@@ -193,7 +194,7 @@ class instrumentFrame_withtabs(wx.Frame):
 
     # Define the tab content as classes:
     class HomeTab(wx.Panel):
-        def __init__(self, parent, instList):
+        def __init__(self, parent, instList, camera):
             """
 
             Args:
@@ -205,7 +206,8 @@ class instrumentFrame_withtabs(wx.Frame):
             vbox = wx.BoxSizer(wx.VERTICAL)
             self.hbox = wx.BoxSizer(wx.HORIZONTAL)
             homeVbox = wx.BoxSizer(wx.VERTICAL)
-            self.t = instrumentFrame_withtabs.Camera()
+            self.camera = camera
+
 
             # p1 = multiprocessing.Process(target=self.test)
             # p1 = multiprocessing.Process(target=self.camerarunning(self.hbox))
@@ -400,27 +402,27 @@ class instrumentFrame_withtabs(wx.Frame):
 
         def saturationchange(self, event):
             c = self.saturation.GetValue()
-            instrumentFrame_withtabs.Camera.saturation(self.t, c)
+            self.camera.saturation(c)
 
         def exposurechange(self, event):
             c = self.exposure.GetValue()
-            instrumentFrame_withtabs.Camera.exposure(self.t, c)
+            self.camera.exposure(c)
 
         def StartRecording(self, event):
             print(self.outputFolderTb.GetValue())
             if self.outputFolderTb.GetValue() == "":
                 print("Please select save location")
             else:
-                instrumentFrame_withtabs.Camera.startrecord(self.t, self.outputFolderTb.GetValue())
+                self.camera.startrecord(self.outputFolderTb.GetValue())
 
         def StopRecording(self, event):
-            instrumentFrame_withtabs.Camera.stoprecord(self.t)
+            self.camera.stoprecord()
 
         def OpenCamera(self, event):
-            self.t.open()
+            self.camera.open()
 
         def CloseCamera(self, event):
-            self.t.close()
+            self.camera.close()
 
         def OnButton_SelectOutputFolder(self, event):
             """
@@ -750,7 +752,7 @@ class instrumentFrame_withtabs(wx.Frame):
         # self.cap = cv2.VideoCapture(0)
 
         def run(self, *args, **kwargs):
-            self.cap = cv2.VideoCapture(1)
+            self.cap = cv2.VideoCapture(0)
             self.show = False
             self.a = 0
             self.b = 0
@@ -762,6 +764,8 @@ class instrumentFrame_withtabs(wx.Frame):
             while self.cap.isOpened():
                 if self.show:
                     ret, frame = self.cap.read()
+
+                    frame = cv2.flip(frame, 1)
 
                     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
@@ -783,7 +787,7 @@ class instrumentFrame_withtabs(wx.Frame):
                     while not self.show:
                         time.sleep(1)
                         pass
-                    self.cap = cv2.VideoCapture(1)
+                    self.cap = cv2.VideoCapture(0)
 
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     break

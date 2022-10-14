@@ -295,11 +295,11 @@ class hp816x(object):
 
     def getLambdaScanResult(self, chan, useClipping, clipLimit, numPts):
         """ Gets the optical power results from a sweep. """
-        wavelengthArr = np.zeros(int(numPts));
-        powerArr = np.zeros(int(numPts));
+        wavelengthArr = np.zeros(int(numPts))
+        powerArr = np.zeros(int(numPts))
         res = self.hp816x_getLambdaScanResult(self.hDriver, chan, useClipping, clipLimit, powerArr, wavelengthArr)
-        self.checkError(res);
-        return wavelengthArr, powerArr;
+        self.checkError(res)
+        return wavelengthArr, powerArr
 
     def disconnect(self):
         self.unregisterMainframe(self.hDriver);
@@ -694,9 +694,9 @@ class hp816x(object):
         self.hp816x_getNoOfRegPWMChannels_Q.restype = c_int32;
 
         # ViStatus _VI_FUNC hp816x_setInitialRangeParams(ViSession ihandle, ViInt32 PWMChannel, ViBoolean resettoDefault, ViReal64 initialRange, ViReal64 rangeDecrement);
-        self.hp816x_setInitialRangeParams = self.hLib.hp816x_setInitialRangeParams;
+        self.hp816x_setInitialRangeParams = self.hLib.hp816x_setInitialRangeParams
         self.hp816x_setInitialRangeParams.argtypes = [c_int32, c_int32, c_uint16, c_double, c_double]
-        self.hp816x_setInitialRangeParams.restype = c_int32;
+        self.hp816x_setInitialRangeParams.restype = c_int32
 
         self.hp816x_unregisterMainframe = self.hLib.hp816x_unregisterMainframe;
         self.hp816x_unregisterMainframe.argtypes = [c_int32]

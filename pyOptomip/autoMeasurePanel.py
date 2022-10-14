@@ -381,6 +381,10 @@ class autoMeasurePanel(wx.Panel):
         sbMeasurement = wx.StaticBox(self, label='Electro-Optic Measurements')
         vboxMeasurement = wx.StaticBoxSizer(sbMeasurement, wx.VERTICAL)
 
+        # Create Detector Selection Box
+        sbDetectors = wx.StaticBox(self, label='Choose Detectors')
+        vboxDetectors = wx.StaticBoxSizer(sbDetectors, wx.VERTICAL)
+
         # Add MatPlotLib Panel
         matPlotBox = wx.BoxSizer(wx.HORIZONTAL)
         self.graph = myMatplotlibPanel.myMatplotlibPanel(self)  # use for regular mymatplotlib file
@@ -517,9 +521,29 @@ class autoMeasurePanel(wx.Panel):
         checkBox.AddMany([(checkListBox, 0, wx.EXPAND), (searchListBox, 0, wx.EXPAND), (selectBox, 0, wx.EXPAND),
                           (selectBox2, 0, wx.EXPAND)])
 
+        # Format check boxes for detector selection
+        self.sel1 = wx.CheckBox(self, label='Slot 1 Det 1', pos=(20, 20))
+        self.sel1.SetValue(False)
+
+        self.sel2 = wx.CheckBox(self, label='Slot 2 Det 1', pos=(20, 20))
+        self.sel2.SetValue(False)
+
+        self.sel3 = wx.CheckBox(self, label='Slot 3 Det 1', pos=(20, 20))
+        self.sel3.SetValue(False)
+
+        self.sel4 = wx.CheckBox(self, label='Slot 4 Det 1', pos=(20, 20))
+        self.sel4.SetValue(False)
+
+        # Populate Detector selection box with check boxes and text
+        hboxDetectors = wx.BoxSizer(wx.HORIZONTAL)
+        hboxDetectors.AddMany([(self.sel1, 1, wx.EXPAND), (self.sel2, 1, wx.EXPAND), (self.sel3, 1, wx.EXPAND),
+                               (self.sel4, 1, wx.EXPAND)])
+
+        vboxDetectors.AddMany([(hboxDetectors, 0, wx.EXPAND)])
+
         # Add all boxes to outer box
         vboxOuter.AddMany([(topBox, 0, wx.EXPAND), (checkBox, 0, wx.EXPAND), (vboxOptical, 0, wx.EXPAND),
-                           (vboxElectrical, 0, wx.EXPAND)])
+                           (vboxElectrical, 0, wx.EXPAND), (vboxDetectors, 0, wx.EXPAND)])
         matPlotBox.Add(vboxOuter, flag=wx.LEFT | wx.TOP | wx.ALIGN_LEFT, border=0, proportion=0)
 
         self.SetSizer(matPlotBox)
@@ -559,6 +583,7 @@ class autoMeasurePanel(wx.Panel):
         self.checkList.SortItems(checkListSort)  # Make sure items in list are sorted
         self.checkList.Refresh()
 
+
     def OnButton_ChooseCoordFile(self, event):
         """ Opens a file dialog to select a coordinate file. """
         fileDlg = wx.FileDialog(self, "Open", "", "",
@@ -595,6 +620,18 @@ class autoMeasurePanel(wx.Panel):
         self.checkList.EnableCheckBoxes()
         self.coordMapPanelOpt.PopulateDropDowns()
         self.coordMapPanelElec.PopulateDropDowns()
+
+    def getActiveDetectors(self):
+        activeDetectorLst = list()
+        if self.sel1.GetValue() == True:
+            activeDetectorLst.append(1)
+        if self.sel2.GetValue() == True:
+            activeDetectorLst.append(2)
+        if self.sel3.GetValue() == True:
+            activeDetectorLst.append(3)
+        if self.sel4.GetValue() == True:
+            activeDetectorLst.append(4)
+        return activeDetectorLst
 
     def OnButton_Save(self, event):
         """Saves the gds devices used for alignment as well as motor positions to a csv file"""
@@ -862,8 +899,8 @@ class autoMeasurePanel(wx.Panel):
 
         for keys, values in self.dataimport.items():
             pass
-            #print(keys)
-            #print(values)
+            # print(keys)
+            # print(values)
 
     def OnButton_CheckAll(self, event):
         """Selects all items in the devices check list"""
@@ -949,21 +986,19 @@ class autoMeasurePanel(wx.Panel):
 
         # Create list of all devices which are selected for measurement from the checklist
         checkedDevicesText = []
-        # checkedDevices = []
 
         for i in range(self.checkList.GetItemCount()):  # self.device_list:
             if self.checkList.IsItemChecked(i):
                 checkedDevicesText.append(self.checkList.GetItemText(i))
-                # checkedDevices.append(self.checkList.GetItemText(i))
+
+        activeDetectors = self.getActiveDetectors()
 
         # Start measurement using the autoMeasure device
         ###MUST HAVE AVAILABLE TESTING INFO FOR SELECTED DEVICE
         self.autoMeasure.beginMeasure(devices=checkedDevicesText, testingParameters=self.dataimport,
-                                      checkList=self.checkList,
-                                      abortFunction=None, updateFunction=None, updateGraph=True)
+                                      checkList=self.checkList, activeDetectors=activeDetectors, graph = self.graph,
+                                      abortFunction=None,updateFunction=None,updateGraph=True)
 
-        # Copy settings from laser panel
-        self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.copySweepSettings()
         # Create a measurement progress dialog.
         autoMeasureDlg = autoMeasureProgressDialog(self, title='Automatic measurement')
         autoMeasureDlg.runMeasurement(checkedDevicesText, self.autoMeasure)

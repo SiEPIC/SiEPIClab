@@ -240,7 +240,7 @@ class tlsPanel(wx.Panel):
         self.haltDetTimer()
         try:
             self.copySweepSettings()
-            self.lastSweepWavelength, self.lastSweepPower = self.laser.sweep();
+            self.lastSweepWavelength, self.lastSweepPower = self.laser.sweep()
             self.graphPanel.canvas.sweepResultDict = {}
             self.graphPanel.canvas.sweepResultDict['wavelength'] = self.lastSweepWavelength
             self.graphPanel.canvas.sweepResultDict['power'] = self.lastSweepPower
@@ -437,7 +437,7 @@ class detectorPanel(wx.Panel):
 
 
     def getActiveDetectors(self):
-        activeDetectorLst = list();
+        activeDetectorLst = list()
         for ii, panel in enumerate(self.detectorPanelLst):
             if panel.enableSweepCb.GetValue() == True:
                 activeDetectorLst.append(ii)
@@ -449,7 +449,7 @@ class detectorPanel(wx.Panel):
                 panel.PowerSt.SetLabel(str(self.laser.readPWM(panel.slot, panel.chan)))
 
     def OnClose(self, event):
-        self.timer.Stop();
+        self.timer.Stop()
 
 
 class individualDetPanel(wx.Panel):
@@ -460,7 +460,7 @@ class individualDetPanel(wx.Panel):
         self.name = name
         self.slot = slot
         self.chan = chan
-        self.autoMeasurementEnabled = 0;
+        self.autoMeasurementEnabled = 0
         self.InitUI()
 
     def InitUI(self):
@@ -477,7 +477,7 @@ class individualDetPanel(wx.Panel):
 
         self.autoMeasurementCb = wx.CheckBox(self, label='Auto measurement')
         # self.autoMeasurementCb.SetFont(font)
-        self.autoMeasurementCb.Bind(wx.EVT_CHECKBOX, self.OnCheckAutoMeasurement);
+        self.autoMeasurementCb.Bind(wx.EVT_CHECKBOX, self.OnCheckAutoMeasurement)
 
         hbox2 = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -493,7 +493,7 @@ class individualDetPanel(wx.Panel):
         self.enableSweepCb.SetValue(False)
         # self.enableSweepCb.SetFont(font)
 
-        fgs.AddMany([(self.detNameSt), (self.enableSweepCb), \
+        fgs.AddMany([(self.detNameSt), (self.enableSweepCb),
                      (self.autoMeasurementCb), (hbox2, 1, wx.EXPAND)])
 
         # fgs.AddGrowableCol(0, 1)
@@ -502,6 +502,6 @@ class individualDetPanel(wx.Panel):
 
     def OnCheckAutoMeasurement(self, event):
         if self.autoMeasurementCb.GetValue():
-            self.autoMeasurementEnabled = 1;
+            self.autoMeasurementEnabled = 1
         else:
-            self.autoMeasurementEnabled = 0;
+            self.autoMeasurementEnabled = 0

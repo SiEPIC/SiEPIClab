@@ -21,10 +21,10 @@
 # THE SOFTWARE.
 
 from ctypes import *
-import numpy as np;
-from itertools import repeat;
+import numpy as np
+from itertools import repeat
 import hp816x_instr
-import math;
+import math
 
 
 class hp816x_N77Det(hp816x_instr.hp816x):
@@ -213,23 +213,23 @@ class hp816x_N77Det(hp816x_instr.hp816x):
 
             c_numPts = c_uint32()
             c_numChanRet = c_uint32()
-            res = self.hp816x_prepareMfLambdaScan(self.hDriver, unitNum, self.sweepPower, outputNum, numScans, numChan, \
+            res = self.hp816x_prepareMfLambdaScan(self.hDriver, unitNum, self.sweepPower, outputNum, numScans, numChan,
                                                   startWvlAdjusted, stopWvlAdjusted, self.sweepStepWvl, byref(c_numPts),
-                                                  byref(c_numChanRet));
+                                                  byref(c_numChanRet))
 
             self.checkError(res)
             numPts = int(c_numPts.value)
 
             # Set range params
             for ii in self.activeSlotIndex:
-                self.setRangeParams(ii, self.sweepInitialRange, self.sweepRangeDecrement)
+                self.setRangeParams(ii, float(self.sweepInitialRange), float(self.sweepRangeDecrement))
 
             # This value is unused since getLambdaScanResult returns the wavelength anyways
             c_wavelengthArr = (c_double * int(numPts))()
             c_wavelengthArrPtr = cast(c_wavelengthArr, POINTER(c_double))
-
             # Perform the sweep
             res = self.hp816x_executeMfLambdaScan(self.hDriver, c_wavelengthArrPtr)
+
             self.checkError(res)
 
             wavelengthArrTemp = np.zeros(int(numPts))
@@ -250,7 +250,7 @@ class hp816x_N77Det(hp816x_instr.hp816x):
             wavelengthArrPWM[pointsAccum:pointsAccum + points] = wavelengthArrTemp
             pointsAccum += points
 
-        print("Sweep Completed")
+        print("Sweep Completed.")
 
         return wavelengthArrPWM, powerArrPWM
 
