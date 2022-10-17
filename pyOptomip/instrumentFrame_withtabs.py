@@ -29,24 +29,12 @@ import traceback
 from logWriter import logWriter, logWriterError
 from autoMeasurePanel import autoMeasurePanel
 from autoMeasure import autoMeasure
-import laserPanel
-from laserPanel import detectorPanel
-from laserPanel import tlsPanel
-from hp816x_N77Det_instr import hp816x_N77Det
 import myMatplotlibPanel
-from matplotlib import pyplot as plt
-import pyvisa as visa
-from TestParameters import testParameters
 from TestParameters import TopPanel
-import cv
 import cv2
-import numpy as np
-from PIL import Image
-import multiprocessing
 import threading
 import time
 
-homebox = wx.BoxSizer(wx.HORIZONTAL)
 
 class instrumentFrame_withtabs(wx.Frame):
 
@@ -56,15 +44,18 @@ class instrumentFrame_withtabs(wx.Frame):
         Args:
             parent:
             instList:
+
+        Returns:
+            object:
         """
         displaySize = wx.DisplaySize()
         super(instrumentFrame_withtabs, self).__init__(parent, title='Instrument Control',
                                                        size=(displaySize[0] * 5 / 8.0, displaySize[1] * 3 / 4.0))
 
-        self.instList = instList
+        self.instList = instList  # List of connected instruments
         try:
             self.InitUI()
-        except Exception as e:
+        except Exception as e:  # If GUI cannot open, disconnect all instruments
             for inst in self.instList:
                 inst.disconnect()
             self.Destroy()
@@ -86,6 +77,7 @@ class instrumentFrame_withtabs(wx.Frame):
         self.electricalStage = []
         self.SMU = []
 
+        """Classify instruments"""
         for inst in self.instList:
             if inst.isLaser:
                 if inst.isDetect:
@@ -102,36 +94,35 @@ class instrumentFrame_withtabs(wx.Frame):
             if inst.isSMU:
                 self.SMU = inst
 
-        self.camera = self.Camera()
+        """Connect to top and side cameras"""
+        self.camera = self.Camera(1)
         self.camera.start()
+        self.side_camera = self.Camera(0)
+        self.side_camera.start()
 
-        # Create the tab windows
-        tab1 = self.HomeTab(nb, self.instList, self.camera)
-        tab2 = self.ElectricalTab(nb, self.instList)
-        tab3 = self.OpticalTab(nb, self.instList)
+        """Create the tab windows"""
+        tab1 = self.HomeTab(nb, self.laserWithDetector, self.opticalStage, self.electricalStage, self.camera,
+                            self.side_camera)
+        tab2 = self.ElectricalTab(nb, self.SMU)
+        tab3 = self.OpticalTab(nb, self.laserWithDetector)
+        tab4 = self.AutoMeasureTab(nb, self.laserWithDetector, self.opticalStage, self.electricalStage, self.SMU,
+                                   self.camera)
+        tab5 = self.TestingParametersTab(nb)
 
-        tab4 = self.AutoMeasureTab(nb, self.laserWithDetector, self.opticalStage, self.electricalStage, self.SMU, self.camera)
-        tab5 = self.TestingparametersTab(nb, self.instList)
-
-        # Add the windows to tabs and name them.
+        """Add the windows to tabs and name them."""
         nb.AddPage(tab1, "Home")
         nb.AddPage(tab2, "Electrical")
         nb.AddPage(tab3, "Optical")
         nb.AddPage(tab4, "Automated Measurements")
         nb.AddPage(tab5, "Testing Parameters")
 
-        outputlabel = wx.StaticBox(self, label='SMU Control')
-
-        output = wx.StaticBoxSizer(outputlabel, wx.VERTICAL)
-
-        print(self.instList)
-
-        # Set notebook in a sizer to create the layout
+        """Set notebook in a sizer to create the layout"""
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(nb, 1, wx.ALL | wx.EXPAND)
 
+        """Add output log"""
         self.log = outputlogPanel(self.p)
-        sizer.Add(self.log, 0, wx.ALL | wx.EXPAND)
+        sizer.Add(self.log, 1, wx.ALL | wx.EXPAND)
         self.p.SetSizer(sizer)
         sys.stdout = logWriter(self.log)
         sys.stderr = logWriterError(self.log)
@@ -194,9 +185,8 @@ class instrumentFrame_withtabs(wx.Frame):
             inst.disconnect()
         self.Destroy()
 
-    # Define the tab content as classes:
     class HomeTab(wx.Panel):
-        def __init__(self, parent, instList, camera):
+        def __init__(self, parent, laserWithDetector, opticalStage, electricalStage, camera, side_camera):
             """
 
             Args:
@@ -204,44 +194,20 @@ class instrumentFrame_withtabs(wx.Frame):
                 instList:
             """
             wx.Panel.__init__(self, parent)
-            self.instList = instList
             vbox = wx.BoxSizer(wx.VERTICAL)
             self.hbox = wx.BoxSizer(wx.HORIZONTAL)
             homeVbox = wx.BoxSizer(wx.VERTICAL)
             self.camera = camera
+            self.side_camera = side_camera
 
-
-            # p1 = multiprocessing.Process(target=self.test)
-            # p1 = multiprocessing.Process(target=self.camerarunning(self.hbox))
-            # p1.start()
-
-            # x = threading.Thread(target=BackgroundTasks, args=(self.hbox,), daemon=True)
-            # x.start()
-
-            # t = BackgroundTasks()
-            # t.start()
-
-            # self.graph = myMatplotlibPanel.myMatplotlibPanel(self)  # use for regular mymatplotlib file
-            # hbox.Add(self.graph, flag=wx.EXPAND, border=0, proportion=1)
-            # self.hbox.Add(self.bitmap, flag=wx.EXPAND, border=0, proportion=1)
-
-            for inst in self.instList:
-                # if inst.isSMU:
-                # panel = inst.panelClass(self)
-                # else:
-                if inst.isDetect:
-                    panel = inst.panelClass(self, inst, False, True, True)
-                elif inst.isLaser and not inst.hasDetector:
-                    panel = inst.panelClass(self, inst, False, False, True)
-                else:
-                    panel = inst.panelClass(self, inst)
-
-                # homeVbox = wx.BoxSizer(wx.VERTICAL)
-                if inst.isMotor and not inst.isElec:
-                    homeVbox.Add(panel, proportion=0, border=0, flag=wx.EXPAND)
-
-                if (inst.isMotor and not inst.isElec) and self.laserFound():
-                    self.fineAlign = fineAlign(self.getLasers()[0], self.getMotors()[0])
+            if laserWithDetector:
+                detectorPanel = laserWithDetector.panelClass(self, laserWithDetector, False, True, True)
+                homeVbox.Add(detectorPanel, proportion=0, border=0, flag=wx.EXPAND)
+            if opticalStage:
+                opticalStagePanel = opticalStage.panelClass(self, opticalStage)
+                homeVbox.Add(opticalStagePanel, proportion=0, border=0, flag=wx.EXPAND)
+                if laserWithDetector:
+                    self.fineAlign = fineAlign(laserWithDetector, opticalStage)
                     try:
                         self.fineAlignPanel = fineAlignPanel(self, self.fineAlign)
                     except Exception as e:
@@ -250,22 +216,10 @@ class instrumentFrame_withtabs(wx.Frame):
                                                 'Error', wx.ICON_ERROR)
                         dial.ShowModal()
                     homeVbox.Add(self.fineAlignPanel, proportion=0, flag=wx.EXPAND)
-                    # if self.motorFound():
-                    #   hbox.Add(homeVbox)
-                if inst.isDetect:
-                    homeVbox.Add(panel, proportion=0, border=0, flag=wx.EXPAND)
-                    # self.detectorPanel = detectorPanel(panel, inst.getNumPWMChannels(), inst)
-                    # detectVbox.Add(self.detectorPanel, proportion=0, border=0, flag=wx.EXPAND)
-                    # hbox.Add(homeVbox, flag=wx.EXPAND)
-                if inst.isElec:
-                    homeVbox.Add(panel, proportion=0, border=0, flag=wx.EXPAND)
-                # self.laser = hp816x_N77Det()
-                #  detectVbox = wx.BoxSizer(wx.VERTICAL)
-                #  detPanel = detectorPanel(tlsPanel, self.laser.getNumPWMChannels(), self.laser)
-                #  detectVbox.Add(detPanel, proportion=0, border=0, flag=wx.EXPAND)
-                #  hbox.Add(detectVbox)
-                # else:
-                #   hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
+            if electricalStage:
+                electricalStagePanel = electricalStage.panelClass(self, electricalStage)
+                homeVbox.Add(electricalStagePanel, proportion=0, border=0, flag=wx.EXPAND)
+
             sbcam = wx.StaticBox(self, label='Camera Settings')
             vboxcam = wx.StaticBoxSizer(sbcam, wx.VERTICAL)
 
@@ -276,6 +230,12 @@ class instrumentFrame_withtabs(wx.Frame):
             self.closeBtn = wx.Button(self, label='Close', size=(50, 20))
             self.closeBtn.Bind(wx.EVT_BUTTON, self.CloseCamera)
             self.hbox0.AddMany([(self.openBtn, 1, wx.EXPAND), (self.closeBtn, 1, wx.EXPAND)])
+
+            self.hbox0_5 = wx.BoxSizer(wx.HORIZONTAL)
+            self.openSideBtn = wx.Button(self, label='Switch Views', size=(50, 20))
+            self.openSideBtn.Bind(wx.EVT_BUTTON, self.OpenSideCamera)
+
+            self.hbox0_5.AddMany([(self.openSideBtn, 1, wx.EXPAND)])
 
             self.hbox1 = wx.BoxSizer(wx.HORIZONTAL)
             bb = wx.StaticText(self, label='Saturation:')
@@ -308,99 +268,14 @@ class instrumentFrame_withtabs(wx.Frame):
                 [(st2, 1, wx.EXPAND), (self.outputFolderTb, 1, wx.EXPAND), (self.outputFolderBtn, 0, wx.EXPAND)])
 
             vboxcam.AddMany([(self.hbox0, 1, wx.EXPAND), (self.hbox1, 1, wx.EXPAND), (self.hbox2, 1, wx.EXPAND),
-                             (self.hbox3, 1, wx.EXPAND), (self.hbox4, 1, wx.EXPAND)])
+                             (self.hbox3, 1, wx.EXPAND), (self.hbox4, 1, wx.EXPAND), (self.hbox0_5, 1, wx.EXPAND)])
 
             self.hbox.Add(homeVbox)
             self.hbox.Add(vboxcam)
             vbox.Add(self.hbox, 3, wx.EXPAND)
-            # self.log = outputlogPanel(self)
-            # vbox.Add(self.log, 1, wx.EXPAND)
             self.SetSizer(vbox)
             self.Layout()
             self.Show()
-
-        def motorFound(self):
-            """
-
-            Returns:
-
-            """
-            motorFound = False
-            for inst in self.instList:
-                motorFound = motorFound | inst.isMotor
-            return motorFound
-
-        def laserFound(self):
-            """
-
-            Returns:
-
-            """
-            laserFound = False
-            for inst in self.instList:
-                laserFound = laserFound | inst.isLaser
-            return laserFound
-
-        def getLasers(self):
-            """
-
-            Returns:
-
-            """
-            laserList = []
-            for inst in self.instList:
-                if inst.isLaser:
-                    laserList.append(inst)
-            return laserList
-
-        def getMotors(self):
-            """
-
-            Returns:
-
-            """
-            motorList = []
-            for inst in self.instList:
-                if inst.isMotor:
-                    motorList.append(inst)
-            return motorList
-
-        def test(self):
-            cap = cv2.VideoCapture(0)
-            while cap.isOpened():
-                ret, frame = cap.read()
-
-                # show Image
-                cv2.imshow('Webcam', frame)
-
-                # checks whether q has been hit and stops the loop
-                if cv2.waitKey(1) & 0xFF == ord('q'):
-                    break
-
-        def camerarunning(self, hbox):
-
-            # connect to capture device
-            cap = cv2.VideoCapture(1)
-
-            while cap.isOpened():
-                ret, frame = cap.read()
-
-                # show Image
-                cv2.imshow('Webcam', frame)
-                # im_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                # x = im_rgb.shape
-
-                ##self.bitmap1 = wx.Bitmap.FromBuffer(x[1], x[0], im_rgb)
-                # self.bitmap = wx.StaticBitmap(self, bitmap=self.bitmap1)
-                # hbox.Add(self.bitmap, flag=wx.EXPAND, border=0, proportion=1)
-                # print('Hello')
-
-                # checks whether q has been hit and stops the loop
-                if cv2.waitKey(1) & 0xFF == ord('q'):
-                    break
-
-            # cap.release()
-            # cv2.destroyAllWindows()
 
         def saturationchange(self, event):
             c = self.saturation.GetValue()
@@ -426,6 +301,16 @@ class instrumentFrame_withtabs(wx.Frame):
         def CloseCamera(self, event):
             self.camera.close()
 
+        def OpenSideCamera(self, event):
+            if self.camera.isOpened():
+                self.camera.close()
+                self.side_camera.open()
+                print("Switched to side view.")
+            elif self.side_camera.isOpened():
+                self.side_camera.close()
+                self.camera.open()
+                print("Switched to top view.")
+
         def OnButton_SelectOutputFolder(self, event):
             """
             Opens the file explorer and allows user to choose the location to save the exported csv file
@@ -442,18 +327,8 @@ class instrumentFrame_withtabs(wx.Frame):
             self.outputFolderTb.SetValue(dirDlg.GetPath())
             dirDlg.Destroy()
 
-        def OnExitApp(self, event):
-            """
-
-            Args:
-                event:
-            """
-            for inst in self.instList:
-                inst.disconnect()
-            self.Destroy()
-
     class ElectricalTab(wx.Panel):
-        def __init__(self, parent, instList):
+        def __init__(self, parent, SMU):
             """
 
             Args:
@@ -461,92 +336,20 @@ class instrumentFrame_withtabs(wx.Frame):
                 instList:
             """
             wx.Panel.__init__(self, parent)
-            self.instList = instList
             vbox = wx.BoxSizer(wx.VERTICAL)
             hbox = wx.BoxSizer(wx.HORIZONTAL)
 
-            for inst in self.instList:
-                # if inst.isSMU:
-                # panel = inst.panelClass(self, str(self.para1tc.GetValue()))
-                # else:
-
-                if inst.isDetect:
-                    panel = inst.panelClass(self, inst, False, True, False)
-                elif inst.isLaser:
-                    panel = inst.panelClass(self, inst, False, True, False)
-                else:
-                    panel = inst.panelClass(self, inst)
-
-                if inst.isSMU:
-                    hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
-                # else:
-                #  hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
+            if SMU:
+                smuPanel = SMU.panelClass(self, SMU)
+                hbox.Add(smuPanel, proportion=1, border=0, flag=wx.EXPAND)
 
             vbox.Add(hbox, 3, wx.EXPAND)
-            # self.log = outputlogPanel(self)
-            # vbox.Add(self.log, 1, wx.EXPAND)
             self.SetSizer(vbox)
             self.Layout()
             self.Show()
-
-        def motorFound(self):
-            """
-
-            Returns:
-
-            """
-            motorFound = False
-            for inst in self.instList:
-                motorFound = motorFound | inst.isMotor
-            return motorFound
-
-        def laserFound(self):
-            """
-
-            Returns:
-
-            """
-            laserFound = False
-            for inst in self.instList:
-                laserFound = laserFound | inst.isLaser
-            return laserFound
-
-        def getLasers(self):
-            """
-
-            Returns:
-
-            """
-            laserList = []
-            for inst in self.instList:
-                if inst.isLaser:
-                    laserList.append(inst)
-            return laserList
-
-        def getMotors(self):
-            """
-
-            Returns:
-
-            """
-            motorList = []
-            for inst in self.instList:
-                if inst.isMotor:
-                    motorList.append(inst)
-            return motorList
-
-        def OnExitApp(self, event):
-            """
-
-            Args:
-                event:
-            """
-            for inst in self.instList:
-                inst.disconnect()
-            self.Destroy()
 
     class OpticalTab(wx.Panel):
-        def __init__(self, parent, instList):
+        def __init__(self, parent, laserWithDetector):
             """
 
             Args:
@@ -554,88 +357,17 @@ class instrumentFrame_withtabs(wx.Frame):
                 instList:
             """
             wx.Panel.__init__(self, parent)
-            self.instList = instList
             vbox = wx.BoxSizer(wx.VERTICAL)
-            hbox = wx.BoxSizer(wx.HORIZONTAL)
-            self.instList = instList
 
-            for inst in instList:
-                if inst.isLaser:
-                    if inst.hasDetector:
-                        panel = inst.panelClass(self, inst, True, False, False)
-                    else:
-                        panel = inst.panelClass(self, inst, True, False, False)
+            if laserWithDetector:
+                laserPanel = laserWithDetector.panelClass(self, laserWithDetector, True, False, False)
+                laserVbox = wx.BoxSizer(wx.VERTICAL)
+                laserVbox.Add(laserPanel, proportion=0, border=0, flag=wx.EXPAND)
+                vbox.Add(laserVbox, 3, wx.EXPAND)
 
-                    laserVbox = wx.BoxSizer(wx.VERTICAL)
-                    laserVbox.Add(panel, proportion=0, border=0, flag=wx.EXPAND)
-                    hbox.Add(laserVbox)
-                else:
-                    panel = inst.panelClass(self, inst)
-                # else:
-                #   hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
-
-            vbox.Add(hbox, 3, wx.EXPAND)
-            # self.log = outputlogPanel(self)
-            # vbox.Add(self.log, 1, wx.EXPAND)
             self.SetSizer(vbox)
             self.Layout()
             self.Show()
-
-        def motorFound(self):
-            """
-
-            Returns:
-
-            """
-            motorFound = False
-            for inst in self.instList:
-                motorFound = motorFound | inst.isMotor
-            return motorFound
-
-        def laserFound(self):
-            """
-
-            Returns:
-
-            """
-            laserFound = False
-            for inst in self.instList:
-                laserFound = laserFound | inst.isLaser
-            return laserFound
-
-        def getLasers(self):
-            """
-
-            Returns:
-
-            """
-            laserList = []
-            for inst in self.instList:
-                if inst.isLaser:
-                    laserList.append(inst)
-            return laserList
-
-        def getMotors(self):
-            """
-
-            Returns:
-
-            """
-            motorList = []
-            for inst in self.instList:
-                if inst.isMotor:
-                    motorList.append(inst)
-            return motorList
-
-        def OnExitApp(self, event):
-            """
-
-            Args:
-                event:
-            """
-            for inst in self.instList:
-                inst.disconnect()
-            self.Destroy()
 
     class AutoMeasureTab(wx.Panel):
         def __init__(self, parent, laser, motorOpt, motorElec, SMU, camera):
@@ -667,8 +399,8 @@ class instrumentFrame_withtabs(wx.Frame):
                 vbox.Add(hbox, 3, wx.EXPAND)
                 self.SetSizer(vbox)
 
-    class TestingparametersTab(wx.Panel):
-        def __init__(self, parent, instList):
+    class TestingParametersTab(wx.Panel):
+        def __init__(self, parent):
             """
 
             Args:
@@ -676,85 +408,24 @@ class instrumentFrame_withtabs(wx.Frame):
                 instList:
             """
             wx.Panel.__init__(self, parent)
-            self.instList = instList
             vbox = wx.BoxSizer(wx.VERTICAL)
             hbox = wx.BoxSizer(wx.HORIZONTAL)
-
             self.testingParameters = TopPanel(self)
-
             vbox.Add(self.testingParameters, proportion=0, flag=wx.EXPAND)
-
             vbox.Add(hbox, 3, wx.EXPAND)
-            # self.log = outputlogPanel(self)
-            # vbox.Add(self.log, 1, wx.EXPAND)
             self.SetSizer(vbox)
-
-            # sys.stdout = logWriter(self.log)
-            # sys.stderr = logWriterError(self.log)
-
-        def motorFound(self):
-            """
-
-            Returns:
-
-            """
-            motorFound = False
-            for inst in self.instList:
-                motorFound = motorFound | inst.isMotor
-            return motorFound
-
-        def laserFound(self):
-            """
-
-            Returns:
-
-            """
-            laserFound = False
-            for inst in self.instList:
-                laserFound = laserFound | inst.isLaser
-            return laserFound
-
-        def getLasers(self):
-            """
-
-            Returns:
-
-            """
-            laserList = []
-            for inst in self.instList:
-                if inst.isLaser:
-                    laserList.append(inst)
-            return laserList
-
-        def getMotors(self):
-            """
-
-            Returns:
-
-            """
-            motorList = []
-            for inst in self.instList:
-                if inst.isMotor:
-                    motorList.append(inst)
-            return motorList
-
-        def OnExitApp(self, event):
-            """
-
-            Args:
-                event:
-            """
-            for inst in self.instList:
-                inst.disconnect()
-            self.Destroy()
 
     class Camera(threading.Thread):
 
         # def connect(self, *args, **kwargs):
         # self.cap = cv2.VideoCapture(0)
 
+        def __init__(self, camID):
+            threading.Thread.__init__(self)
+            self.camID = camID
+
         def run(self, *args, **kwargs):
-            self.cap = cv2.VideoCapture(0)
+            self.cap = cv2.VideoCapture(self.camID)
             self.show = False
             self.a = 0
             self.b = 0
@@ -789,7 +460,7 @@ class instrumentFrame_withtabs(wx.Frame):
                     while not self.show:
                         time.sleep(1)
                         pass
-                    self.cap = cv2.VideoCapture(0)
+                    self.cap = cv2.VideoCapture(self.camID)
 
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     break
@@ -798,6 +469,9 @@ class instrumentFrame_withtabs(wx.Frame):
             self.cap.release()
             # Destroy all the windows
             cv2.destroyAllWindows()
+
+        def isOpened(self):
+            return self.show
 
         def saturation(self, value):
             self.a = value
@@ -830,6 +504,3 @@ class instrumentFrame_withtabs(wx.Frame):
 
         def open(self):
             self.show = True
-
-
-

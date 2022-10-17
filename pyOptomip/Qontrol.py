@@ -34,23 +34,23 @@ class QontrolMotor:
     # can be used regardless of how many axis are enabled
     def moveAbsoluteXYZ(self, x, y, z):
         print("Absolute")
-        self.q[0] = x
+        self.q.x[0] = x
         self.q.wait_until_stopped()
-        self.q[1] = y
+        self.q.x[1] = y
         self.q.wait_until_stopped()
-        self.q[2] = z
+        self.q.x[2] = z
         self.q.wait_until_stopped()
 
     def moveRelativeXYZ(self, x, y, z):
-        xCurrentPos = self.q[0]
-        yCurrentPos = self.q[1]
-        zCurrentPos = self.q[2]
+        xCurrentPos = self.q.x[0]
+        yCurrentPos = self.q.x[1]
+        zCurrentPos = self.q.x[2]
         print(xCurrentPos)
         print(yCurrentPos)
-        self.q[0] = x - xCurrentPos
+        self.q.x[0] = x - xCurrentPos
         self.q.wait_until_stopped()
-        self.q[1] = y - yCurrentPos
+        self.q.x[1] = y - yCurrentPos
         self.q.wait_until_stopped()
-        self.q[2] = z - zCurrentPos
+        self.q.x[2] = z - zCurrentPos
         self.q.wait_until_stopped()
 
