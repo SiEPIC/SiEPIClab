@@ -188,6 +188,8 @@ class instrumentFrame_withtabs(wx.Frame):
         Args:
             event:
         """
+        self.camera.cap.release()
+        cv2.destroyAllWindows()
         for inst in self.instList:
             inst.disconnect()
         self.Destroy()
@@ -658,7 +660,7 @@ class instrumentFrame_withtabs(wx.Frame):
                 self.graph = myMatplotlibPanel.myMatplotlibPanel(self)
                 self.autoMeasure = autoMeasure(laser, motorOpt, motorElec, SMU, self.fineAlign, self.graph)
 
-                self.autoMeasurePanel = autoMeasurePanel(self, self.autoMeasure)
+                self.autoMeasurePanel = autoMeasurePanel(self, self.autoMeasure, camera)
 
                 vbox.Add(self.autoMeasurePanel, proportion=0, flag=wx.EXPAND)
 
@@ -814,7 +816,7 @@ class instrumentFrame_withtabs(wx.Frame):
 
             self.result = cv2.VideoWriter(filename,
                                           cv2.VideoWriter_fourcc(*'MJPG'),
-                                          20, size)
+                                          10, size)
             self.recordflag = True
             print("Recording Started")
 

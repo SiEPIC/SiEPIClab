@@ -273,7 +273,7 @@ class autoMeasure(object):
 
         return newMotorCoords
 
-    def beginMeasure(self, devices, testingParameters, checkList, activeDetectors, graph, abortFunction=None, updateFunction=None, updateGraph=True):
+    def beginMeasure(self, devices, testingParameters, checkList, activeDetectors, graph, camera, abortFunction=None, updateFunction=None, updateGraph=True):
         """ Runs an automated measurement. For each device, wedge probe is moved out of the way, chip stage is moved
         so laser in aligned, wedge probe is moved to position. Various tests are performed depending on the contents
         of the testing parameters file.
@@ -305,6 +305,8 @@ class autoMeasure(object):
         for i, d in enumerate(testingParameters['device']):
             for device in devices:
                 if device.getDeviceID() == d:
+
+                    camera.startrecord(path = self.saveFolder)
                     # Find motor coordinates for desired device
                     gdsCoordOpt = (device.getOpticalCoordinates()[0], device.getOpticalCoordinates()[1])
                     motorCoordOpt = self.gdsToMotorCoordsOpt(gdsCoordOpt)
@@ -373,7 +375,7 @@ class autoMeasure(object):
                     #print('GDS: (%g,%g) Motor: (%g,%g,%g)' % (gdsCoordOpt[0], gdsCoordOpt[1], gdsCoordOpt[2],
                                                               #motorCoordOpt[0], motorCoordOpt[1]))
 
-
+                        camera.stoprecord()
                         path = self.saveFolder
                         d1 = d.replace(":","")
                         matFileName = os.path.join(path, self.saveFolder + "\\" + d1 + ".mat")

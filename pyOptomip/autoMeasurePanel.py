@@ -316,7 +316,7 @@ class coordinateMapPanel(wx.Panel):
 
 class autoMeasurePanel(wx.Panel):
 
-    def __init__(self, parent, autoMeasure):
+    def __init__(self, parent, autoMeasure, camera):
         """
         Creates the panel used to automate measurement of chips. Users must upload a text file created
         using the automated coordinate extraction from the Si-EPIC tools k-layout package. Then, three devices
@@ -335,6 +335,7 @@ class autoMeasurePanel(wx.Panel):
         self.autoMeasure = autoMeasure
         # List of all the names of devices on the chip
         self.device_list = []
+        self.camera = camera
         # No testing parameters have been uploaded
         self.parametersImported = False
         # Parameters to be imported from the testing parameters tab or uploaded file
@@ -624,13 +625,13 @@ class autoMeasurePanel(wx.Panel):
     def getActiveDetectors(self):
         activeDetectorLst = list()
         if self.sel1.GetValue() == True:
-            activeDetectorLst.append(1)
+            activeDetectorLst.append(0)
         if self.sel2.GetValue() == True:
-            activeDetectorLst.append(2)
+            activeDetectorLst.append(1)
         if self.sel3.GetValue() == True:
-            activeDetectorLst.append(3)
+            activeDetectorLst.append(2)
         if self.sel4.GetValue() == True:
-            activeDetectorLst.append(4)
+            activeDetectorLst.append(3)
         return activeDetectorLst
 
     def OnButton_Save(self, event):
@@ -996,7 +997,7 @@ class autoMeasurePanel(wx.Panel):
         # Start measurement using the autoMeasure device
         ###MUST HAVE AVAILABLE TESTING INFO FOR SELECTED DEVICE
         self.autoMeasure.beginMeasure(devices=checkedDevicesText, testingParameters=self.dataimport,
-                                      checkList=self.checkList, activeDetectors=activeDetectors, graph = self.graph,
+                                      checkList=self.checkList, activeDetectors=activeDetectors, graph = self.graph, camera = self.camera,
                                       abortFunction=None,updateFunction=None,updateGraph=True)
 
         # Create a measurement progress dialog.
