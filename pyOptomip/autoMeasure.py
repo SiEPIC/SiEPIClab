@@ -370,7 +370,8 @@ class autoMeasure(object):
                             self.drawGraph(self.measure.wav * 1e9, self.measure.pow, self.graph)
 
                             #save all associated files
-
+                            self.saveFiles(device, self.measure.wav, y, devNum, xArray, yArray, testType, motorCoord,
+                                      testingParameters)
                             # Create pdf file
                             path = self.saveFolder
                             d1 = d.replace(":", "")
@@ -520,10 +521,10 @@ class autoMeasure(object):
         writer.writerow(det1)
         f.close()
 
-    def saveFiles(self, deviceObject, x, y, devNum, xArray, yArray, testType, motorCoord):
+    def saveFiles(self, deviceObject, x, y, devNum, xArray, yArray, testType, motorCoord, testingParameters):
         self.save_pdf(deviceObject, x, y)
         self.save_mat(deviceObject, devNum, motorCoord, xArray, yArray, x, y)
-        self.save_csv(deviceObject, testType, xArray, yArray)
+        self.save_csv(deviceObject, testType, xArray, yArray, testingParameters)
 
 class CoordinateTransformException(Exception):
     pass
