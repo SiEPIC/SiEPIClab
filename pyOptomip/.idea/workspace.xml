@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a8aeb52c-8b26-4e4f-bf5c-7cec241db66f" name="Changes" comment="changed camera function to try and fix blackout issue">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="a8aeb52c-8b26-4e4f-bf5c-7cec241db66f" name="Changes" comment="added gitignore file">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CameraPanel.py" beforeDir="false" afterPath="$PROJECT_DIR$/CameraPanel.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -417,7 +415,14 @@
       <option name="project" value="LOCAL" />
       <updated>1666131687930</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="added gitignore file">
+      <created>1666133692585</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1666133692585</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -444,7 +449,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="formatted frontend of testing parameters, linked testing parameter program to pyoptomip" />
     <MESSAGE value="removed blank panel class" />
     <MESSAGE value="enabled devices appearing in selection window, created dictionary and linked to device parameter inputs" />
     <MESSAGE value="added setw and setw panels and began adding necessary parameters to the dictionary" />
@@ -469,6 +473,7 @@
     <MESSAGE value="upgraded camera to include, recording, saturation, exposure buttons, and open and close buttons" />
     <MESSAGE value="added documentation panel to hometab" />
     <MESSAGE value="changed camera function to try and fix blackout issue" />
-    <option name="LAST_COMMIT_MESSAGE" value="changed camera function to try and fix blackout issue" />
+    <MESSAGE value="added gitignore file" />
+    <option name="LAST_COMMIT_MESSAGE" value="added gitignore file" />
   </component>
 </project>
