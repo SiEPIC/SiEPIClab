@@ -64,7 +64,16 @@ class CorvusPanel(wx.Panel):
         hbox.Add(st1, flag=wx.ALIGN_LEFT, border=8)
         st1 = wx.StaticText(self, label='')
         hbox.Add(st1, flag=wx.EXPAND, border=8, proportion=1)
-        btn1 = wx.Button(self, label='-', size=(20, 20))
+        if self.axis == 1:
+            btn1 = wx.Button(self, label='Right', size=(80, 20))
+            btn2 = wx.Button(self, label='Left', size=(80, 20))
+        elif self.axis ==2:
+            btn1 = wx.Button(self, label='Forwards', size=(80, 20))
+            btn2 = wx.Button(self, label='Back', size=(80, 20))
+        else:
+            btn1 = wx.Button(self, label='Up', size=(80, 20))
+            btn2 = wx.Button(self, label='Down', size=(80, 20))
+
         hbox.Add(btn1, flag=wx.EXPAND | wx.RIGHT, proportion=0, border=8)
         btn1.Bind(wx.EVT_BUTTON, self.OnButton_MinusButtonHandler)
 
@@ -73,19 +82,17 @@ class CorvusPanel(wx.Panel):
 
         st1 = wx.StaticText(self, label='um')
         hbox.Add(st1, flag=wx.ALIGN_LEFT, border=8)
-
-        btn2 = wx.Button(self, label='+', size=(20, 20))
         hbox.Add(btn2, proportion=0, flag=wx.EXPAND | wx.LEFT | wx.RIGHT, border=8)
         btn2.Bind(wx.EVT_BUTTON, self.OnButton_PlusButtonHandler)
-        self.SetSizer(hbox);
+        self.SetSizer(hbox)
 
     def getMoveValue(self):
         try:
-            val = float(self.tc.GetValue());
+            val = float(self.tc.GetValue())
         except ValueError:
-            self.tc.SetValue('0');
-            return 0.0;
-        return val;
+            self.tc.SetValue('0')
+            return 0.0
+        return val
 
     def OnButton_MinusButtonHandler(self, event):
 

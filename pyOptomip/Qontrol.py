@@ -3,7 +3,7 @@ import re
 
 class QontrolMotor:
     name = 'Qontrol'
-    isMotor = False
+    isMotor = True
     isOpt = False
     isElec = True
     isLaser = False

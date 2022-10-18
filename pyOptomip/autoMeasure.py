@@ -352,6 +352,8 @@ class autoMeasure(object):
                             print("Performing Optical Test")
                             self.measure = measurementRoutines('OPT', testingParameters, i, self.smu, self.laser, self,
                                                 self.activeDetectors)
+                            self.graph.axes.set_xlabel('Wavelength (nm)')
+                            self.graph.axes.set_ylabel('Power (dBm)')
                             self.graph.canvas.sweepResultDict = {}
                             self.graph.canvas.sweepResultDict['wavelength'] = self.measure.wav
                             self.graph.canvas.sweepResultDict['power'] = self.measure.pow
@@ -413,6 +415,7 @@ class autoMeasure(object):
         graphPanel.axes.ticklabel_format(useOffset=False)
         graphPanel.canvas.draw()
 
+    #def save_csv(self):
 
 class CoordinateTransformException(Exception):
     pass

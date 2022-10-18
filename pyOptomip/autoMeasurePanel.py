@@ -516,7 +516,7 @@ class autoMeasurePanel(wx.Panel):
              (moveElecLabelBox, 0, wx.EXPAND), (goBoxElec, 0, wx.EXPAND)])
 
         topBox = wx.BoxSizer(wx.HORIZONTAL)
-        topBox.AddMany([(vboxUpload, 0, wx.EXPAND), (vboxMeasurement, 0, wx.EXPAND)])
+        topBox.AddMany([(vboxUpload, 1, wx.EXPAND), (vboxMeasurement, 0, wx.EXPAND)])
 
         checkBox = wx.BoxSizer(wx.VERTICAL)
         checkBox.AddMany([(checkListBox, 0, wx.EXPAND), (searchListBox, 0, wx.EXPAND), (selectBox, 0, wx.EXPAND),
@@ -916,7 +916,7 @@ class autoMeasurePanel(wx.Panel):
     # TODO: Modify to move probe out of the way and keep track of chip stage movement
     def OnButton_GotoDeviceOpt(self, event):
         """Moves laser to selected device"""
-        selectedDevice = self.devSelectCb.GetValue()
+        selectedDevice = self.devSelectCbOpt.GetString(self.devSelectCbOpt.GetSelection())
         global deviceListAsObjects
         for device in deviceListAsObjects:
             if device.getDeviceID == selectedDevice:

@@ -200,9 +200,6 @@ class instrumentFrame_withtabs(wx.Frame):
             self.camera = camera
             self.side_camera = side_camera
 
-            if laserWithDetector:
-                detectorPanel = laserWithDetector.panelClass(self, laserWithDetector, False, True, True)
-                homeVbox.Add(detectorPanel, proportion=0, border=0, flag=wx.EXPAND)
             if opticalStage:
                 opticalStagePanel = opticalStage.panelClass(self, opticalStage)
                 homeVbox.Add(opticalStagePanel, proportion=0, border=0, flag=wx.EXPAND)
@@ -219,6 +216,11 @@ class instrumentFrame_withtabs(wx.Frame):
             if electricalStage:
                 electricalStagePanel = electricalStage.panelClass(self, electricalStage)
                 homeVbox.Add(electricalStagePanel, proportion=0, border=0, flag=wx.EXPAND)
+            if laserWithDetector:
+                detectorPanel = laserWithDetector.panelClass(self, laserWithDetector, False, True)
+                detectHbox = wx.BoxSizer(wx.VERTICAL)
+                detectHbox.Add(detectorPanel,proportion=2, border=0, flag=wx.EXPAND)
+                homeVbox.Add(detectHbox, 1, wx.EXPAND)
 
             sbcam = wx.StaticBox(self, label='Camera Settings')
             vboxcam = wx.StaticBoxSizer(sbcam, wx.VERTICAL)
@@ -360,7 +362,7 @@ class instrumentFrame_withtabs(wx.Frame):
             vbox = wx.BoxSizer(wx.VERTICAL)
 
             if laserWithDetector:
-                laserPanel = laserWithDetector.panelClass(self, laserWithDetector, True, False, False)
+                laserPanel = laserWithDetector.panelClass(self, laserWithDetector, True, False)
                 laserVbox = wx.BoxSizer(wx.VERTICAL)
                 laserVbox.Add(laserPanel, proportion=0, border=0, flag=wx.EXPAND)
                 vbox.Add(laserVbox, 3, wx.EXPAND)
