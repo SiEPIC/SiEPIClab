@@ -1,6 +1,4 @@
 import wx
-import cv2
-import threading
 
 
 class cameraPanel(wx.Panel):
@@ -9,6 +7,7 @@ class cameraPanel(wx.Panel):
         super(cameraPanel, self).__init__(parent)
         self.camera = camera
         self.InitUI()
+
 
     def InitUI(self):
         sbcam = wx.StaticBox(self, label='Camera Settings')
