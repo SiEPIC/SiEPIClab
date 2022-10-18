@@ -463,7 +463,7 @@ class autoMeasure(object):
         matDict['metadata']['time_str'] = time.ctime(timeSeconds)
         savemat(matFileName, matDict)
 
-    def save_csv(self, deviceObject, testType, wavArray, powArray):
+    def save_csv(self, deviceObject, testType, wavArray, powArray, testingParameters):
 
         path = self.saveFolder
         d1 = deviceObject.getDeviceID().replace(":", "")
