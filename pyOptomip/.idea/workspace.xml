@@ -4,14 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a8aeb52c-8b26-4e4f-bf5c-7cec241db66f" name="Changes" comment="upgraded camera to include, recording, saturation, exposure buttons, and open and close buttons">
-      <change afterPath="$PROJECT_DIR$/documentationpanel.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/pyOptomip.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/pyOptomip.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+    <list default="true" id="a8aeb52c-8b26-4e4f-bf5c-7cec241db66f" name="Changes" comment="added documentation panel to hometab">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CameraPanel.py" beforeDir="false" afterPath="$PROJECT_DIR$/CameraPanel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/documentationpanel.py" beforeDir="false" afterPath="$PROJECT_DIR$/documentationpanel.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instrumentFrame_withtabs.py" beforeDir="false" afterPath="$PROJECT_DIR$/instrumentFrame_withtabs.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -401,7 +397,14 @@
       <option name="project" value="LOCAL" />
       <updated>1665687340842</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="added documentation panel to hometab">
+      <created>1666129621537</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1666129621537</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -428,7 +431,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="fixed up bugs regarding detector panel displaying properly, began working on test parameters program" />
     <MESSAGE value="created testing parameters standalone frame and began adding frontend" />
     <MESSAGE value="formatted frontend of testing parameters, linked testing parameter program to pyoptomip" />
     <MESSAGE value="removed blank panel class" />
@@ -453,6 +455,7 @@
     <MESSAGE value="fixed motorcoords not being saved" />
     <MESSAGE value="added camera support" />
     <MESSAGE value="upgraded camera to include, recording, saturation, exposure buttons, and open and close buttons" />
-    <option name="LAST_COMMIT_MESSAGE" value="upgraded camera to include, recording, saturation, exposure buttons, and open and close buttons" />
+    <MESSAGE value="added documentation panel to hometab" />
+    <option name="LAST_COMMIT_MESSAGE" value="added documentation panel to hometab" />
   </component>
 </project>

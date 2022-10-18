@@ -33,21 +33,21 @@ class docPanel(wx.Panel):
         vbox = wx.StaticBoxSizer(sb, wx.VERTICAL)
 
         self.hbox = wx.BoxSizer(wx.HORIZONTAL)
-        self.instBtn = wx.Button(self, label='Instrument Information', size=(50, 20))
+        self.instBtn = wx.Button(self, label='Instrument Information', size=(160, 20))
         self.hbox.Add(self.instBtn, 1, wx.EXPAND)
         self.instBtn.Bind(wx.EVT_BUTTON, self.instruments)
 
         self.hbox1 = wx.BoxSizer(wx.HORIZONTAL)
-        self.tutorialBtn = wx.Button(self, label='Tutorials', size=(50, 20))
+        self.tutorialBtn = wx.Button(self, label='Tutorials', size=(160, 20))
         self.hbox1.Add(self.tutorialBtn, 1, wx.EXPAND)
         self.tutorialBtn.Bind(wx.EVT_BUTTON, self.tutorials)
 
-        self.hbox1 = wx.BoxSizer(wx.HORIZONTAL)
-        self.tutorialBtn = wx.Button(self, label='pyOptomip User Guide', size=(50, 20))
-        self.hbox1.Add(self.tutorialBtn, 1, wx.EXPAND)
+        self.hbox2 = wx.BoxSizer(wx.HORIZONTAL)
+        self.tutorialBtn = wx.Button(self, label='pyOptomip User Guide', size=(160, 20))
+        self.hbox2.Add(self.tutorialBtn, 1, wx.EXPAND)
         self.tutorialBtn.Bind(wx.EVT_BUTTON, self.userguide)
 
-        vbox.AddMany([(self.hbox, 1, wx.EXPAND), (self.hbox1, 1, wx.EXPAND)])
+        vbox.AddMany([(self.hbox, 1, wx.EXPAND), (self.hbox1, 1, wx.EXPAND), (self.hbox2, 1, wx.EXPAND)])
         self.SetSizer(vbox)
 
     def instruments(self, event):

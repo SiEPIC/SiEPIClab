@@ -35,6 +35,7 @@ import cv2
 import threading
 import time
 from documentationpanel import docPanel
+from CameraPanel import cameraPanel
 
 
 class instrumentFrame_withtabs(wx.Frame):
@@ -96,14 +97,14 @@ class instrumentFrame_withtabs(wx.Frame):
                 self.SMU = inst
 
         """Connect to top and side cameras"""
-        self.camera = self.Camera(1)
+        #self.camera = cameraPanel.Camera
+        self.camera = self.Camera()
         self.camera.start()
-        self.side_camera = self.Camera(0)
-        self.side_camera.start()
+        #self.side_camera = self.Camera(0)
+        #self.side_camera.start()
 
         """Create the tab windows"""
-        tab1 = self.HomeTab(nb, self.laserWithDetector, self.opticalStage, self.electricalStage, self.camera,
-                            self.side_camera)
+        tab1 = self.HomeTab(nb, self.laserWithDetector, self.opticalStage, self.electricalStage, self.camera)
         tab2 = self.ElectricalTab(nb, self.SMU)
         tab3 = self.OpticalTab(nb, self.laserWithDetector)
         tab4 = self.AutoMeasureTab(nb, self.laserWithDetector, self.opticalStage, self.electricalStage, self.SMU,
@@ -187,7 +188,7 @@ class instrumentFrame_withtabs(wx.Frame):
         self.Destroy()
 
     class HomeTab(wx.Panel):
-        def __init__(self, parent, laserWithDetector, opticalStage, electricalStage, camera, side_camera):
+        def __init__(self, parent, laserWithDetector, opticalStage, electricalStage, camera):
             """
 
             Args:
@@ -199,7 +200,7 @@ class instrumentFrame_withtabs(wx.Frame):
             self.hbox = wx.BoxSizer(wx.HORIZONTAL)
             homeVbox = wx.BoxSizer(wx.VERTICAL)
             self.camera = camera
-            self.side_camera = side_camera
+            #self.side_camera = side_camera
 
             if opticalStage:
                 opticalStagePanel = opticalStage.panelClass(self, opticalStage)
@@ -223,120 +224,19 @@ class instrumentFrame_withtabs(wx.Frame):
                 detectHbox.Add(detectorPanel,proportion=2, border=0, flag=wx.EXPAND)
                 homeVbox.Add(detectHbox, 1, wx.EXPAND)
 
-
-            sbcam = wx.StaticBox(self, label='Camera Settings')
-            vboxcam = wx.StaticBoxSizer(sbcam, wx.VERTICAL)
-
-            self.hbox0 = wx.BoxSizer(wx.HORIZONTAL)
-            self.openBtn = wx.Button(self, label='Open', size=(50, 20))
-            self.openBtn.Bind(wx.EVT_BUTTON, self.OpenCamera)
-
-            self.closeBtn = wx.Button(self, label='Close', size=(50, 20))
-            self.closeBtn.Bind(wx.EVT_BUTTON, self.CloseCamera)
-            self.hbox0.AddMany([(self.openBtn, 1, wx.EXPAND), (self.closeBtn, 1, wx.EXPAND)])
-
-            self.hbox0_5 = wx.BoxSizer(wx.HORIZONTAL)
-            self.openSideBtn = wx.Button(self, label='Switch Views', size=(50, 20))
-            self.openSideBtn.Bind(wx.EVT_BUTTON, self.OpenSideCamera)
-
-            self.hbox0_5.AddMany([(self.openSideBtn, 1, wx.EXPAND)])
-
-            self.hbox1 = wx.BoxSizer(wx.HORIZONTAL)
-            bb = wx.StaticText(self, label='Saturation:')
-            self.saturation = wx.Slider(self, value=0, minValue=0, maxValue=254, style=wx.SL_HORIZONTAL)
-            self.hbox1.AddMany([(bb, 1, wx.EXPAND), (self.saturation, 1, wx.EXPAND)])
-            self.saturation.Bind(wx.EVT_SLIDER, self.saturationchange)
-
-            self.hbox2 = wx.BoxSizer(wx.HORIZONTAL)
-            bb2 = wx.StaticText(self, label='Exposure:')
-            self.exposure = wx.Slider(self, value=-5, minValue=-10, maxValue=0, style=wx.SL_HORIZONTAL)
-            self.hbox2.AddMany([(bb2, 1, wx.EXPAND), (self.exposure, 1, wx.EXPAND)])
-            self.exposure.Bind(wx.EVT_SLIDER, self.exposurechange)
-
-            self.hbox3 = wx.BoxSizer(wx.HORIZONTAL)
-            bb3 = wx.StaticText(self, label='Recording:')
-            self.startBtn = wx.Button(self, label='Start', size=(50, 20))
-            self.startBtn.Bind(wx.EVT_BUTTON, self.StartRecording)
-
-            self.stopBtn = wx.Button(self, label='Stop', size=(50, 20))
-            self.stopBtn.Bind(wx.EVT_BUTTON, self.StopRecording)
-
-            self.hbox3.AddMany([(bb3, 1, wx.EXPAND), (self.startBtn, 1, wx.EXPAND), (self.stopBtn, 1, wx.EXPAND)])
-
-            self.hbox4 = wx.BoxSizer(wx.HORIZONTAL)
-            st2 = wx.StaticText(self, label='Save folder:')
-            self.outputFolderTb = wx.TextCtrl(self, style=wx.TE_READONLY)
-            self.outputFolderBtn = wx.Button(self, wx.ID_OPEN, size=(50, 20))
-            self.outputFolderBtn.Bind(wx.EVT_BUTTON, self.OnButton_SelectOutputFolder)
-            self.hbox4.AddMany(
-                [(st2, 1, wx.EXPAND), (self.outputFolderTb, 1, wx.EXPAND), (self.outputFolderBtn, 0, wx.EXPAND)])
-
-            vboxcam.AddMany([(self.hbox0, 1, wx.EXPAND), (self.hbox1, 1, wx.EXPAND), (self.hbox2, 1, wx.EXPAND),
-                             (self.hbox3, 1, wx.EXPAND), (self.hbox4, 1, wx.EXPAND), (self.hbox0_5, 1, wx.EXPAND)])
-
-            self.hbox.Add(vboxcam)
+            camerapanel = cameraPanel(self, camera)
+            homeVbox.Add(camerapanel, 1, wx.EXPAND)
 
             docpanel = docPanel(self)
             homeVbox.Add(docpanel, 1, wx.EXPAND)
 
             self.hbox.Add(homeVbox)
 
-
-
             vbox.Add(self.hbox, 3, wx.EXPAND)
             self.SetSizer(vbox)
             self.Layout()
             self.Show()
 
-        def saturationchange(self, event):
-            c = self.saturation.GetValue()
-            self.camera.saturation(c)
-
-        def exposurechange(self, event):
-            c = self.exposure.GetValue()
-            self.camera.exposure(c)
-
-        def StartRecording(self, event):
-            print(self.outputFolderTb.GetValue())
-            if self.outputFolderTb.GetValue() == "":
-                print("Please select save location")
-            else:
-                self.camera.startrecord(self.outputFolderTb.GetValue())
-
-        def StopRecording(self, event):
-            self.camera.stoprecord()
-
-        def OpenCamera(self, event):
-            self.camera.open()
-
-        def CloseCamera(self, event):
-            self.camera.close()
-
-        def OpenSideCamera(self, event):
-            if self.camera.isOpened():
-                self.camera.close()
-                self.side_camera.open()
-                print("Switched to side view.")
-            elif self.side_camera.isOpened():
-                self.side_camera.close()
-                self.camera.open()
-                print("Switched to top view.")
-
-        def OnButton_SelectOutputFolder(self, event):
-            """
-            Opens the file explorer and allows user to choose the location to save the exported csv file
-            Parameters
-            ----------
-            event : the event triggered by pressing the "open" button to choose the output save location
-
-            Returns
-            -------
-
-            """
-            dirDlg = wx.DirDialog(self, "Open", "", wx.DD_DEFAULT_STYLE)
-            dirDlg.ShowModal()
-            self.outputFolderTb.SetValue(dirDlg.GetPath())
-            dirDlg.Destroy()
 
     class ElectricalTab(wx.Panel):
         def __init__(self, parent, SMU):
@@ -431,9 +331,9 @@ class instrumentFrame_withtabs(wx.Frame):
         # def connect(self, *args, **kwargs):
         # self.cap = cv2.VideoCapture(0)
 
-        def __init__(self, camID):
+        def __init__(self):
             threading.Thread.__init__(self)
-            self.camID = camID
+            self.camID = 0
 
         def run(self, *args, **kwargs):
             self.cap = cv2.VideoCapture(self.camID)
@@ -444,6 +344,7 @@ class instrumentFrame_withtabs(wx.Frame):
             self.frame_width = int(self.cap.get(3))
             self.frame_height = int(self.cap.get(4))
             self.recordflag = False
+            self.switchcamera = False
 
             while self.cap.isOpened():
                 if self.show:
@@ -464,6 +365,17 @@ class instrumentFrame_withtabs(wx.Frame):
 
                     if self.recordflag:
                         self.result.write(frame)
+
+                    if self.switchcamera:
+                        self.cap.release()
+                        cv2.destroyAllWindows()
+                        if self.camID == 0:
+                            self.camID = 1
+                        elif self.camID == 1:
+                            self.camID = 0
+                        self.cap = cv2.VideoCapture(self.camID)
+                        self.switchcamera = False
+
                 else:
                     self.cap.release()
                     # Destroy all the windows
