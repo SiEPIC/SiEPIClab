@@ -1,0 +1,240 @@
+Index: instrumentFrame_withtabs.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+># The MIT License (MIT)\r\n\r\n# Copyright (c) 2015 Michael Caverley\r\n\r\n# Permission is hereby granted, free of charge, to any person obtaining a copy\r\n# of this software and associated documentation files (the \"Software\"), to deal\r\n# in the Software without restriction, including without limitation the rights\r\n# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell\r\n# copies of the Software, and to permit persons to whom the Software is\r\n# furnished to do so, subject to the following conditions:\r\n\r\n# The above copyright notice and this permission notice shall be included in\r\n# all copies or substantial portions of the Software.\r\n\r\n# THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\r\n# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\r\n# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\r\n# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\r\n# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\r\n# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\r\n# THE SOFTWARE.\r\n\r\nimport wx\r\nfrom outputlogPanel import outputlogPanel\r\nimport sys\r\nfrom fineAlign import fineAlign\r\nfrom fineAlignPanel import fineAlignPanel\r\nimport traceback\r\nfrom logWriter import logWriter, logWriterError\r\nfrom autoMeasurePanel import autoMeasurePanel\r\nfrom autoMeasure import autoMeasure\r\nimport laserPanel\r\nfrom laserPanel import detectorPanel\r\nfrom laserPanel import tlsPanel\r\nfrom hp816x_N77Det_instr import hp816x_N77Det\r\nimport myMatplotlibPanel\r\nfrom matplotlib import pyplot as plt\r\nimport pyvisa as visa\r\nfrom TestParameters import testParameters\r\nfrom TestParameters import TopPanel\r\nimport cv\r\nimport cv2\r\nimport numpy as np\r\nfrom PIL import Image\r\nimport multiprocessing\r\nimport threading\r\nimport time\r\n\r\nhomebox = wx.BoxSizer(wx.HORIZONTAL)\r\n\r\nclass instrumentFrame_withtabs(wx.Frame):\r\n\r\n    def __init__(self, parent, instList):\r\n        \"\"\"\r\n\r\n        Args:\r\n            parent:\r\n            instList:\r\n        \"\"\"\r\n        displaySize = wx.DisplaySize()\r\n        super(instrumentFrame_withtabs, self).__init__(parent, title='Instrument Control',\r\n                                                       size=(displaySize[0] * 5 / 8.0, displaySize[1] * 3 / 4.0))\r\n\r\n        self.instList = instList\r\n        try:\r\n            self.InitUI()\r\n        except Exception as e:\r\n            for inst in instList:\r\n                inst.disconnect()\r\n            self.Destroy()\r\n            raise\r\n        self.Centre()\r\n        self.Show()\r\n\r\n    def InitUI(self):\r\n        \"\"\"\r\n\r\n        \"\"\"\r\n        self.Bind(wx.EVT_CLOSE, self.OnExitApp)\r\n\r\n        # c = wx.Panel(self)\r\n        self.p = wx.Panel(self)\r\n        nb = wx.Notebook(self.p)\r\n\r\n        # Create the tab windows\r\n        tab1 = self.HomeTab(nb, self.instList)\r\n        tab2 = self.ElectricalTab(nb, self.instList)\r\n        tab3 = self.OpticalTab(nb, self.instList)\r\n        tab4 = self.AutoMeasureTab(nb, self.instList)\r\n        tab5 = self.TestingparametersTab(nb, self.instList)\r\n\r\n        # Add the windows to tabs and name them.\r\n        nb.AddPage(tab1, \"Home\")\r\n        nb.AddPage(tab2, \"Electrical\")\r\n        nb.AddPage(tab3, \"Optical\")\r\n        nb.AddPage(tab4, \"Automated Measurements\")\r\n        nb.AddPage(tab5, \"Testing Parameters\")\r\n\r\n        outputlabel = wx.StaticBox(self, label='SMU Control')\r\n\r\n        output = wx.StaticBoxSizer(outputlabel, wx.VERTICAL)\r\n\r\n        print(self.instList)\r\n\r\n        # Set notebook in a sizer to create the layout\r\n        sizer = wx.BoxSizer(wx.VERTICAL)\r\n        sizer.Add(nb, 1, wx.ALL | wx.EXPAND)\r\n\r\n        self.log = outputlogPanel(self.p)\r\n        sizer.Add(self.log, 0, wx.ALL | wx.EXPAND)\r\n        self.p.SetSizer(sizer)\r\n        sys.stdout = logWriter(self.log)\r\n        sys.stderr = logWriterError(self.log)\r\n\r\n    def OnExitApp(self, event):\r\n        \"\"\"\r\n\r\n        Args:\r\n            event:\r\n        \"\"\"\r\n        for inst in self.instList:\r\n            inst.disconnect()\r\n        self.Destroy()\r\n\r\n    # Define the tab content as classes:\r\n    class HomeTab(wx.Panel):\r\n        def __init__(self, parent, instList):\r\n            \"\"\"\r\n\r\n            Args:\r\n                parent:\r\n                instList:\r\n            \"\"\"\r\n            wx.Panel.__init__(self, parent)\r\n            self.instList = instList\r\n            vbox = wx.BoxSizer(wx.VERTICAL)\r\n            self.hbox = wx.BoxSizer(wx.HORIZONTAL)\r\n            homeVbox = wx.BoxSizer(wx.VERTICAL)\r\n            self.t = instrumentFrame_withtabs.Camera()\r\n\r\n            # p1 = multiprocessing.Process(target=self.test)\r\n            # p1 = multiprocessing.Process(target=self.camerarunning(self.hbox))\r\n            # p1.start()\r\n\r\n            # x = threading.Thread(target=BackgroundTasks, args=(self.hbox,), daemon=True)\r\n            # x.start()\r\n\r\n            # t = BackgroundTasks()\r\n            # t.start()\r\n\r\n            # self.graph = myMatplotlibPanel.myMatplotlibPanel(self)  # use for regular mymatplotlib file\r\n            # hbox.Add(self.graph, flag=wx.EXPAND, border=0, proportion=1)\r\n            # self.hbox.Add(self.bitmap, flag=wx.EXPAND, border=0, proportion=1)\r\n\r\n            for inst in self.instList:\r\n                # if inst.isSMU:\r\n                # panel = inst.panelClass(self)\r\n                # else:\r\n                if inst.isDetect:\r\n                    panel = inst.panelClass(self, inst, False, True, True)\r\n                elif inst.isLaser and not inst.hasDetector:\r\n                    panel = inst.panelClass(self, inst, False, False, True)\r\n                else:\r\n                    panel = inst.panelClass(self, inst)\r\n\r\n                # homeVbox = wx.BoxSizer(wx.VERTICAL)\r\n                if inst.isMotor and not inst.isElec:\r\n                    homeVbox.Add(panel, proportion=0, border=0, flag=wx.EXPAND)\r\n\r\n                if (inst.isMotor and not inst.isElec) and self.laserFound():\r\n                    self.fineAlign = fineAlign(self.getLasers()[0], self.getMotors()[0])\r\n                    try:\r\n                        self.fineAlignPanel = fineAlignPanel(self, self.fineAlign)\r\n                    except Exception as e:\r\n                        dial = wx.MessageDialog(None,\r\n                                                'Could not initiate instrument control. ' + traceback.format_exc(),\r\n                                                'Error', wx.ICON_ERROR)\r\n                        dial.ShowModal()\r\n                    homeVbox.Add(self.fineAlignPanel, proportion=0, flag=wx.EXPAND)\r\n                    # if self.motorFound():\r\n                    #   hbox.Add(homeVbox)\r\n                if inst.isDetect:\r\n                    homeVbox.Add(panel, proportion=0, border=0, flag=wx.EXPAND)\r\n                    # self.detectorPanel = detectorPanel(panel, inst.getNumPWMChannels(), inst)\r\n                    # detectVbox.Add(self.detectorPanel, proportion=0, border=0, flag=wx.EXPAND)\r\n                    # hbox.Add(homeVbox, flag=wx.EXPAND)\r\n                if inst.isElec:\r\n                    homeVbox.Add(panel, proportion=0, border=0, flag=wx.EXPAND)\r\n                # self.laser = hp816x_N77Det()\r\n                #  detectVbox = wx.BoxSizer(wx.VERTICAL)\r\n                #  detPanel = detectorPanel(tlsPanel, self.laser.getNumPWMChannels(), self.laser)\r\n                #  detectVbox.Add(detPanel, proportion=0, border=0, flag=wx.EXPAND)\r\n                #  hbox.Add(detectVbox)\r\n                # else:\r\n                #   hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)\r\n            sbcam = wx.StaticBox(self, label='Camera Settings')\r\n            vboxcam = wx.StaticBoxSizer(sbcam, wx.VERTICAL)\r\n\r\n            self.hbox0 = wx.BoxSizer(wx.HORIZONTAL)\r\n            self.openBtn = wx.Button(self, label='Open', size=(50, 20))\r\n            self.openBtn.Bind(wx.EVT_BUTTON, self.OpenCamera)\r\n\r\n            self.closeBtn = wx.Button(self, label='Close', size=(50, 20))\r\n            self.closeBtn.Bind(wx.EVT_BUTTON, self.CloseCamera)\r\n            self.hbox0.AddMany([(self.openBtn, 1, wx.EXPAND), (self.closeBtn, 1, wx.EXPAND)])\r\n\r\n            self.hbox1 = wx.BoxSizer(wx.HORIZONTAL)\r\n            bb = wx.StaticText(self, label='Saturation:')\r\n            self.saturation = wx.Slider(self, value=0, minValue=0, maxValue=254, style=wx.SL_HORIZONTAL)\r\n            self.hbox1.AddMany([(bb, 1, wx.EXPAND), (self.saturation, 1, wx.EXPAND)])\r\n            self.saturation.Bind(wx.EVT_SLIDER, self.saturationchange)\r\n\r\n            self.hbox2 = wx.BoxSizer(wx.HORIZONTAL)\r\n            bb2 = wx.StaticText(self, label='Exposure:')\r\n            self.exposure = wx.Slider(self, value=-5, minValue=-10, maxValue=0, style=wx.SL_HORIZONTAL)\r\n            self.hbox2.AddMany([(bb2, 1, wx.EXPAND), (self.exposure, 1, wx.EXPAND)])\r\n            self.exposure.Bind(wx.EVT_SLIDER, self.exposurechange)\r\n\r\n            self.hbox3 = wx.BoxSizer(wx.HORIZONTAL)\r\n            bb3 = wx.StaticText(self, label='Recording:')\r\n            self.startBtn = wx.Button(self, label='Start', size=(50, 20))\r\n            self.startBtn.Bind(wx.EVT_BUTTON, self.StartRecording)\r\n\r\n            self.stopBtn = wx.Button(self, label='Stop', size=(50, 20))\r\n            self.stopBtn.Bind(wx.EVT_BUTTON, self.StopRecording)\r\n\r\n            self.hbox3.AddMany([(bb3, 1, wx.EXPAND), (self.startBtn, 1, wx.EXPAND), (self.stopBtn, 1, wx.EXPAND)])\r\n\r\n            self.hbox4 = wx.BoxSizer(wx.HORIZONTAL)\r\n            st2 = wx.StaticText(self, label='Save folder:')\r\n            self.outputFolderTb = wx.TextCtrl(self, style=wx.TE_READONLY)\r\n            self.outputFolderBtn = wx.Button(self, wx.ID_OPEN, size=(50, 20))\r\n            self.outputFolderBtn.Bind(wx.EVT_BUTTON, self.OnButton_SelectOutputFolder)\r\n            self.hbox4.AddMany(\r\n                [(st2, 1, wx.EXPAND), (self.outputFolderTb, 1, wx.EXPAND), (self.outputFolderBtn, 0, wx.EXPAND)])\r\n\r\n            vboxcam.AddMany([(self.hbox0, 1, wx.EXPAND), (self.hbox1, 1, wx.EXPAND), (self.hbox2, 1, wx.EXPAND),\r\n                             (self.hbox3, 1, wx.EXPAND), (self.hbox4, 1, wx.EXPAND)])\r\n\r\n            self.hbox.Add(homeVbox)\r\n            self.hbox.Add(vboxcam)\r\n            vbox.Add(self.hbox, 3, wx.EXPAND)\r\n            # self.log = outputlogPanel(self)\r\n            # vbox.Add(self.log, 1, wx.EXPAND)\r\n            self.SetSizer(vbox)\r\n            self.Layout()\r\n            self.Show()\r\n\r\n        def test(self):\r\n            cap = cv2.VideoCapture(0)\r\n            while cap.isOpened():\r\n                ret, frame = cap.read()\r\n\r\n                # show Image\r\n                cv2.imshow('Webcam', frame)\r\n\r\n                # checks whether q has been hit and stops the loop\r\n                if cv2.waitKey(1) & 0xFF == ord('q'):\r\n                    break\r\n\r\n        def camerarunning(self, hbox):\r\n\r\n            # connect to capture device\r\n            cap = cv2.VideoCapture(1)\r\n\r\n            while cap.isOpened():\r\n                ret, frame = cap.read()\r\n\r\n                # show Image\r\n                cv2.imshow('Webcam', frame)\r\n                # im_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)\r\n                # x = im_rgb.shape\r\n\r\n                ##self.bitmap1 = wx.Bitmap.FromBuffer(x[1], x[0], im_rgb)\r\n                # self.bitmap = wx.StaticBitmap(self, bitmap=self.bitmap1)\r\n                # hbox.Add(self.bitmap, flag=wx.EXPAND, border=0, proportion=1)\r\n                # print('Hello')\r\n\r\n                # checks whether q has been hit and stops the loop\r\n                if cv2.waitKey(1) & 0xFF == ord('q'):\r\n                    break\r\n\r\n            # cap.release()\r\n            # cv2.destroyAllWindows()\r\n\r\n        def motorFound(self):\r\n            \"\"\"\r\n\r\n            Returns:\r\n\r\n            \"\"\"\r\n            motorFound = False\r\n            for inst in self.instList:\r\n                motorFound = motorFound | inst.isMotor\r\n            return motorFound\r\n\r\n        def laserFound(self):\r\n            \"\"\"\r\n\r\n            Returns:\r\n\r\n            \"\"\"\r\n            laserFound = False\r\n            for inst in self.instList:\r\n                laserFound = laserFound | inst.isLaser\r\n            return laserFound\r\n\r\n        def getLasers(self):\r\n            \"\"\"\r\n\r\n            Returns:\r\n\r\n            \"\"\"\r\n            laserList = []\r\n            for inst in self.instList:\r\n                if inst.isLaser:\r\n                    laserList.append(inst)\r\n            return laserList\r\n\r\n        def getMotors(self):\r\n            \"\"\"\r\n\r\n            Returns:\r\n\r\n            \"\"\"\r\n            motorList = []\r\n            for inst in self.instList:\r\n                if inst.isMotor:\r\n                    motorList.append(inst)\r\n            return motorList\r\n\r\n        def saturationchange(self, event):\r\n            c = self.saturation.GetValue()\r\n            instrumentFrame_withtabs.Camera.saturation(self.t, c)\r\n\r\n        def exposurechange(self, event):\r\n            c = self.exposure.GetValue()\r\n            instrumentFrame_withtabs.Camera.exposure(self.t, c)\r\n\r\n        def StartRecording(self, event):\r\n            print(self.outputFolderTb.GetValue())\r\n            if self.outputFolderTb.GetValue() == \"\":\r\n                print(\"Please select save location\")\r\n            else:\r\n                instrumentFrame_withtabs.Camera.startrecord(self.t, self.outputFolderTb.GetValue())\r\n\r\n        def StopRecording(self, event):\r\n            instrumentFrame_withtabs.Camera.stoprecord(self.t)\r\n\r\n        def OpenCamera(self, event):\r\n            self.t.open()\r\n\r\n        def CloseCamera(self, event):\r\n            self.t.close()\r\n\r\n        def OnButton_SelectOutputFolder(self, event):\r\n            \"\"\"\r\n            Opens the file explorer and allows user to choose the location to save the exported csv file\r\n            Parameters\r\n            ----------\r\n            event : the event triggered by pressing the \"open\" button to choose the output save location\r\n\r\n            Returns\r\n            -------\r\n\r\n            \"\"\"\r\n            dirDlg = wx.DirDialog(self, \"Open\", \"\", wx.DD_DEFAULT_STYLE)\r\n            dirDlg.ShowModal()\r\n            self.outputFolderTb.SetValue(dirDlg.GetPath())\r\n            dirDlg.Destroy()\r\n\r\n        def OnExitApp(self, event):\r\n            \"\"\"\r\n\r\n            Args:\r\n                event:\r\n            \"\"\"\r\n            for inst in self.instList:\r\n                inst.disconnect()\r\n            self.Destroy()\r\n\r\n    class ElectricalTab(wx.Panel):\r\n        def __init__(self, parent, instList):\r\n            \"\"\"\r\n\r\n            Args:\r\n                parent:\r\n                instList:\r\n            \"\"\"\r\n            wx.Panel.__init__(self, parent)\r\n            self.instList = instList\r\n            vbox = wx.BoxSizer(wx.VERTICAL)\r\n            hbox = wx.BoxSizer(wx.HORIZONTAL)\r\n\r\n            for inst in self.instList:\r\n                # if inst.isSMU:\r\n                # panel = inst.panelClass(self, str(self.para1tc.GetValue()))\r\n                # else:\r\n\r\n                if inst.isDetect:\r\n                    panel = inst.panelClass(self, inst, False, True, False)\r\n                elif inst.isLaser:\r\n                    panel = inst.panelClass(self, inst, False, True, False)\r\n                else:\r\n                    panel = inst.panelClass(self, inst)\r\n\r\n                if inst.isSMU:\r\n                    hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)\r\n                # else:\r\n                #  hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)\r\n\r\n            vbox.Add(hbox, 3, wx.EXPAND)\r\n            # self.log = outputlogPanel(self)\r\n            # vbox.Add(self.log, 1, wx.EXPAND)\r\n            self.SetSizer(vbox)\r\n            self.Layout()\r\n            self.Show()\r\n\r\n        def motorFound(self):\r\n            \"\"\"\r\n\r\n            Returns:\r\n\r\n            \"\"\"\r\n            motorFound = False\r\n            for inst in self.instList:\r\n                motorFound = motorFound | inst.isMotor\r\n            return motorFound\r\n\r\n        def laserFound(self):\r\n            \"\"\"\r\n\r\n            Returns:\r\n\r\n            \"\"\"\r\n            laserFound = False\r\n            for inst in self.instList:\r\n                laserFound = laserFound | inst.isLaser\r\n            return laserFound\r\n\r\n        def getLasers(self):\r\n            \"\"\"\r\n\r\n            Returns:\r\n\r\n            \"\"\"\r\n            laserList = []\r\n            for inst in self.instList:\r\n                if inst.isLaser:\r\n                    laserList.append(inst)\r\n            return laserList\r\n\r\n        def getMotors(self):\r\n            \"\"\"\r\n\r\n            Returns:\r\n\r\n            \"\"\"\r\n            motorList = []\r\n            for inst in self.instList:\r\n                if inst.isMotor:\r\n                    motorList.append(inst)\r\n            return motorList\r\n\r\n        def OnExitApp(self, event):\r\n            \"\"\"\r\n\r\n            Args:\r\n                event:\r\n            \"\"\"\r\n            for inst in self.instList:\r\n                inst.disconnect()\r\n            self.Destroy()\r\n\r\n    class OpticalTab(wx.Panel):\r\n        def __init__(self, parent, instList):\r\n            \"\"\"\r\n\r\n            Args:\r\n                parent:\r\n                instList:\r\n            \"\"\"\r\n            wx.Panel.__init__(self, parent)\r\n            self.instList = instList\r\n            vbox = wx.BoxSizer(wx.VERTICAL)\r\n            hbox = wx.BoxSizer(wx.HORIZONTAL)\r\n            self.instList = instList\r\n\r\n            for inst in instList:\r\n                if inst.isLaser:\r\n                    if inst.hasDetector:\r\n                        panel = inst.panelClass(self, inst, True, False, False)\r\n                    else:\r\n                        panel = inst.panelClass(self, inst, True, False, False)\r\n\r\n                    laserVbox = wx.BoxSizer(wx.VERTICAL)\r\n                    laserVbox.Add(panel, proportion=0, border=0, flag=wx.EXPAND)\r\n                    hbox.Add(laserVbox)\r\n                else:\r\n                    panel = inst.panelClass(self, inst)\r\n                # else:\r\n                #   hbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)\r\n\r\n            vbox.Add(hbox, 3, wx.EXPAND)\r\n            # self.log = outputlogPanel(self)\r\n            # vbox.Add(self.log, 1, wx.EXPAND)\r\n            self.SetSizer(vbox)\r\n            self.Layout()\r\n            self.Show()\r\n\r\n        def motorFound(self):\r\n            \"\"\"\r\n\r\n            Returns:\r\n\r\n            \"\"\"\r\n            motorFound = False\r\n            for inst in self.instList:\r\n                motorFound = motorFound | inst.isMotor\r\n            return motorFound\r\n\r\n        def laserFound(self):\r\n            \"\"\"\r\n\r\n            Returns:\r\n\r\n            \"\"\"\r\n            laserFound = False\r\n            for inst in self.instList:\r\n                laserFound = laserFound | inst.isLaser\r\n            return laserFound\r\n\r\n        def getLasers(self):\r\n            \"\"\"\r\n\r\n            Returns:\r\n\r\n            \"\"\"\r\n            laserList = []\r\n            for inst in self.instList:\r\n                if inst.isLaser:\r\n                    laserList.append(inst)\r\n            return laserList\r\n\r\n        def getMotors(self):\r\n            \"\"\"\r\n\r\n            Returns:\r\n\r\n            \"\"\"\r\n            motorList = []\r\n            for inst in self.instList:\r\n                if inst.isMotor:\r\n                    motorList.append(inst)\r\n            return motorList\r\n\r\n        def OnExitApp(self, event):\r\n            \"\"\"\r\n\r\n            Args:\r\n                event:\r\n            \"\"\"\r\n            for inst in self.instList:\r\n                inst.disconnect()\r\n            self.Destroy()\r\n\r\n    class AutoMeasureTab(wx.Panel):\r\n        def __init__(self, parent, instList):\r\n            \"\"\"\r\n\r\n            Args:\r\n                parent:\r\n                instList:\r\n            \"\"\"\r\n            wx.Panel.__init__(self, parent)\r\n            self.instList = instList\r\n            vbox = wx.BoxSizer(wx.VERTICAL)\r\n            hbox = wx.BoxSizer(wx.HORIZONTAL)\r\n            if self.getLasers():\r\n                self.fineAlign = fineAlign(self.getLasers()[0], self.getMotorsOpt())\r\n                try:\r\n                    self.fineAlignPanel = fineAlignPanel(self, self.fineAlign)\r\n                except Exception as e:\r\n                    dial = wx.MessageDialog(None, 'Could not initiate instrument control. ' + traceback.format_exc(),\r\n                                            'Error', wx.ICON_ERROR)\r\n                    dial.ShowModal()\r\n\r\n                self.autoMeasure = autoMeasure(self.getLasers()[0], self.getMotorsOpt(), self.getMotorsElec()[0],\r\n                                               self.getSMUs(),\r\n                                               self.fineAlign)\r\n\r\n                self.autoMeasurePanel = autoMeasurePanel(self, self.autoMeasure)\r\n\r\n                vbox.Add(self.autoMeasurePanel, proportion=0, flag=wx.EXPAND)\r\n\r\n                vbox.Add(hbox, 3, wx.EXPAND)\r\n                # self.log = outputlogPanel(self)\r\n                # vbox.Add(self.log, 1, wx.EXPAND)\r\n                self.SetSizer(vbox)\r\n\r\n            # sys.stdout = logWriter(self.log)\r\n            # sys.stderr = logWriterError(self.log)\r\n\r\n        def motorFound(self):\r\n            \"\"\"\r\n\r\n            Returns:\r\n\r\n            \"\"\"\r\n            motorFound = False\r\n            for inst in self.instList:\r\n                motorFound = motorFound | inst.isMotor\r\n            return motorFound\r\n\r\n        def laserFound(self):\r\n            \"\"\"\r\n\r\n            Returns:\r\n\r\n            \"\"\"\r\n            laserFound = False\r\n            for inst in self.instList:\r\n                laserFound = laserFound | inst.isLaser\r\n            return laserFound\r\n\r\n        def getLasers(self):\r\n            \"\"\"\r\n\r\n            Returns:\r\n\r\n            \"\"\"\r\n            laserList = []\r\n            for inst in self.instList:\r\n                if inst.isLaser:\r\n                    laserList.append(inst)\r\n            return laserList\r\n\r\n        def getMotorsOpt(self):\r\n            \"\"\"\r\n\r\n            Returns:\r\n\r\n            \"\"\"\r\n            motorList = []\r\n            for inst in self.instList:\r\n                if inst.isMotor and inst.isOpt:\r\n                    motorList.append(inst)\r\n            if not motorList:\r\n                return [0]\r\n            else:\r\n                return motorList[0]\r\n\r\n        def getMotorsElec(self):\r\n            \"\"\"\r\n\r\n            Returns:\r\n\r\n            \"\"\"\r\n            motorList = []\r\n            for inst in self.instList:\r\n                if inst.isMotor and inst.isElec:\r\n                    motorList.append(inst)\r\n            if not motorList:\r\n                return [0]\r\n            else:\r\n                return motorList[0]\r\n\r\n        def getSMUs(self):\r\n            \"\"\"\r\n\r\n            Returns:\r\n\r\n            \"\"\"\r\n            SMUList = []\r\n            for inst in self.instList:\r\n                if inst.isSMU:\r\n                    SMUList.append(inst)\r\n            return SMUList\r\n\r\n        def OnExitApp(self, event):\r\n            \"\"\"\r\n\r\n            Args:\r\n                event:\r\n            \"\"\"\r\n            for inst in self.instList:\r\n                inst.disconnect()\r\n            self.Destroy()\r\n\r\n    class TestingparametersTab(wx.Panel):\r\n        def __init__(self, parent, instList):\r\n            \"\"\"\r\n\r\n            Args:\r\n                parent:\r\n                instList:\r\n            \"\"\"\r\n            wx.Panel.__init__(self, parent)\r\n            self.instList = instList\r\n            vbox = wx.BoxSizer(wx.VERTICAL)\r\n            hbox = wx.BoxSizer(wx.HORIZONTAL)\r\n\r\n            self.testingParameters = TopPanel(self)\r\n\r\n            vbox.Add(self.testingParameters, proportion=0, flag=wx.EXPAND)\r\n\r\n            vbox.Add(hbox, 3, wx.EXPAND)\r\n            # self.log = outputlogPanel(self)\r\n            # vbox.Add(self.log, 1, wx.EXPAND)\r\n            self.SetSizer(vbox)\r\n\r\n            # sys.stdout = logWriter(self.log)\r\n            # sys.stderr = logWriterError(self.log)\r\n\r\n        def motorFound(self):\r\n            \"\"\"\r\n\r\n            Returns:\r\n\r\n            \"\"\"\r\n            motorFound = False\r\n            for inst in self.instList:\r\n                motorFound = motorFound | inst.isMotor\r\n            return motorFound\r\n\r\n        def laserFound(self):\r\n            \"\"\"\r\n\r\n            Returns:\r\n\r\n            \"\"\"\r\n            laserFound = False\r\n            for inst in self.instList:\r\n                laserFound = laserFound | inst.isLaser\r\n            return laserFound\r\n\r\n        def getLasers(self):\r\n            \"\"\"\r\n\r\n            Returns:\r\n\r\n            \"\"\"\r\n            laserList = []\r\n            for inst in self.instList:\r\n                if inst.isLaser:\r\n                    laserList.append(inst)\r\n            return laserList\r\n\r\n        def getMotors(self):\r\n            \"\"\"\r\n\r\n            Returns:\r\n\r\n            \"\"\"\r\n            motorList = []\r\n            for inst in self.instList:\r\n                if inst.isMotor:\r\n                    motorList.append(inst)\r\n            return motorList\r\n\r\n        def OnExitApp(self, event):\r\n            \"\"\"\r\n\r\n            Args:\r\n                event:\r\n            \"\"\"\r\n            for inst in self.instList:\r\n                inst.disconnect()\r\n            self.Destroy()\r\n\r\n    class Camera(threading.Thread):\r\n\r\n        # def connect(self, *args, **kwargs):\r\n        # self.cap = cv2.VideoCapture(0)\r\n\r\n        def run(self, *args, **kwargs):\r\n            self.cap = cv2.VideoCapture(0)\r\n            self.show = False\r\n            self.a = 0\r\n            self.b = 0\r\n            self.record = 0\r\n            self.frame_width = int(self.cap.get(3))\r\n            self.frame_height = int(self.cap.get(4))\r\n            self.recordflag = False\r\n\r\n            while self.cap.isOpened():\r\n                if self.show:\r\n                    ret, frame = self.cap.read()\r\n\r\n                    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)\r\n\r\n                    h, s, v = cv2.split(hsv)\r\n\r\n                    s = s + self.a\r\n\r\n                    hsv = cv2.merge([h, s, v])\r\n                    frame = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)\r\n                    self.cap.set(cv2.CAP_PROP_EXPOSURE, self.b)\r\n                    cv2.imshow('Webcam', frame)\r\n\r\n                    if self.recordflag:\r\n                        self.result.write(frame)\r\n                else:\r\n                    self.cap.release()\r\n                    # Destroy all the windows\r\n                    cv2.destroyAllWindows()\r\n                    while not self.show:\r\n                        time.sleep(1)\r\n                        pass\r\n                    self.cap = cv2.VideoCapture(0)\r\n\r\n                if cv2.waitKey(1) & 0xFF == ord('q'):\r\n                    break\r\n\r\n            # After the loop release the cap object\r\n            self.cap.release()\r\n            # Destroy all the windows\r\n            cv2.destroyAllWindows()\r\n\r\n        def saturation(self, value):\r\n            self.a = value\r\n\r\n        def exposure(self, value):\r\n            self.b = value\r\n\r\n        def startrecord(self, path):\r\n\r\n            self.record = self.record + 1\r\n\r\n            filename = (path + \"\\Arraycapture_\" + str(self.record) + \".avi\")\r\n            print(filename)\r\n\r\n            size = (self.frame_width, self.frame_height)\r\n\r\n            self.result = cv2.VideoWriter(filename,\r\n                                          cv2.VideoWriter_fourcc(*'MJPG'),\r\n                                          20, size)\r\n            self.recordflag = True\r\n            print(\"Recording Started\")\r\n\r\n        def stoprecord(self):\r\n\r\n            self.recordflag = False\r\n            print(\"Recording Stopped\")\r\n\r\n        def close(self):\r\n            self.show = False\r\n\r\n        def open(self):\r\n            self.show = True\r\n\r\n\r\n\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/instrumentFrame_withtabs.py b/instrumentFrame_withtabs.py
+--- a/instrumentFrame_withtabs.py	(revision c1961452bad13f65bd348b427b96951ea4f01da7)
++++ b/instrumentFrame_withtabs.py	(date 1665769345098)
+@@ -81,9 +81,11 @@
+         # c = wx.Panel(self)
+         self.p = wx.Panel(self)
+         nb = wx.Notebook(self.p)
++        self.camera = self.Camera()
++        self.camera.start()
+ 
+         # Create the tab windows
+-        tab1 = self.HomeTab(nb, self.instList)
++        tab1 = self.HomeTab(nb, self.instList, self.camera)
+         tab2 = self.ElectricalTab(nb, self.instList)
+         tab3 = self.OpticalTab(nb, self.instList)
+         tab4 = self.AutoMeasureTab(nb, self.instList)
+@@ -124,7 +126,7 @@
+ 
+     # Define the tab content as classes:
+     class HomeTab(wx.Panel):
+-        def __init__(self, parent, instList):
++        def __init__(self, parent, instList, camera):
+             """
+ 
+             Args:
+@@ -136,7 +138,7 @@
+             vbox = wx.BoxSizer(wx.VERTICAL)
+             self.hbox = wx.BoxSizer(wx.HORIZONTAL)
+             homeVbox = wx.BoxSizer(wx.VERTICAL)
+-            self.t = instrumentFrame_withtabs.Camera()
++            self.camera = camera
+ 
+             # p1 = multiprocessing.Process(target=self.test)
+             # p1 = multiprocessing.Process(target=self.camerarunning(self.hbox))
+@@ -246,42 +248,6 @@
+             self.Layout()
+             self.Show()
+ 
+-        def test(self):
+-            cap = cv2.VideoCapture(0)
+-            while cap.isOpened():
+-                ret, frame = cap.read()
+-
+-                # show Image
+-                cv2.imshow('Webcam', frame)
+-
+-                # checks whether q has been hit and stops the loop
+-                if cv2.waitKey(1) & 0xFF == ord('q'):
+-                    break
+-
+-        def camerarunning(self, hbox):
+-
+-            # connect to capture device
+-            cap = cv2.VideoCapture(1)
+-
+-            while cap.isOpened():
+-                ret, frame = cap.read()
+-
+-                # show Image
+-                cv2.imshow('Webcam', frame)
+-                # im_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+-                # x = im_rgb.shape
+-
+-                ##self.bitmap1 = wx.Bitmap.FromBuffer(x[1], x[0], im_rgb)
+-                # self.bitmap = wx.StaticBitmap(self, bitmap=self.bitmap1)
+-                # hbox.Add(self.bitmap, flag=wx.EXPAND, border=0, proportion=1)
+-                # print('Hello')
+-
+-                # checks whether q has been hit and stops the loop
+-                if cv2.waitKey(1) & 0xFF == ord('q'):
+-                    break
+-
+-            # cap.release()
+-            # cv2.destroyAllWindows()
+ 
+         def motorFound(self):
+             """
+@@ -331,27 +297,27 @@
+ 
+         def saturationchange(self, event):
+             c = self.saturation.GetValue()
+-            instrumentFrame_withtabs.Camera.saturation(self.t, c)
++            self.camera.saturation(c)
+ 
+         def exposurechange(self, event):
+             c = self.exposure.GetValue()
+-            instrumentFrame_withtabs.Camera.exposure(self.t, c)
++            self.camera.exposure(c)
+ 
+         def StartRecording(self, event):
+             print(self.outputFolderTb.GetValue())
+             if self.outputFolderTb.GetValue() == "":
+                 print("Please select save location")
+             else:
+-                instrumentFrame_withtabs.Camera.startrecord(self.t, self.outputFolderTb.GetValue())
++                self.camera.startrecord(self.camera, self.outputFolderTb.GetValue())
+ 
+         def StopRecording(self, event):
+-            instrumentFrame_withtabs.Camera.stoprecord(self.t)
++            self.camera.stoprecord(self.camera)
+ 
+         def OpenCamera(self, event):
+-            self.t.open()
++            self.camera.open()
+ 
+         def CloseCamera(self, event):
+-            self.t.close()
++            self.camera.close()
+ 
+         def OnButton_SelectOutputFolder(self, event):
+             """
+Index: .idea/inspectionProfiles/profiles_settings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/inspectionProfiles/profiles_settings.xml b/.idea/inspectionProfiles/profiles_settings.xml
+--- a/.idea/inspectionProfiles/profiles_settings.xml	(revision c1961452bad13f65bd348b427b96951ea4f01da7)
++++ b/.idea/inspectionProfiles/profiles_settings.xml	(date 1665699721583)
+@@ -1,0 +1,6 @@
++<component name="InspectionProjectProfileManager">
++  <settings>
++    <option name="USE_PROJECT_PROFILE" value="false" />
++    <version value="1.0" />
++  </settings>
++</component>
+\ No newline at end of file
+Index: .idea/inspectionProfiles/Project_Default.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/inspectionProfiles/Project_Default.xml b/.idea/inspectionProfiles/Project_Default.xml
+--- a/.idea/inspectionProfiles/Project_Default.xml	(revision c1961452bad13f65bd348b427b96951ea4f01da7)
++++ b/.idea/inspectionProfiles/Project_Default.xml	(date 1665699721114)
+@@ -1,0 +1,24 @@
++<component name="InspectionProjectProfileManager">
++  <profile version="1.0">
++    <option name="myName" value="Project Default" />
++    <inspection_tool class="PyMissingOrEmptyDocstringInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
++    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
++      <option name="ignoredPackages">
++        <value>
++          <list size="1">
++            <item index="0" class="java.lang.String" itemvalue="matplotlib" />
++          </list>
++        </value>
++      </option>
++    </inspection_tool>
++    <inspection_tool class="PyPep8NamingInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
++      <option name="ignoredErrors">
++        <list>
++          <option value="N803" />
++          <option value="N806" />
++          <option value="N802" />
++        </list>
++      </option>
++    </inspection_tool>
++  </profile>
++</component>
+\ No newline at end of file
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+--- a/.idea/misc.xml	(revision c1961452bad13f65bd348b427b96951ea4f01da7)
++++ b/.idea/misc.xml	(date 1665702813531)
+@@ -1,0 +1,4 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.9" project-jdk-type="Python SDK" />
++</project>
+\ No newline at end of file
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+--- a/.idea/vcs.xml	(revision c1961452bad13f65bd348b427b96951ea4f01da7)
++++ b/.idea/vcs.xml	(date 1665699721549)
+@@ -1,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="VcsDirectoryMappings">
++    <mapping directory="$PROJECT_DIR$/.." vcs="Git" />
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/modules.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/modules.xml b/.idea/modules.xml
+--- a/.idea/modules.xml	(revision c1961452bad13f65bd348b427b96951ea4f01da7)
++++ b/.idea/modules.xml	(date 1665699721328)
+@@ -1,0 +1,8 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="ProjectModuleManager">
++    <modules>
++      <module fileurl="file://$PROJECT_DIR$/.idea/pyOptomip.iml" filepath="$PROJECT_DIR$/.idea/pyOptomip.iml" />
++    </modules>
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/pyOptomip.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/pyOptomip.iml b/.idea/pyOptomip.iml
+--- a/.idea/pyOptomip.iml	(revision c1961452bad13f65bd348b427b96951ea4f01da7)
++++ b/.idea/pyOptomip.iml	(date 1665702813447)
+@@ -1,0 +1,14 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<module type="PYTHON_MODULE" version="4">
++  <component name="NewModuleRootManager">
++    <content url="file://$MODULE_DIR$">
++      <excludeFolder url="file://$MODULE_DIR$/venv" />
++    </content>
++    <orderEntry type="jdk" jdkName="Python 3.9" jdkType="Python SDK" />
++    <orderEntry type="sourceFolder" forTests="false" />
++  </component>
++  <component name="PyDocumentationSettings">
++    <option name="format" value="PLAIN" />
++    <option name="myDocStringFormat" value="Plain" />
++  </component>
++</module>
+\ No newline at end of file

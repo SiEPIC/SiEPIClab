@@ -34,6 +34,7 @@ from TestParameters import TopPanel
 import cv2
 import threading
 import time
+from documentationpanel import docPanel
 
 
 class instrumentFrame_withtabs(wx.Frame):
@@ -222,6 +223,7 @@ class instrumentFrame_withtabs(wx.Frame):
                 detectHbox.Add(detectorPanel,proportion=2, border=0, flag=wx.EXPAND)
                 homeVbox.Add(detectHbox, 1, wx.EXPAND)
 
+
             sbcam = wx.StaticBox(self, label='Camera Settings')
             vboxcam = wx.StaticBoxSizer(sbcam, wx.VERTICAL)
 
@@ -272,8 +274,15 @@ class instrumentFrame_withtabs(wx.Frame):
             vboxcam.AddMany([(self.hbox0, 1, wx.EXPAND), (self.hbox1, 1, wx.EXPAND), (self.hbox2, 1, wx.EXPAND),
                              (self.hbox3, 1, wx.EXPAND), (self.hbox4, 1, wx.EXPAND), (self.hbox0_5, 1, wx.EXPAND)])
 
-            self.hbox.Add(homeVbox)
             self.hbox.Add(vboxcam)
+
+            docpanel = docPanel(self)
+            homeVbox.Add(docpanel, 1, wx.EXPAND)
+
+            self.hbox.Add(homeVbox)
+
+
+
             vbox.Add(self.hbox, 3, wx.EXPAND)
             self.SetSizer(vbox)
             self.Layout()

@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="a8aeb52c-8b26-4e4f-bf5c-7cec241db66f" name="Changes" comment="upgraded camera to include, recording, saturation, exposure buttons, and open and close buttons">
+      <change afterPath="$PROJECT_DIR$/documentationpanel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/pyOptomip.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/pyOptomip.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instrumentFrame_withtabs.py" beforeDir="false" afterPath="$PROJECT_DIR$/instrumentFrame_withtabs.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$/.." value="40e44a07e454d10d2869b06d5d8f89676bf71ed9" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="ProjectErrors" />
+  </component>
+  <component name="ProjectId" id="2CDxS1Dbo1vCvQYc6lCBk84Le0O" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Work/pyOptomip3/pyOptomip&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyIntegratedToolsModulesConfigurable&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Work\pyOptomip3\pyOptomip" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.pyOptomip.pyw">
+    <configuration name="TestParameters" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="pyOptomip" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/TestParameters.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="amcamexample" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="pyOptomip" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/amcamexample.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="camera" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="pyOptomip" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/camera.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="camera2" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="pyOptomip" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/camera2.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="pyOptomip.pyw" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="pyOptomip" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/pyOptomip.pyw" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.pyOptomip.pyw" />
+        <item itemvalue="Python.TestParameters" />
+        <item itemvalue="Python.camera2" />
+        <item itemvalue="Python.camera" />
+        <item itemvalue="Python.amcamexample" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a8aeb52c-8b26-4e4f-bf5c-7cec241db66f" name="Changes" comment="" />
+      <created>1658350953184</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1658350953184</updated>
+    </task>
+    <task id="LOCAL-00001" summary="change int to float for resolution check error message">
+      <created>1658351340456</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1658351340456</updated>
+    </task>
+    <task id="LOCAL-00002" summary="change int to float for resolution check error message">
+      <created>1658352408449</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1658352408449</updated>
+    </task>
+    <task id="LOCAL-00003" summary="fixed finealign so that pyoptomip opens">
+      <created>1658353696417</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1658353696417</updated>
+    </task>
+    <task id="LOCAL-00004" summary="fixed outputpanel duplication">
+      <created>1658354261391</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1658354261391</updated>
+    </task>
+    <task id="LOCAL-00005" summary="organized tabs, fixed checkbox deprecation error, began trying to split laser and detector">
+      <created>1658362089939</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1658362089939</updated>
+    </task>
+    <task id="LOCAL-00006" summary="organized tabs, fixed the detector on home tab and put together the optical tab">
+      <created>1658436882346</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1658436882346</updated>
+    </task>
+    <task id="LOCAL-00007" summary="fixed up bugs regarding detector panel displaying properly, began working on test parameters program">
+      <created>1658444225785</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1658444225785</updated>
+    </task>
+    <task id="LOCAL-00008" summary="created testing parameters standalone frame and began adding frontend">
+      <created>1658513418325</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1658513418325</updated>
+    </task>
+    <task id="LOCAL-00009" summary="formatted frontend of testing parameters, linked testing parameter program to pyoptomip">
+      <created>1658522291867</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1658522291867</updated>
+    </task>
+    <task id="LOCAL-00010" summary="removed blank panel class">
+      <created>1658523173496</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1658523173496</updated>
+    </task>
+    <task id="LOCAL-00011" summary="enabled devices appearing in selection window, created dictionary and linked to device parameter inputs">
+      <created>1658533215046</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1658533215046</updated>
+    </task>
+    <task id="LOCAL-00012" summary="added setw and setw panels and began adding necessary parameters to the dictionary">
+      <created>1659465480491</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1659465480491</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Fixed data dictionary export and import functions, finalized data dictionary parameters, modified gui to be more visually appealing">
+      <created>1659566062875</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1659566062875</updated>
+    </task>
+    <task id="LOCAL-00014" summary="adjusted order of routine panel setup so that program will work in pyoptomip">
+      <created>1659568978755</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1659568978755</updated>
+    </task>
+    <task id="LOCAL-00015" summary="added requirements.txt file">
+      <created>1659635327893</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1659635327893</updated>
+    </task>
+    <task id="LOCAL-00016" summary="added retrieve data function, doesnt function yet">
+      <created>1659722463184</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1659722463186</updated>
+    </task>
+    <task id="LOCAL-00017" summary="added retrieve data function, doesnt function yet">
+      <created>1659722486365</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1659722486365</updated>
+    </task>
+    <task id="LOCAL-00018" summary="reorganized layout">
+      <created>1659727475836</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1659727475837</updated>
+    </task>
+    <task id="LOCAL-00019" summary="added routine number organization by highlight function">
+      <created>1660163378130</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1660163378130</updated>
+    </task>
+    <task id="LOCAL-00020" summary="removed import file">
+      <created>1660164068257</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1660164068258</updated>
+    </task>
+    <task id="LOCAL-00021" summary="fized issue caused by change of parameter inputs in internal automeasure class">
+      <created>1660164570076</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1660164570076</updated>
+    </task>
+    <task id="LOCAL-00022" summary="added docstrings and updated documentation for testing parameters and SMU">
+      <created>1661293831473</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1661293831473</updated>
+    </task>
+    <task id="LOCAL-00023" summary="added further docstrings">
+      <created>1661803278967</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1661803278967</updated>
+    </task>
+    <task id="LOCAL-00024" summary="added to SMUtestsuite">
+      <created>1662156053274</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1662156053274</updated>
+    </task>
+    <task id="LOCAL-00025" summary="modified requirements">
+      <created>1663700523763</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1663700523764</updated>
+    </task>
+    <task id="LOCAL-00026" summary="fixed the outputlog size">
+      <created>1664829853854</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1664829853854</updated>
+    </task>
+    <task id="LOCAL-00027" summary="changed boxes in automeasure panel to comboboxes">
+      <created>1664837259195</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1664837259195</updated>
+    </task>
+    <task id="LOCAL-00028" summary="fixed motorcoords not being saved">
+      <created>1664840447538</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1664840447538</updated>
+    </task>
+    <task id="LOCAL-00029" summary="added camera support">
+      <created>1665513786812</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1665513786812</updated>
+    </task>
+    <task id="LOCAL-00030" summary="added camera support">
+      <created>1665513856715</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1665513856715</updated>
+    </task>
+    <task id="LOCAL-00031" summary="upgraded camera to include, recording, saturation, exposure buttons, and open and close buttons">
+      <created>1665687340842</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1665687340842</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="origin/ida-dev-py3" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="fixed up bugs regarding detector panel displaying properly, began working on test parameters program" />
+    <MESSAGE value="created testing parameters standalone frame and began adding frontend" />
+    <MESSAGE value="formatted frontend of testing parameters, linked testing parameter program to pyoptomip" />
+    <MESSAGE value="removed blank panel class" />
+    <MESSAGE value="enabled devices appearing in selection window, created dictionary and linked to device parameter inputs" />
+    <MESSAGE value="added setw and setw panels and began adding necessary parameters to the dictionary" />
+    <MESSAGE value="Fixed data dictionary export and import functions, finalized data dictionary parameters, modified gui to be more visually appealing" />
+    <MESSAGE value="adjusted order of routine panel setup so that program will work in pyoptomip" />
+    <MESSAGE value="added requirements.txt file" />
+    <MESSAGE value="added retrieve data function, doesnt function yet" />
+    <MESSAGE value="reorganized layout" />
+    <MESSAGE value="added routine number organization by highlight function" />
+    <MESSAGE value="removed import file" />
+    <MESSAGE value="fized issue caused by change of parameter inputs in internal automeasure class" />
+    <MESSAGE value="added docstrings and updated documentation for testing parameters and SMU" />
+    <MESSAGE value="added further docstrings" />
+    <MESSAGE value="added to SMUtestsuite" />
+    <MESSAGE value="modified requirements" />
+    <MESSAGE value="chnages should have been committed already" />
+    <MESSAGE value="not sure whats here" />
+    <MESSAGE value="fixed the outputlog size" />
+    <MESSAGE value="changed boxes in automeasure panel to comboboxes" />
+    <MESSAGE value="fixed motorcoords not being saved" />
+    <MESSAGE value="added camera support" />
+    <MESSAGE value="upgraded camera to include, recording, saturation, exposure buttons, and open and close buttons" />
+    <option name="LAST_COMMIT_MESSAGE" value="upgraded camera to include, recording, saturation, exposure buttons, and open and close buttons" />
+  </component>
+</project>
