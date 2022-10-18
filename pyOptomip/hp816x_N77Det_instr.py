@@ -254,6 +254,11 @@ class hp816x_N77Det(hp816x_instr.hp816x):
 
         return wavelengthArrPWM, powerArrPWM
 
+    def getName(self):
+        return "hp816x"
+
+    def getDetector(self):
+        return "N7744A"
 
 class InstrumentError(Exception):
     pass
