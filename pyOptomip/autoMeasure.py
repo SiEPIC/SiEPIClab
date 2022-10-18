@@ -310,13 +310,16 @@ class autoMeasure(object):
             for device in devices:
                 if device.getDeviceID() == d:
 
-                    camera.startrecord(path = self.saveFolder)
+                    camera.startrecord(path=self.saveFolder)
                     # Find motor coordinates for desired device
                     gdsCoordOpt = (device.getOpticalCoordinates()[0], device.getOpticalCoordinates()[1])
                     motorCoordOpt = self.gdsToMotorCoordsOpt(gdsCoordOpt)
+                    elec = False
                     if device.getElectricalCoordinates():
+
                         gdsCoordElec = (device.getElectricalCoordinates()[0], device.getElectricalCoordinates()[1])
                         motorCoordElec = self.gdsToMotorCoordsElec(gdsCoordElec)
+                        elec = True
 
                     if self.motorElec:
                         # move wedge probe out of the way
@@ -329,7 +332,7 @@ class autoMeasure(object):
                     self.motorOpt.moveAbsoluteXYZ(motorCoordOpt[0], motorCoordOpt[1], motorCoordOpt[2])
 
                     if device.getElectricalCoordinates():
-                        if self.motorElec:
+                        if elec:
                         # Move wedge probe and compensate for movement of chip stage
                             self.motorElec.moveAbsoluteXYZElec(motorCoordElec[0] + x, motorCoordElec[1] + y,
                                                             motorCoordElec[2] + z)
@@ -347,21 +350,27 @@ class autoMeasure(object):
                         for ii in range(self.checkList.GetItemCount()):
                             if self.checkList.GetItemText(ii) == device.getDeviceID():
                                 self.checkList.SetItemTextColour(ii, wx.Colour(0, 255, 0))
+
                         # Check which type of measurement is to be completed
                         if testingParameters['ELECflag'][i] == "True":
                             measurementRoutines('ELEC', testingParameters, i, self.smu, self.laser, self, self.activeDetectors)
+
                         if testingParameters['OPTICflag'][i] == "True":
                             timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
                             print("Performing Optical Test")
                             self.measure = measurementRoutines('OPT', testingParameters, i, self.smu, self.laser, self,
                                                 self.activeDetectors)
                             timeStop = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
+
                             self.graph.axes.set_xlabel('Wavelength (nm)')
                             self.graph.axes.set_ylabel('Power (dBm)')
                             self.graph.canvas.sweepResultDict = {}
                             self.graph.canvas.sweepResultDict['wavelength'] = self.measure.wav
                             self.graph.canvas.sweepResultDict['power'] = self.measure.pow
                             self.drawGraph(self.measure.wav * 1e9, self.measure.pow, self.graph)
+
+                            #save all associated files
+
                             # Create pdf file
                             path = self.saveFolder
                             d1 = d.replace(":", "")
@@ -373,6 +382,7 @@ class autoMeasure(object):
                             plt.ylabel('Power (dBm)')
                             plt.savefig(pdfFileName)
                             plt.close()
+
                         if testingParameters['setwflag'] == "True":
                             measurementRoutines('FIXWAVIV', testingParameters, i, self.smu, self.laser, self, self.activeDetectors)
                         if testingParameters['setvflag'] == "True":
@@ -418,7 +428,19 @@ class autoMeasure(object):
         graphPanel.axes.ticklabel_format(useOffset=False)
         graphPanel.canvas.draw()
 
-    def save_mat(self, deviceObject, devNum, testingParameters, motorCoordOpt, wavArray, powArray):
+    def save_pdf(self, deviceObject, x, y):
+        # Create pdf file
+        path = self.saveFolder
+        d1 = deviceObject.getDeviceID().replace(":", "")
+        pdfFileName = os.path.join(path, self.saveFolder + "\\" + d1 + ".pdf")
+        plt.figure()
+        plt.plot(self.measure.wav, self.measure.pow)
+        plt.xlabel(x)
+        plt.ylabel(y)
+        plt.savefig(pdfFileName)
+        plt.close()
+
+    def save_mat(self, deviceObject, devNum, motorCoordOpt, wavArray, powArray, x, y):
         path = self.saveFolder
         d1 = deviceObject.getDeviceID().replace(":", "")
         matFileName = os.path.join(path, self.saveFolder + "\\" + d1 + ".mat")
@@ -427,8 +449,8 @@ class autoMeasure(object):
         matDict = dict()
         matDict['scandata'] = dict()
         matDict['metadata'] = dict()
-        matDict['scandata']['wavelength'] = wavArray
-        matDict['scandata']['power'] = powArray
+        matDict['scandata'][x] = wavArray
+        matDict['scandata'][y] = powArray
         matDict['metadata']['device'] = deviceObject.getDeviceID()
         matDict['metadata']['gds_x_coord'] = deviceObject.getOpticalCoordinates()[0]
         matDict['metadata']['gds_y_coord'] = deviceObject.getOpticalCoordinates()[1]
@@ -446,7 +468,6 @@ class autoMeasure(object):
         path = self.saveFolder
         d1 = deviceObject.getDeviceID().replace(":", "")
         csvFileName = os.path.join(path, self.saveFolder + "\\" + d1 + ".csv")
-
         f = open(csvFileName, 'w', newline='')
         writer = csv.writer(f)
         textType = ["#Test:" + testType]
@@ -498,6 +519,11 @@ class autoMeasure(object):
         det1 = ["channel_1", powArray]
         writer.writerow(det1)
         f.close()
+
+    def saveFiles(self, deviceObject, x, y, devNum, xArray, yArray, testType, motorCoord):
+        self.save_pdf(deviceObject, x, y)
+        self.save_mat(deviceObject, devNum, motorCoord, xArray, yArray, x, y)
+        self.save_csv(deviceObject, testType, xArray, yArray)
 
 class CoordinateTransformException(Exception):
     pass
