@@ -466,6 +466,9 @@ class hp816x(object):
         idx = (abs(array - value)).argmin()
         return idx
 
+    def getName(self):
+        return "hp816x"
+
     def sweepReturnEquidistantData(self, value):
         """ Specifies whether or not a laser sweep returns equidistant wavelength values
             Default is on. This may need to be disbled on some lasers when the step size is
