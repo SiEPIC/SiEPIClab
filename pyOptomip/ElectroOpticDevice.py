@@ -134,3 +134,27 @@ class ElectroOpticDevice:
             self.setVoltageWavelengthSweeps['ChannelA'].append(a)
             self.setVoltageWavelengthSweeps['ChannelB'].append(initialrange)
             self.setVoltageWavelengthSweeps['Voltage'].append(voltage)
+
+    def getWavelengthSweeps(self):
+        return self.wavelengthSweeps
+
+    def getVoltageSweeps(self):
+        return self.voltageSweeps
+
+    def getCurrentSweeps(self):
+        return self.currentSweeps
+
+    def getSetWavelengthVoltageSweeps(self):
+        return self.setWavelengthVoltageSweeps
+
+    def getSetWavelengthCurrentSweeps(self):
+        return self.setWavelengthCurrentSweeps
+
+    def getSetVoltageWavelengthSweeps(self):
+        return self.setVoltageWavelengthSweeps
+
+    def hasRoutines(self):
+        return self.wavelengthSweeps or self.voltageSweeps or self.currentSweeps or \
+               self.setWavelengthVoltageSweeps or self.setWavelengthCurrentSweeps or \
+               self.setVoltageWavelengthSweeps
+
