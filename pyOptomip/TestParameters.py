@@ -85,7 +85,7 @@ class TopPanel(wx.Panel):
         self.routineflag = ""
         self.setpanel = SetPanel(self)#BlankPanel(self)
         self.instructpanel = InstructPanel(self, self.setpanel)
-        self.autoMeasure = autoMeasurePanel.autoMeasure
+        self.autoMeasure = automeasurePanel.autoMeasure
         self.selected = []
         self.retrievedataselected = []
         self.setflag = False
