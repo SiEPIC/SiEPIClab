@@ -6,8 +6,8 @@ class ElectroOpticDevice:
         self.wavelength = wavelength
         self.polarization = polarization
         self.opticalCoordinates = [x, y]
-        self.electricalCoordinates = []
         self.type = type
+        self.electricalCoordinates = []
         self.wavelengthSweeps = {'Start': [], 'Stop': [], 'Stepsize': [], 'Sweeppower': [], 'Sweepspeed': [],
                                  'Laseroutput': [], 'Numscans': [], 'InitialRange': [], 'RangeDec': []}
         self.voltageSweeps = {'VoltMin': [], 'VoltMax': [], 'VoltRes': [], 'IV': [], 'RV': [], 'PV': [],
@@ -59,7 +59,7 @@ class ElectroOpticDevice:
 
     def addWavelengthSweep(self, start, stop, stepsize, sweeppower, sweepspeed, laseroutput, numscans,
                            initialrange, rangedec):
-        """"""
+        """Associates a wavelength sweep routine with this device"""
         self.wavelengthSweeps['Start'].append(start)
         self.wavelengthSweeps['Stop'].append(stop)
         self.wavelengthSweeps['Stepsize'].append(stepsize)
@@ -71,7 +71,7 @@ class ElectroOpticDevice:
         self.wavelengthSweeps['RangeDec'].append(rangedec)
 
     def addVoltageSweep(self, voltmin, voltmax, voltres, iv, rv, pv, a, b):
-        """"""
+        """Associates a voltage sweep routine with this device"""
         self.voltageSweeps['VoltMin'].append(voltmin)
         self.voltageSweeps['VoltMax'].append(voltmax)
         self.voltageSweeps['VoltRes'].append(voltres)
@@ -82,7 +82,7 @@ class ElectroOpticDevice:
         self.voltageSweeps['ChannelB'].append(b)
 
     def addCurrentSweep(self, currentmin, currentmax, currentres, iv, rv, pv, a, b):
-        """"""
+        """Associates a current sweep routine with this device"""
         self.currentSweeps['CurrentMin'].append(currentmin)
         self.currentSweeps['CurrentMax'].append(currentmax)
         self.currentSweeps['CurrentRes'].append(currentres)
@@ -136,24 +136,32 @@ class ElectroOpticDevice:
             self.setVoltageWavelengthSweeps['Voltage'].append(voltage)
 
     def getWavelengthSweeps(self):
+        """Returns a dictionary of the wavelength sweep routines associated with this device"""
         return self.wavelengthSweeps
 
     def getVoltageSweeps(self):
+        """Returns a dictionary of the voltage sweep routines associated with this device"""
         return self.voltageSweeps
 
     def getCurrentSweeps(self):
+        """Returns a dictionary of the current sweep routines associated with this device"""
         return self.currentSweeps
 
     def getSetWavelengthVoltageSweeps(self):
+        """Returns a dictionary of the set wavelength voltage sweep routines associated with this device"""
         return self.setWavelengthVoltageSweeps
 
     def getSetWavelengthCurrentSweeps(self):
+        """Returns a dictionary of the set wavelength current sweep routines associated with this device"""
         return self.setWavelengthCurrentSweeps
 
     def getSetVoltageWavelengthSweeps(self):
+        """Returns a dictionary of the set voltage wavelength sweep routines associated with this device"""
         return self.setVoltageWavelengthSweeps
 
     def hasRoutines(self):
+        """Return true if the electro-optic device has any routines associated with it and
+        false otherwise"""
         return self.wavelengthSweeps or self.voltageSweeps or self.currentSweeps or \
                self.setWavelengthVoltageSweeps or self.setWavelengthCurrentSweeps or \
                self.setVoltageWavelengthSweeps

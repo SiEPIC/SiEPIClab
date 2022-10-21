@@ -84,20 +84,10 @@ class coordinateMapPanel(wx.Panel):
         self.tbGdsDevice1.Bind(wx.EVT_TEXT, self.on_drop_down1)
         self.tbGdsDevice1.Bind(wx.EVT_TEXT_ENTER, self.SortDropDowns1)
 
-        # Create drop down menus to select devices
-        # self.tbGdsDevice1 = wx.Choice(self, size=(200, 20), choices=[])
-        # self.tbGdsDevice1.Bind(wx.EVT_CHOICE, self.on_drop_down1)
-
-        # self.tbGdsDevice2 = wx.Choice(self, size=(200, 20), choices=[])
-        # self.tbGdsDevice2.Bind(wx.EVT_CHOICE, self.on_drop_down2)
-
         self.tbGdsDevice2 = wx.ComboBox(self, size=(200, 20), choices=[], style=wx.TE_PROCESS_ENTER)
         self.tbGdsDevice2.Bind(wx.EVT_CHOICE, self.on_drop_down2)
         self.tbGdsDevice2.Bind(wx.EVT_TEXT, self.on_drop_down2)
         self.tbGdsDevice2.Bind(wx.EVT_TEXT_ENTER, self.SortDropDowns2)
-
-        # self.tbGdsDevice3 = wx.Choice(self, size=(200, 20), choices=[])
-        # self.tbGdsDevice3.Bind(wx.EVT_CHOICE, self.on_drop_down3)
 
         self.tbGdsDevice3 = wx.ComboBox(self, size=(200, 20), choices=[], style=wx.TE_PROCESS_ENTER)
         self.tbGdsDevice3.Bind(wx.EVT_CHOICE, self.on_drop_down3)
@@ -109,9 +99,9 @@ class coordinateMapPanel(wx.Panel):
 
         # Get motor coordinates of first device from text box
         stDevice1 = wx.StaticText(self, label='Device %d' % (1))
-        self.tbxMotorCoord1 = wx.TextCtrl(self, size=(80, 20))
-        self.tbyMotorCoord1 = wx.TextCtrl(self, size=(80, 20))
-        self.tbzMotorCoord1 = wx.TextCtrl(self, size=(80, 20))
+        self.tbxMotorCoord1 = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
+        self.tbyMotorCoord1 = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
+        self.tbzMotorCoord1 = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
 
         btnGetMotorCoord = wx.Button(self, label='Get Pos.', size=(50, 20))
 
@@ -131,9 +121,9 @@ class coordinateMapPanel(wx.Panel):
 
         # Get motor coordinates of second device from text box
         stDevice2 = wx.StaticText(self, label='Device %d' % (2))
-        self.tbxMotorCoord2 = wx.TextCtrl(self, size=(80, 20))
-        self.tbyMotorCoord2 = wx.TextCtrl(self, size=(80, 20))
-        self.tbzMotorCoord2 = wx.TextCtrl(self, size=(80, 20))
+        self.tbxMotorCoord2 = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
+        self.tbyMotorCoord2 = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
+        self.tbzMotorCoord2 = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
 
         btnGetMotorCoord = wx.Button(self, label='Get Pos.', size=(50, 20))
 
@@ -153,9 +143,9 @@ class coordinateMapPanel(wx.Panel):
 
         # Get motor coordinates of first device from text box
         stDevice3 = wx.StaticText(self, label='Device %d' % (3))
-        self.tbxMotorCoord3 = wx.TextCtrl(self, size=(80, 20))
-        self.tbyMotorCoord3 = wx.TextCtrl(self, size=(80, 20))
-        self.tbzMotorCoord3 = wx.TextCtrl(self, size=(80, 20))
+        self.tbxMotorCoord3 = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
+        self.tbyMotorCoord3 = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
+        self.tbzMotorCoord3 = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
 
         btnGetMotorCoord = wx.Button(self, label='Get Pos.', size=(50, 20))
 
@@ -501,8 +491,10 @@ class autoMeasurePanel(wx.Panel):
         goBoxElec.AddMany([(self.devSelectCb, 1, wx.EXPAND), (self.gotoDevBtn, 0, wx.EXPAND)])
 
         # Populate File Upload Box with file upload, save folder selection and device checklist
-        vboxUpload.AddMany([(fileLabelBox, 0, wx.EXPAND), (fileLoadBox, 0, wx.EXPAND),
-                            (saveLabelBox, 0, wx.EXPAND), (saveBox, 0, wx.EXPAND)])
+        #vboxUpload.AddMany([(fileLabelBox, 0, wx.EXPAND), (fileLoadBox, 0, wx.EXPAND),
+                            #(saveLabelBox, 0, wx.EXPAND), (saveBox, 0, wx.EXPAND)])
+
+        vboxUpload.AddMany([(saveLabelBox, 0, wx.EXPAND), (saveBox, 0, wx.EXPAND)])
 
         # Populate Optical Box with alignment and buttons
         vboxOptical.AddMany([(opticalBox, 0, wx.EXPAND)])
@@ -558,6 +550,29 @@ class autoMeasurePanel(wx.Panel):
             dial = wx.MessageDialog(None, 'Could not initiate filter. ' + traceback.format_exc(),
                                     'Error', wx.ICON_ERROR)
             dial.ShowModal()
+
+    def importObjects(self, listOfDevicesAsObjects):
+        global deviceListAsObjects
+        deviceListAsObjects = listOfDevicesAsObjects
+        global deviceList
+        deviceList = []
+        for device in deviceListAsObjects:
+            deviceList.append(device.getDeviceID())
+        self.devSelectCb.Clear()
+        self.devSelectCb.AppendItems(deviceList)
+        self.devSelectCbOpt.Clear()
+        self.devSelectCbOpt.AppendItems(deviceList)
+        # Adds items to the checklist
+        self.checkList.DeleteAllItems()
+        for ii, device in enumerate(deviceList):
+            self.checkList.InsertItem(ii, device)
+            for dev in deviceListAsObjects:
+                if dev.getDeviceID() == device:
+                    index = deviceListAsObjects.index(dev)  # Stores index of device in list
+                    self.checkList.SetItemData(ii, index)
+        self.checkList.EnableCheckBoxes()
+        self.coordMapPanelOpt.PopulateDropDowns()
+        self.coordMapPanelElec.PopulateDropDowns()
 
     def OnButton_Filter(self, event):
         """Creates filter frame when filter button is pressed"""
@@ -844,6 +859,8 @@ class autoMeasurePanel(wx.Panel):
             for c in range(len(rows)):
                 x = rows[c].split(',')
 
+
+
                 self.dataimport['device'].append(x[1])
                 self.dataimport['ELECflag'].append(x[2])
                 self.dataimport['OPTICflag'].append(x[3])
@@ -898,10 +915,6 @@ class autoMeasurePanel(wx.Panel):
                 self.dataimport['setvChannelB'].append(x[52])
                 self.dataimport['Voltages'].append(x[53])
 
-        for keys, values in self.dataimport.items():
-            pass
-            # print(keys)
-            # print(values)
 
     def OnButton_CheckAll(self, event):
         """Selects all items in the devices check list"""
@@ -998,7 +1011,7 @@ class autoMeasurePanel(wx.Panel):
         ###MUST HAVE AVAILABLE TESTING INFO FOR SELECTED DEVICE
         self.autoMeasure.beginMeasure(devices=checkedDevicesText, testingParameters=self.dataimport,
                                       checkList=self.checkList, activeDetectors=activeDetectors, graph = self.graph, camera = self.camera,
-                                      abortFunction=None,updateFunction=None,updateGraph=True)
+                                      abortFunction=None, updateFunction=None, updateGraph=True)
 
         # Create a measurement progress dialog.
         autoMeasureDlg = autoMeasureProgressDialog(self, title='Automatic measurement')
