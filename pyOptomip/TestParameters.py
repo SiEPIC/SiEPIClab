@@ -35,7 +35,6 @@ class testParameters(wx.Frame):
 
         displaySize = wx.DisplaySize()
         super(testParameters, self).__init__(None, title='Instrument Control', size=(int(displaySize[0] * 5 / 8.0), int(displaySize[1] * 3 / 4.0)))
-
         try:
             self.InitUI()
         except Exception as e:
@@ -81,12 +80,12 @@ class testParameters(wx.Frame):
 # contains the graph.
 class TopPanel(wx.Panel):
 
-    def __init__(self, parent):
+    def __init__(self, parent, automeasurePanel):
         super(TopPanel, self).__init__(parent)
         self.routineflag = ""
         self.setpanel = SetPanel(self)#BlankPanel(self)
         self.instructpanel = InstructPanel(self, self.setpanel)
-        self.autoMeasure = autoMeasure()
+        self.autoMeasure = autoMeasurePanel.autoMeasure
         self.selected = []
         self.retrievedataselected = []
         self.setflag = False
@@ -107,7 +106,7 @@ class TopPanel(wx.Panel):
                      'setvStepsize': [], 'setvSweeppower': [], 'setvSweepspeed': [], 'setvLaseroutput': [],
                      'setvNumscans': [], 'setvInitialRange': [], 'setvRangeDec': [], 'setvChannelA': [],
                      'setvChannelB': [], 'Voltages': [], 'RoutineNumber': []}
-
+        self.autoMeasurePanel = automeasurePanel
         self.InitUI()
 
 
@@ -1193,6 +1192,8 @@ class TopPanel(wx.Panel):
         #for keys, values in self.data.items():
          #   print(keys)
           #  print(values)
+
+        self.autoMeasurePanel.importObjects(self.autoMeasure.devices)
 
         print('Data has been set')
 
@@ -2657,63 +2658,6 @@ class SetPanel(wx.Panel):
                 self.Asel3.SetValue(bool(self.setvchannelA[value]))
                 self.Bsel3.SetValue(bool(self.setvchannelB[value]))
                 self.voltagesetTc2.SetValue(self.setvvoltages[value])
-
-
-
-class autoMeasure(object):
-
-    def __init__(self):
-        self.saveFolder = os.getcwd()
-
-    def readCoordFile(self, fileName):
-
-        with open(fileName, 'r') as f:
-            data = f.readlines()
-
-        # Remove the first line since it is the header and remove newline char
-        dataStrip = [line.strip() for line in data[1:]]
-        dataStrip2 = []
-        for x in dataStrip:
-            j = x.replace(" ", "")
-            dataStrip2.append(j)
-        # x,y,polarization,wavelength,type,deviceid,params
-        reg = re.compile(r'(.-?[0-9]*),(.-?[0-9]*),(T(E|M)),([0-9]+),(.+?),(.+),(.*)')
-        # x, y, deviceid, padname, params
-        regElec = re.compile(r'(.-?[0-9]+),(.-?[0-9]+),(.+),(.+),(.*)')
-
-        self.devices = []
-        self.devSet = set()
-
-        for ii, line in enumerate(dataStrip2):
-            if reg.match(line):
-                matchRes = reg.findall(line)[0]
-                devName = matchRes[6]
-                self.devSet.add(devName)
-
-        # Parse the data in each line and put it into a list of devices
-        for ii, line in enumerate(dataStrip2):
-            if reg.match(line):
-                matchRes = reg.findall(line)[0]
-                devName = matchRes[6]
-                if devName in self.devSet:
-                    devName = "X:"+matchRes[0]+"Y:"+matchRes[1]+devName
-                self.devSet.add(devName)
-                device = ElectroOpticDevice(devName, matchRes[3], matchRes[2], float(matchRes[0]), float(matchRes[1]),
-                                            matchRes[5])
-                self.devices.append(device)
-            else:
-                if regElec.match(line):
-                    print(line)
-                    matchRes = reg.findall(line)[0]
-                    devName = matchRes[2]
-                    for device in self.devices:
-                        if device.getDeviceID() == devName:
-                            device.addElectricalCoordinates(matchRes[3], float(matchRes[0]), float(matchRes[1]))
-                else:
-                    if line == "" or line == "%X-coord,Y-coord,deviceID,padName,params":
-                        pass
-                    else:
-                        print('Warning: The entry\n%s\nis not formatted correctly.' % line)
 
 
 if __name__ == '__main__':
