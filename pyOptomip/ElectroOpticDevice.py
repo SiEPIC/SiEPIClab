@@ -6,9 +6,11 @@ class ElectroOpticDevice:
         self.wavelength = wavelength
         self.polarization = polarization
         self.type = type_
+        a = 0
+        b = 0
 
         self.opticalCoordinates = [x, y]
-        self.electricalCoordinates = []
+        self.electricalCoordinates = [a, b]
 
     def addElectricalCoordinates(self, padName, x, y):
         """Associates a bondpad with the device"""
@@ -27,6 +29,12 @@ class ElectroOpticDevice:
     def getDeviceID(self):
         """Returns the device id of the device. IDs should be unique for each device within a chip"""
         return self.device_id
+
+    def getDeviceWavelength(self):
+        return self.wavelength
+
+    def getDevicePolarization(self):
+        return self.polarization
 
     def getDeviceType(self):
         """Returns the type of the device"""

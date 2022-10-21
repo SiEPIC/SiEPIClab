@@ -4,9 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a8aeb52c-8b26-4e4f-bf5c-7cec241db66f" name="Changes" comment="something">
-      <change afterPath="$PROJECT_DIR$/hyperlinktest.py" afterDir="false" />
+    <list default="true" id="a8aeb52c-8b26-4e4f-bf5c-7cec241db66f" name="Changes" comment="added hyperlinks to home page">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ElectroOpticDevice.py" beforeDir="false" afterPath="$PROJECT_DIR$/ElectroOpticDevice.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TestParameters.csv" beforeDir="false" afterPath="$PROJECT_DIR$/TestParameters.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TestParameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/TestParameters.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/documentationpanel.py" beforeDir="false" afterPath="$PROJECT_DIR$/documentationpanel.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -431,7 +433,14 @@
       <option name="project" value="LOCAL" />
       <updated>1666134448630</updated>
     </task>
-    <option name="localTasksCounter" value="37" />
+    <task id="LOCAL-00037" summary="added hyperlinks to home page">
+      <created>1666138367537</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1666138367537</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -458,7 +467,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="enabled devices appearing in selection window, created dictionary and linked to device parameter inputs" />
     <MESSAGE value="added setw and setw panels and began adding necessary parameters to the dictionary" />
     <MESSAGE value="Fixed data dictionary export and import functions, finalized data dictionary parameters, modified gui to be more visually appealing" />
     <MESSAGE value="adjusted order of routine panel setup so that program will work in pyoptomip" />
@@ -483,6 +491,7 @@
     <MESSAGE value="changed camera function to try and fix blackout issue" />
     <MESSAGE value="added gitignore file" />
     <MESSAGE value="something" />
-    <option name="LAST_COMMIT_MESSAGE" value="something" />
+    <MESSAGE value="added hyperlinks to home page" />
+    <option name="LAST_COMMIT_MESSAGE" value="added hyperlinks to home page" />
   </component>
 </project>
