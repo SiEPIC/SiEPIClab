@@ -333,7 +333,7 @@ class instrumentFrame_withtabs(wx.Frame):
 
         def __init__(self):
             threading.Thread.__init__(self)
-            self.camID = 0
+            self.camID = 1
 
         def run(self, *args, **kwargs):
             self.cap = cv2.VideoCapture(self.camID)

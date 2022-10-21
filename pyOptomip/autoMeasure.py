@@ -356,6 +356,7 @@ class autoMeasure(object):
                             measurementRoutines('ELEC', testingParameters, i, self.smu, self.laser, self, self.activeDetectors)
 
                         if testingParameters['OPTICflag'][i] == "True":
+
                             timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
                             print("Performing Optical Test")
                             self.measure = measurementRoutines('OPT', testingParameters, i, self.smu, self.laser, self,
@@ -370,52 +371,16 @@ class autoMeasure(object):
                             self.drawGraph(self.measure.wav * 1e9, self.measure.pow, self.graph)
 
                             #save all associated files
-                            self.saveFiles(device, self.measure.wav, y, devNum, xArray, yArray, testType, motorCoord,
-                                      testingParameters)
-                            # Create pdf file
-                            path = self.saveFolder
-                            d1 = d.replace(":", "")
-                            pdfFileName = os.path.join(path, self.saveFolder + "\\" + d1 + ".pdf")
-                            plt.figure()
-                            print(testingParameters['Wavelengths'][i])
-                            plt.plot(self.measure.wav, self.measure.pow)
-                            plt.xlabel('Wavelength (nm)')
-                            plt.ylabel('Power (dBm)')
-                            plt.savefig(pdfFileName)
-                            plt.close()
+                            self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', i, self.measure.wav, self.measure.pow, 'Wavelength sweep', motorCoordOpt,
+                                      testingParameters, timeStart, timeStop, chipTimeStart)
 
                         if testingParameters['setwflag'] == "True":
                             measurementRoutines('FIXWAVIV', testingParameters, i, self.smu, self.laser, self, self.activeDetectors)
+
                         if testingParameters['setvflag'] == "True":
                             measurementRoutines('BIASVOPT', testingParameters, i, self.smu, self.laser, self, self.activeDetectors)
 
-
                         camera.stoprecord()
-
-                        path = self.saveFolder
-                        d1 = d.replace(":","")
-                        matFileName = os.path.join(path, self.saveFolder + "\\" + d1 + ".mat")
-
-
-
-                        # Save sweep data and metadata to the mat file
-                        matDict = dict()
-                        matDict['scandata'] = dict()
-                        matDict['metadata'] = dict()
-                        matDict['scandata']['wavelength'] = testingParameters['Wavelengths'][i]
-                        matDict['scandata']['power'] = testingParameters['Sweeppower'][i]
-                        matDict['metadata']['device'] = d
-                        matDict['metadata']['gds_x_coord'] = device.getOpticalCoordinates()[0]
-                        matDict['metadata']['gds_y_coord'] = device.getOpticalCoordinates()[1]
-                        matDict['metadata']['motor_x_coord'] = motorCoordOpt[0]
-                        matDict['metadata']['motor_y_coord'] = motorCoordOpt[1]
-                        matDict['metadata']['motor_z_coord'] = motorCoordOpt[2]
-                        matDict['metadata']['measured_device_number'] = i
-                        timeSeconds = time.time()
-                        matDict['metadata']['time_seconds'] = timeSeconds
-                        matDict['metadata']['time_str'] = time.ctime(timeSeconds)
-                        savemat(matFileName, matDict)
-
 
             if abortFunction is not None and abortFunction():
                 print('Aborted')
@@ -435,7 +400,7 @@ class autoMeasure(object):
         d1 = deviceObject.getDeviceID().replace(":", "")
         pdfFileName = os.path.join(path, self.saveFolder + "\\" + d1 + ".pdf")
         plt.figure()
-        plt.plot(self.measure.wav, self.measure.pow)
+        plt.plot(self.measure.wav/1000, self.measure.pow/1000)
         plt.xlabel(x)
         plt.ylabel(y)
         plt.savefig(pdfFileName)
@@ -464,7 +429,7 @@ class autoMeasure(object):
         matDict['metadata']['time_str'] = time.ctime(timeSeconds)
         savemat(matFileName, matDict)
 
-    def save_csv(self, deviceObject, testType, wavArray, powArray, testingParameters):
+    def save_csv(self, deviceObject, testType, wavArray, powArray, testingParameters, start, stop, chipStart, motorCoords, devNum):
 
         path = self.saveFolder
         d1 = deviceObject.getDeviceID().replace(":", "")
@@ -475,17 +440,17 @@ class autoMeasure(object):
         writer.writerow(textType)
         user = ["#User:"]
         writer.writerow(user)
-        start = ["#Start:" ]
+        start = ["#Start:" + start]
         writer.writerow(start)
-        stop = ["#Stop:"]
+        stop = ["#Stop:" + stop]
         writer.writerow(stop)
         devID = ["#Device ID:" + deviceObject.getDeviceID]
         writer.writerow(devID)
-        gds = ["#Device coordinates (gds):"]
+        gds = ["#Device coordinates (gds):" + deviceObject.getOpticalCoordinates()]
         writer.writerow(gds)
-        motor = ["#Device coordinates (motor):"]
+        motor = ["#Device coordinates (motor):" + motorCoords]
         writer.writerow(motor)
-        chipStart = ["#Chip test start:"]
+        chipStart = ["#Chip test start:" + chipStart]
         writer.writerow(chipStart)
         settings = ["#Settings:"]
         writer.writerow(settings)
@@ -493,21 +458,21 @@ class autoMeasure(object):
         writer.writerow(laser)
         detector = ["#Detector:" + self.laser.getDetector()]
         writer.writerow(detector)
-        speed = ["#Sweep speed:"]
+        speed = ["#Sweep speed:" + testingParameters['Sweepspeed'][devNum]]
         writer.writerow(speed)
-        numData = ["#Number of datasets:"]
+        numData = ["#Number of datasets: 1"]
         writer.writerow(numData)
-        laserPow = ["#Laser power:"]
+        laserPow = ["#Laser power:" + testingParameters['Sweeppower'][devNum]]
         writer.writerow(laserPow)
-        stepSize = ["#Wavelength step-size:"]
+        stepSize = ["#Wavelength step-size:" + testingParameters['Stepsize'][devNum]]
         writer.writerow(stepSize)
-        startWav = ["#Start wavelength:"]
+        startWav = ["#Start wavelength:" + testingParameters['Start'][devNum]]
         writer.writerow(startWav)
-        stopWav = ["#Stop wavelength:"]
+        stopWav = ["#Stop wavelength:" + testingParameters['Stop'][devNum]]
         writer.writerow(stopWav)
-        stitCount = ["#Stitch count:"]
+        stitCount = ["#Stitch count: 0"]
         writer.writerow(stitCount)
-        initRange = ["#Init Range:"]
+        initRange = ["#Init Range:" + testingParameters['InitialRange'][devNum]]
         writer.writerow(initRange)
         newSweep = ["#New sweep plot behaviour: replace"]
         writer.writerow(newSweep)
@@ -521,10 +486,10 @@ class autoMeasure(object):
         writer.writerow(det1)
         f.close()
 
-    def saveFiles(self, deviceObject, x, y, devNum, xArray, yArray, testType, motorCoord, testingParameters):
+    def saveFiles(self, deviceObject, x, y, devNum, xArray, yArray, testType, motorCoord, testingParameters, start, stop, chipStart):
         self.save_pdf(deviceObject, x, y)
         self.save_mat(deviceObject, devNum, motorCoord, xArray, yArray, x, y)
-        self.save_csv(deviceObject, testType, xArray, yArray, testingParameters)
+        self.save_csv(deviceObject, testType, xArray, yArray, testingParameters, start, stop, chipStart, motorCoord, devNum)
 
 class CoordinateTransformException(Exception):
     pass
