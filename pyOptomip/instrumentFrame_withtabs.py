@@ -114,10 +114,12 @@ class instrumentFrame_withtabs(wx.Frame):
 
         """Add the windows to tabs and name them."""
         nb.AddPage(tab1, "Home")
-        nb.AddPage(tab2, "Electrical")
-        nb.AddPage(tab3, "Optical")
-        nb.AddPage(tab4, "Automated Measurements")
+        if self.SMU:
+            nb.AddPage(tab2, "Electrical")
+        if self.laserWithDetector:
+            nb.AddPage(tab3, "Optical")
         if (self.laserWithDetector and self.opticalStage) or (self.SMU and self.electricalStage):
+            nb.AddPage(tab4, "Automated Measurements")
             nb.AddPage(tab5, "Testing Parameters")
 
         """Set notebook in a sizer to create the layout"""
