@@ -31,6 +31,7 @@ from hp816x_instrParameters import hp816x_instrParameters
 from QontrolMotorParameters import QontrolMotorParameters
 from dummyCorvusParameters import dummyCorvusParameters
 from BSC203MotorParameters import BSC203MotorParameters
+from dummyLaserParameters import dummyLaserParameters
 
 from SMUParameters import SMUParameters
 from outputlogPanel import outputlogPanel
@@ -45,7 +46,8 @@ softwareVersion = "1.1"
 
 devTypes = [CorvusEcoParameters, MGMotorParameters, QontrolMotorParameters,
             hp816x_N77Det_instrParameters, hp816x_instrParameters,
-            SMUParameters, dummyCorvusParameters, BSC203MotorParameters]# N77Det_instrParameters]
+            SMUParameters, dummyCorvusParameters, dummyLaserParameters,
+            BSC203MotorParameters]# N77Det_instrParameters]
 
 
 class ConnectCB(wx.Choicebook):

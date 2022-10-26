@@ -94,7 +94,7 @@ class autoMeasure(object):
                 if devName in self.devSet:
                     devName = "X:"+matchRes[0]+"Y:"+matchRes[1]+devName
                 self.devSet.add(devName)
-                device = ElectroOpticDevice(devName, matchRes[3], matchRes[2], float(matchRes[0]), float(matchRes[1]),
+                device = ElectroOpticDevice(devName, matchRes[4], matchRes[2], float(matchRes[0]), float(matchRes[1]),
                                             matchRes[5])
                 self.devices.append(device)
             else:
