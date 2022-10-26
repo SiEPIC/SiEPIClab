@@ -56,6 +56,7 @@ class autoMeasure(object):
         self.fineAlign = fineAlign
         self.saveFolder = os.getcwd()
         self.graphPanel = graph
+        self.devices = []
 
     def readCoordFile(self, fileName):
         """

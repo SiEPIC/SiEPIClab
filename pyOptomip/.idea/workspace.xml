@@ -4,12 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a8aeb52c-8b26-4e4f-bf5c-7cec241db66f" name="Changes" comment="added device properties to csv file export in testing parameters">
+    <list default="true" id="a8aeb52c-8b26-4e4f-bf5c-7cec241db66f" name="Changes" comment="fixed testing parameters so that checklist updates on import of csv file">
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2022-10-18_1_27_p_m___Changes_.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ElectroOpticDevice.py" beforeDir="false" afterPath="$PROJECT_DIR$/ElectroOpticDevice.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TestParameters.csv" beforeDir="false" afterPath="$PROJECT_DIR$/TestParameters.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TestParameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/TestParameters.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instrumentFrame_withtabs.py" beforeDir="false" afterPath="$PROJECT_DIR$/instrumentFrame_withtabs.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/autoMeasurePanel.py" beforeDir="false" afterPath="$PROJECT_DIR$/autoMeasurePanel.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -447,7 +446,21 @@
       <option name="project" value="LOCAL" />
       <updated>1666386128952</updated>
     </task>
-    <option name="localTasksCounter" value="39" />
+    <task id="LOCAL-00039" summary="fixed testing parameters so that checklist updates on import of csv file">
+      <created>1666807475581</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1666807475581</updated>
+    </task>
+    <task id="LOCAL-00040" summary="fixed testing parameters so that checklist updates on import of csv file">
+      <created>1666809026076</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1666809026076</updated>
+    </task>
+    <option name="localTasksCounter" value="41" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -474,7 +487,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Fixed data dictionary export and import functions, finalized data dictionary parameters, modified gui to be more visually appealing" />
     <MESSAGE value="adjusted order of routine panel setup so that program will work in pyoptomip" />
     <MESSAGE value="added requirements.txt file" />
     <MESSAGE value="added retrieve data function, doesnt function yet" />
@@ -499,17 +511,7 @@
     <MESSAGE value="something" />
     <MESSAGE value="added hyperlinks to home page" />
     <MESSAGE value="added device properties to csv file export in testing parameters" />
-    <option name="LAST_COMMIT_MESSAGE" value="added device properties to csv file export in testing parameters" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/TestParameters.py</url>
-          <line>1657</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="fixed testing parameters so that checklist updates on import of csv file" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed testing parameters so that checklist updates on import of csv file" />
   </component>
 </project>

@@ -85,6 +85,7 @@ class TopPanel(wx.Panel):
         self.routineflag = ""
         self.setpanel = SetPanel(self)#BlankPanel(self)
         self.instructpanel = InstructPanel(self, self.setpanel)
+        self.autoMeasurePanel = automeasurePanel
         self.autoMeasure = automeasurePanel.autoMeasure
         self.selected = []
         self.retrievedataselected = []
@@ -1548,7 +1549,7 @@ class TopPanel(wx.Panel):
 
 
 
-        self.autoMeasure.readCSV(originalfile)
+        deviceListAsObjects = self.autoMeasurePanel.readCSV(originalfile)
         self.device_list = deviceListAsObjects
         global deviceList
         deviceList = []
@@ -1624,64 +1625,7 @@ class autoMeasure(object):
                     else:
                         print('Warning: The entry\n%s\nis not formatted correctly.' % line)
 
-    def readCSV(self, originalFile):
-        """Reads a csv testing parameters file and stores the information as a list of electro-optic device
-         objects to be used for automated measurements."""
 
-        global deviceListAsObjects
-        deviceListAsObjects = []
-
-        with open(originalFile, 'r') as file:
-            rows = []
-            for row in file:
-                rows.append(row)
-
-            rows.pop(2)
-            rows.pop(1)
-            rows.pop(0)
-
-            for c in range(len(rows)):
-                x = rows[c].split(',')
-
-                deviceToTest = False
-                deviceToTestFlag = True
-
-                if len(deviceListAsObjects) == 0:
-                    deviceToTest = ElectroOpticDevice(x[1], x[54], x[55], x[56], x[57], x[58])
-                else:
-                    for device in deviceListAsObjects:
-                        if device.getDeviceID() == x[1]:
-                            deviceToTest = device
-                            deviceToTestFlag = False
-                    if deviceToTest == False:
-                        print("got here")
-                        deviceToTest = ElectroOpticDevice(x[1], x[54], x[55], x[56], x[57], x[58])
-
-                if x[2] == "True":
-                    """electrical routine"""
-                    if x[6] == "True":
-                        """voltage sweep"""
-                        deviceToTest.addVoltageSweep(x[8], x[9], x[12], x[14], x[15], x[16], x[17], x[18])
-                    if x[7] == "True":
-                        """Current sweep"""
-                        deviceToTest.addCurrentSweep(x[10], x[11], x[13], x[14], x[15], x[16], x[17], x[18])
-                if x[3] == "True":
-                    """optical routine"""
-                    deviceToTest.addWavelengthSweep(x[19], x[20], x[21], x[22], x[23], x[24], x[25], x[26], x[27])
-                if x[4] == "True":
-                    """set wavelength iv"""
-                    if x[28] == "True":
-                        """voltage sweep"""
-                        deviceToTest.addSetWavelengthVoltageSweep(x[30], x[31], x[34], x[36], x[37], x[38], x[39], x[40], x[41])
-                    if x[29] == "True":
-                        """current sweep"""
-                        deviceToTest.addSetWavelengthCurrentSweep(x[32], x[33], x[35], x[36], x[37], x[38], x[39], x[40], x[41])
-                if x[5] == "True":
-                    """set voltage optical sweep"""
-                    deviceToTest.addSetVoltageWavelengthSweep(x[42], x[43], x[44], x[45], x[46], x[47], x[48],
-                                                              x[49], x[50], x[51], x[52], x[53])
-                if deviceToTestFlag:
-                    deviceListAsObjects.append(deviceToTest)
 
 
 #This panel class contains the instructions for going about inputting the routine data for the devices as well as the
