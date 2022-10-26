@@ -4,12 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a8aeb52c-8b26-4e4f-bf5c-7cec241db66f" name="Changes" comment="added hyperlinks to home page">
+    <list default="true" id="a8aeb52c-8b26-4e4f-bf5c-7cec241db66f" name="Changes" comment="added device properties to csv file export in testing parameters">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ElectroOpticDevice.py" beforeDir="false" afterPath="$PROJECT_DIR$/ElectroOpticDevice.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TestParameters.csv" beforeDir="false" afterPath="$PROJECT_DIR$/TestParameters.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TestParameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/TestParameters.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documentationpanel.py" beforeDir="false" afterPath="$PROJECT_DIR$/documentationpanel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instrumentFrame_withtabs.py" beforeDir="false" afterPath="$PROJECT_DIR$/instrumentFrame_withtabs.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -440,7 +440,14 @@
       <option name="project" value="LOCAL" />
       <updated>1666138367537</updated>
     </task>
-    <option name="localTasksCounter" value="38" />
+    <task id="LOCAL-00038" summary="added device properties to csv file export in testing parameters">
+      <created>1666386128951</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1666386128952</updated>
+    </task>
+    <option name="localTasksCounter" value="39" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -467,7 +474,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="added setw and setw panels and began adding necessary parameters to the dictionary" />
     <MESSAGE value="Fixed data dictionary export and import functions, finalized data dictionary parameters, modified gui to be more visually appealing" />
     <MESSAGE value="adjusted order of routine panel setup so that program will work in pyoptomip" />
     <MESSAGE value="added requirements.txt file" />
@@ -492,6 +498,18 @@
     <MESSAGE value="added gitignore file" />
     <MESSAGE value="something" />
     <MESSAGE value="added hyperlinks to home page" />
-    <option name="LAST_COMMIT_MESSAGE" value="added hyperlinks to home page" />
+    <MESSAGE value="added device properties to csv file export in testing parameters" />
+    <option name="LAST_COMMIT_MESSAGE" value="added device properties to csv file export in testing parameters" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/TestParameters.py</url>
+          <line>1657</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

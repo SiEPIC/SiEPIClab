@@ -109,7 +109,7 @@ class instrumentFrame_withtabs(wx.Frame):
         tab3 = self.OpticalTab(nb, self.laserWithDetector)
         tab4 = self.AutoMeasureTab(nb, self.laserWithDetector, self.opticalStage, self.electricalStage, self.SMU,
                                    self.camera)
-        tab5 = self.TestingParametersTab(nb, tab4.autoMeasurePanel)
+        tab5 = self.TestingParametersTab(nb)#, tab4.autoMeasurePanel)
 
         """Add the windows to tabs and name them."""
         nb.AddPage(tab1, "Home")
@@ -259,6 +259,7 @@ class instrumentFrame_withtabs(wx.Frame):
             self.Layout()
             self.Show()
 
+
     class OpticalTab(wx.Panel):
         def __init__(self, parent, laserWithDetector):
             """
@@ -279,6 +280,7 @@ class instrumentFrame_withtabs(wx.Frame):
             self.SetSizer(vbox)
             self.Layout()
             self.Show()
+
 
     class AutoMeasureTab(wx.Panel):
         def __init__(self, parent, laser, motorOpt, motorElec, SMU, camera):
@@ -310,8 +312,9 @@ class instrumentFrame_withtabs(wx.Frame):
                 vbox.Add(hbox, 3, wx.EXPAND)
                 self.SetSizer(vbox)
 
+
     class TestingParametersTab(wx.Panel):
-        def __init__(self, parent, automeasurePanel):
+        def __init__(self, parent):#, automeasurePanel):
             """
 
             Args:
@@ -321,7 +324,7 @@ class instrumentFrame_withtabs(wx.Frame):
             wx.Panel.__init__(self, parent)
             vbox = wx.BoxSizer(wx.VERTICAL)
             hbox = wx.BoxSizer(wx.HORIZONTAL)
-            self.testingParameters = TopPanel(self, automeasurePanel)
+            self.testingParameters = TopPanel(self)#, automeasurePanel)
             vbox.Add(self.testingParameters, proportion=0, flag=wx.EXPAND)
             vbox.Add(hbox, 3, wx.EXPAND)
             self.SetSizer(vbox)
