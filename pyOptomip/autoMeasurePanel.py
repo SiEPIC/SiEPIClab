@@ -833,15 +833,19 @@ class autoMeasurePanel(wx.Panel):
 
         fileDlg = wx.FileDialog(self, "Open", "", "",
                                 "CSV Files (*.csv)|*.csv",
-                                wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
+                                wx.FD_OPEN | wx.FD_MULTIPLE | wx.FD_FILE_MUST_EXIST)
         fileDlg.ShowModal()
-        originalFile = fileDlg.GetPath()
+        Files = fileDlg.GetPaths()
 
-        if originalFile == '':
+        if not Files:
             print('Please select a file to import')
             return
 
-        self.readCSV(originalFile)
+        global deviceListAsObjects
+        deviceListAsObjects = []
+
+        for file in Files:
+            self.readCSV(file)
         self.parametersImported = True
 
     def readCSV(self, originalFile):
@@ -849,7 +853,6 @@ class autoMeasurePanel(wx.Panel):
          objects to be used for automated measurements."""
 
         global deviceListAsObjects
-        deviceListAsObjects = []
 
         with open(originalFile, 'r') as file:
             rows = []
@@ -990,9 +993,10 @@ class autoMeasurePanel(wx.Panel):
 
         # Start measurement using the autoMeasure device
         ###MUST HAVE AVAILABLE TESTING INFO FOR SELECTED DEVICE
-        self.autoMeasure.beginMeasure(devices=checkedDevicesText, testingParameters=self.dataimport,
-                                      checkList=self.checkList, activeDetectors=activeDetectors, graph = self.graph, camera = self.camera,
-                                      abortFunction=None, updateFunction=None, updateGraph=True)
+        self.autoMeasure.beginMeasure(devices=checkedDevicesText, checkList=self.checkList,
+                                      activeDetectors=activeDetectors, graph=self.graph,
+                                      camera=self.camera, abortFunction=None, updateFunction=None,
+                                      updateGraph=True)
 
         # Create a measurement progress dialog.
         autoMeasureDlg = autoMeasureProgressDialog(self, title='Automatic measurement')

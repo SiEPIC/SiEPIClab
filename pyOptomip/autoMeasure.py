@@ -78,7 +78,6 @@ class autoMeasure(object):
         # x, y, deviceid, padname, params
         regElec = re.compile(r'(.-?[0-9]*),(.-?[0-9]*),(.+),(.+),(.*)')
 
-        self.devices = []
         self.devSet = set()
 
         for ii, line in enumerate(dataStrip2):
@@ -275,7 +274,7 @@ class autoMeasure(object):
 
         return newMotorCoords
 
-    def beginMeasure(self, devices, testingParameters, checkList, activeDetectors, graph, camera, abortFunction=None, updateFunction=None, updateGraph=True):
+    def beginMeasure(self, devices, checkList, activeDetectors, graph, camera, abortFunction=None, updateFunction=None, updateGraph=True):
         """ Runs an automated measurement. For each device, wedge probe is moved out of the way, chip stage is moved
         so laser in aligned, wedge probe is moved to position. Various tests are performed depending on the contents
         of the testing parameters file.
@@ -305,82 +304,81 @@ class autoMeasure(object):
 
         chipTimeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
 
-        # For each device
-        for i, d in enumerate(testingParameters['device']):
-            for device in devices:
-                if device.getDeviceID() == d:
+        # For each checked device
+        for i, device in enumerate(devices):
 
-                    camera.startrecord(path=self.saveFolder)
-                    # Find motor coordinates for desired device
-                    gdsCoordOpt = (device.getOpticalCoordinates()[0], device.getOpticalCoordinates()[1])
-                    motorCoordOpt = self.gdsToMotorCoordsOpt(gdsCoordOpt)
-                    elec = False
-                    if device.getElectricalCoordinates():
+            camera.startrecord(path=self.saveFolder)
 
-                        gdsCoordElec = (device.getElectricalCoordinates()[0], device.getElectricalCoordinates()[1])
-                        motorCoordElec = self.gdsToMotorCoordsElec(gdsCoordElec)
-                        elec = True
+            # Find motor coordinates for desired device
+            gdsCoordOpt = (device.getOpticalCoordinates()[0], device.getOpticalCoordinates()[1])
+            motorCoordOpt = self.gdsToMotorCoordsOpt(gdsCoordOpt)
+            elec = False
+            if device.getElectricalCoordinates():
 
-                    if self.motorElec:
-                        # move wedge probe out of the way
-                        self.motorElec.moveRelativeXYZElec(0, -2000, 2000)
+                gdsCoordElec = (device.getElectricalCoordinates()[0], device.getElectricalCoordinates()[1])
+                motorCoordElec = self.gdsToMotorCoordsElec(gdsCoordElec)
+                elec = True
 
-                    # move chip stage
-                    x = motorCoordOpt[0] - self.motorOpt.getPosition()[0]
-                    y = motorCoordOpt[1] - self.motorOpt.getPosition()[1]
-                    z = motorCoordOpt[2] - self.motorOpt.getPosition()[2]
-                    self.motorOpt.moveAbsoluteXYZ(motorCoordOpt[0], motorCoordOpt[1], motorCoordOpt[2])
+            if self.motorElec:
+                # move wedge probe out of the way
+                self.motorElec.moveRelativeXYZElec(0, -2000, 2000)
 
-                    if device.getElectricalCoordinates():
-                        if elec:
-                        # Move wedge probe and compensate for movement of chip stage
-                            self.motorElec.moveAbsoluteXYZElec(motorCoordElec[0] + x, motorCoordElec[1] + y,
-                                                            motorCoordElec[2] + z)
+            # move chip stage
+            x = motorCoordOpt[0] - self.motorOpt.getPosition()[0]
+            y = motorCoordOpt[1] - self.motorOpt.getPosition()[1]
+            z = motorCoordOpt[2] - self.motorOpt.getPosition()[2]
+            self.motorOpt.moveAbsoluteXYZ(motorCoordOpt[0], motorCoordOpt[1], motorCoordOpt[2])
 
-                    # Fine align to device
-                    res, completed = self.fineAlign.doFineAlign()
+            if device.getElectricalCoordinates():
+                if elec:
+                # Move wedge probe and compensate for movement of chip stage
+                    self.motorElec.moveAbsoluteXYZElec(motorCoordElec[0] + x, motorCoordElec[1] + y,
+                                                    motorCoordElec[2] + z)
 
-                    # If fine align fails change text colour of device to red in the checklist
-                    if completed is False:
-                        for ii in range(self.checkList.GetItemCount()):
-                            if self.checkList.GetItemText(ii) == device.getDeviceID():
-                                self.checkList.SetItemTextColour(ii, wx.Colour(255, 0, 0))
-                    else:
-                        #Set text to green if FineAlign Completes
-                        for ii in range(self.checkList.GetItemCount()):
-                            if self.checkList.GetItemText(ii) == device.getDeviceID():
-                                self.checkList.SetItemTextColour(ii, wx.Colour(0, 255, 0))
+            # Fine align to device
+            res, completed = self.fineAlign.doFineAlign()
 
-                        # Check which type of measurement is to be completed
-                        if testingParameters['ELECflag'][i] == "True":
-                            measurementRoutines('ELEC', testingParameters, i, self.smu, self.laser, self, self.activeDetectors)
+            # If fine align fails change text colour of device to red in the checklist
+            if completed is False:
+                for ii in range(self.checkList.GetItemCount()):
+                    if self.checkList.GetItemText(ii) == device.getDeviceID():
+                        self.checkList.SetItemTextColour(ii, wx.Colour(255, 0, 0))
+            else:
+                #Set text to green if FineAlign Completes
+                for ii in range(self.checkList.GetItemCount()):
+                    if self.checkList.GetItemText(ii) == device.getDeviceID():
+                        self.checkList.SetItemTextColour(ii, wx.Colour(0, 255, 0))
 
-                        if testingParameters['OPTICflag'][i] == "True":
+                # Check which type of measurement is to be completed
+                if testingParameters['ELECflag'][i] == "True":
+                    measurementRoutines('ELEC', testingParameters, i, self.smu, self.laser, self, self.activeDetectors)
 
-                            timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
-                            print("Performing Optical Test")
-                            self.measure = measurementRoutines('OPT', testingParameters, i, self.smu, self.laser, self,
-                                                self.activeDetectors)
-                            timeStop = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
+                if testingParameters['OPTICflag'][i] == "True":
 
-                            self.graph.axes.set_xlabel('Wavelength (nm)')
-                            self.graph.axes.set_ylabel('Power (dBm)')
-                            self.graph.canvas.sweepResultDict = {}
-                            self.graph.canvas.sweepResultDict['wavelength'] = self.measure.wav
-                            self.graph.canvas.sweepResultDict['power'] = self.measure.pow
-                            self.drawGraph(self.measure.wav * 1e9, self.measure.pow, self.graph)
+                    timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
+                    print("Performing Optical Test")
+                    self.measure = measurementRoutines('OPT', testingParameters, i, self.smu, self.laser, self,
+                                        self.activeDetectors)
+                    timeStop = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
 
-                            #save all associated files
-                            self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', i, self.measure.wav, self.measure.pow, 'Wavelength sweep', motorCoordOpt,
-                                      testingParameters, timeStart, timeStop, chipTimeStart)
+                    self.graph.axes.set_xlabel('Wavelength (nm)')
+                    self.graph.axes.set_ylabel('Power (dBm)')
+                    self.graph.canvas.sweepResultDict = {}
+                    self.graph.canvas.sweepResultDict['wavelength'] = self.measure.wav
+                    self.graph.canvas.sweepResultDict['power'] = self.measure.pow
+                    self.drawGraph(self.measure.wav * 1e9, self.measure.pow, self.graph)
 
-                        if testingParameters['setwflag'] == "True":
-                            measurementRoutines('FIXWAVIV', testingParameters, i, self.smu, self.laser, self, self.activeDetectors)
+                    #save all associated files
+                    self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', i, self.measure.wav, self.measure.pow, 'Wavelength sweep', motorCoordOpt,
+                                testingParameters, timeStart, timeStop, chipTimeStart)
 
-                        if testingParameters['setvflag'] == "True":
-                            measurementRoutines('BIASVOPT', testingParameters, i, self.smu, self.laser, self, self.activeDetectors)
+                if testingParameters['setwflag'] == "True":
+                    measurementRoutines('FIXWAVIV', testingParameters, i, self.smu, self.laser, self, self.activeDetectors)
 
-                        camera.stoprecord()
+                if testingParameters['setvflag'] == "True":
+                    measurementRoutines('BIASVOPT', testingParameters, i, self.smu, self.laser, self, self.activeDetectors)
+
+                camera.stoprecord()
 
             if abortFunction is not None and abortFunction():
                 print('Aborted')
