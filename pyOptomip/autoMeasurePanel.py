@@ -633,6 +633,8 @@ class autoMeasurePanel(wx.Panel):
                 if dev.getDeviceID() == device:
                     index = deviceListAsObjects.index(dev)  # Stores index of device in list
                     self.checkList.SetItemData(ii, index)
+                    if not dev.hasRoutines:
+                        self.checkList.SetItemTextColour(ii, wx.Colour(153, 153, 102))
         self.checkList.EnableCheckBoxes()
         self.coordMapPanelOpt.PopulateDropDowns()
         self.coordMapPanelElec.PopulateDropDowns()
