@@ -20,7 +20,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-import keyboard
 import os
 import wx
 import re
@@ -81,13 +80,12 @@ class testParameters(wx.Frame):
 # contains the graph.
 class TopPanel(wx.Panel):
 
-    def __init__(self, parent):#, automeasurePanel):
+    def __init__(self, parent, automeasurePanel):
         super(TopPanel, self).__init__(parent)
         self.routineflag = ""
         self.setpanel = SetPanel(self)#BlankPanel(self)
         self.instructpanel = InstructPanel(self, self.setpanel)
-        self.autoMeasure = autoMeasure()
-        #self.autoMeasure = autoMeasurePanel.autoMeasure
+        self.autoMeasure = automeasurePanel.autoMeasure
         self.selected = []
         self.retrievedataselected = []
         self.setflag = False
@@ -589,9 +587,6 @@ class TopPanel(wx.Panel):
 
         for d in range(len(self.data['device'])):
 
-            print(self.data['device'][d])
-            print(self.checkList.GetItemText(c, 0))
-
             if self.data['device'][d] == self.checkList.GetItemText(c, 0):
                 number.append(d)
 
@@ -851,7 +846,6 @@ class TopPanel(wx.Panel):
         self.setflag = True
         self.routinenum = self.routinenum + 1
 
-        print(self.data['VoltMax'])
 
         self.big = max([self.instructpanel.elecroutine.GetValue(), self.instructpanel.optroutine.GetValue(), self.instructpanel.setwroutine.GetValue(), self.instructpanel.setvroutine.GetValue()])
 
@@ -995,8 +989,6 @@ class TopPanel(wx.Panel):
                 self.data['device'].append(self.checkList.GetItemText(int(self.selected[c]), 0))
                 self.data['index'].append(int(self.selected[c]))
 
-            print(self.data['VoltMax'])
-
             for i in range(int(self.big)):
 
                 self.data['Voltsel'].append(self.setpanel.elecvolt[i])
@@ -1013,8 +1005,6 @@ class TopPanel(wx.Panel):
                 self.data['ChannelA'].append(self.setpanel.elecchannelA[i])
                 self.data['ChannelB'].append(self.setpanel.elecchannelB[i])
                 self.data['ELECflag'].append(self.setpanel.elecflagholder[i])
-
-            print(self.data['VoltMax'])
 
 
             for i in range(int(self.big)):
@@ -1070,8 +1060,6 @@ class TopPanel(wx.Panel):
             self.set[self.selected[c]] = True
 
             print('Testing parameters for ' + self.checkList.GetItemText(self.selected[c], 0) + ' set')
-
-        print(self.data['VoltMax'])
 
         for c in range(int(len(self.selected))*int(self.big)):
             self.data['RoutineNumber'].append(self.routinenum)
@@ -1988,16 +1976,16 @@ class SetPanel(wx.Panel):
         hbox0 = wx.BoxSizer(wx.HORIZONTAL)
         sq0_1 = wx.StaticText(self, label='Select Routine ')
         options = []
-        self.routineselectelec = wx.ComboBox(self, choices=options, style=wx.CB_READONLY, value='1', size=(80, -1))
+        self.routineselectelec = wx.ComboBox(self, choices=options, style=wx.CB_READONLY, value='1')
         self.routineselectelec.name = 'routineselectelec'
         self.routineselectelec.Bind(wx.EVT_COMBOBOX_DROPDOWN, self.routinepanel)
         self.routineselectelec.Bind(wx.EVT_COMBOBOX, self.swaproutine)
-        hbox0.AddMany([(sq0_1, 1, wx.EXPAND), (self.routineselectelec, 0, wx.EXPAND)])
+        hbox0.AddMany([(sq0_1, 1, wx.EXPAND), (self.routineselectelec, 1, wx.EXPAND)])
 
         #Independent Variable selection
         hbox1 = wx.BoxSizer(wx.HORIZONTAL)
         sq1_1 = wx.StaticText(self, label='Select Independent Variable: ')
-        self.voltsel = wx.CheckBox(self, label='Voltage', pos=(20, 20), size=(40, -1))
+        self.voltsel = wx.CheckBox(self, label='Voltage', pos=(20, 20))
         self.voltsel.SetValue(False)
         self.voltsel.Bind(wx.EVT_CHECKBOX, self.trueorfalse)
         self.currentsel = wx.CheckBox(self, label='Current', pos=(20, 20))
@@ -2008,41 +1996,41 @@ class SetPanel(wx.Panel):
         #Voltage and Current maximum select
         hbox2 = wx.BoxSizer(wx.HORIZONTAL)
         sw1 = wx.StaticText(self, label='Set Max:')
-        self.maxsetvoltage = wx.TextCtrl(self, size=(60, -1))
+        self.maxsetvoltage = wx.TextCtrl(self)
         self.maxsetvoltage.SetValue('V')
         self.maxsetvoltage.Bind(wx.EVT_SET_FOCUS, self.cleartext)
         self.maxsetvoltage.SetForegroundColour(wx.Colour(211, 211, 211))
-        self.maxsetcurrent = wx.TextCtrl(self, size=(60, -1))
+        self.maxsetcurrent = wx.TextCtrl(self)
         self.maxsetcurrent.SetValue('mA')
         self.maxsetcurrent.Bind(wx.EVT_SET_FOCUS, self.cleartext)
         self.maxsetcurrent.SetForegroundColour(wx.Colour(211,211,211))
-        hbox2.AddMany([(sw1, 1, wx.EXPAND), (self.maxsetvoltage, 0, wx.EXPAND), (self.maxsetcurrent, 0, wx.EXPAND)])
+        hbox2.AddMany([(sw1, 1, wx.EXPAND), (self.maxsetvoltage, 1, wx.EXPAND), (self.maxsetcurrent, 1, wx.EXPAND)])
 
         #Voltage and current minimum select
         hbox3 = wx.BoxSizer(wx.HORIZONTAL)
         sw2 = wx.StaticText(self, label='Set Min:')
-        self.minsetcurrent = wx.TextCtrl(self, size=(60, -1))
+        self.minsetcurrent = wx.TextCtrl(self)
         self.minsetcurrent.SetValue('mA')
         self.minsetcurrent.Bind(wx.EVT_SET_FOCUS, self.cleartext)
         self.minsetcurrent.SetForegroundColour(wx.Colour(211, 211, 211))
-        self.minsetvoltage = wx.TextCtrl(self, size=(60, -1))
+        self.minsetvoltage = wx.TextCtrl(self)
         self.minsetvoltage.SetValue('V')
         self.minsetvoltage.Bind(wx.EVT_SET_FOCUS, self.cleartext)
         self.minsetvoltage.SetForegroundColour(wx.Colour(211, 211, 211))
-        hbox3.AddMany([(sw2, 1, wx.EXPAND), (self.minsetvoltage, 0, wx.EXPAND), (self.minsetcurrent, 0, wx.EXPAND)])
+        hbox3.AddMany([(sw2, 1, wx.EXPAND), (self.minsetvoltage, 1, wx.EXPAND), (self.minsetcurrent, 1, wx.EXPAND)])
 
         #Voltage and Current resolution select
         hbox4 = wx.BoxSizer(wx.HORIZONTAL)
         sw3 = wx.StaticText(self, label='Set Resolution:')
-        self.resovoltage = wx.TextCtrl(self, size=(60, -1))
+        self.resovoltage = wx.TextCtrl(self)
         self.resovoltage.SetValue('V')
         self.resovoltage.Bind(wx.EVT_SET_FOCUS, self.cleartext)
         self.resovoltage.SetForegroundColour(wx.Colour(211, 211, 211))
-        self.resocurrent = wx.TextCtrl(self, size=(60, -1))
+        self.resocurrent = wx.TextCtrl(self)
         self.resocurrent.SetValue('mA')
         self.resocurrent.Bind(wx.EVT_SET_FOCUS, self.cleartext)
         self.resocurrent.SetForegroundColour(wx.Colour(211, 211, 211))
-        hbox4.AddMany([(sw3, 1, wx.EXPAND), (self.resovoltage, 0, wx.EXPAND), (self.resocurrent, 0, wx.EXPAND)])
+        hbox4.AddMany([(sw3, 1, wx.EXPAND), (self.resovoltage, 1, wx.EXPAND), (self.resocurrent, 1, wx.EXPAND)])
 
         #Plot type selection checkboxes
         hbox5 = wx.BoxSizer(wx.HORIZONTAL)

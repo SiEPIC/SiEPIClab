@@ -4,18 +4,14 @@ from itertools import repeat
 import numpy as np
 import wx
 
-#TODO: Plot figures
 class measurementRoutines:
 
-    def __init__(self, flag, deviceInfo, i, smu, laser, automeasure, activeDetectors):
+    def __init__(self, flag, smu, laser, activeDetectors):
         """A class containing different types of measurement routines including iv sweeps, optical spectrum sweeps
         iv sweeps at fixed wavelengths and optical sweeps with bias voltages."""
 
-        self.deviceDict = deviceInfo
-        self.i = i
         self.SMU = smu
         self.laser = laser
-        self.automeasure = automeasure
         self.activeDetectors = activeDetectors
         self.laserOutputMap = dict([('High power', 'highpower'), ('Low SSE', 'lowsse')])
         self.laserNumSweepMap = dict([('1', 1), ('2', 2), ('3', 3)])

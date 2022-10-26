@@ -833,20 +833,27 @@ class autoMeasurePanel(wx.Panel):
 
         fileDlg = wx.FileDialog(self, "Open", "", "",
                                 "CSV Files (*.csv)|*.csv",
-                                wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
+                                wx.FD_OPEN | wx.FD_MULTIPLE | wx.FD_FILE_MUST_EXIST)
         fileDlg.ShowModal()
-        originalFile = fileDlg.GetPath()
+        Files = fileDlg.GetPaths()
 
-        if originalFile == '':
+        if not Files:
             print('Please select a file to import')
             return
 
-        self.readCSV(originalFile)
+        global deviceListAsObjects
+        deviceListAsObjects = []
+
+        for file in Files:
+            self.readCSV(file)
         self.parametersImported = True
 
     def readCSV(self, originalFile):
-        """Reads a csv testing parameters file and stores the information in a dictionary to be used for
-        automated measurements."""
+        """Reads a csv testing parameters file and stores the information as a list of electro-optic device
+         objects to be used for automated measurements."""
+
+        global deviceListAsObjects
+
         with open(originalFile, 'r') as file:
             rows = []
             for row in file:
@@ -858,62 +865,39 @@ class autoMeasurePanel(wx.Panel):
 
             for c in range(len(rows)):
                 x = rows[c].split(',')
+                deviceListAsObjects.append(ElecctrOpticDevice(x[1], x[54], x[55], x[56], x[57], x[58]))
 
+            for c in range(len(rows)):
+                x = rows[c].split(',')
 
+                for device in deviceListAsObjects:
 
-                self.dataimport['device'].append(x[1])
-                self.dataimport['ELECflag'].append(x[2])
-                self.dataimport['OPTICflag'].append(x[3])
-                self.dataimport['setwflag'].append(x[4])
-                self.dataimport['setvflag'].append(x[5])
-                self.dataimport['Voltsel'].append(x[6])
-                self.dataimport['Currentsel'].append(x[7])
-                self.dataimport['VoltMin'].append(x[8])
-                self.dataimport['VoltMax'].append(x[9])
-                self.dataimport['CurrentMin'].append(x[10])
-                self.dataimport['CurrentMax'].append(x[11])
-                self.dataimport['VoltRes'].append(x[12])
-                self.dataimport['CurrentRes'].append(x[13])
-                self.dataimport['IV'].append(x[14])
-                self.dataimport['RV'].append(x[15])
-                self.dataimport['PV'].append(x[16])
-                self.dataimport['ChannelA'].append(x[17])
-                self.dataimport['ChannelB'].append(x[18])
-                self.dataimport['Start'].append(x[19])
-                self.dataimport['Stop'].append(x[20])
-                self.dataimport['Stepsize'].append(x[21])
-                self.dataimport['Sweeppower'].append(x[22])
-                self.dataimport['Sweepspeed'].append(x[23])
-                self.dataimport['Laseroutput'].append(x[24])
-                self.dataimport['Numscans'].append(x[25])
-                self.dataimport['InitialRange'].append(x[26])
-                self.dataimport['RangeDec'].append(x[27])
-                self.dataimport['setwVoltsel'].append(x[28])
-                self.dataimport['setwCurrentsel'].append(x[29])
-                self.dataimport['setwVoltMin'].append(x[30])
-                self.dataimport['setwVoltMax'].append(x[31])
-                self.dataimport['setwCurrentMin'].append(x[32])
-                self.dataimport['setwCurrentMax'].append(x[33])
-                self.dataimport['setwVoltRes'].append(x[34])
-                self.dataimport['setwCurrentRes'].append(x[35])
-                self.dataimport['setwIV'].append(x[36])
-                self.dataimport['setwRV'].append(x[37])
-                self.dataimport['setwPV'].append(x[38])
-                self.dataimport['setwChannelA'].append(x[39])
-                self.dataimport['setwChannelB'].append(x[40])
-                self.dataimport['Wavelengths'].append(x[41])
-                self.dataimport['setvStart'].append(x[42])
-                self.dataimport['setvStop'].append(x[43])
-                self.dataimport['setvStepsize'].append(x[44])
-                self.dataimport['setvSweeppower'].append(x[45])
-                self.dataimport['setvSweepspeed'].append(x[46])
-                self.dataimport['setvLaseroutput'].append(x[47])
-                self.dataimport['setvNumscans'].append(x[48])
-                self.dataimport['setvInitialRange'].append(x[49])
-                self.dataimport['setvRangeDec'].append(x[50])
-                self.dataimport['setvChannelA'].append(x[51])
-                self.dataimport['setvChannelB'].append(x[52])
-                self.dataimport['Voltages'].append(x[53])
+                    if device.getDeviceID == x[1]:
+                        deviceToTest = device
+
+                    if x[2] == "True":
+                        """electrical routine"""
+                        if x[6] == "True":
+                            """voltage sweep"""
+                            deviceToTest.addVoltageSweep(x[8], x[9], x[12], x[14], x[15], x[16], x[17], x[18])
+                        if x[7] == "True":
+                            """Current sweep"""
+                            deviceToTest.addCurrentSweep(x[10], x[11], x[13], x[14], x[15], x[16], x[17], x[18])
+                    if x[3] == "True":
+                        """optical routine"""
+                        deviceToTest.addWavelengthSweep(x[19], x[20], x[21], x[22], x[23], x[24], x[25], x[26], x[27])
+                    if x[4] == "True":
+                        """set wavelength iv"""
+                        if x[28] == "True":
+                            """voltage sweep"""
+                            deviceToTest.addSetWavelengthVoltageSweep(x[30], x[31], x[34], x[36], x[37], x[38], x[39], x[40], x[41])
+                        if x[29] == "True":
+                            """current sweep"""
+                            deviceToTest.addSetWavelengthCurrentSweep(x[32], x[33], x[35], x[36], x[37], x[38], x[39], x[40], x[41])
+                    if x[5] == "True":
+                        """set voltage optical sweep"""
+                        deviceToTest.addSetVoltageWavelengthSweep(x[42], x[43], x[44], x[45], x[46], x[47], x[48],
+                                                              x[49], x[50], x[51], x[52], x[53])
 
 
     def OnButton_CheckAll(self, event):
@@ -1009,9 +993,10 @@ class autoMeasurePanel(wx.Panel):
 
         # Start measurement using the autoMeasure device
         ###MUST HAVE AVAILABLE TESTING INFO FOR SELECTED DEVICE
-        self.autoMeasure.beginMeasure(devices=checkedDevicesText, testingParameters=self.dataimport,
-                                      checkList=self.checkList, activeDetectors=activeDetectors, graph = self.graph, camera = self.camera,
-                                      abortFunction=None, updateFunction=None, updateGraph=True)
+        self.autoMeasure.beginMeasure(devices=checkedDevicesText, checkList=self.checkList,
+                                      activeDetectors=activeDetectors, graph=self.graph,
+                                      camera=self.camera, abortFunction=None, updateFunction=None,
+                                      updateGraph=True)
 
         # Create a measurement progress dialog.
         autoMeasureDlg = autoMeasureProgressDialog(self, title='Automatic measurement')
