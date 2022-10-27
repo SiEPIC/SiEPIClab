@@ -540,7 +540,7 @@ class autoMeasure(object):
 
                         #save all associated files
                         self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', i, wav, pow,
-                                       'Wavelength sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
+                                       'Wavelength sweep w Bias Voltage', motorCoordOpt, timeStart, timeStop, chipTimeStart)
 
                 if device.setWavelengthVoltageSweeps:
                     voltageSweeps = device.getSetWavelengthVoltageSweeps()
@@ -818,7 +818,7 @@ class autoMeasure(object):
         detector = ["#Detector:" + self.laser.getDetector()]
         writer.writerow(detector)
         if testType == "Wavelength Sweep":
-            wavsweep = deviceObject.getWavelengthSweeps
+            wavsweep = deviceObject.getWavelengthSweeps()
             speed = ["#Sweep speed:" + wavsweep['Sweepspeed'][devNum]]
             writer.writerow(speed)
             numData = ["#Number of datasets: 1"]
@@ -845,6 +845,34 @@ class autoMeasure(object):
             writer.writerow(wavSweep)
             det1 = ["channel_1", yArray]
             writer.writerow(det1)
+            if testType == "Wavelength Sweep w Bias Voltage":
+                wavsweep = deviceObject.getSetVoltageWavelengthSweeps()
+                speed = ["#Sweep speed:" + wavsweep['Sweepspeed'][devNum]]
+                writer.writerow(speed)
+                numData = ["#Number of datasets: 1"]
+                writer.writerow(numData)
+                laserPow = ["#Laser power:" + wavsweep['Sweeppower'][devNum]]
+                writer.writerow(laserPow)
+                stepSize = ["#Wavelength step-size:" + wavsweep['Stepsize'][devNum]]
+                writer.writerow(stepSize)
+                startWav = ["#Start wavelength:" + wavsweep['Start'][devNum]]
+                writer.writerow(startWav)
+                stopWav = ["#Stop wavelength:" + wavsweep['Stop'][devNum]]
+                writer.writerow(stopWav)
+                stitCount = ["#Stitch count: 0"]
+                writer.writerow(stitCount)
+                initRange = ["#Init Range:" + wavsweep['InitialRange'][devNum]]
+                writer.writerow(initRange)
+                newSweep = ["#New sweep plot behaviour: replace"]
+                writer.writerow(newSweep)
+                laseOff = ["#Turn off laser when done: no"]
+                writer.writerow(laseOff)
+                metric = ["#Metric Tag"]
+                writer.writerow(metric)
+                wavSweep = ["wavelength", xArray]
+                writer.writerow(wavSweep)
+                det1 = ["channel_1", yArray]
+                writer.writerow(det1)
         f.close()
 
     def saveFiles(self, deviceObject, x, y, devNum, xArray, yArray, testType, motorCoord, start, stop, chipStart):
