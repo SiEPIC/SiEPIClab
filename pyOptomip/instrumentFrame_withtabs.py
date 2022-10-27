@@ -232,9 +232,10 @@ class instrumentFrame_withtabs(wx.Frame):
             homeVbox.Add(camerapanel, 1, wx.EXPAND)
 
             docpanel = docPanel(self)
-            homeVbox.Add(docpanel, 1, wx.EXPAND)
+            #homeVbox.Add(docpanel, 1, wx.EXPAND)
 
             self.hbox.Add(homeVbox)
+            self.hbox.Add(docpanel, 1, wx.EXPAND)
 
             vbox.Add(self.hbox, 3, wx.EXPAND)
             self.SetSizer(vbox)
