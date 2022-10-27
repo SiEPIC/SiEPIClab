@@ -555,6 +555,7 @@ class autoMeasurePanel(wx.Panel):
     def importObjects(self, listOfDevicesAsObjects):
         global deviceListAsObjects
         deviceListAsObjects = listOfDevicesAsObjects
+        self.device_list = listOfDevicesAsObjects
         global deviceList
         deviceList = []
         for device in listOfDevicesAsObjects:
@@ -572,7 +573,6 @@ class autoMeasurePanel(wx.Panel):
                     index = deviceListAsObjects.index(dev)  # Stores index of device in list
                     self.checkList.SetItemData(ii, index)
                     if not dev.hasRoutines:
-                        print("no routines set")
                         self.checkList.SetItemTextColour(ii, wx.Colour(211, 211, 211))
         self.checkList.EnableCheckBoxes()
         self.coordMapPanelOpt.PopulateDropDowns()
@@ -937,26 +937,26 @@ class autoMeasurePanel(wx.Panel):
                     if deviceToTest == False:
                         deviceToTest = ElectroOpticDevice(x[1], x[54], x[55], x[56], x[57], x[58])
 
-                if x[2] == "TRUE":
+                if x[2]:
                     """electrical routine"""
-                    if x[6] == "TRUE":
+                    if x[6]:
                         """voltage sweep"""
                         deviceToTest.addVoltageSweep(x[8], x[9], x[12], x[14], x[15], x[16], x[17], x[18])
-                    if x[7] == "TRUE":
+                    if x[7]:
                         """Current sweep"""
                         deviceToTest.addCurrentSweep(x[10], x[11], x[13], x[14], x[15], x[16], x[17], x[18])
-                if x[3] == "TRUE":
+                if x[3]:
                     """optical routine"""
                     deviceToTest.addWavelengthSweep(x[19], x[20], x[21], x[22], x[23], x[24], x[25], x[26], x[27])
-                if x[4] == "TRUE":
+                if x[4]:
                     """set wavelength iv"""
-                    if x[28] == "TRUE":
+                    if x[28]:
                         """voltage sweep"""
                         deviceToTest.addSetWavelengthVoltageSweep(x[30], x[31], x[34], x[36], x[37], x[38], x[39], x[40], x[41])
-                    if x[29] == "TRUE":
+                    if x[29]:
                         """current sweep"""
                         deviceToTest.addSetWavelengthCurrentSweep(x[32], x[33], x[35], x[36], x[37], x[38], x[39], x[40], x[41])
-                if x[5] == "TRUE":
+                if x[5]:
                     """set voltage optical sweep"""
                     deviceToTest.addSetVoltageWavelengthSweep(x[42], x[43], x[44], x[45], x[46], x[47], x[48],
                                                               x[49], x[50], x[51], x[52], x[53])

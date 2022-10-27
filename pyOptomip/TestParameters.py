@@ -184,10 +184,10 @@ class TopPanel(wx.Panel):
 
 
     def printdata(self, event):
-
-        for keys, values in self.data.items():
-            print(keys)
-            print(values)
+        pass
+        #for keys, values in self.data.items():
+            #print(keys)
+            #print(values)
 
 
     def OnButton_ChooseCoordFile(self, event):
@@ -994,7 +994,6 @@ class TopPanel(wx.Panel):
 
                         if self.setpanel.elecflagholder[i]:
                             """electrical routine"""
-                            print("set electrical routine")
                             if self.setpanel.elecvolt[i]:
                                 """voltage sweep"""
                                 selectedDevice.addVoltageSweep(self.setpanel.elecvmin[i], self.setpanel.elecvmax[i],
@@ -1127,7 +1126,7 @@ class TopPanel(wx.Panel):
             self.checkList.CheckItem(self.selected[c], False)
             self.set[self.selected[c]] = True
 
-            print('Testing parameters for ' + self.checkList.GetItemText(self.selected[c], 0) + ' set')
+            #print('Testing parameters for ' + self.checkList.GetItemText(self.selected[c], 0) + ' set')
 
         self.autoMeasurePanel.importObjects(deviceListasObjectsLocal)
 
