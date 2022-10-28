@@ -154,7 +154,7 @@ class hp816x_N77Det(hp816x_instr.hp816x):
         numActiveChan = len(self.activeSlotIndex)  # Number of active channels
 
         # Total number of points in sweep
-        numTotalPoints = int(round((self.sweepStopWvl - self.sweepStartWvl) / self.sweepStepWvl + 1))
+        numTotalPoints = abs(int(round((self.sweepStopWvl - self.sweepStartWvl) / self.sweepStepWvl + 1)))
 
         # The laser reserves 100 pm of spectrum which takes away from the maximum number of datapoints per scan
         # Also, we will reserve another 100 datapoints as an extra buffer.
@@ -163,7 +163,9 @@ class hp816x_N77Det(hp816x_instr.hp816x):
         numFullScans = int(numTotalPoints // maxPWMPointsTrunc)
         numRemainingPts = numTotalPoints % maxPWMPointsTrunc
 
-        stitchNumber = numFullScans + 1
+        stitchNumber = abs(numFullScans + 1)
+        if stitchNumber <= 0:
+            self.sweepStepWvl = self.sweepStepWvl*(-1)
 
         print('Total number of datapoints: %d' % numTotalPoints)
         print('Stitch number: %d' % stitchNumber)
