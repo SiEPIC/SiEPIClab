@@ -78,7 +78,7 @@ class hp816x(object):
         libLocation -- Location of hp816x_32.dll library. It will search the system's PATH variable by default.
         """
         
-        self.hLib = WinDLL('hp816x_32.dll');
+        self.hLib = WinDLL('hp816x_64.dll');
         self.createPrototypes();
         self.connected = False
         
