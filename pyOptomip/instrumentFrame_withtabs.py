@@ -36,6 +36,7 @@ import threading
 import time
 from documentationpanel import docPanel
 from CameraPanel import cameraPanel
+from instr_status import statusPanel
 
 
 class instrumentFrame_withtabs(wx.Frame):
@@ -104,7 +105,7 @@ class instrumentFrame_withtabs(wx.Frame):
         #self.side_camera.start()
 
         """Create the tab windows"""
-        tab1 = self.HomeTab(nb, self.laserWithDetector, self.opticalStage, self.electricalStage, self.camera)
+        tab1 = self.HomeTab(nb, self.laserWithDetector, self.opticalStage, self.electricalStage, self.camera, self.instList)
         tab2 = self.ElectricalTab(nb, self.SMU)
         tab3 = self.OpticalTab(nb, self.laserWithDetector)
         tab4 = self.AutoMeasureTab(nb, self.laserWithDetector, self.opticalStage, self.electricalStage, self.SMU,
@@ -192,7 +193,7 @@ class instrumentFrame_withtabs(wx.Frame):
         self.Destroy()
 
     class HomeTab(wx.Panel):
-        def __init__(self, parent, laserWithDetector, opticalStage, electricalStage, camera):
+        def __init__(self, parent, laserWithDetector, opticalStage, electricalStage, camera, instr):
             """
 
             Args:
@@ -203,6 +204,7 @@ class instrumentFrame_withtabs(wx.Frame):
             vbox = wx.BoxSizer(wx.VERTICAL)
             self.hbox = wx.BoxSizer(wx.HORIZONTAL)
             homeVbox = wx.BoxSizer(wx.VERTICAL)
+            homeVbox2 = wx.BoxSizer(wx.VERTICAL)
             self.camera = camera
             #self.side_camera = side_camera
 
@@ -228,13 +230,18 @@ class instrumentFrame_withtabs(wx.Frame):
                 detectHbox.Add(detectorPanel,proportion=2, border=0, flag=wx.EXPAND)
                 homeVbox.Add(detectHbox, 1, wx.EXPAND)
 
+
+
             camerapanel = cameraPanel(self, camera)
-            homeVbox.Add(camerapanel, 1, wx.EXPAND)
+            homeVbox2.Add(camerapanel, 1, wx.EXPAND)
+
+            statuspanel = statusPanel(self, instr)
+            homeVbox2.Add(statuspanel, 1, wx.EXPAND)
 
             docpanel = docPanel(self)
-            homeVbox.Add(docpanel, 1, wx.EXPAND)
+            homeVbox2.Add(docpanel, 1, wx.EXPAND)
 
-            self.hbox.Add(homeVbox)
+            self.hbox.AddMany([(homeVbox, 1, wx.EXPAND), (homeVbox2, 1, wx.EXPAND)])
 
             vbox.Add(self.hbox, 3, wx.EXPAND)
             self.SetSizer(vbox)

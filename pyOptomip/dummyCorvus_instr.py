@@ -4,7 +4,7 @@ def connect():
 
 class dummyCorvus:
     NumberOfAxis = 3  # default the axis number @ 3 just in case.
-    name = 'CorvusEco'
+    name = 'Dummy CorvusEco'
     isSMU = False
     isMotor = True
     isOpt = True

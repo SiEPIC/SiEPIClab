@@ -601,16 +601,33 @@ class TopPanel(wx.Panel):
         OPTcount = 0
         SETWcount = 0
         SETVcount = 0
+        suborder = []
+        order = []
+
         for q in number:
 
-            if self.data['ELECflag'][q] == 'True':
+            if self.data['ELECflag'][q] == 'True' or self.data['ELECflag'][q] == True:
                 ELECcount = ELECcount + 1
-            if self.data['OPTICflag'][q] == 'True':
+                suborder.append('ELEC')
+            if self.data['OPTICflag'][q] == 'True' or self.data['OPTICflag'][q] == True:
                 OPTcount = OPTcount + 1
-            if self.data['setvflag'][q] == 'True':
+                suborder.append('OPTIC')
+            if self.data['setvflag'][q] == 'True' or self.data['setvflag'][q] == True:
                 SETVcount = SETVcount + 1
-            if self.data['setwflag'][q] == 'True':
+                suborder.append('SETV')
+            if self.data['setwflag'][q] == 'True' or self.data['setwflag'][q] == True:
                 SETWcount = SETWcount + 1
+                suborder.append('SETW')
+            attach = suborder
+            order.append(attach)
+            suborder = []
+
+        print(ELECcount)
+        print(OPTcount)
+        print(SETWcount)
+        print(SETVcount)
+
+        print(order)
 
         self.instructpanel.elecroutine.SetValue(str(ELECcount))
         self.instructpanel.optroutine.SetValue(str(OPTcount))
@@ -643,131 +660,171 @@ class TopPanel(wx.Panel):
                 x = x + 1
                 setwoptions.append(str(x))
 
-        for d in range(len(number)):
+        # Electrical set#############################################################################################
+        self.setpanel.routineselectelec.SetItems(elecoptions)
+        self.setpanel.elecvolt = [''] * int(ELECcount)
+        self.setpanel.eleccurrent = [''] * int(ELECcount)
+        self.setpanel.elecvmax = [''] * int(ELECcount)
+        self.setpanel.elecvmin = [''] * int(ELECcount)
+        self.setpanel.elecimin = [''] * int(ELECcount)
+        self.setpanel.elecimax = [''] * int(ELECcount)
+        self.setpanel.elecires = [''] * int(ELECcount)
+        self.setpanel.elecvres = [''] * int(ELECcount)
+        self.setpanel.eleciv = [''] * int(ELECcount)
+        self.setpanel.elecrv = [''] * int(ELECcount)
+        self.setpanel.elecpv = [''] * int(ELECcount)
+        self.setpanel.elecchannelA = [''] * int(ELECcount)
+        self.setpanel.elecchannelB = [''] * int(ELECcount)
+        self.setpanel.elecflagholder = [''] * int(ELECcount)
 
-            # Electrical set#############################################################################################
-            self.setpanel.routineselectelec.SetItems(elecoptions)
-            self.setpanel.elecvolt = [''] * int(ELECcount)
-            self.setpanel.eleccurrent = [''] * int(ELECcount)
-            self.setpanel.elecvmax = [''] * int(ELECcount)
-            self.setpanel.elecvmin = [''] * int(ELECcount)
-            self.setpanel.elecimin = [''] * int(ELECcount)
-            self.setpanel.elecimax = [''] * int(ELECcount)
-            self.setpanel.elecires = [''] * int(ELECcount)
-            self.setpanel.elecvres = [''] * int(ELECcount)
-            self.setpanel.eleciv = [''] * int(ELECcount)
-            self.setpanel.elecrv = [''] * int(ELECcount)
-            self.setpanel.elecpv = [''] * int(ELECcount)
-            self.setpanel.elecchannelA = [''] * int(ELECcount)
-            self.setpanel.elecchannelB = [''] * int(ELECcount)
-            self.setpanel.elecflagholder = [''] * int(ELECcount)
+        # Optical set################################################################################################
+        self.setpanel.routineselectopt.SetItems(optoptions)
+        self.setpanel.start = [''] * int(OPTcount)
+        self.setpanel.stop = [''] * int(OPTcount)
+        self.setpanel.step = [''] * int(OPTcount)
+        self.setpanel.sweeppow = [''] * int(OPTcount)
+        self.setpanel.sweepsped = [''] * int(OPTcount)
+        self.setpanel.laserout = [''] * int(OPTcount)
+        self.setpanel.numscans = [''] * int(OPTcount)
+        self.setpanel.initialran = [''] * int(OPTcount)
+        self.setpanel.rangedecre = [''] * int(OPTcount)
+        self.setpanel.opticflagholder = [''] * int(OPTcount)
 
-            for p in range(int(ELECcount)):
-                self.setpanel.elecvolt[p] = self.data['Voltsel'][number[p]]
-                self.setpanel.eleccurrent[p] = self.data['Currentsel'][number[p]]
-                self.setpanel.elecvmax[p] = self.data['VoltMax'][number[p]]
-                self.setpanel.elecvmin[p] = self.data['VoltMin'][number[p]]
-                self.setpanel.elecimin[p] = self.data['CurrentMin'][number[p]]
-                self.setpanel.elecimax[p] = self.data['CurrentMax'][number[p]]
-                self.setpanel.elecires[p] = self.data['CurrentRes'][number[p]]
-                self.setpanel.elecvres[p] = self.data['VoltRes'][number[p]]
-                self.setpanel.eleciv[p] = self.data['IV'][number[p]]
-                self.setpanel.elecrv[p] = self.data['RV'][number[p]]
-                self.setpanel.elecpv[p] = self.data['PV'][number[p]]
-                self.setpanel.elecchannelA[p] = self.data['ChannelA'][number[p]]
-                self.setpanel.elecchannelB[p] = self.data['ChannelB'][number[p]]
-                self.setpanel.elecflagholder[p] = self.data['ELECflag'][number[p]]
+        # Setw set###################################################################################################
+        self.setpanel.routineselectsetw.SetItems(setwoptions)
+        self.setpanel.setwvolt = [''] * int(SETWcount)
+        self.setpanel.setwcurrent = [''] * int(SETWcount)
+        self.setpanel.setwvmax = [''] * int(SETWcount)
+        self.setpanel.setwvmin = [''] * int(SETWcount)
+        self.setpanel.setwimin = [''] * int(SETWcount)
+        self.setpanel.setwimax = [''] * int(SETWcount)
+        self.setpanel.setwires = [''] * int(SETWcount)
+        self.setpanel.setwvres = [''] * int(SETWcount)
+        self.setpanel.setwiv = [''] * int(SETWcount)
+        self.setpanel.setwrv = [''] * int(SETWcount)
+        self.setpanel.setwpv = [''] * int(SETWcount)
+        self.setpanel.setwchannelA = [''] * int(SETWcount)
+        self.setpanel.setwchannelB = [''] * int(SETWcount)
+        self.setpanel.setwwavelengths = [''] * int(SETWcount)
+        self.setpanel.setwflagholder = [''] * int(SETWcount)
 
-            # Optical set################################################################################################
-            self.setpanel.routineselectopt.SetItems(optoptions)
-            self.setpanel.start = [''] * int(OPTcount)
-            self.setpanel.stop = [''] * int(OPTcount)
-            self.setpanel.step = [''] * int(OPTcount)
-            self.setpanel.sweeppow = [''] * int(OPTcount)
-            self.setpanel.sweepsped = [''] * int(OPTcount)
-            self.setpanel.laserout = [''] * int(OPTcount)
-            self.setpanel.numscans = [''] * int(OPTcount)
-            self.setpanel.initialran = [''] * int(OPTcount)
-            self.setpanel.rangedecre = [''] * int(OPTcount)
-            self.setpanel.opticflagholder = [''] * int(OPTcount)
+        # setv set###################################################################################################
+        self.setpanel.routineselectsetv.SetItems(setvoptions)
+        self.setpanel.setvstart = [''] * int(SETVcount)
+        self.setpanel.setvstop = [''] * int(SETVcount)
+        self.setpanel.setvstep = [''] * int(SETVcount)
+        self.setpanel.setvsweeppow = [''] * int(SETVcount)
+        self.setpanel.setvsweepsped = [''] * int(SETVcount)
+        self.setpanel.setvlaserout = [''] * int(SETVcount)
+        self.setpanel.setvnumscans = [''] * int(SETVcount)
+        self.setpanel.setvinitialran = [''] * int(SETVcount)
+        self.setpanel.setvrangedecre = [''] * int(SETVcount)
+        self.setpanel.setvchannelA = [''] * int(SETVcount)
+        self.setpanel.setvchannelB = [''] * int(SETVcount)
+        self.setpanel.setvvoltages = [''] * int(SETVcount)
+        self.setpanel.setvflagholder = [''] * int(SETVcount)
 
-            for p in range(int(OPTcount)):
-                self.setpanel.start[p] = self.data['Start'][number[p]]
-                self.setpanel.stop[p] = self.data['Stop'][number[p]]
-                self.setpanel.step[p] = self.data['Stepsize'][number[p]]
-                self.setpanel.sweeppow[p] = self.data['Sweeppower'][number[p]]
-                self.setpanel.sweepsped[p] = self.data['Sweepspeed'][number[p]]
-                self.setpanel.laserout[p] = self.data['Laseroutput'][number[p]]
-                self.setpanel.numscans[p] = self.data['Numscans'][number[p]]
-                self.setpanel.initialran[p] = self.data['InitialRange'][number[p]]
-                self.setpanel.rangedecre[p] = self.data['RangeDec'][number[p]]
-                self.setpanel.opticflagholder[p] = self.data['OPTICflag'][number[p]]
+        electracker = 0
+        opttracker = 0
+        setvtracker = 0
+        setwtracker = 0
+        tracker = 0
 
-            # Setw set###################################################################################################
-            self.setpanel.routineselectsetw.SetItems(setwoptions)
-            self.setpanel.setwvolt = [''] * int(SETWcount)
-            self.setpanel.setwcurrent = [''] * int(SETWcount)
-            self.setpanel.setwvmax = [''] * int(SETWcount)
-            self.setpanel.setwvmin = [''] * int(SETWcount)
-            self.setpanel.setwimin = [''] * int(SETWcount)
-            self.setpanel.setwimax = [''] * int(SETWcount)
-            self.setpanel.setwires = [''] * int(SETWcount)
-            self.setpanel.setwvres = [''] * int(SETWcount)
-            self.setpanel.setwiv = [''] * int(SETWcount)
-            self.setpanel.setwrv = [''] * int(SETWcount)
-            self.setpanel.setwpv = [''] * int(SETWcount)
-            self.setpanel.setwchannelA = [''] * int(SETWcount)
-            self.setpanel.setwchannelB = [''] * int(SETWcount)
-            self.setpanel.setwwavelengths = [''] * int(SETWcount)
-            self.setpanel.setwflagholder = [''] * int(SETWcount)
+        for d in order:
+            for a in d:
 
-            for p in range(int(SETWcount)):
-                self.setpanel.setwvolt = self.data['setwVoltsel'][number[p]]
-                self.setpanel.setwcurrent = self.data['setwCurrentsel'][number[p]]
-                self.setpanel.setwvmax = self.data['setwVoltMax'][number[p]]
-                self.setpanel.setwvmin = self.data['setwVoltMin'][number[p]]
-                self.setpanel.setwimin = self.data['setwCurrentMin'][number[p]]
-                self.setpanel.setwimax = self.data['setwCurrentMax'][number[p]]
-                self.setpanel.setwires = self.data['setwCurrentRes'][number[p]]
-                self.setpanel.setwvres = self.data['setwVoltRes'][number[p]]
-                self.setpanel.setwiv = self.data['setwIV'][number[p]]
-                self.setpanel.setwrv = self.data['setwRV'][number[p]]
-                self.setpanel.setwpv = self.data['setwPV'][number[p]]
-                self.setpanel.setwchannelA = self.data['setwChannelA'][number[p]]
-                self.setpanel.setwchannelB = self.data['setwChannelB'][number[p]]
-                self.setpanel.setwwavelengths = self.data['Wavelengths'][number[p]]
-                self.setpanel.setwflagholder = self.data['setwflag'][number[p]]
+                if a == 'ELEC':
+                    if self.data['Voltsel'][number[tracker]] == 'True':
+                        self.data['Voltsel'][number[tracker]] = True
+                    if self.data['Voltsel'][number[tracker]] == 'False':
+                        self.data['Voltsel'][number[tracker]] = False
+                    self.setpanel.elecvolt[electracker] = self.data['Voltsel'][number[tracker]]
+                    if self.data['Currentsel'][number[tracker]] == 'True':
+                        self.data['Currentsel'][number[tracker]] = True
+                    if self.data['Currentsel'][number[tracker]] == 'False':
+                        self.data['Currentsel'][number[tracker]] = False
+                    self.setpanel.eleccurrent[electracker] = self.data['Currentsel'][number[tracker]]
+                    self.setpanel.elecvmax[electracker] = self.data['VoltMax'][number[tracker]]
+                    self.setpanel.elecvmin[electracker] = self.data['VoltMin'][number[tracker]]
+                    self.setpanel.elecimin[electracker] = self.data['CurrentMin'][number[tracker]]
+                    self.setpanel.elecimax[electracker] = self.data['CurrentMax'][number[tracker]]
+                    self.setpanel.elecires[electracker] = self.data['CurrentRes'][number[tracker]]
+                    self.setpanel.elecvres[electracker] = self.data['VoltRes'][number[tracker]]
+                    if self.data['IV'][number[tracker]] == 'True':
+                        self.data['IV'][number[tracker]] = True
+                    if self.data['IV'][number[tracker]] == 'False':
+                        self.data['IV'][number[tracker]] = False
+                    self.setpanel.eleciv[electracker] = self.data['IV'][number[tracker]]
+                    if self.data['RV'][number[tracker]] == 'True':
+                        self.data['RV'][number[tracker]] = True
+                    if self.data['RV'][number[tracker]] == 'False':
+                        self.data['RV'][number[tracker]] = False
+                    self.setpanel.elecrv[electracker] = self.data['RV'][number[tracker]]
+                    if self.data['PV'][number[tracker]] == 'True':
+                        self.data['PV'][number[tracker]] = True
+                    if self.data['PV'][number[tracker]] == 'False':
+                        self.data['PV'][number[tracker]] = False
+                    self.setpanel.elecpv[electracker] = self.data['PV'][number[tracker]]
+                    if self.data['ChannelA'][number[tracker]] == 'True':
+                        self.data['ChannelA'][number[tracker]] = True
+                    if self.data['ChannelA'][number[tracker]] == 'False':
+                        self.data['ChannelA'][number[tracker]] = False
+                    self.setpanel.elecchannelA[electracker] = self.data['ChannelA'][number[tracker]]
+                    if self.data['ChannelB'][number[tracker]] == 'True':
+                        self.data['ChannelB'][number[tracker]] = True
+                    if self.data['ChannelB'][number[tracker]] == 'False':
+                        self.data['ChannelB'][number[tracker]] = False
+                    self.setpanel.elecchannelB[electracker] = self.data['ChannelB'][number[tracker]]
+                    self.setpanel.elecflagholder[electracker] = self.data['ELECflag'][number[tracker]]
+                    electracker = electracker + 1
 
-            # setv set###################################################################################################
-            self.setpanel.routineselectsetv.SetItems(setvoptions)
-            self.setpanel.setvstart = [''] * int(SETVcount)
-            self.setpanel.setvstop = [''] * int(SETVcount)
-            self.setpanel.setvstep = [''] * int(SETVcount)
-            self.setpanel.setvsweeppow = [''] * int(SETVcount)
-            self.setpanel.setvsweepsped = [''] * int(SETVcount)
-            self.setpanel.setvlaserout = [''] * int(SETVcount)
-            self.setpanel.setvnumscans = [''] * int(SETVcount)
-            self.setpanel.setvinitialran = [''] * int(SETVcount)
-            self.setpanel.setvrangedecre = [''] * int(SETVcount)
-            self.setpanel.setvchannelA = [''] * int(SETVcount)
-            self.setpanel.setvchannelB = [''] * int(SETVcount)
-            self.setpanel.setvvoltages = [''] * int(SETVcount)
-            self.setpanel.setvflagholder = [''] * int(SETVcount)
+                if a == 'OPTIC':
+                    self.setpanel.start[opttracker] = self.data['Start'][number[tracker]]
+                    self.setpanel.stop[opttracker] = self.data['Stop'][number[tracker]]
+                    self.setpanel.step[opttracker] = self.data['Stepsize'][number[tracker]]
+                    self.setpanel.sweeppow[opttracker] = self.data['Sweeppower'][number[tracker]]
+                    self.setpanel.sweepsped[opttracker] = self.data['Sweepspeed'][number[tracker]]
+                    self.setpanel.laserout[opttracker] = self.data['Laseroutput'][number[tracker]]
+                    self.setpanel.numscans[opttracker] = self.data['Numscans'][number[tracker]]
+                    self.setpanel.initialran[opttracker] = self.data['InitialRange'][number[tracker]]
+                    self.setpanel.rangedecre[opttracker] = self.data['RangeDec'][number[tracker]]
+                    self.setpanel.opticflagholder[opttracker] = self.data['OPTICflag'][number[tracker]]
+                    opttracker = opttracker + 1
 
-            for p in range(int(SETVcount)):
-                self.setpanel.setvstart = self.data['setvStart'][number[p]]
-                self.setpanel.setvstop = self.data['setvStop'][number[p]]
-                self.setpanel.setvstep = self.data['setvStepsize'][number[p]]
-                self.setpanel.setvsweeppow = self.data['setvSweeppower'][number[p]]
-                self.setpanel.setvsweepsped = self.data['setvSweepspeed'][number[p]]
-                self.setpanel.setvlaserout = self.data['setvLaseroutput'][number[p]]
-                self.setpanel.setvnumscans = self.data['setvNumscans'][number[p]]
-                self.setpanel.setvinitialran = self.data['setvInitialRange'][number[p]]
-                self.setpanel.setvrangedecre = self.data['setvChannelB'][number[p]]
-                self.setpanel.setvchannelA = self.data['setvChannelB'][number[p]]
-                self.setpanel.setvchannelB = self.data['setvChannelB'][number[p]]
-                self.setpanel.setvvoltages = self.data['Voltages'][number[p]]
-                self.setpanel.setvflagholder = self.data['setvflag'][number[p]]
+                if a == 'SETW':
+                    self.setpanel.setwvolt[setwtracker] = self.data['setwVoltsel'][number[tracker]]
+                    self.setpanel.setwcurrent[setwtracker] = self.data['setwCurrentsel'][number[tracker]]
+                    self.setpanel.setwvmax[setwtracker] = self.data['setwVoltMax'][number[tracker]]
+                    self.setpanel.setwvmin[setwtracker] = self.data['setwVoltMin'][number[tracker]]
+                    self.setpanel.setwimin[setwtracker] = self.data['setwCurrentMin'][number[tracker]]
+                    self.setpanel.setwimax[setwtracker] = self.data['setwCurrentMax'][number[tracker]]
+                    self.setpanel.setwires[setwtracker] = self.data['setwCurrentRes'][number[tracker]]
+                    self.setpanel.setwvres[setwtracker] = self.data['setwVoltRes'][number[tracker]]
+                    self.setpanel.setwiv[setwtracker] = self.data['setwIV'][number[tracker]]
+                    self.setpanel.setwrv[setwtracker] = self.data['setwRV'][number[tracker]]
+                    self.setpanel.setwpv[setwtracker] = self.data['setwPV'][number[tracker]]
+                    self.setpanel.setwchannelA[setwtracker] = self.data['setwChannelA'][number[tracker]]
+                    self.setpanel.setwchannelB[setwtracker] = self.data['setwChannelB'][number[tracker]]
+                    self.setpanel.setwwavelengths[setwtracker] = self.data['Wavelengths'][number[tracker]]
+                    self.setpanel.setwflagholder[setwtracker] = self.data['setwflag'][number[tracker]]
+                    setwtracker = setwtracker + 1
+
+                if a == 'SETV':
+                    self.setpanel.setvstart[setvtracker] = self.data['setvStart'][number[tracker]]
+                    self.setpanel.setvstop[setvtracker] = self.data['setvStop'][number[tracker]]
+                    self.setpanel.setvstep[setvtracker] = self.data['setvStepsize'][number[tracker]]
+                    self.setpanel.setvsweeppow[setvtracker] = self.data['setvSweeppower'][number[tracker]]
+                    self.setpanel.setvsweepsped[setvtracker] = self.data['setvSweepspeed'][number[tracker]]
+                    self.setpanel.setvlaserout[setvtracker] = self.data['setvLaseroutput'][number[tracker]]
+                    self.setpanel.setvnumscans[setvtracker] = self.data['setvNumscans'][number[tracker]]
+                    self.setpanel.setvinitialran[setvtracker] = self.data['setvInitialRange'][number[tracker]]
+                    self.setpanel.setvrangedecre[setvtracker] = self.data['setvRangeDec'][number[tracker]]
+                    self.setpanel.setvchannelA[setvtracker] = self.data['setvChannelA'][number[tracker]]
+                    self.setpanel.setvchannelB[setvtracker] = self.data['setvChannelB'][number[tracker]]
+                    self.setpanel.setvvoltages[setvtracker] = self.data['Voltages'][number[tracker]]
+                    self.setpanel.setvflagholder[setvtracker] = self.data['setvflag'][number[tracker]]
+                    setvtracker = setvtracker + 1
+            tracker = tracker + 1
 
 
     def checkListunchecked(self, event):
@@ -929,8 +986,6 @@ class TopPanel(wx.Panel):
 
             list.sort(save, reverse=True)
 
-            print(self.data['VoltMax'])
-
             #for i in range(len(save)):
             #    del self.data['device'][save[i]]
              #   del self.data['index'][save[i]]
@@ -988,14 +1043,11 @@ class TopPanel(wx.Panel):
                # del self.data['setvflag'][save[i]]
               #  del self.data['RoutineNumber'][save[i]]
 
-            print(self.data['VoltMax'])
-
 
             for i in range(int(self.big)):
                 self.data['device'].append(self.checkList.GetItemText(int(self.selected[c]), 0))
                 self.data['index'].append(int(self.selected[c]))
 
-            print(self.data['VoltMax'])
 
             for i in range(int(self.big)):
 
@@ -1013,8 +1065,6 @@ class TopPanel(wx.Panel):
                 self.data['ChannelA'].append(self.setpanel.elecchannelA[i])
                 self.data['ChannelB'].append(self.setpanel.elecchannelB[i])
                 self.data['ELECflag'].append(self.setpanel.elecflagholder[i])
-
-            print(self.data['VoltMax'])
 
 
             for i in range(int(self.big)):

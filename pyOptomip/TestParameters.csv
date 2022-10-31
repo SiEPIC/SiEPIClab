@@ -1,4 +1,3 @@
 ,,,,,,,,,,,,,,,,
 ,,,,,,IV Sweep,,,,,,,,,,,,,Optical Sweep,,,,,,,,,Set Wavelength,,,,,,,,,,,,,,SetVoltage,,,,,,Device Properties 
 RoutineNumber, Device ID, ELECFlag, OPTICflag, setwflag, setvflag, Volt Select, Current Select, Volt Min,Volt Max,Current Min,Current Max,Volt Resolution,Current Resolution,IV/VI,RV/RI,PV/PI, Channel A, Channel B,Start,Stop,Stepsize,Sweep power,Sweep speed,Laser Output,Number of scans, Initial Range, Range Dec, Volt Select, Current Select, Volt Min,Volt Max,Current Min,Current Max,Volt Resolution,Current Resolution,IV/VI,RV/RI,PV/PI, Channel A, Channel B, Wavelength, Start, Stop, Stepsize, Sweep power,Sweep speed,Laser Output,Number of scans, Initial Range, Range Dec, Channel A, Channel B, Voltages, Wavelength, Polarization, Opt x, Opt y, type, Elec x, Elec y 
-N/A,X:1Y:-3436FarmLeft,True,,,,True,False,1,1,,,1,,True,False,False,False,True,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1550,TM,1.0,-3436.0,<class 'type'>,0,0,
