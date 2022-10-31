@@ -28,7 +28,7 @@ import dummyLaserPanel
 
 
 class dummyLaserParameters(wx.Panel):
-    name = 'Dummy laser'
+    name = 'Dummy Laser'
 
     def __init__(self, parent, connectPanel, **kwargs):
         super(dummyLaserParameters, self).__init__(parent)

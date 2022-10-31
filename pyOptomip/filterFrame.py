@@ -13,6 +13,7 @@ class filterFrame(wx.Frame):
         #initial status of the checklist
         self.TE = False
         self.TM = False
+        self.routine = False
         self.thirteen = False
         self.fifteen = False
         self.keywords = set()
@@ -87,9 +88,14 @@ class filterFrame(wx.Frame):
         hbox3.AddMany([(keywords, 1, wx.EXPAND), (self.keyword, 1, wx.EXPAND), (btnSelect, 1, wx.EXPAND),
                        (btnUnSelect, 1, wx.EXPAND)])
 
+        hbox3_5 = wx.BoxSizer(wx.HORIZONTAL)
+        btnSelectRoutines = wx.Button(self, label='Select Devices with Routines', size=(100, 20))
+        btnSelectRoutines.Bind(wx.EVT_BUTTON, self.OnSelectRoutines)
+        hbox3_5.Add(btnSelectRoutines, 1, wx.EXPAND)
+
         vbox = wx.BoxSizer(wx.VERTICAL)
         vbox.AddMany([(hbox1, 1, wx.EXPAND), (hbox2, 1, wx.EXPAND), (hbox5, 0, wx.EXPAND), (hbox3, 0, wx.EXPAND),
-                      (hbox4, 0, wx.EXPAND)])
+                      (hbox3_5, 0, wx.EXPAND),(hbox4, 0, wx.EXPAND)])
 
         self.SetSizer(vbox)
 
@@ -104,6 +110,20 @@ class filterFrame(wx.Frame):
                 if self.device_list[self.checkList.GetItemData(ii)].polarization == 'TE':
 
                     self.checkList.CheckItem(ii, True)
+                    if self.thirteen is True:
+                        pass
+                    else:
+                        for i in range(self.checkList.GetItemCount()):
+                            if self.device_list[self.checkList.GetItemData(i)].wavelength == 1310 and \
+                                    self.device_list[self.checkList.GetItemData(i)].polarization == 'TE':
+                                self.checkList.CheckItem(i, False)
+                    if self.fifteen is True:
+                        pass
+                    else:
+                        for i in range(self.checkList.GetItemCount()):
+                            if self.device_list[self.checkList.GetItemData(i)].wavelength == 1550 and \
+                                    self.device_list[self.checkList.GetItemData(i)].polarization == 'TE':
+                                self.checkList.CheckItem(i, False)
         else:
             for i in range(self.checkList.GetItemCount()):
                 if self.device_list[self.checkList.GetItemData(i)].polarization == 'TE':
@@ -115,31 +135,23 @@ class filterFrame(wx.Frame):
                 if self.device_list[self.checkList.GetItemData(i)].polarization == 'TM':
 
                     self.checkList.CheckItem(i, True)
+                    if self.thirteen is True:
+                        pass
+                    else:
+                        for i in range(self.checkList.GetItemCount()):
+                            if self.device_list[self.checkList.GetItemData(i)].wavelength == 1310 and \
+                                    self.device_list[self.checkList.GetItemData(i)].polarization == 'TM':
+                                self.checkList.CheckItem(i, False)
+                    if self.fifteen is True:
+                        pass
+                    else:
+                        for i in range(self.checkList.GetItemCount()):
+                            if self.device_list[self.checkList.GetItemData(i)].wavelength == 1550 and \
+                                    self.device_list[self.checkList.GetItemData(i)].polarization == 'TM':
+                                self.checkList.CheckItem(i, False)
         else:
             for i in range(self.checkList.GetItemCount()):
                 if self.device_list[self.checkList.GetItemData(i)].polarization == 'TM':
-
-                    self.checkList.CheckItem(i, False)
-
-        if self.thirteen is True:
-            for i in range(self.checkList.GetItemCount()):
-                if self.device_list[self.checkList.GetItemData(i)].polarization == 1310:
-
-                    self.checkList.CheckItem(i, True)
-        else:
-            for i in range(self.checkList.GetItemCount()):
-                if self.device_list[self.checkList.GetItemData(i)].polarization == 1310:
-
-                    self.checkList.CheckItem(i, False)
-
-        if self.fifteen is True:
-            for i in range(self.checkList.GetItemCount()):
-                if self.device_list[self.checkList.GetItemData(i)].polarization == 1550:
-
-                    self.checkList.CheckItem(i, True)
-        else:
-            for i in range(self.checkList.GetItemCount()):
-                if self.device_list[self.checkList.GetItemData(i)].polarization == 1550:
 
                     self.checkList.CheckItem(i, False)
 
@@ -149,12 +161,12 @@ class filterFrame(wx.Frame):
                 if select == str(self.device_list[self.checkList.GetItemData(i)].getDeviceType()):
                     self.checkList.CheckItem(i, True)
 
+
         self.keywords.discard('')
         for select in self.keywords:
             print(select)
             for i in range(self.checkList.GetItemCount()):
                 if select in str(self.device_list[self.checkList.GetItemData(i)].device_id):
-
                     self.checkList.CheckItem(i, True)
 
         self.deselect.discard('')
@@ -163,6 +175,11 @@ class filterFrame(wx.Frame):
                 if str(deselect) in str(self.device_list[self.checkList.GetItemData(i)].device_id):
 
                     self.checkList.CheckItem(i, False)
+
+        if self.routine:
+            for i in range(self.checkList.GetItemCount()):
+                if self.device_list[self.checkList.GetItemData(i)].hasRoutines:
+                    self.checkList.CheckItem(i, True)
 
         self.Destroy()
 
@@ -201,3 +218,6 @@ class filterFrame(wx.Frame):
     def on_choose_device_type(self, event):
         """Adds selected device type to a list containing the type of devices to select"""
         self.devTypes.add(self.selDeviceType.GetValue())
+
+    def OnSelectRoutines(self, event):
+        self.routine = True
