@@ -84,12 +84,12 @@ class fineAlign(object):
                 xStopPos = self.stage.getPosition()[0];
                 yStopPos = self.stage.getPosition()[1];
                 self.stage.moveRelative(xStartPos-xStopPos, yStartPos-yStopPos)
-                print 'Could not find a device using this detector.'
+                print('Could not find a device using this detector.')
                 continue
             elif res == self.FINE_ALIGN_ABORTED:
-                print 'Fine align self.aborted.'
+                print('Fine align self.aborted.')
                 break
-            print 'Found a device. Optimizing power...'   
+            print('Found a device. Optimizing power...') 
             # Gradient search stage      
             res = self.gradientSearch(detSlot, detChan)
               
@@ -97,10 +97,10 @@ class fineAlign(object):
             if self.useCrosshair:
                 res = self.crosshairSearch(maxSteps, detSlot, detChan)
             self.laser.setAutorangeAll()
-            print 'Fine align completed.'
+            print('Fine align completed.')
             return res
         # Fine align failed  
-        print 'Fine align failed.'
+        print('Fine align failed.')
         xStopPos = self.stage.getPosition()[0];
         yStopPos = self.stage.getPosition()[1];
         self.stage.moveRelative(xStartPos-xStopPos, yStartPos-yStopPos)
