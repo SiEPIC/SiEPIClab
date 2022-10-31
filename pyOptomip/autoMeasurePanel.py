@@ -383,17 +383,17 @@ class autoMeasurePanel(wx.Panel):
         matPlotBox.Add(self.graph, flag=wx.EXPAND, border=0, proportion=1)
 
         # Add Coordinate file label
-        st1 = wx.StaticText(self, label='Coordinate file:')
-        fileLabelBox = wx.BoxSizer(wx.HORIZONTAL)
-        fileLabelBox.Add(st1, proportion=1, flag=wx.EXPAND)
+        #st1 = wx.StaticText(self, label='Coordinate file:')
+        #fileLabelBox = wx.BoxSizer(wx.HORIZONTAL)
+        #fileLabelBox.Add(st1, proportion=1, flag=wx.EXPAND)
 
         # Allow File Selection
-        self.coordFileTb = wx.TextCtrl(self, style=wx.TE_READONLY)
-        self.coordFileTb.SetValue('No file selected')
-        self.coordFileSelectBtn = wx.Button(self, wx.ID_OPEN, size=(50, 20))
-        self.coordFileSelectBtn.Bind(wx.EVT_BUTTON, self.OnButton_ChooseCoordFile)
-        fileLoadBox = wx.BoxSizer(wx.HORIZONTAL)
-        fileLoadBox.AddMany([(self.coordFileTb, 1, wx.EXPAND), (self.coordFileSelectBtn, 0, wx.EXPAND)])
+        #self.coordFileTb = wx.TextCtrl(self, style=wx.TE_READONLY)
+        #self.coordFileTb.SetValue('No file selected')
+        #self.coordFileSelectBtn = wx.Button(self, wx.ID_OPEN, size=(50, 20))
+        #self.coordFileSelectBtn.Bind(wx.EVT_BUTTON, self.OnButton_ChooseCoordFile)
+        #fileLoadBox = wx.BoxSizer(wx.HORIZONTAL)
+        #fileLoadBox.AddMany([(self.coordFileTb, 1, wx.EXPAND), (self.coordFileSelectBtn, 0, wx.EXPAND)])
 
         # Add Selection Buttons and Filter
         self.checkAllBtn = wx.Button(self, label='Select All', size=(80, 20))

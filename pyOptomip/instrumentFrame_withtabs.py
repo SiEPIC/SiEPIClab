@@ -106,7 +106,8 @@ class instrumentFrame_withtabs(wx.Frame):
 
         """Create the tab windows"""
         tab1 = self.HomeTab(nb, self.laserWithDetector, self.opticalStage, self.electricalStage, self.camera, self.instList)
-        tab2 = self.ElectricalTab(nb, self.SMU)
+        if self.SMU:
+            tab2 = self.ElectricalTab(nb, self.SMU)
         tab3 = self.OpticalTab(nb, self.laserWithDetector)
         tab4 = self.AutoMeasureTab(nb, self.laserWithDetector, self.opticalStage, self.electricalStage, self.SMU,
                                    self.camera)

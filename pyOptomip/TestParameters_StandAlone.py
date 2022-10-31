@@ -792,7 +792,15 @@ class TopPanel(wx.Panel):
                     opttracker = opttracker + 1
 
                 if a == 'SETW':
+                    if self.data['setwVoltsel'][number[tracker]] == 'True':
+                        self.data['setwVoltsel'][number[tracker]] = True
+                    if self.data['setwVoltsel'][number[tracker]] == 'False':
+                        self.data['setwVoltsel'][number[tracker]] = False
                     self.setpanel.setwvolt[setwtracker] = self.data['setwVoltsel'][number[tracker]]
+                    if self.data['setwCurrentsel'][number[tracker]] == 'True':
+                        self.data['setwCurrentsel'][number[tracker]] = True
+                    if self.data['setwCurrentsel'][number[tracker]] == 'False':
+                        self.data['setwCurrentsel'][number[tracker]] = False
                     self.setpanel.setwcurrent[setwtracker] = self.data['setwCurrentsel'][number[tracker]]
                     self.setpanel.setwvmax[setwtracker] = self.data['setwVoltMax'][number[tracker]]
                     self.setpanel.setwvmin[setwtracker] = self.data['setwVoltMin'][number[tracker]]
@@ -800,10 +808,30 @@ class TopPanel(wx.Panel):
                     self.setpanel.setwimax[setwtracker] = self.data['setwCurrentMax'][number[tracker]]
                     self.setpanel.setwires[setwtracker] = self.data['setwCurrentRes'][number[tracker]]
                     self.setpanel.setwvres[setwtracker] = self.data['setwVoltRes'][number[tracker]]
+                    if self.data['setwIV'][number[tracker]] == 'True':
+                        self.data['setwIV'][number[tracker]] = True
+                    if self.data['setwIV'][number[tracker]] == 'False':
+                        self.data['setwIV'][number[tracker]] = False
                     self.setpanel.setwiv[setwtracker] = self.data['setwIV'][number[tracker]]
+                    if self.data['setwRV'][number[tracker]] == 'True':
+                        self.data['setwRV'][number[tracker]] = True
+                    if self.data['setwRV'][number[tracker]] == 'False':
+                        self.data['setwRV'][number[tracker]] = False
                     self.setpanel.setwrv[setwtracker] = self.data['setwRV'][number[tracker]]
+                    if self.data['setwPV'][number[tracker]] == 'True':
+                        self.data['setwPV'][number[tracker]] = True
+                    if self.data['setwPV'][number[tracker]] == 'False':
+                        self.data['setwPV'][number[tracker]] = False
                     self.setpanel.setwpv[setwtracker] = self.data['setwPV'][number[tracker]]
+                    if self.data['setwChannelA'][number[tracker]] == 'True':
+                        self.data['setwChannelA'][number[tracker]] = True
+                    if self.data['setwChannelA'][number[tracker]] == 'False':
+                        self.data['setwChannelA'][number[tracker]] = False
                     self.setpanel.setwchannelA[setwtracker] = self.data['setwChannelA'][number[tracker]]
+                    if self.data['setwChannelB'][number[tracker]] == 'True':
+                        self.data['setwChannelB'][number[tracker]] = True
+                    if self.data['setwChannelB'][number[tracker]] == 'False':
+                        self.data['setwChannelB'][number[tracker]] = False
                     self.setpanel.setwchannelB[setwtracker] = self.data['setwChannelB'][number[tracker]]
                     self.setpanel.setwwavelengths[setwtracker] = self.data['Wavelengths'][number[tracker]]
                     self.setpanel.setwflagholder[setwtracker] = self.data['setwflag'][number[tracker]]
@@ -819,7 +847,15 @@ class TopPanel(wx.Panel):
                     self.setpanel.setvnumscans[setvtracker] = self.data['setvNumscans'][number[tracker]]
                     self.setpanel.setvinitialran[setvtracker] = self.data['setvInitialRange'][number[tracker]]
                     self.setpanel.setvrangedecre[setvtracker] = self.data['setvRangeDec'][number[tracker]]
+                    if self.data['setvChannelA'][number[tracker]] == 'True':
+                        self.data['setvChannelA'][number[tracker]] = True
+                    if self.data['setvChannelA'][number[tracker]] == 'False':
+                        self.data['setvChannelA'][number[tracker]] = False
                     self.setpanel.setvchannelA[setvtracker] = self.data['setvChannelA'][number[tracker]]
+                    if self.data['setvChannelB'][number[tracker]] == 'True':
+                        self.data['setvChannelB'][number[tracker]] = True
+                    if self.data['setvChannelB'][number[tracker]] == 'False':
+                        self.data['setvChannelB'][number[tracker]] = False
                     self.setpanel.setvchannelB[setvtracker] = self.data['setvChannelB'][number[tracker]]
                     self.setpanel.setvvoltages[setvtracker] = self.data['Voltages'][number[tracker]]
                     self.setpanel.setvflagholder[setvtracker] = self.data['setvflag'][number[tracker]]
