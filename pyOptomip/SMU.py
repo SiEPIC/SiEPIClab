@@ -67,6 +67,7 @@ class SMUClass:
         -------
         A print statement indicating that the SMU is connected
         """
+        self.visaName = visaName
         self.k = Keithley2600(visaName)
 
         self.inst = rm.open_resource(visaName)
@@ -83,6 +84,14 @@ class SMUClass:
 
         print('Connected\n')
 
+    def testconnection(self, rm):
+        print(self.visaName)
+        test = rm.open_resource(self.visaName)
+        result = test.query("*IDN?\n")
+        if result:
+            print('Device is connected, no errors')
+        else:
+            print('SMU device cannot connect')
 
     def disconnect(self):
         """

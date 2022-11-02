@@ -4,14 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a8aeb52c-8b26-4e4f-bf5c-7cec241db66f" name="Changes" comment="fixed testparameters, however some bugs still remain, addded instrument status panel">
-      <change afterPath="$PROJECT_DIR$/TestParameters2.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TestParameters21.py" afterDir="false" />
+    <list default="true" id="a8aeb52c-8b26-4e4f-bf5c-7cec241db66f" name="Changes" comment="fixed more testparameter bugs related to retrievedataswap, removed excess sizers from instrumentframe and automeasurepanel">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SMU.py" beforeDir="false" afterPath="$PROJECT_DIR$/SMU.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TestParameters.csv" beforeDir="false" afterPath="$PROJECT_DIR$/TestParameters.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TestParameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/TestParameters.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TestParameters_StandAlone.py" beforeDir="false" afterPath="$PROJECT_DIR$/TestParameters_StandAlone.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/autoMeasurePanel.py" beforeDir="false" afterPath="$PROJECT_DIR$/autoMeasurePanel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/instr_status.py" beforeDir="false" afterPath="$PROJECT_DIR$/instr_status.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/instrumentFrame_withtabs.py" beforeDir="false" afterPath="$PROJECT_DIR$/instrumentFrame_withtabs.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -46,15 +44,15 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "D:/Work/pyOptomip3/pyOptomip",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyIntegratedToolsModulesConfigurable",
-    "two.files.diff.last.used.file": "D:/Work/pyOptomip3/pyOptomip/TestParameters_StandAlone.py"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Work/pyOptomip3/pyOptomip&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyIntegratedToolsModulesConfigurable&quot;,
+    &quot;two.files.diff.last.used.file&quot;: &quot;D:/Work/pyOptomip3/pyOptomip/TestParameters_StandAlone.py&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\Work\pyOptomip3\pyOptomip" />
@@ -479,7 +477,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667252870129</updated>
     </task>
-    <option name="localTasksCounter" value="43" />
+    <task id="LOCAL-00043" summary="fixed more testparameter bugs related to retrievedataswap, removed excess sizers from instrumentframe and automeasurepanel">
+      <created>1667259199259</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1667259199259</updated>
+    </task>
+    <option name="localTasksCounter" value="44" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -506,7 +511,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="added retrieve data function, doesnt function yet" />
     <MESSAGE value="reorganized layout" />
     <MESSAGE value="added routine number organization by highlight function" />
     <MESSAGE value="removed import file" />
@@ -531,6 +535,7 @@
     <MESSAGE value="fixed testing parameters so that checklist updates on import of csv file" />
     <MESSAGE value="fixed a few merging bugs, got automeasure working with testing parameters" />
     <MESSAGE value="fixed testparameters, however some bugs still remain, addded instrument status panel" />
-    <option name="LAST_COMMIT_MESSAGE" value="fixed testparameters, however some bugs still remain, addded instrument status panel" />
+    <MESSAGE value="fixed more testparameter bugs related to retrievedataswap, removed excess sizers from instrumentframe and automeasurepanel" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixed more testparameter bugs related to retrievedataswap, removed excess sizers from instrumentframe and automeasurepanel" />
   </component>
 </project>

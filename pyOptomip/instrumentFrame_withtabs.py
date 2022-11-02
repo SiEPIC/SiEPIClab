@@ -227,20 +227,21 @@ class instrumentFrame_withtabs(wx.Frame):
                 homeVbox.Add(electricalStagePanel, proportion=0, border=0, flag=wx.EXPAND)
             if laserWithDetector:
                 detectorPanel = laserWithDetector.panelClass(self, laserWithDetector, False, True)
-                detectHbox = wx.BoxSizer(wx.VERTICAL)
-                detectHbox.Add(detectorPanel,proportion=2, border=0, flag=wx.EXPAND)
+                detectHbox = wx.BoxSizer(wx.HORIZONTAL)
+                detectHbox.Add(detectorPanel,proportion=1, border=0, flag=wx.EXPAND)
+                docpanel = docPanel(self)
+                detectHbox.Add(docpanel, 1, wx.EXPAND)
                 homeVbox.Add(detectHbox, 1, wx.EXPAND)
 
 
-
             camerapanel = cameraPanel(self, camera)
-            homeVbox2.Add(camerapanel, 1, wx.EXPAND)
+            homeVbox2.Add(camerapanel, 0, wx.EXPAND)
 
             statuspanel = statusPanel(self, instr)
             homeVbox2.Add(statuspanel, 1, wx.EXPAND)
 
-            docpanel = docPanel(self)
-            homeVbox2.Add(docpanel, 1, wx.EXPAND)
+            #docpanel = docPanel(self)
+            #homeVbox2.Add(docpanel, 1, wx.EXPAND)
 
             self.hbox.AddMany([(homeVbox, 1, wx.EXPAND), (homeVbox2, 1, wx.EXPAND)])
 

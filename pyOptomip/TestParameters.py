@@ -24,6 +24,7 @@ import keyboard
 import os
 import wx
 import re
+import yaml
 from outputlogPanel import outputlogPanel
 from logWriter import logWriter, logWriterError
 import sys
@@ -233,6 +234,71 @@ class TopPanel(wx.Panel):
 
        # for ii in range(self.checkList.GetItemCount()):
             #self.data['index'] = ii
+        self.devicedict = {}
+        for dev in deviceList:
+            self.devicedict[dev] = {}
+            self.devicedict[dev]['index'] = []
+            self.devicedict[dev]['ELECflag'] = []
+            self.devicedict[dev]['OPTICflag'] = []
+            self.devicedict[dev]['setwflag'] = []
+            self.devicedict[dev]['setvflag'] = []
+            self.devicedict[dev]['Voltsel'] = []
+            self.devicedict[dev]['Currentsel'] = []
+            self.devicedict[dev]['VoltMin'] = []
+            self.devicedict[dev]['VoltMax'] = []
+            self.devicedict[dev]['CurrentMin'] = []
+            self.devicedict[dev]['CurrentMax'] = []
+            self.devicedict[dev]['VoltRes'] = []
+            self.devicedict[dev]['CurrentRes'] = []
+            self.devicedict[dev]['IV'] = []
+            self.devicedict[dev]['RV'] = []
+            self.devicedict[dev]['PV'] = []
+            self.devicedict[dev]['ChannelA'] = []
+            self.devicedict[dev]['ChannelB'] = []
+            self.devicedict[dev]['Start'] = []
+            self.devicedict[dev]['Stop'] = []
+            self.devicedict[dev]['Stepsize'] = []
+            self.devicedict[dev]['Sweeppower'] = []
+            self.devicedict[dev]['Sweepspeed'] = []
+            self.devicedict[dev]['Laseroutput'] = []
+            self.devicedict[dev]['Numscans'] = []
+            self.devicedict[dev]['InitialRange'] = []
+            self.devicedict[dev]['RangeDec'] = []
+            self.devicedict[dev]['setwVoltsel'] = []
+            self.devicedict[dev]['setwCurrentsel'] = []
+            self.devicedict[dev]['setwVoltMin'] = []
+            self.devicedict[dev]['setwVoltMax'] = []
+            self.devicedict[dev]['setwCurrentMin'] = []
+            self.devicedict[dev]['setwCurrentMax'] = []
+            self.devicedict[dev]['setwVoltRes'] = []
+            self.devicedict[dev]['setwCurrentRes'] = []
+            self.devicedict[dev]['setwIV'] = []
+            self.devicedict[dev]['setwRV'] = []
+            self.devicedict[dev]['setwPV'] = []
+            self.devicedict[dev]['setwChannelA'] = []
+            self.devicedict[dev]['setwChannelB'] = []
+            self.devicedict[dev]['Wavelengths'] = []
+            self.devicedict[dev]['setvStart'] = []
+            self.devicedict[dev]['setvStop'] = []
+            self.devicedict[dev]['setvStepsize'] = []
+            self.devicedict[dev]['setvSweeppower'] = []
+            self.devicedict[dev]['setvSweepspeed'] = []
+            self.devicedict[dev]['setvLaseroutput'] = []
+            self.devicedict[dev]['setvNumscans'] = []
+            self.devicedict[dev]['setvInitialRange'] = []
+            self.devicedict[dev]['setvRangeDec'] = []
+            self.devicedict[dev]['setvChannelA'] = []
+            self.devicedict[dev]['setvChannelB'] = []
+            self.devicedict[dev]['Voltages'] = []
+            self.devicedict[dev]['RoutineNumber'] = []
+            self.devicedict[dev]['Wavelength'] = []
+            self.devicedict[dev]['Polarization'] = []
+            self.devicedict[dev]['Opt x'] = []
+            self.devicedict[dev]['Opt y'] = []
+            self.devicedict[dev]['type'] = []
+            self.devicedict[dev]['Elec x'] = []
+            self.devicedict[dev]['Elec y'] = []
+
 
 
 
@@ -936,6 +1002,20 @@ class TopPanel(wx.Panel):
 
         """
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         if self.retrievedataflag == True:
             print('Cannot set data while in retrieve data mode, please change to set data mode to set data')
             return
@@ -1302,10 +1382,17 @@ class TopPanel(wx.Panel):
 
         """
 
-        ROOT_DIR = format(os.getcwd())
-        primarysavefile = ROOT_DIR + '\TestParameters.csv'
 
-        with open(primarysavefile, 'w', newline='') as f:
+        ROOT_DIR = format(os.getcwd())
+        primarysavefilecsv = ROOT_DIR + '\TestParameters.csv'
+        primarysavefileyml = ROOT_DIR + '\TestParameters.yaml'
+
+        with open(primarysavefileyml, 'w') as f:
+            documents = yaml.dump(self.devicedict, f)
+
+
+
+        with open(primarysavefilecsv, 'w', newline='') as f:
             f.write(',,,,,,,,,,,,,,,,\n')
             f.write(',,,,,,IV Sweep,,,,,,,,,,,,,Optical Sweep,,,,,,,,,Set Wavelength,,,,,,,,,,,,,,SetVoltage,,,,,,Device Properties \n')
             f.write('RoutineNumber, Device ID, ELECFlag, OPTICflag, setwflag, setvflag, Volt Select, Current Select,'

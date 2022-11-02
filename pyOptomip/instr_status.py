@@ -16,7 +16,7 @@ class statusPanel(wx.Panel):
 
         hbox = wx.BoxSizer(wx.HORIZONTAL)
         Condev = wx.StaticText(self, label='Connected Devices:')
-        hbox.AddMany([(Condev, 1, wx.EXPAND)])
+        hbox.AddMany([(Condev, 0, wx.EXPAND)])
 
         self.hbox1 = wx.BoxSizer(wx.HORIZONTAL)
         self.devices = wx.StaticText(self, label='')
@@ -27,10 +27,10 @@ class statusPanel(wx.Panel):
         self.refreshBtn = wx.Button(self, label='Refresh', size=(50, 20))
         self.refreshBtn.Bind(wx.EVT_BUTTON, self.refresh_btn)
 
-        hbox2.AddMany([(self.refreshBtn, 1, wx.EXPAND)])
+        hbox2.AddMany([(self.refreshBtn, 1, wx.EXPAND|wx.BOTTOM)])
 
 
-        vboxstatus.AddMany([(hbox, 1, wx.EXPAND), (self.hbox1, 1, wx.EXPAND), (hbox2, 1, wx.EXPAND)])
+        vboxstatus.AddMany([(hbox, 0, wx.EXPAND), (self.hbox1, 1, wx.EXPAND), (hbox2, 0, wx.EXPAND|wx.BOTTOM)])
 
         self.SetSizer(vboxstatus)
 
@@ -49,8 +49,9 @@ class statusPanel(wx.Panel):
             devname = inst[a].name
             if devname == 'Dummy CorvusEco' or devname == 'Dummy Laser':
                 pass
-            else:
-                print(inst[a].query('*IDN?'))
+            elif devname == 'SMU':
+                inst[a].testconnection(rm)
+                #print(inst[a].query('*IDN?'))
 
             string = string + '\n' + str(devname)
 
