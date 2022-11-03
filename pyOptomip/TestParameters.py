@@ -232,6 +232,9 @@ class TopPanel(wx.Panel):
         self.set = [False] * self.checkList.GetItemCount()
 
 
+
+
+
        # for ii in range(self.checkList.GetItemCount()):
             #self.data['index'] = ii
         self.devicedict = {}
@@ -298,6 +301,15 @@ class TopPanel(wx.Panel):
             self.devicedict[dev]['type'] = []
             self.devicedict[dev]['Elec x'] = []
             self.devicedict[dev]['Elec y'] = []
+
+        for dev in self.device_list:
+            self.devicedict[dev.getDeviceID()]['Wavelength'].append(dev.getDeviceWavelength())
+            self.devicedict[dev.getDeviceID()]['Polarization'].append(dev.getDevicePolarization())
+            self.devicedict[dev.getDeviceID()]['Opt x'].append(dev.getOpticalCoordinates()[0])
+            self.devicedict[dev.getDeviceID()]['Opt y'].append(dev.getOpticalCoordinates()[1])
+            self.devicedict[dev.getDeviceID()]['type'].append(dev.getDeviceType())
+            self.devicedict[dev.getDeviceID()]['Elec x'].append(dev.getElectricalCoordinates()[0])
+            self.devicedict[dev.getDeviceID()]['Elec y'].append(dev.getElectricalCoordinates()[1])
 
 
 
@@ -1002,22 +1014,138 @@ class TopPanel(wx.Panel):
 
         """
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         if self.retrievedataflag == True:
             print('Cannot set data while in retrieve data mode, please change to set data mode to set data')
+            return
+
+        n = 0
+
+        for dev in deviceListAsObjects:
+
+            for x in self.selected:
+                if n == x:
+                    for i in range(int(self.instructpanel.elecroutine.GetValue())):
+                        if self.setpanel.elecvolt[i] == True:
+                            dev.addVoltageSweep(self.setpanel.elecvmin[i], self.setpanel.elecvmax[i],
+                                                self.setpanel.elecvres[i],
+                                                self.setpanel.eleciv[i], self.setpanel.elecrv[i],
+                                                self.setpanel.elecpv[i],
+                                                self.setpanel.elecchannelA[i], self.setpanel.elecchannelB[i])
+                        elif self.setpanel.eleccurrent[i] == True:
+                            dev.addCurrantSweep(self.setpanel.elecimin[i], self.setpanel.elecimax[i],
+                                                self.setpanel.elecires[i],
+                                                self.setpanel.eleciv[i], self.setpanel.elecrv[i],
+                                                self.setpanel.elecpv[i],
+                                                self.setpanel.elecchannelA[i], self.setpanel.elecchannelB[i])
+
+                    for i in range(int(self.instructpanel.optroutine.GetValue())):
+                        dev.addWavelengthSweep(self.setpanel.start[i], self.setpanel.stop[i], self.setpanel.step[i],
+                                               self.setpanel.sweeppow[i], self.setpanel.sweepsped[i], self.setpanel.laserout[i],
+                                               self.setpanel.numscans[i],
+                                               self.setpanel.initialran[i], self.setpanel.rangedecre[i])
+
+                    for i in range(int(self.instructpanel.setwroutine.GetValue())):
+                        if self.setpanel.setwvolt[i] == True:
+                            dev.addSetWavelengthVoltageSweep(self.setpanel.setwvmin[i], self.setpanel.setwvmax[i],
+                                                             self.setpanel.setwvres[i], self.setpanel.setwiv[i],
+                                                             self.setpanel.setwrv[i], self.setpanel.setwpv[i],
+                                                             self.setpanel.setwchannelA[i],
+                                                             self.setpanel.setwchannelB[i],
+                                                             self.setpanel.setwwavelengths[i])
+                        elif self.setpanel.setwcurrent[i] == True:
+                            dev.addSetWavelengthVoltageSweep(self.setpanel.setwimin[i], self.setpanel.setwimax[i],
+                                                             self.setpanel.setwires[i], self.setpanel.setwiv[i],
+                                                             self.setpanel.setwrv[i], self.setpanel.setwpv[i],
+                                                             self.setpanel.setwchannelA[i],
+                                                             self.setpanel.setwchannelB[i],
+                                                             self.setpanel.setwwavelengths[i])
+
+                    for i in range(int(self.instructpanel.setwroutine.GetValue())):
+                        dev.addSetVoltageWavelengthSweep(self.setpanel.setvstart[i], self.setpanel.setvstop[i],
+                                                         self.setpanel.setvstep[i], self.setpanel.setvsweeppow[i],
+                                                         self.setpanel.setvsweepsped[i], self.setpanel.setvlaserout[i],
+                                                         self.setpanel.setvnumscans[i], self.setpanel.setvinitialran[i],
+                                                         self.setpanel.setvrangedecre[i], self.setpanel.setvchannelA[i],
+                                                         self.setpanel.setvchannelB[i], self.setpanel.setvvoltages[i])
+
+                n = n + 1
+
+
+
+
+
+
+
+        #devlist = self.checkList.GetCheckedItems()
+        #GetCheckedStrings(self.checkList)
+        #print(devlist)
+        for devnum in self.selected:
+            print(self.checkList.GetItemText(devnum))
+
+            for i in range(int(self.instructpanel.elecroutine.GetValue())):
+                self.devicedict[self.checkList.GetItemText(devnum)]['Voltsel'].append(self.setpanel.elecvolt[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['Currentsel'].append(self.setpanel.eleccurrent[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['VoltMin'].append(self.setpanel.elecvmin[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['VoltMax'].append(self.setpanel.elecvmax[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['CurrentMin'].append(self.setpanel.elecimin[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['CurrentMax'].append(self.setpanel.elecimax[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['VoltRes'].append(self.setpanel.elecvres[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['CurrentRes'].append(self.setpanel.elecires[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['IV'].append(self.setpanel.eleciv[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['RV'].append(self.setpanel.elecrv[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['PV'].append(self.setpanel.elecpv[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['ChannelA'].append(self.setpanel.elecchannelA[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['ChannelB'].append(self.setpanel.elecchannelB[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['ELECflag'].append(self.setpanel.elecflagholder[i])
+
+            for i in range(int(self.instructpanel.optroutine.GetValue())):
+                self.devicedict[self.checkList.GetItemText(devnum)]['Start'].append(self.setpanel.start[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['Stop'].append(self.setpanel.stop[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['Stepsize'].append(self.setpanel.step[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['Sweeppower'].append(self.setpanel.sweeppow[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['Sweepspeed'].append(self.setpanel.sweepsped[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['Laseroutput'].append(self.setpanel.laserout[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['Numscans'].append(self.setpanel.numscans[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['InitialRange'].append(self.setpanel.initialran[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['RangeDec'].append(self.setpanel.rangedecre[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['OPTICflag'].append(self.setpanel.opticflagholder[i])
+
+            for i in range(int(self.instructpanel.setwroutine.GetValue())):
+                self.devicedict[self.checkList.GetItemText(devnum)]['setwVoltsel'].append(self.setpanel.setwvolt[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['setwCurrentsel'].append(self.setpanel.setwcurrent[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['setwVoltMin'].append(self.setpanel.setwvmin[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['setwVoltMax'].append(self.setpanel.setwvmax[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['setwCurrentMin'].append(self.setpanel.setwimin[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['setwCurrentMax'].append(self.setpanel.setwimax[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['setwVoltRes'].append(self.setpanel.setwvres[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['setwCurrentRes'].append(self.setpanel.setwires[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['setwIV'].append(self.setpanel.setwiv[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['setwRV'].append(self.setpanel.setwrv[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['setwPV'].append(self.setpanel.setwpv[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['setwChannelA'].append(self.setpanel.setwchannelA[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['setwChannelB'].append(self.setpanel.setwchannelB[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['Wavelengths'].append(self.setpanel.setwwavelengths[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['setwflag'].append(self.setpanel.setwflagholder[i])
+
+            for i in range(int(self.instructpanel.setvroutine.GetValue())):
+                self.devicedict[self.checkList.GetItemText(devnum)]['setvStart'].append(self.setpanel.setvstart[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['setvStop'].append(self.setpanel.setvstop[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['setvStepsize'].append(self.setpanel.setvstep[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['setvSweeppower'].append(self.setpanel.setvsweeppow[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['setvSweepspeed'].append(self.setpanel.setvsweepsped[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['setvLaseroutput'].append(self.setpanel.setvlaserout[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['setvNumscans'].append(self.setpanel.setvnumscans[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['setvInitialRange'].append(self.setpanel.setvinitialran[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['setvRangeDec'].append(self.setpanel.setvrangedecre[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['setvChannelA'].append(self.setpanel.setvchannelA[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['setvChannelB'].append(self.setpanel.setvchannelB[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['Voltages'].append(self.setpanel.setvvoltages[i])
+                self.devicedict[self.checkList.GetItemText(devnum)]['setvflag'].append(self.setpanel.setvflagholder[i])
+
+
+
+            if self.retrievedataflag == True:
+                print('Cannot set data while in retrieve data mode, please change to set data mode to set data')
             return
 
         list.sort(self.selected, reverse=True)
@@ -1385,10 +1513,19 @@ class TopPanel(wx.Panel):
 
         ROOT_DIR = format(os.getcwd())
         primarysavefilecsv = ROOT_DIR + '\TestParameters.csv'
-        primarysavefileyml = ROOT_DIR + '\TestParameters.yaml'
+        primarysavefileymlcwd = ROOT_DIR + '\TestParameters.yaml'
+
+        savelocation = self.outputFolderTb.GetValue()
+        primarysavefileyml = savelocation + '\TestParameters.yaml'
 
         with open(primarysavefileyml, 'w') as f:
+            documents = yaml.dump(deviceListAsObjects, f)
+
+        with open(primarysavefileymlcwd, 'w') as f:
             documents = yaml.dump(self.devicedict, f)
+
+        #with open(primarysavefileyml, 'w') as f:
+           # documents = yaml.dump(self.devicedict, f)
 
 
 
