@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a8aeb52c-8b26-4e4f-bf5c-7cec241db66f" name="Changes" comment="began formatting for yml file">
+    <list default="true" id="a8aeb52c-8b26-4e4f-bf5c-7cec241db66f" name="Changes" comment="yml file output modified and fixed">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TestParameters.py" beforeDir="false" afterPath="$PROJECT_DIR$/TestParameters.py" afterDir="false" />
     </list>
@@ -487,7 +487,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667411753789</updated>
     </task>
-    <option name="localTasksCounter" value="45" />
+    <task id="LOCAL-00045" summary="yml file output modified and fixed">
+      <created>1667517307467</created>
+      <option name="number" value="00045" />
+      <option name="presentableId" value="LOCAL-00045" />
+      <option name="project" value="LOCAL" />
+      <updated>1667517307467</updated>
+    </task>
+    <option name="localTasksCounter" value="46" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -514,7 +521,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="added routine number organization by highlight function" />
     <MESSAGE value="removed import file" />
     <MESSAGE value="fized issue caused by change of parameter inputs in internal automeasure class" />
     <MESSAGE value="added docstrings and updated documentation for testing parameters and SMU" />
@@ -539,6 +545,7 @@
     <MESSAGE value="fixed testparameters, however some bugs still remain, addded instrument status panel" />
     <MESSAGE value="fixed more testparameter bugs related to retrievedataswap, removed excess sizers from instrumentframe and automeasurepanel" />
     <MESSAGE value="began formatting for yml file" />
-    <option name="LAST_COMMIT_MESSAGE" value="began formatting for yml file" />
+    <MESSAGE value="yml file output modified and fixed" />
+    <option name="LAST_COMMIT_MESSAGE" value="yml file output modified and fixed" />
   </component>
 </project>
