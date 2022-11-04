@@ -63,6 +63,7 @@ class MGMotor(object):
     name = 'Thorlabs BBD203'
     isMotor=True
     isLaser=False
+    isElec = True
         
     def __init__(self, serialNum):
         self.COM_id = 'MGMOTOR.MGMotorCtrl.1'
