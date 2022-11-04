@@ -63,8 +63,13 @@ class ConnectCB(wx.Choicebook):
         self.connectPanel = connectPanel
         # Reduce load time by getting VISA addresses here and passing them to each panel
         rm = visa.ResourceManager()
-        visaAddrLst = rm.list_resources()
-        #visaAddrLst = visaAddrLst + Thorlabs.list_kinesis_devices()
+        visaAddrList = rm.list_resources()
+        ThorLabslist = Thorlabs.list_kinesis_devices()
+        visaAddrLst = []
+        for addr in visaAddrList:
+            visaAddrLst.append(addr)
+        for addr in ThorLabslist:
+            visaAddrLst.append(addr[0])
         for c in devTypes:
             win = wx.Panel(self)
             vbox = wx.BoxSizer(wx.VERTICAL)
@@ -85,9 +90,9 @@ class pyOptomip(wx.Frame):
                           size=(600, 400))
         self.panel = wx.Panel(self)
         self.panel.instList = []
-        notebook = ConnectCB(self.panel, -1, self.panel)
+        self.notebook = ConnectCB(self.panel, -1, self.panel)
         sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(notebook, 2, wx.ALL | wx.EXPAND, 5)
+        sizer.Add(self.notebook, 2, wx.ALL | wx.EXPAND, 5)
         self.doneButton = wx.Button(self.panel, label='Done', size=(75, 20))
         self.doneButton.Bind(wx.EVT_BUTTON, self.OnButton_Done)
         sizer.Add(self.doneButton, 0, wx.ALIGN_RIGHT | wx.ALL)

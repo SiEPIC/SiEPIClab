@@ -3,6 +3,8 @@ import wx
 
 import BSC203
 import BSC203MotorPanel
+import MGMotorPanel
+from MGMotor_inst import MGMotor
 
 
 # Panel in the Connect Instruments window which contains the connection settings for the Qontrol motors.
@@ -19,20 +21,21 @@ class BSC203MotorParameters(wx.Panel):
         """
         super(BSC203MotorParameters, self).__init__(parent)
         self.connectPanel = connectPanel
+        self.instList = kwargs['visaAddrLst']
         self.InitUI()
 
     def InitUI(self):
         """
         Initializes the user interface for connecting to the thorlabs actuators.
         """
-        sb = wx.StaticBox(self, label='Thorlabs Connection Parameters');
+        sb = wx.StaticBox(self, label='Thorlabs Connection Parameters')
         vbox = wx.StaticBoxSizer(sb, wx.VERTICAL)
         hbox = wx.BoxSizer(wx.HORIZONTAL)
 
         # First Parameter: Serial Port
         self.para1 = wx.BoxSizer(wx.HORIZONTAL)
         self.para1name = wx.StaticText(self, label='Serial Port')
-        self.para1tc = wx.ComboBox(self, choices=pyvisa.ResourceManager().list_resources())
+        self.para1tc = wx.ComboBox(self, choices=self.instList)
         # self.para1tc = wx.TextCtrl(self,value='ASRL5::INSTR')
         self.para1.AddMany([(self.para1name, 1, wx.EXPAND), (self.para1tc, 1, wx.EXPAND)])
 
@@ -56,9 +59,11 @@ class BSC203MotorParameters(wx.Panel):
 
     def connect(self, event):
         self.stage = BSC203.BSC203Motor()
+        #self.stage = MGMotor(str(self.para1tc.GetValue()))
         self.stage.connect(str(self.para1tc.GetValue()), int(self.para2tc.GetValue()))
         self.stage.panelClass = BSC203MotorPanel.topBSC203MotorPanel
         self.connectPanel.instList.append(self.stage)
+        print("Connected to Thorlabs Stage.")
         self.disconnectBtn.Enable()
         self.connectBtn.Disable()
 

@@ -67,7 +67,7 @@ class MGMotorParameters(wx.Panel):
         if serial2 != '':
             serialNumList.append(serial2)
 
-        self.stage = MGMotor(serialNumList);
+        self.stage = MGMotor(serialNumList)
         self.stage.panelClass = MGMotorPanel.topMGMotorPanel  # Give the laser its panel class
         self.connectPanel.instList.append(self.stage)
         self.disconnectBtn.Enable()

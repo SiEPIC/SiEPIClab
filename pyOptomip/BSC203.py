@@ -1,11 +1,10 @@
-import qontrol
-import re
+
 from pylablib.devices import Thorlabs
 
 
 class BSC203Motor:
     name = 'BSC203'
-    isMotor = False
+    isMotor = True
     isOpt = False
     isElec = True
     isLaser = False
@@ -17,8 +16,7 @@ class BSC203Motor:
         self.numAxes = 0
 
     def connect(self, SerialPortName, NumberOfAxis):
-        self.bsc = Thorlabs.KinesisMotor(SerialPortName)
-        self.bsc.scale = "stage"
+        self.bsc = Thorlabs.kinesis.KinesisMotor(SerialPortName, scale='stage')
         self.numAxes = NumberOfAxis
         print('Connected\n')
 
