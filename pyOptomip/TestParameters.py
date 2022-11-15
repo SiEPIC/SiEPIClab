@@ -20,7 +20,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-import keyboard
 import os
 import wx
 import re
@@ -85,7 +84,7 @@ class TopPanel(wx.Panel):
     def __init__(self, parent, automeasurePanel):
         super(TopPanel, self).__init__(parent)
         self.routineflag = ""
-        self.setpanel = SetPanel(self)
+        self.setpanel = SetPanel(self)#BlankPanel(self)
         self.instructpanel = InstructPanel(self, self.setpanel)
         self.autoMeasurePanel = automeasurePanel
         self.autoMeasure = automeasurePanel.autoMeasure
@@ -98,6 +97,18 @@ class TopPanel(wx.Panel):
         self.routinenum = 0
         self.retrievedataflag = False
         self.deviceListset = []
+        self.data = {'index': [], 'device': [], 'ELECflag': [], 'OPTICflag': [], 'setwflag': [], 'setvflag': [], 'Voltsel': [],
+                     'Currentsel': [], 'VoltMin': [], 'VoltMax': [], 'CurrentMin': [], 'CurrentMax': [],
+                     'VoltRes': [], 'CurrentRes': [], 'IV': [], 'RV': [], 'PV': [], 'ChannelA': [], 'ChannelB': [],
+                     'Start': [], 'Stop': [], 'Stepsize': [], 'Sweeppower': [], 'Sweepspeed': [], 'Laseroutput': [],
+                     'Numscans': [], 'InitialRange': [], 'RangeDec': [] ,'setwVoltsel': [],'setwCurrentsel': [],
+                     'setwVoltMin': [], 'setwVoltMax': [], 'setwCurrentMin': [], 'setwCurrentMax': [],
+                     'setwVoltRes': [], 'setwCurrentRes': [], 'setwIV': [], 'setwRV': [], 'setwPV': [],
+                     'setwChannelA': [], 'setwChannelB': [], 'Wavelengths': [], 'setvStart': [], 'setvStop': [],
+                     'setvStepsize': [], 'setvSweeppower': [], 'setvSweepspeed': [], 'setvLaseroutput': [],
+                     'setvNumscans': [], 'setvInitialRange': [], 'setvRangeDec': [], 'setvChannelA': [],
+                     'setvChannelB': [], 'Voltages': [], 'RoutineNumber': [], 'Wavelength': [], 'Polarization': [], 'Opt x': [], 'Opt y': [], 'type': [], 'Elec x': [], 'Elec y': []}
+        #self.autoMeasurePanel = automeasurePanel
         self.InitUI()
 
 
@@ -130,7 +141,9 @@ class TopPanel(wx.Panel):
         self.retrievedataBtn = wx.Button(self, label='Retrieve Data', size=(100, 20))
         self.retrievedataBtn.Bind(wx.EVT_BUTTON, self.retrievedata)
         self.indicator = wx.StaticText(self, label='')
-        hbox2.AddMany([(self.checkAllBtn, 0, wx.EXPAND), (self.uncheckAllBtn, 0, wx.EXPAND), (self.searchFile, 0, wx.EXPAND), (self.searchBtn, 0, wx.EXPAND), (self.unsearchBtn, 0, wx.EXPAND), (self.retrievedataBtn, 0, wx.EXPAND), (self.indicator, 0, wx.EXPAND)])
+        self.printbtn = wx.Button(self, label='Print data', size=(100, 20))
+        self.printbtn.Bind(wx.EVT_BUTTON, self.printdata)
+        hbox2.AddMany([(self.checkAllBtn, 0, wx.EXPAND), (self.uncheckAllBtn, 0, wx.EXPAND), (self.searchFile, 0, wx.EXPAND), (self.searchBtn, 0, wx.EXPAND), (self.unsearchBtn, 0, wx.EXPAND), (self.printbtn, 0, wx.EXPAND), (self.retrievedataBtn, 0, wx.EXPAND), (self.indicator, 0, wx.EXPAND)])
 
         #create checklist
         self.checkList = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
@@ -171,6 +184,13 @@ class TopPanel(wx.Panel):
         self.SetSizer(vboxOuter)
 
 
+    def printdata(self, event):
+
+        for keys, values in self.data.items():
+            print(keys)
+            print(values)
+
+
     def OnButton_ChooseCoordFile(self, event):
         """
         When event is triggered this function opens the chosen coordinate file and displays the devices in a checklist
@@ -209,6 +229,153 @@ class TopPanel(wx.Panel):
         self.checkList.SortItems(self.checkListSort)  # Make sure items in list are sorted
         self.checkList.EnableCheckBoxes()
         self.set = [False] * self.checkList.GetItemCount()
+
+       # for ii in range(self.checkList.GetItemCount()):
+            #self.data['index'] = ii
+        self.devicedict = {}
+        for dev in deviceList:
+            self.devicedict[dev] = {}
+            self.devicedict[dev]['index'] = []
+            self.devicedict[dev]['ELECflag'] = []
+            self.devicedict[dev]['OPTICflag'] = []
+            self.devicedict[dev]['setwflag'] = []
+            self.devicedict[dev]['setvflag'] = []
+            self.devicedict[dev]['Voltsel'] = []
+            self.devicedict[dev]['Currentsel'] = []
+            self.devicedict[dev]['VoltMin'] = []
+            self.devicedict[dev]['VoltMax'] = []
+            self.devicedict[dev]['CurrentMin'] = []
+            self.devicedict[dev]['CurrentMax'] = []
+            self.devicedict[dev]['VoltRes'] = []
+            self.devicedict[dev]['CurrentRes'] = []
+            self.devicedict[dev]['IV'] = []
+            self.devicedict[dev]['RV'] = []
+            self.devicedict[dev]['PV'] = []
+            self.devicedict[dev]['ChannelA'] = []
+            self.devicedict[dev]['ChannelB'] = []
+            self.devicedict[dev]['Start'] = []
+            self.devicedict[dev]['Stop'] = []
+            self.devicedict[dev]['Stepsize'] = []
+            self.devicedict[dev]['Sweeppower'] = []
+            self.devicedict[dev]['Sweepspeed'] = []
+            self.devicedict[dev]['Laseroutput'] = []
+            self.devicedict[dev]['Numscans'] = []
+            self.devicedict[dev]['InitialRange'] = []
+            self.devicedict[dev]['RangeDec'] = []
+            self.devicedict[dev]['setwVoltsel'] = []
+            self.devicedict[dev]['setwCurrentsel'] = []
+            self.devicedict[dev]['setwVoltMin'] = []
+            self.devicedict[dev]['setwVoltMax'] = []
+            self.devicedict[dev]['setwCurrentMin'] = []
+            self.devicedict[dev]['setwCurrentMax'] = []
+            self.devicedict[dev]['setwVoltRes'] = []
+            self.devicedict[dev]['setwCurrentRes'] = []
+            self.devicedict[dev]['setwIV'] = []
+            self.devicedict[dev]['setwRV'] = []
+            self.devicedict[dev]['setwPV'] = []
+            self.devicedict[dev]['setwChannelA'] = []
+            self.devicedict[dev]['setwChannelB'] = []
+            self.devicedict[dev]['Wavelengths'] = []
+            self.devicedict[dev]['setvStart'] = []
+            self.devicedict[dev]['setvStop'] = []
+            self.devicedict[dev]['setvStepsize'] = []
+            self.devicedict[dev]['setvSweeppower'] = []
+            self.devicedict[dev]['setvSweepspeed'] = []
+            self.devicedict[dev]['setvLaseroutput'] = []
+            self.devicedict[dev]['setvNumscans'] = []
+            self.devicedict[dev]['setvInitialRange'] = []
+            self.devicedict[dev]['setvRangeDec'] = []
+            self.devicedict[dev]['setvChannelA'] = []
+            self.devicedict[dev]['setvChannelB'] = []
+            self.devicedict[dev]['Voltages'] = []
+            self.devicedict[dev]['RoutineNumber'] = []
+            self.devicedict[dev]['Wavelength'] = []
+            self.devicedict[dev]['Polarization'] = []
+            self.devicedict[dev]['Opt x'] = []
+            self.devicedict[dev]['Opt y'] = []
+            self.devicedict[dev]['type'] = []
+            self.devicedict[dev]['Elec x'] = []
+            self.devicedict[dev]['Elec y'] = []
+
+        for dev in self.device_list:
+            self.devicedict[dev.getDeviceID()]['Wavelength'].append(dev.getDeviceWavelength())
+            self.devicedict[dev.getDeviceID()]['Polarization'].append(dev.getDevicePolarization())
+            self.devicedict[dev.getDeviceID()]['Opt x'].append(dev.getOpticalCoordinates()[0])
+            self.devicedict[dev.getDeviceID()]['Opt y'].append(dev.getOpticalCoordinates()[1])
+            self.devicedict[dev.getDeviceID()]['type'].append(dev.getDeviceType())
+            if dev.getElectricalCoordinates():
+                self.devicedict[dev.getDeviceID()]['Elec x'].append(dev.getElectricalCoordinates()[0][1])
+                self.devicedict[dev.getDeviceID()]['Elec y'].append(dev.getElectricalCoordinates()[0][2])
+            else:
+                self.devicedict[dev.getDeviceID()]['Elec x'].append(0)
+                self.devicedict[dev.getDeviceID()]['Elec y'].append(0)
+
+            #electrical parameters of data
+        self.data['index'] = []
+        self.data['device'] = [] #* self.checkList.GetItemCount()
+        self.data['Voltsel'] = [] #* self.checkList.GetItemCount()
+        self.data['Currentsel'] = []# * self.checkList.GetItemCount()
+        self.data['VoltMin'] = [] #* self.checkList.GetItemCount()
+        self.data['VoltMax'] = [] #* self.checkList.GetItemCount()
+        self.data['CurrentMin'] = []# * self.checkList.GetItemCount()
+        self.data['CurrentMax'] = [] #* self.checkList.GetItemCount()
+        self.data['VoltRes'] = [] #* self.checkList.GetItemCount()
+        self.data['CurrentRes'] = [] #* self.checkList.GetItemCount()
+        self.data['IV'] = [] #* self.checkList.GetItemCount()
+        self.data['RV'] = [] #* self.checkList.GetItemCount()
+        self.data['PV'] = [] #* self.checkList.GetItemCount()
+        self.data['ChannelA'] = [] #* self.checkList.GetItemCount()
+        self.data['ChannelB'] = [] #* self.checkList.GetItemCount()
+
+            #optical parameters of data
+        self.data['Start'] = [] #* self.checkList.GetItemCount()
+        self.data['Stop'] = [] #* self.checkList.GetItemCount()
+        self.data['Stepsize'] = [] #* self.checkList.GetItemCount()
+        self.data['Sweeppower'] = [] #* self.checkList.GetItemCount()
+        self.data['Sweepspeed'] = [] #* self.checkList.GetItemCount()
+        self.data['Laseroutput'] = [] #* self.checkList.GetItemCount()
+        self.data['Numscans'] = [] #* self.checkList.GetItemCount()
+        self.data['InitialRange'] = [] #* self.checkList.GetItemCount()
+        self.data['RangeDec'] = [] #* self.checkList.GetItemCount()
+
+            #set wavelength parameters of data
+        self.data['setwVoltsel'] = [] #* self.checkList.GetItemCount()
+        self.data['setwCurrentsel'] = [] #* self.checkList.GetItemCount()
+        self.data['setwVoltMin'] = [] #* self.checkList.GetItemCount()
+        self.data['setwVoltMax'] = [] #* self.checkList.GetItemCount()
+        self.data['setwCurrentMin'] = [] #* self.checkList.GetItemCount()
+        self.data['setwCurrentMax'] = [] #* self.checkList.GetItemCount()
+        self.data['setwVoltRes'] = [] #* self.checkList.GetItemCount()
+        self.data['setwCurrentRes'] = [] #* self.checkList.GetItemCount()
+        self.data['setwIV'] = [] #* self.checkList.GetItemCount()
+        self.data['setwRV'] = [] #* self.checkList.GetItemCount()
+        self.data['setwPV'] = [] #* self.checkList.GetItemCount()
+        self.data['setwChannelA'] = [] #* self.checkList.GetItemCount()
+        self.data['setwChannelB'] = [] #* self.checkList.GetItemCount()
+        self.data['Wavelengths'] = [] #* self.checkList.GetItemCount()
+
+            #set voltage parameters of data
+        self.data['setvStart'] = [] #* self.checkList.GetItemCount()
+        self.data['setvStop'] = [] #* self.checkList.GetItemCount()
+        self.data['setvStepsize'] = [] #* self.checkList.GetItemCount()
+        self.data['setvSweeppower'] = [] #* self.checkList.GetItemCount()
+        self.data['setvSweepspeed'] = [] #* self.checkList.GetItemCount()
+        self.data['setvLaseroutput'] = [] #* self.checkList.GetItemCount()
+        self.data['setvNumscans'] = [] #* self.checkList.GetItemCount()
+        self.data['setvInitialRange'] = [] #* self.checkList.GetItemCount()
+        self.data['setvRangeDec'] = [] #* self.checkList.GetItemCount()
+        self.data['setvChannelA'] = [] #* self.checkList.GetItemCount()
+        self.data['setvChannelB'] = []# * self.checkList.GetItemCount()
+        self.data['Voltages'] = []# * self.checkList.GetItemCount()
+
+            #set device properties
+        self.data['Wavelength'] = []
+        self.data['Polarization'] = []
+        self.data['Opt x'] = []
+        self.data['Opt y'] = []
+        self.data['type'] = []
+        self.data['Elec x'] = []
+        self.data['Elec y'] = []
 
         global fileLoaded
         fileLoaded = True
@@ -312,10 +479,10 @@ class TopPanel(wx.Panel):
             if self.set[c] != True and self.searchFile.GetValue() != None and self.searchFile.GetValue() in self.checkList.GetItemText(c, 0):
                 self.checkList.SetItemBackgroundColour(c, wx.Colour(255, 255, 0))
             else:
-                self.checkList.SetItemBackgroundColour(c, wx.Colour(255, 255, 255))
+                self.checkList.SetItemBackgroundColour(c, wx.Colour(255,255,255))
 
             if self.searchFile.GetValue() == '':
-                self.checkList.SetItemBackgroundColour(c, wx.Colour(255, 255, 255))
+                self.checkList.SetItemBackgroundColour(c, wx.Colour(255,255,255))
 
 
     def retrievehighlight(self, index):
@@ -341,7 +508,7 @@ class TopPanel(wx.Panel):
 
         num = []
         for d in self.highlightchecked:
-            for dev in self.autoMeasure.devices:
+            for a in range(len(self.data['index'])):
                 if self.data['index'][a] == d:
                     num.append(a)
 
@@ -373,7 +540,7 @@ class TopPanel(wx.Panel):
 
         num = []
         for d in self.highlightchecked:
-            for a in range(len()):
+            for a in range(len(self.data['index'])):
                 if self.data['index'][a] == d:
                     num.append(a)
 
@@ -470,6 +637,7 @@ class TopPanel(wx.Panel):
                 self.checkList.CheckItem(c, False)
             else:
                 self.retrievedataswap(c)
+            #self.retrievehighlight(c)
 
 
     def retrievedataswap(self, c):
@@ -982,12 +1150,87 @@ class TopPanel(wx.Panel):
 
             list.sort(save, reverse=True)
 
+
+            for i in range(int(self.big)):
+                self.data['device'].append(self.checkList.GetItemText(int(self.selected[c]), 0))
+                self.data['index'].append(int(self.selected[c]))
+
+
+            for i in range(int(self.big)):
+
+                self.data['Voltsel'].append(self.setpanel.elecvolt[i])
+                self.data['Currentsel'].append(self.setpanel.eleccurrent[i])
+                self.data['VoltMin'].append(self.setpanel.elecvmin[i])
+                self.data['VoltMax'].append(self.setpanel.elecvmax[i])
+                self.data['CurrentMin'].append(self.setpanel.elecimin[i])
+                self.data['CurrentMax'].append(self.setpanel.elecimax[i])
+                self.data['VoltRes'].append(self.setpanel.elecvres[i])
+                self.data['CurrentRes'].append(self.setpanel.elecires[i])
+                self.data['IV'].append(self.setpanel.eleciv[i])
+                self.data['RV'].append(self.setpanel.elecrv[i])
+                self.data['PV'].append(self.setpanel.elecpv[i])
+                self.data['ChannelA'].append(self.setpanel.elecchannelA[i])
+                self.data['ChannelB'].append(self.setpanel.elecchannelB[i])
+                self.data['ELECflag'].append(self.setpanel.elecflagholder[i])
+
+
+            for i in range(int(self.big)):
+
+                self.data['Start'].append(self.setpanel.start[i])
+                self.data['Stop'].append(self.setpanel.stop[i])
+                self.data['Stepsize'].append(self.setpanel.step[i])
+                self.data['Sweeppower'].append(self.setpanel.sweeppow[i])
+                self.data['Sweepspeed'].append(self.setpanel.sweepsped[i])
+                self.data['Laseroutput'].append(self.setpanel.laserout[i])
+                self.data['Numscans'].append(self.setpanel.numscans[i])
+                self.data['InitialRange'].append(self.setpanel.initialran[i])
+                self.data['RangeDec'].append(self.setpanel.rangedecre[i])
+                self.data['OPTICflag'].append(self.setpanel.opticflagholder[i])
+
+            for i in range(int(self.big)):
+
+                self.data['setwVoltsel'].append(self.setpanel.setwvolt[i])
+                self.data['setwCurrentsel'].append(self.setpanel.setwcurrent[i])
+                self.data['setwVoltMin'].append(self.setpanel.setwvmin[i])
+                self.data['setwVoltMax'].append(self.setpanel.setwvmax[i])
+                self.data['setwCurrentMin'].append(self.setpanel.setwimin[i])
+                self.data['setwCurrentMax'].append(self.setpanel.setwimax[i])
+                self.data['setwVoltRes'].append(self.setpanel.setwvres[i])
+                self.data['setwCurrentRes'].append(self.setpanel.setwires[i])
+                self.data['setwIV'].append(self.setpanel.setwiv[i])
+                self.data['setwRV'].append(self.setpanel.setwrv[i])
+                self.data['setwPV'].append(self.setpanel.setwpv[i])
+                self.data['setwChannelA'].append(self.setpanel.setwchannelA[i])
+                self.data['setwChannelB'].append(self.setpanel.setwchannelB[i])
+                self.data['Wavelengths'].append(self.setpanel.setwwavelengths[i])
+                self.data['setwflag'].append(self.setpanel.setwflagholder[i])
+
+            for i in range(int(self.big)):
+
+                self.data['setvStart'].append(self.setpanel.setvstart[i])
+                self.data['setvStop'].append(self.setpanel.setvstop[i])
+                self.data['setvStepsize'].append(self.setpanel.setvstep[i])
+                self.data['setvSweeppower'].append(self.setpanel.setvsweeppow[i])
+                self.data['setvSweepspeed'].append(self.setpanel.setvsweepsped[i])
+                self.data['setvLaseroutput'].append(self.setpanel.setvlaserout[i])
+                self.data['setvNumscans'].append(self.setpanel.setvnumscans[i])
+                self.data['setvInitialRange'].append(self.setpanel.setvinitialran[i])
+                self.data['setvRangeDec'].append(self.setpanel.setvrangedecre[i])
+                self.data['setvChannelA'].append(self.setpanel.setvchannelA[i])
+                self.data['setvChannelB'].append(self.setpanel.setvchannelB[i])
+                self.data['Voltages'].append(self.setpanel.setvvoltages[i])
+                self.data['setvflag'].append(self.setpanel.setvflagholder[i])
+
             self.checkList.SetItemTextColour(self.selected[c], wx.Colour(211, 211, 211))
             self.checkList.SetItemBackgroundColour(c, wx.Colour(255, 255, 255))
             self.checkList.CheckItem(self.selected[c], False)
             self.set[self.selected[c]] = True
 
             print('Testing parameters for ' + self.checkList.GetItemText(self.selected[c], 0) + ' set')
+
+        for c in range(int(len(self.selected))*int(self.big)):
+            self.data['RoutineNumber'].append(self.routinenum)
+
 
         #reset user inputs and selected devices back to default so that next routine can be set
         self.selected = []
@@ -1108,6 +1351,11 @@ class TopPanel(wx.Panel):
         self.setpanel.Bsel2.SetValue(False)
         self.setpanel.wavesetTc2.SetValue('')
 
+        #if want to see items in dictionary uncommment code below
+        #for keys, values in self.data.items():
+         #   print(keys)
+          #  print(values)
+
         print('Data has been set')
 
 
@@ -1125,6 +1373,7 @@ class TopPanel(wx.Panel):
 
         # set paths for saving file to current working directory
         ROOT_DIR = format(os.getcwd())
+        primarysavefilecsv = ROOT_DIR + '\TestParameters.csv'
         primarysavefileymlcwd = ROOT_DIR + '\TestParameters.yaml'
 
         # set path for saving yaml file to selected output folder
@@ -1136,7 +1385,182 @@ class TopPanel(wx.Panel):
         with open(primarysavefileyml, 'w') as f:
             documents = yaml.dump(deviceListAsObjects, f)
 
-        print('Data exported to ' + primarysavefileyml)
+        # dump deviceListAsObjects which contains all the electroopticdevice objects to a file in current working directory
+        with open(primarysavefileymlcwd, 'w') as f:
+            documents = yaml.dump(self.devicedict, f)
+
+        #formatting and outputting data to csv file, (no longer required for code to work but still nice to have)
+        with open(primarysavefilecsv, 'w', newline='') as f:
+            f.write(',,,,,,,,,,,,,,,,\n')
+            f.write(',,,,,,IV Sweep,,,,,,,,,,,,,Optical Sweep,,,,,,,,,Set Wavelength,,,,,,,,,,,,,,SetVoltage,,,,,,Device Properties \n')
+            f.write('RoutineNumber, Device ID, ELECFlag, OPTICflag, setwflag, setvflag, Volt Select, Current Select,'
+                    ' Volt Min,Volt Max,Current Min,Current Max,Volt Resolution,Current Resolution,IV/VI,RV/RI,PV/PI, '
+                    'Channel A, Channel B,Start,Stop,Stepsize,Sweep power,Sweep speed,Laser Output,Number of scans,'
+                    ' Initial Range, Range Dec, Volt Select, Current Select, Volt Min,Volt Max,Current Min,Current Max,'
+                    'Volt Resolution,Current Resolution,IV/VI,RV/RI,PV/PI, Channel A, Channel B, Wavelength, Start, Stop,'
+                    ' Stepsize, Sweep power,Sweep speed,Laser Output,Number of scans, Initial Range, Range Dec,'
+                    ' Channel A, Channel B, Voltages, Wavelength, Polarization, Opt x, Opt y, type, Elec x, Elec y \n')
+
+            print(range(len(self.data['device'])))
+            print(range(len(self.device_list)))
+
+            len(self.data['Wavelength'])
+
+            for c in range(len(self.data['device']) - len(self.data['Wavelength'])):
+                self.data['Wavelength'].append('')
+                self.data['Polarization'].append('')
+                self.data['Opt x'].append('')
+                self.data['Opt y'].append('')
+                self.data['type'].append('')
+                self.data['Elec x'].append('')
+                self.data['Elec y'].append('')
+
+            for c in range(len(self.data['device'])):
+                for d in range(len(self.device_list)):
+                    print()
+                    if self.data['device'][c] == self.device_list[d].getDeviceID():
+                        self.data['Wavelength'][c] = self.device_list[d].getDeviceWavelength()
+                        self.data['Polarization'][c] = self.device_list[d].getDevicePolarization()
+                        x, y = self.device_list[d].getOpticalCoordinates()
+                        self.data['Opt x'][c] = x
+                        self.data['Opt y'][c] = y
+                        self.data['type'][c] = self.device_list[d].getDeviceType()
+                        if self.device_list[d].getElectricalCoordinates():
+                            coordlist = self.device_list[d].getElectricalCoordinates()
+                            bondPad = coordlist[0]
+                            x = bondPad[1]
+                            y = bondPad[2]
+                        else:
+                            x= 0
+                            y= 0
+                        self.data['Elec x'][c] = x
+                        self.data['Elec y'][c] = y
+
+
+
+            print(len(self.data['device']))
+            print(self.data['RoutineNumber'])
+
+            for c in range(len(self.data['device'])):
+                f.write(str('N/A') + ',' + str(self.data['device'][c]) + ',' + str(
+                    self.data['ELECflag'][c]) + ',' + str(self.data['OPTICflag'][c]) + ',' + str(
+                    self.data['setwflag'][c]) + ',' + str(self.data['setvflag'][c]) + ',' + str(
+                    self.data['Voltsel'][c]) + ',' + str(self.data['Currentsel'][c]) + ',' + str(
+                    self.data['VoltMin'][c]) + ',' + str(self.data['VoltMax'][c])
+                        + ',' + str(self.data['CurrentMin'][c]) + ',' + str(self.data['CurrentMax'][c]) + ',' +
+                        str(self.data['VoltRes'][c]) + ',' + str(self.data['CurrentRes'][c]) + ',' + str(
+                    self.data['IV'][c]) + ','
+                        + str(self.data['RV'][c]) + ',' + str(self.data['PV'][c]) + ',' + str(
+                    self.data['ChannelA'][c]) + ',' + str(self.data['ChannelB'][c]) + ',' + str(
+                    self.data['Start'][c]) + ','
+                        + str(self.data['Stop'][c]) + ',' + str(self.data['Stepsize'][c]) + ',' + str(
+                    self.data['Sweeppower'][c])
+                        + ',' + str(self.data['Sweepspeed'][c]) + ',' + str(self.data['Laseroutput'][c]) + ','
+                        + str(self.data['Numscans'][c]) + ',' + str(self.data['InitialRange'][c]) + ',' + str(
+                    self.data['RangeDec'][c]) + ',' + str(self.data['setwVoltsel'][c]) + ',' + str(
+                    self.data['setwCurrentsel'][c]) + ',' + str(self.data['setwVoltMin'][c]) + ',' + str(
+                    self.data['setwVoltMax'][c])
+                        + ',' + str(self.data['setwCurrentMin'][c]) + ',' + str(self.data['setwCurrentMax'][c]) + ',' +
+                        str(self.data['setwVoltRes'][c]) + ',' + str(self.data['setwCurrentRes'][c]) + ',' + str(
+                    self.data['setwIV'][c]) + ','
+                        + str(self.data['setwRV'][c]) + ',' + str(self.data['setwPV'][c]) + ',' + str(
+                    self.data['setwChannelA'][c]) + ',' + str(self.data['setwChannelB'][c]) + ',' + str(
+                    self.data['Wavelengths'][c]) + ',' + str(self.data['setvStart'][c]) + ','
+                        + str(self.data['setvStop'][c]) + ',' + str(self.data['setvStepsize'][c]) + ',' + str(
+                    self.data['setvSweeppower'][c])
+                        + ',' + str(self.data['setvSweepspeed'][c]) + ',' + str(self.data['setvLaseroutput'][c]) + ','
+                        + str(self.data['setvNumscans'][c]) + ',' + str(self.data['setvInitialRange'][c]) + ',' + str(
+                    self.data['setvRangeDec'][c]) + ',' + str(self.data['setvChannelA'][c]) + ',' + str(
+                    self.data['setvChannelB'][c]) + ',' + str(self.data['Voltages'][c]) + ',' + str(
+                    self.data['Wavelength'][c]) + ',' + str(self.data['Polarization'][c]) + ',' + str(
+                    self.data['Opt x'][c]) + ',' + str(self.data['Opt y'][c]) + ',' + str(self.data['type'][c]) + ','
+                        + str(self.data['Elec x'][c]) + ',' + str(self.data['Elec y'][c]) + ',' +'\n')
+
+        if self.outputFolderTb.GetValue() != '':
+
+            savelocation = self.outputFolderTb.GetValue()
+            savefile = savelocation + '/TestingParameters.csv'
+            savefilestring = savelocation + '\TestingParameters.csv'
+
+            with open(savefile, 'w', newline='') as f:
+                f.write(',,,,,,,,,,,,,,,,\n')
+                f.write(',,,,,,IV Sweep,,,,,,,,,,,,,Optical Sweep,,,,,,,,,Set Wavelength,,,,,,,,,,,,,,SetVoltage,,,,,,,,,,,,Device Properties\n')
+                f.write('RoutineNumber, Device ID, ELECFlag, OPTICflag, setwflag, setvflag, Volt Select,'
+                        ' Current Select, Volt Min,Volt Max,Current Min,Current Max,Volt Resolution,Current Resolution,'
+                        'IV/VI,RV/RI,PV/PI, Channel A, Channel B,Start,Stop,Stepsize,Sweep power,Sweep speed,'
+                        'Laser Output,Number of scans, Initial Range, Range Dec, Volt Select, Current Select, Volt Min,'
+                        'Volt Max,Current Min,Current Max,Volt Resolution,Current Resolution,IV/VI,RV/RI,PV/PI,'
+                        ' Channel A, Channel B, Wavelength, Start, Stop, Stepsize, Sweep power,Sweep speed,Laser Output,'
+                        'Number of scans, Initial Range, Range Dec, Channel A, Channel B, Voltages, Wavelength, Polarization, Opt x, Opt y, type, Elec x, Elec y \n')
+
+
+
+                for c in range(len(self.data['device'])):
+
+                    f.write(str('N/A') + ',' + str(self.data['device'][c]) + ',' +
+                            str(self.data['ELECflag'][c]) + ',' + str(self.data['OPTICflag'][c]) + ',' +
+                            str(self.data['setwflag'][c]) + ',' + str(self.data['setvflag'][c]) + ',' +
+                            str(self.data['Voltsel'][c]) + ',' + str(self.data['Currentsel'][c]) + ',' +
+                            str(self.data['VoltMin'][c]) + ',' + str(self.data['VoltMax'][c])
+                            + ',' + str(self.data['CurrentMin'][c]) + ',' + str(self.data['CurrentMax'][c]) + ',' +
+                            str(self.data['VoltRes'][c]) + ',' + str(self.data['CurrentRes'][c]) + ',' +
+                            str(self.data['IV'][c]) + ',' + str(self.data['RV'][c]) + ',' + str(self.data['PV'][c]) +
+                            ',' + str(self.data['ChannelA'][c]) + ',' + str(self.data['ChannelB'][c]) + ',' +
+                            str(self.data['Start'][c]) + ',' + str(self.data['Stop'][c]) + ',' +
+                            str(self.data['Stepsize'][c]) + ',' + str(self.data['Sweeppower'][c]) + ',' +
+                            str(self.data['Sweepspeed'][c]) + ',' + str(self.data['Laseroutput'][c]) + ',' +
+                            str(self.data['Numscans'][c]) + ',' + str(self.data['InitialRange'][c]) + ',' +
+                            str(self.data['RangeDec'][c]) + ',' + str(self.data['setwVoltsel'][c]) + ',' +
+                            str(self.data['setwCurrentsel'][c]) + ',' + str(self.data['setwVoltMin'][c]) + ',' +
+                            str(self.data['setwVoltMax'][c]) + ',' + str(self.data['setwCurrentMin'][c]) + ',' +
+                            str(self.data['setwCurrentMax'][c]) + ',' + str(self.data['setwVoltRes'][c]) + ',' +
+                            str(self.data['setwCurrentRes'][c]) + ',' + str(self.data['setwIV'][c]) + ',' +
+                            str(self.data['setwRV'][c]) + ',' + str(self.data['setwPV'][c]) + ',' +
+                            str(self.data['setwChannelA'][c]) + ',' + str(self.data['setwChannelB'][c]) + ',' +
+                            str(self.data['Wavelengths'][c]) + ',' + str(self.data['setvStart'][c]) + ',' +
+                            str(self.data['setvStop'][c]) + ',' + str(self.data['setvStepsize'][c]) + ',' +
+                            str(self.data['setvSweeppower'][c]) + ',' + str(self.data['setvSweepspeed'][c]) + ',' +
+                            str(self.data['setvLaseroutput'][c]) + ',' + str(self.data['setvNumscans'][c]) + ',' +
+                            str(self.data['setvInitialRange'][c]) + ',' + str(self.data['setvRangeDec'][c]) + ',' +
+                            str(self.data['setvChannelA'][c]) + ',' + str(self.data['setvChannelB'][c]) + ',' +
+                            str(self.data['Voltages'][c]) + ',' + str(
+                            self.data['Wavelength'][c]) + ',' + str(self.data['Polarization'][c]) + ',' + str(
+                            self.data['Opt x'][c]) + ',' + str(self.data['Opt y'][c]) + ',' + str(self.data['type'][c]) + ','
+                            + str(self.data['Elec x'][c]) + ',' + str(self.data['Elec y'][c]) + ',' +'\n')
+                    count = c
+
+                devicesetcheck = [False] * len(self.device_list)
+
+
+                for c in range(len(self.device_list)):
+                    for d in range(len(self.data['device'])):
+                        print(self.device_list[c].getDeviceID())
+                        print(self.data['device'][d])
+                        if self.device_list[c].getDeviceID() == self.data['device'][d]:
+                            devicesetcheck[c] = True
+                            break
+                        else:
+                            pass
+
+                print(devicesetcheck)
+
+                for c in range(len(self.device_list)):
+
+                    if devicesetcheck[c] == False:
+                        if self.device_list[c].getElectricalCoordinates():
+                            f.write(',' + str(self.device_list[c].getDeviceID()) + ',' +
+                                     ',' + ',' + ','  + ',' + ','  + ',' + ',' + ','  + ',' + ',' + ',' + ',' + ',' + ',' +
+                                    ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ','
+                                    + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' +
+                                    ',' + ',' +',' + ',' + ',' + ',' + ',' + ',' + ',' + str(self.device_list[c].getDeviceWavelength())
+                                    + ',' + str(self.device_list[c].getDevicePolarization()) + ',' + str(
+                                self.device_list[c].getOpticalCoordinates()[0]) + ',' + str(self.device_list[c].getOpticalCoordinates()[1]) + ',' + str(
+                                self.device_list[c].getDeviceType()) + ',' + str(self.device_list[c].getElectricalCoordinates()[0][1])
+                                    + ',' + str(self.device_list[c].getElectricalCoordinates()[0][2]) + ',' + '\n')
+
+
+
+                print('Data exported to ' + savefilestring)
 
 
     def ImportButton(self, event):
@@ -1157,6 +1581,184 @@ class TopPanel(wx.Panel):
 
             self.device_list = deviceListAsObjects
             global deviceList
+            deviceList = []
+            for device in deviceListAsObjects:
+                deviceList.append(device.getDeviceID())
+            # Adds items to the check list
+            self.checkList.DeleteAllItems()
+            for ii, device in enumerate(deviceList):
+                self.checkList.InsertItem(ii, device)
+                for dev in deviceListAsObjects:
+                    if dev.getDeviceID() == device:
+                        index = deviceListAsObjects.index(dev)  # Stores index of device in list
+                self.checkList.SetItemData(ii, index)
+            self.checkList.SortItems(self.checkListSort)  # Make sure items in list are sorted
+            self.checkList.EnableCheckBoxes()
+            self.set = [False] * self.checkList.GetItemCount()
+
+
+
+        elif '.csv' in originalfile:
+            # check to see that user has actually selected a file
+            if originalfile == '':
+                print('Please select a file to import')
+                return
+
+            self.data['device'].clear()
+            self.data['index'].clear()
+            self.data['Voltsel'].clear()
+            self.data['Currentsel'].clear()
+            self.data['VoltMin'].clear()
+            self.data['VoltMax'].clear()
+            self.data['CurrentMin'].clear()
+            self.data['CurrentMax'].clear()
+            self.data['VoltRes'].clear()
+            self.data['CurrentRes'].clear()
+            self.data['IV'].clear()
+            self.data['RV'].clear()
+            self.data['PV'].clear()
+            self.data['ChannelA'].clear()
+            self.data['ChannelB'].clear()
+            self.data['ELECflag'].clear()
+            self.data['Start'].clear()
+            self.data['Stop'].clear()
+            self.data['Stepsize'].clear()
+            self.data['Sweeppower'].clear()
+            self.data['Sweepspeed'].clear()
+            self.data['Laseroutput'].clear()
+            self.data['Numscans'].clear()
+            self.data['InitialRange'].clear()
+            self.data['RangeDec'].clear()
+            self.data['OPTICflag'].clear()
+            self.data['setwVoltsel'].clear()
+            self.data['setwCurrentsel'].clear()
+            self.data['setwVoltMin'].clear()
+            self.data['setwVoltMax'].clear()
+            self.data['setwCurrentMin'].clear()
+            self.data['setwCurrentMax'].clear()
+            self.data['setwVoltRes'].clear()
+            self.data['setwCurrentRes'].clear()
+            self.data['setwIV'].clear()
+            self.data['setwRV'].clear()
+            self.data['setwPV'].clear()
+            self.data['setwChannelA'].clear()
+            self.data['setwChannelB'].clear()
+            self.data['Wavelengths'].clear()
+            self.data['setwflag'].clear()
+            self.data['setvStart'].clear()
+            self.data['setvStop'].clear()
+            self.data['setvStepsize'].clear()
+            self.data['setvSweeppower'].clear()
+            self.data['setvSweepspeed'].clear()
+            self.data['setvLaseroutput'].clear()
+            self.data['setvNumscans'].clear()
+            self.data['setvInitialRange'].clear()
+            self.data['setvRangeDec'].clear()
+            self.data['setvChannelA'].clear()
+            self.data['setvChannelB'].clear()
+            self.data['Voltages'].clear()
+            self.data['setvflag'].clear()
+            self.data['RoutineNumber'].clear()
+            self.data['Wavelength'].clear()
+            self.data['Polarization'].clear()
+            self.data['Opt x'].clear()
+            self.data['Opt y'].clear()
+            self.data['type'].clear()
+            self.data['Elec x'].clear()
+            self.data['Elec y'].clear()
+
+            with open(originalfile, 'r') as file:
+                rows = []
+                for row in file:
+                    rows.append(row)
+
+                rows.pop(2)
+                rows.pop(1)
+                rows.pop(0)
+
+                i = 0
+
+                for d in range(len(rows)):
+                    x = rows[d].split(',')
+
+                    if x[2] == 'True' or x[3] == 'True' or x[4] == 'True' or x[5] == 'True':
+                        i = i + 1
+
+                for c in range(i):
+                    x = rows[c].split(',')
+
+                    self.data['device'].append(x[1])
+                    self.data['ELECflag'].append(x[2])
+                    self.data['OPTICflag'].append(x[3])
+                    self.data['setwflag'].append(x[4])
+                    self.data['setvflag'].append(x[5])
+                    self.data['Voltsel'].append(x[6])
+                    self.data['Currentsel'].append(x[7])
+                    self.data['VoltMin'].append(x[8])
+                    self.data['VoltMax'].append(x[9])
+                    self.data['CurrentMin'].append(x[10])
+                    self.data['CurrentMax'].append(x[11])
+                    self.data['VoltRes'].append(x[12])
+                    self.data['CurrentRes'].append(x[13])
+                    self.data['IV'].append(x[14])
+                    self.data['RV'].append(x[15])
+                    self.data['PV'].append(x[16])
+                    self.data['ChannelA'].append(x[17])
+                    self.data['ChannelB'].append(x[18])
+                    self.data['Start'].append(x[19])
+                    self.data['Stop'].append(x[20])
+                    self.data['Stepsize'].append(x[21])
+                    self.data['Sweeppower'].append(x[22])
+                    self.data['Sweepspeed'].append(x[23])
+                    self.data['Laseroutput'].append(x[24])
+                    self.data['Numscans'].append(x[25])
+                    self.data['InitialRange'].append(x[26])
+                    self.data['RangeDec'].append(x[27])
+                    self.data['setwVoltsel'].append(x[28])
+                    self.data['setwCurrentsel'].append(x[29])
+                    self.data['setwVoltMin'].append(x[30])
+                    self.data['setwVoltMax'].append(x[31])
+                    self.data['setwCurrentMin'].append(x[32])
+                    self.data['setwCurrentMax'].append(x[33])
+                    self.data['setwVoltRes'].append(x[34])
+                    self.data['setwCurrentRes'].append(x[35])
+                    self.data['setwIV'].append(x[36])
+                    self.data['setwRV'].append(x[37])
+                    self.data['setwPV'].append(x[38])
+                    self.data['setwChannelA'].append(x[39])
+                    self.data['setwChannelB'].append(x[40])
+                    self.data['Wavelengths'].append(x[41])
+                    self.data['setvStart'].append(x[42])
+                    self.data['setvStop'].append(x[43])
+                    self.data['setvStepsize'].append(x[44])
+                    self.data['setvSweeppower'].append(x[45])
+                    self.data['setvSweepspeed'].append(x[46])
+                    self.data['setvLaseroutput'].append(x[47])
+                    self.data['setvNumscans'].append(x[48])
+                    self.data['setvInitialRange'].append(x[49])
+                    self.data['setvRangeDec'].append(x[50])
+                    self.data['setvChannelA'].append(x[51])
+                    self.data['setvChannelB'].append(x[52])
+                    self.data['Voltages'].append(x[53])
+                    self.data['Wavelength'].append(x[54])
+                    self.data['Polarization'].append(x[55])
+                    self.data['Opt x'].append(x[56])
+                    self.data['Opt y'].append(x[57])
+                    self.data['type'].append(x[58])
+                    self.data['Elec x'].append(x[59])
+                    self.data['Elec y'].append(x[60])
+
+            for keys, values in self.data.items():
+                print(keys)
+                print(values)
+
+            # self.checkList.DeleteAllItems()
+            # devicelist = []
+            # for c in range(len(self.dataimport['Device'])):
+            #   devicelist.append(self.dataimport['Device'][c])
+
+            deviceListAsObjects = self.autoMeasurePanel.readCSV(originalfile)
+            self.device_list = deviceListAsObjects
             deviceList = []
             for device in deviceListAsObjects:
                 deviceList.append(device.getDeviceID())
@@ -1219,6 +1821,8 @@ class autoMeasure(object):
                     print(line)
                     matchRes = reg.findall(line)[0]
                     devName = matchRes[2]
+                    if devName in self.devSet:
+                        devName = "X:" + matchRes[0] + "Y:" + matchRes[1] + devName
                     for device in self.devices:
                         if device.getDeviceID() == devName:
                             device.addElectricalCoordinates(matchRes[3], float(matchRes[0]), float(matchRes[1]))

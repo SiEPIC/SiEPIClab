@@ -1,11 +1,7 @@
-import pyvisa
 import wx
 
 import BSC203
 import BSC203MotorPanel
-import MGMotorPanel
-from MGMotor_inst import MGMotor
-
 
 # Panel in the Connect Instruments window which contains the connection settings for the Qontrol motors.
 class BSC203MotorParameters(wx.Panel):
@@ -59,7 +55,6 @@ class BSC203MotorParameters(wx.Panel):
 
     def connect(self, event):
         self.stage = BSC203.BSC203Motor()
-        #self.stage = MGMotor(str(self.para1tc.GetValue()))
         self.stage.connect(str(self.para1tc.GetValue()), int(self.para2tc.GetValue()))
         self.stage.panelClass = BSC203MotorPanel.topBSC203MotorPanel
         self.connectPanel.instList.append(self.stage)

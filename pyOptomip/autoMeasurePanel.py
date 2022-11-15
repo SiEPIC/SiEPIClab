@@ -49,7 +49,7 @@ class coordinateMapPanel(wx.Panel):
 
         super(coordinateMapPanel, self).__init__(parent)
         self.autoMeasure = autoMeasure
-        self.type = type
+        self.type = type  # "opt" or "elec"
         self.InitUI()
 
     def InitUI(self):
@@ -209,33 +209,102 @@ class coordinateMapPanel(wx.Panel):
 
     def Event_OnCoordButton1(self, event, xcoord, ycoord, zcoord):
         """ Called when the button is pressed to get the current motor coordinates, and put it into the text box. """
-        motorPosition = self.autoMeasure.motorOpt.getPosition()
-        xcoord.SetValue(str(motorPosition[0]))
-        ycoord.SetValue(str(motorPosition[1]))
-        zcoord.SetValue(str(motorPosition[2]))
-        self.stxMotorCoordLst[0] = self.tbxMotorCoord1.GetValue()
-        self.styMotorCoordLst[0] = self.tbyMotorCoord1.GetValue()
-        self.stzMotorCoordLst[0] = self.tbzMotorCoord1.GetValue()
+        if self.type == "opt":
+            motorPosition = self.autoMeasure.motorOpt.getPosition()
+            xcoord.SetValue(str(motorPosition[0]))
+            ycoord.SetValue(str(motorPosition[1]))
+            zcoord.SetValue(str(motorPosition[2]))
+            self.stxMotorCoordLst[0] = self.tbxMotorCoord1.GetValue()
+            self.styMotorCoordLst[0] = self.tbyMotorCoord1.GetValue()
+            self.stzMotorCoordLst[0] = self.tbzMotorCoord1.GetValue()
+        if self.type == "elec":
+            if self.autoMeasure.motorOpt and self.autoMeasure.motorElec:
+                optPosition = self.autoMeasure.motorOpt.getPosition()
+                elecPosition = self.autoMeasure.motorElec.getPosition()
+                relativePosition = []
+                relativePosition.append(elecPosition[0]-optPosition[0])
+                relativePosition.append(elecPosition[1] - optPosition[1])
+                relativePosition.append(elecPosition[2] - optPosition[2])
+                xcoord.SetValue(str(relativePosition[0]))
+                ycoord.SetValue(str(relativePosition[1]))
+                zcoord.SetValue(str(relativePosition[2]))
+                self.stxMotorCoordLst[0] = self.tbxMotorCoord1.GetValue()
+                self.styMotorCoordLst[0] = self.tbyMotorCoord1.GetValue()
+                self.stzMotorCoordLst[0] = self.tbzMotorCoord1.GetValue()
+            else:
+                motorPosition = self.autoMeasure.motorElec.getPosition()
+                xcoord.SetValue(str(motorPosition[0]))
+                ycoord.SetValue(str(motorPosition[1]))
+                zcoord.SetValue(str(motorPosition[2]))
+                self.stxMotorCoordLst[0] = self.tbxMotorCoord1.GetValue()
+                self.styMotorCoordLst[0] = self.tbyMotorCoord1.GetValue()
+                self.stzMotorCoordLst[0] = self.tbzMotorCoord1.GetValue()
 
     def Event_OnCoordButton2(self, event, xcoord, ycoord, zcoord):
         """ Called when the button is pressed to get the current motor coordinates, and put it into the text box. """
-        motorPosition = self.autoMeasure.motorOpt.getPosition()
-        xcoord.SetValue(str(motorPosition[0]))
-        ycoord.SetValue(str(motorPosition[1]))
-        zcoord.SetValue(str(motorPosition[2]))
-        self.stxMotorCoordLst[1] = self.tbxMotorCoord2.GetValue()
-        self.styMotorCoordLst[1] = self.tbyMotorCoord2.GetValue()
-        self.stzMotorCoordLst[1] = self.tbzMotorCoord2.GetValue()
+        if self.type == "opt":
+            motorPosition = self.autoMeasure.motorOpt.getPosition()
+            xcoord.SetValue(str(motorPosition[0]))
+            ycoord.SetValue(str(motorPosition[1]))
+            zcoord.SetValue(str(motorPosition[2]))
+            self.stxMotorCoordLst[1] = self.tbxMotorCoord2.GetValue()
+            self.styMotorCoordLst[1] = self.tbyMotorCoord2.GetValue()
+            self.stzMotorCoordLst[1] = self.tbzMotorCoord2.GetValue()
+        if self.type == "elec":
+            if self.autoMeasure.motorOpt and self.autoMeasure.motorElec:
+                optPosition = self.autoMeasure.motorOpt.getPosition()
+                elecPosition = self.autoMeasure.motorElec.getPosition()
+                relativePosition = []
+                relativePosition.append(elecPosition[0] - optPosition[0])
+                relativePosition.append(elecPosition[1] - optPosition[1])
+                relativePosition.append(elecPosition[2] - optPosition[2])
+                xcoord.SetValue(str(relativePosition[0]))
+                ycoord.SetValue(str(relativePosition[1]))
+                zcoord.SetValue(str(relativePosition[2]))
+                self.stxMotorCoordLst[1] = self.tbxMotorCoord2.GetValue()
+                self.styMotorCoordLst[1] = self.tbyMotorCoord2.GetValue()
+                self.stzMotorCoordLst[1] = self.tbzMotorCoord2.GetValue()
+            else:
+                motorPosition = self.autoMeasure.motorElec.getPosition()
+                xcoord.SetValue(str(motorPosition[0]))
+                ycoord.SetValue(str(motorPosition[1]))
+                zcoord.SetValue(str(motorPosition[2]))
+                self.stxMotorCoordLst[1] = self.tbxMotorCoord2.GetValue()
+                self.styMotorCoordLst[1] = self.tbyMotorCoord2.GetValue()
+                self.stzMotorCoordLst[1] = self.tbzMotorCoord2.GetValue()
 
     def Event_OnCoordButton3(self, event, xcoord, ycoord, zcoord):
         """ Called when the button is pressed to get the current motor coordinates, and put it into the text box. """
-        motorPosition = self.autoMeasure.motorOpt.getPosition()
-        xcoord.SetValue(str(motorPosition[0]))
-        ycoord.SetValue(str(motorPosition[1]))
-        zcoord.SetValue(str(motorPosition[2]))
-        self.stxMotorCoordLst[2] = self.tbxMotorCoord3.GetValue()
-        self.styMotorCoordLst[2] = self.tbyMotorCoord3.GetValue()
-        self.stzMotorCoordLst[2] = self.tbzMotorCoord3.GetValue()
+        if self.type == "opt":
+            motorPosition = self.autoMeasure.motorOpt.getPosition()
+            xcoord.SetValue(str(motorPosition[0]))
+            ycoord.SetValue(str(motorPosition[1]))
+            zcoord.SetValue(str(motorPosition[2]))
+            self.stxMotorCoordLst[2] = self.tbxMotorCoord3.GetValue()
+            self.styMotorCoordLst[2] = self.tbyMotorCoord3.GetValue()
+            self.stzMotorCoordLst[2] = self.tbzMotorCoord3.GetValue()
+        if self.type == "elec":
+            if self.autoMeasure.motorOpt and self.autoMeasure.motorElec:
+                optPosition = self.autoMeasure.motorOpt.getPosition()
+                elecPosition = self.autoMeasure.motorElec.getPosition()
+                relativePosition = []
+                relativePosition.append(elecPosition[0] - optPosition[0])
+                relativePosition.append(elecPosition[1] - optPosition[1])
+                relativePosition.append(elecPosition[2] - optPosition[2])
+                xcoord.SetValue(str(relativePosition[0]))
+                ycoord.SetValue(str(relativePosition[1]))
+                zcoord.SetValue(str(relativePosition[2]))
+                self.stxMotorCoordLst[2] = self.tbxMotorCoord3.GetValue()
+                self.styMotorCoordLst[2] = self.tbyMotorCoord3.GetValue()
+                self.stzMotorCoordLst[2] = self.tbzMotorCoord3.GetValue()
+            else:
+                motorPosition = self.autoMeasure.motorElec.getPosition()
+                xcoord.SetValue(str(motorPosition[0]))
+                ycoord.SetValue(str(motorPosition[1]))
+                zcoord.SetValue(str(motorPosition[2]))
+                self.stxMotorCoordLst[2] = self.tbxMotorCoord3.GetValue()
+                self.styMotorCoordLst[2] = self.tbyMotorCoord3.GetValue()
+                self.stzMotorCoordLst[2] = self.tbzMotorCoord3.GetValue()
 
     def getMotorCoords(self):
         """ Returns a list of motor coordinates for each entered device. """
@@ -266,8 +335,8 @@ class coordinateMapPanel(wx.Panel):
         device.  """
         coordsLst = []
         for tcx, tcy in zip(self.elecxGdsCoordLst, self.elecyGdsCoordLst):
-            xval = tcx.GetValue()
-            yval = tcy.GetValue()
+            xval = tcx
+            yval = tcy
             if xval != '' and yval != '':
                 coordsLst.append((float(xval), float(yval)))
         return coordsLst
@@ -384,17 +453,17 @@ class autoMeasurePanel(wx.Panel):
         matPlotBox.Add(self.graph, flag=wx.EXPAND, border=0, proportion=1)
 
         # Add Coordinate file label
-        #st1 = wx.StaticText(self, label='Coordinate file:')
-        #fileLabelBox = wx.BoxSizer(wx.HORIZONTAL)
-        #fileLabelBox.Add(st1, proportion=1, flag=wx.EXPAND)
+        # st1 = wx.StaticText(self, label='Coordinate file:')
+        # fileLabelBox = wx.BoxSizer(wx.HORIZONTAL)
+        # fileLabelBox.Add(st1, proportion=1, flag=wx.EXPAND)
 
         # Allow File Selection
-        #self.coordFileTb = wx.TextCtrl(self, style=wx.TE_READONLY)
-        #self.coordFileTb.SetValue('No file selected')
-        #self.coordFileSelectBtn = wx.Button(self, wx.ID_OPEN, size=(50, 20))
-        #self.coordFileSelectBtn.Bind(wx.EVT_BUTTON, self.OnButton_ChooseCoordFile)
-        #fileLoadBox = wx.BoxSizer(wx.HORIZONTAL)
-        #fileLoadBox.AddMany([(self.coordFileTb, 1, wx.EXPAND), (self.coordFileSelectBtn, 0, wx.EXPAND)])
+        # self.coordFileTb = wx.TextCtrl(self, style=wx.TE_READONLY)
+        # self.coordFileTb.SetValue('No file selected')
+        # self.coordFileSelectBtn = wx.Button(self, wx.ID_OPEN, size=(50, 20))
+        # self.coordFileSelectBtn.Bind(wx.EVT_BUTTON, self.OnButton_ChooseCoordFile)
+        # fileLoadBox = wx.BoxSizer(wx.HORIZONTAL)
+        # fileLoadBox.AddMany([(self.coordFileTb, 1, wx.EXPAND), (self.coordFileSelectBtn, 0, wx.EXPAND)])
 
         # Add Selection Buttons and Filter
         self.checkAllBtn = wx.Button(self, label='Select All', size=(80, 20))
@@ -493,8 +562,8 @@ class autoMeasurePanel(wx.Panel):
         goBoxElec.AddMany([(self.devSelectCb, 1, wx.EXPAND), (self.gotoDevBtn, 0, wx.EXPAND)])
 
         # Populate File Upload Box with file upload, save folder selection and device checklist
-        #vboxUpload.AddMany([(fileLabelBox, 0, wx.EXPAND), (fileLoadBox, 0, wx.EXPAND),
-                            #(saveLabelBox, 0, wx.EXPAND), (saveBox, 0, wx.EXPAND)])
+        # vboxUpload.AddMany([(fileLabelBox, 0, wx.EXPAND), (fileLoadBox, 0, wx.EXPAND),
+        # (saveLabelBox, 0, wx.EXPAND), (saveBox, 0, wx.EXPAND)])
 
         vboxUpload.AddMany([(saveLabelBox, 0, wx.EXPAND), (saveBox, 0, wx.EXPAND)])
 
@@ -603,7 +672,6 @@ class autoMeasurePanel(wx.Panel):
 
         self.checkList.SortItems(checkListSort)  # Make sure items in list are sorted
         self.checkList.Refresh()
-
 
     def OnButton_ChooseCoordFile(self, event):
         """ Opens a file dialog to select a coordinate file. """
@@ -897,14 +965,16 @@ class autoMeasurePanel(wx.Panel):
                         """set wavelength iv"""
                         if x[28] == "True":
                             """voltage sweep"""
-                            deviceToTest.addSetWavelengthVoltageSweep(x[30], x[31], x[34], x[36], x[37], x[38], x[39], x[40], x[41])
+                            deviceToTest.addSetWavelengthVoltageSweep(x[30], x[31], x[34], x[36], x[37], x[38], x[39],
+                                                                      x[40], x[41])
                         if x[29] == "True":
                             """current sweep"""
-                            deviceToTest.addSetWavelengthCurrentSweep(x[32], x[33], x[35], x[36], x[37], x[38], x[39], x[40], x[41])
+                            deviceToTest.addSetWavelengthCurrentSweep(x[32], x[33], x[35], x[36], x[37], x[38], x[39],
+                                                                      x[40], x[41])
                     if x[5] == "True":
                         """set voltage optical sweep"""
                         deviceToTest.addSetVoltageWavelengthSweep(x[42], x[43], x[44], x[45], x[46], x[47], x[48],
-                                                              x[49], x[50], x[51], x[52], x[53])
+                                                                  x[49], x[50], x[51], x[52], x[53])
 
     def readCSV(self, originalFile):
         """Reads a csv testing parameters file and stores the information as a list of electro-optic device
@@ -930,6 +1000,7 @@ class autoMeasurePanel(wx.Panel):
 
                 if len(deviceListAsObjects) == 0:
                     deviceToTest = ElectroOpticDevice(x[1], x[54], x[55], x[56], x[57], x[58])
+                    deviceToTest.addElectricalCoordinates("pad", x[59], x[60])
                 else:
                     for device in deviceListAsObjects:
                         if device.getDeviceID() == x[1]:
@@ -937,6 +1008,7 @@ class autoMeasurePanel(wx.Panel):
                             deviceToTestFlag = False
                     if deviceToTest == False:
                         deviceToTest = ElectroOpticDevice(x[1], x[54], x[55], x[56], x[57], x[58])
+                        deviceToTest.addElectricalCoordinates("pad", x[59], x[60])
 
                 if x[2]:
                     """electrical routine"""
@@ -953,10 +1025,12 @@ class autoMeasurePanel(wx.Panel):
                     """set wavelength iv"""
                     if x[28]:
                         """voltage sweep"""
-                        deviceToTest.addSetWavelengthVoltageSweep(x[30], x[31], x[34], x[36], x[37], x[38], x[39], x[40], x[41])
+                        deviceToTest.addSetWavelengthVoltageSweep(x[30], x[31], x[34], x[36], x[37], x[38], x[39],
+                                                                  x[40], x[41])
                     if x[29]:
                         """current sweep"""
-                        deviceToTest.addSetWavelengthCurrentSweep(x[32], x[33], x[35], x[36], x[37], x[38], x[39], x[40], x[41])
+                        deviceToTest.addSetWavelengthCurrentSweep(x[32], x[33], x[35], x[36], x[37], x[38], x[39],
+                                                                  x[40], x[41])
                 if x[5]:
                     """set voltage optical sweep"""
                     deviceToTest.addSetVoltageWavelengthSweep(x[42], x[43], x[44], x[45], x[46], x[47], x[48],
@@ -965,7 +1039,6 @@ class autoMeasurePanel(wx.Panel):
                     deviceListAsObjects.append(deviceToTest)
             self.importObjects(deviceListAsObjects)
             return deviceListAsObjects
-
 
     def readYAML(self, originalFile):
         """Reads a csv testing parameters file and stores the information as a list of electro-optic device
@@ -1014,10 +1087,12 @@ class autoMeasurePanel(wx.Panel):
                     """set wavelength iv"""
                     if x[28]:
                         """voltage sweep"""
-                        deviceToTest.addSetWavelengthVoltageSweep(x[30], x[31], x[34], x[36], x[37], x[38], x[39], x[40], x[41])
+                        deviceToTest.addSetWavelengthVoltageSweep(x[30], x[31], x[34], x[36], x[37], x[38], x[39],
+                                                                  x[40], x[41])
                     if x[29]:
                         """current sweep"""
-                        deviceToTest.addSetWavelengthCurrentSweep(x[32], x[33], x[35], x[36], x[37], x[38], x[39], x[40], x[41])
+                        deviceToTest.addSetWavelengthCurrentSweep(x[32], x[33], x[35], x[36], x[37], x[38], x[39],
+                                                                  x[40], x[41])
                 if x[5]:
                     """set voltage optical sweep"""
                     deviceToTest.addSetVoltageWavelengthSweep(x[42], x[43], x[44], x[45], x[46], x[47], x[48],
@@ -1026,7 +1101,6 @@ class autoMeasurePanel(wx.Panel):
                     deviceListAsObjects.append(deviceToTest)
             self.importObjects(deviceListAsObjects)
             return deviceListAsObjects
-
 
     def OnButton_CheckAll(self, event):
         """Selects all items in the devices check list"""
@@ -1041,10 +1115,12 @@ class autoMeasurePanel(wx.Panel):
     # TODO: Modify to move probe out of the way and keep track of chip stage movement
     def OnButton_GotoDeviceOpt(self, event):
         """Moves laser to selected device"""
+        self.autoMeasure.findCoordinateTransformOpt(self.coordMapPanelOpt.getMotorCoords(),
+                                                    self.coordMapPanelOpt.getGdsCoordsOpt())
         selectedDevice = self.devSelectCbOpt.GetString(self.devSelectCbOpt.GetSelection())
         global deviceListAsObjects
         for device in deviceListAsObjects:
-            if device.getDeviceID == selectedDevice:
+            if device.getDeviceID() == selectedDevice:
                 gdsCoord = (device.getOpticalCoordinates[0], device.getOpticalCoordinates[1])
                 motorCoord = self.autoMeasure.gdsToMotorCoordsOpt(gdsCoord)
                 # Get wedge probe coordinates
@@ -1054,13 +1130,24 @@ class autoMeasurePanel(wx.Panel):
     # TODO: Modify to move laser out of the way
     def OnButton_GotoDeviceElec(self, event):
         """Move probe to selected device"""
-        selectedDevice = self.devSelectCb.GetValue()
+        self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
+                                                     self.coordMapPanelElec.getGdsCoordsElec())
+        selectedDevice = self.devSelectCb.GetString(self.devSelectCb.GetSelection())
         global deviceListAsObjects
         for device in deviceListAsObjects:
-            if device.getDeviceID == selectedDevice:
-                gdsCoord = (device.getReferenceBondPad[1], device.getReferenceBondPad[2])
+            if device.getDeviceID() == selectedDevice:
+                gdsCoord = (float(device.getElectricalCoordinates()[0][1]), float(device.getElectricalCoordinates()[0][2]))
                 motorCoord = self.autoMeasure.gdsToMotorCoordsElec(gdsCoord)
-                self.autoMeasure.motorElec.moveAbsoluteXYZ(motorCoord[0], motorCoord[1], motorCoord[2])
+                if self.autoMeasure.motorOpt and self.autoMeasure.motorElec:
+                    optPosition = self.autoMeasure.motorOpt.getPosition()
+                    absolutex = motorCoord[0] + optPosition[1]
+                    absolutey = motorCoord[1] + optPosition[2]
+                    absolutez = motorCoord[2] + optPosition[0]
+                    self.autoMeasure.motorElec.moveAbsoluteXYZ(absolutex[0], absolutey[0], absolutez[0])
+                    print("moved elec relative to opt")
+                else:
+                    self.autoMeasure.motorElec.moveAbsoluteXYZ(motorCoord[0], motorCoord[1], motorCoord[2])
+                    print("moved elec")
 
     def OnButton_CalculateOpt(self, event):
         """ Computes the optical coordinate transformation matrix. Used to align the laser with the stage.

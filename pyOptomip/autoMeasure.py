@@ -89,25 +89,25 @@ class autoMeasure(object):
 
         # Parse the data in each line and put it into a list of devices
         for ii, line in enumerate(dataStrip2):
-            if reg.match(line):
-                matchRes = reg.findall(line)[0]
-                devName = matchRes[6]
-                if devName in self.devSet:
-                    devName = "X:"+matchRes[0]+"Y:"+matchRes[1]+devName
-                self.devSet.add(devName)
-                device = ElectroOpticDevice(devName, matchRes[4], matchRes[2], float(matchRes[0]), float(matchRes[1]),
-                                            matchRes[5])
-                self.devices.append(device)
+            if line == "" or line == "%X-coord,Y-coord,deviceID,padName,params":
+                pass
             else:
-                if regElec.match(line):
+                if reg.match(line):
                     matchRes = reg.findall(line)[0]
-                    devName = matchRes[2]
-                    for device in self.devices:
-                        if device.getDeviceID() == devName:
-                            device.addElectricalCoordinates(matchRes[3], float(matchRes[0]), float(matchRes[1]))
+                    devName = matchRes[6]
+                    self.devSet.add(devName)
+                    device = ElectroOpticDevice(devName, matchRes[4], matchRes[2], float(matchRes[0]),
+                                                float(matchRes[1]),
+                                                matchRes[5])
+                    self.devices.append(device)
                 else:
-                    if line == "" or line == "%X-coord,Y-coord,deviceID,padName,params":
-                        pass
+                    if regElec.match(line):
+                        matchRes = regElec.findall(line)[0]
+                        devName = matchRes[2]
+                        for device in self.devices:
+                            if device.getDeviceID() == devName:
+                                print("adding elec coords to device")
+                                device.addElectricalCoordinates(matchRes[3], float(matchRes[0]), float(matchRes[1]))
                     else:
                         print('Warning: The entry\n%s\nis not formatted correctly.' % line)
 
@@ -144,7 +144,7 @@ class autoMeasure(object):
         ## OLD METHOD: USED FOR TESTING
         """ Uses the calculated affine transform to map a GDS coordinate to a motor coordinate."""
         gdsCoordVec = mat([[gdsCoords[0]], [gdsCoords[1]], [1]])
-        motorCoordVec = self.transformMatrix*gdsCoordVec
+        motorCoordVec = self.transformMatrix * gdsCoordVec
         motorCoords = (float(motorCoordVec[0]), float(motorCoordVec[1]))
         return motorCoords
 
@@ -158,7 +158,6 @@ class autoMeasure(object):
         gdsMatrix = np.array([[gdsCoords[0][0], gdsCoords[1][0], gdsCoords[2][0]],
                               [gdsCoords[0][1], gdsCoords[1][1], gdsCoords[2][1]],
                               [1, 1, 1]])
-
 
         transpose = gdsMatrix.T
 
@@ -175,7 +174,7 @@ class autoMeasure(object):
         """ Uses the calculated affine transform to map a GDS coordinate to a motor coordinate."""
         gdsVector = np.array([[gdsCoords[0]], [gdsCoords[1]], [1]])
 
-        newMotorCoords = self.T@gdsVector
+        newMotorCoords = self.T @ gdsVector
 
         return newMotorCoords
 
@@ -190,26 +189,25 @@ class autoMeasure(object):
         Returns:
             M: a matrix used to map gds coordinates to motor coordinates.
         """
+        if not all([v == 0 for v in motorCoords]) and not all([l == 0 for l in gdsCoords]):
 
-        if motorCoords and gdsCoords:
-            motorMatrix = np.array([[motorCoords[0][0], motorCoords[1][0], motorCoords[2][0]],
-                                    [motorCoords[0][1], motorCoords[1][1], motorCoords[2][1]],
-                                    [motorCoords[0][2], motorCoords[1][2], motorCoords[2][2]]])
+            if motorCoords and gdsCoords:
+                motorMatrix = np.array([[motorCoords[0][0], motorCoords[1][0], motorCoords[2][0]],
+                                        [motorCoords[0][1], motorCoords[1][1], motorCoords[2][1]],
+                                        [motorCoords[0][2], motorCoords[1][2], motorCoords[2][2]]])
 
+                gdsMatrix = np.array([[gdsCoords[0][0], gdsCoords[1][0], gdsCoords[2][0]],
+                                      [gdsCoords[0][1], gdsCoords[1][1], gdsCoords[2][1]],
+                                      [1, 1, 1]])
 
-            gdsMatrix = np.array([[gdsCoords[0][0], gdsCoords[1][0], gdsCoords[2][0]],
-                                [gdsCoords[0][1], gdsCoords[1][1], gdsCoords[2][1]],
-                                [1, 1, 1]])
+                transpose = gdsMatrix.T
+                row1 = np.linalg.solve(transpose, motorMatrix[0])
+                row2 = np.linalg.solve(transpose, motorMatrix[1])
+                row3 = np.linalg.solve(transpose, motorMatrix[2])
 
+                self.TMopt = vstack((row1, row2, row3))
 
-            transpose = gdsMatrix.T
-            row1 = np.linalg.solve(transpose, motorMatrix[0])
-            row2 = np.linalg.solve(transpose, motorMatrix[1])
-            row3 = np.linalg.solve(transpose, motorMatrix[2])
-
-            self.TMopt = vstack((row1, row2, row3))
-
-            return self.TMopt
+                return self.TMopt
 
     def findCoordinateTransformElec(self, motorCoords, gdsCoords):
         """ Finds the best fit affine transform which maps the GDS coordinates to motor coordinates
@@ -229,9 +227,8 @@ class autoMeasure(object):
                                     [motorCoords[0][2], motorCoords[1][2], motorCoords[2][2]]])
 
             gdsMatrix = np.array([[gdsCoords[0][0], gdsCoords[1][0], gdsCoords[2][0]],
-                                [gdsCoords[0][1], gdsCoords[1][1], gdsCoords[2][1]],
-                                [1, 1, 1]])
-
+                                  [gdsCoords[0][1], gdsCoords[1][1], gdsCoords[2][1]],
+                                  [1, 1, 1]])
 
             transpose = gdsMatrix.T
 
@@ -255,7 +252,7 @@ class autoMeasure(object):
         """
         gdsVector = np.array([[gdsCoords[0]], [gdsCoords[1]], [1]])
 
-        newMotorCoords = self.TMopt@gdsVector
+        newMotorCoords = self.TMopt @ gdsVector
 
         return newMotorCoords
 
@@ -271,11 +268,12 @@ class autoMeasure(object):
         """
         gdsVector = np.array([[gdsCoords[0]], [gdsCoords[1]], [1]])
 
-        newMotorCoords = self.TMelec@gdsVector
+        newMotorCoords = self.TMelec @ gdsVector
 
         return newMotorCoords
 
-    def beginMeasure(self, devices, checkList, activeDetectors, graph, camera, abortFunction=None, updateFunction=None, updateGraph=True):
+    def beginMeasure(self, devices, checkList, activeDetectors, graph, camera, abortFunction=None, updateFunction=None,
+                     updateGraph=True):
         """ Runs an automated measurement. For each device, wedge probe is moved out of the way, chip stage is moved
         so laser in aligned, wedge probe is moved to position. Various tests are performed depending on the contents
         of the testing parameters file.
@@ -317,7 +315,6 @@ class autoMeasure(object):
             motorCoordOpt = self.gdsToMotorCoordsOpt(gdsCoordOpt)
             elec = False
             if device.getElectricalCoordinates():
-
                 gdsCoordElec = (device.getElectricalCoordinates()[0], device.getElectricalCoordinates()[1])
                 motorCoordElec = self.gdsToMotorCoordsElec(gdsCoordElec)
                 elec = True
@@ -334,9 +331,9 @@ class autoMeasure(object):
 
             if device.getElectricalCoordinates():
                 if elec:
-                # Move wedge probe and compensate for movement of chip stage
+                    # Move wedge probe and compensate for movement of chip stage
                     self.motorElec.moveAbsoluteXYZElec(motorCoordElec[0] + x, motorCoordElec[1] + y,
-                                                    motorCoordElec[2] + z)
+                                                       motorCoordElec[2] + z)
 
             # Fine align to device
             res, completed = self.fineAlign.doFineAlign()
@@ -347,7 +344,7 @@ class autoMeasure(object):
                     if self.checkList.GetItemText(ii) == device.getDeviceID():
                         self.checkList.SetItemTextColour(ii, wx.Colour(255, 0, 0))
             else:
-                #Set text to green if FineAlign Completes
+                # Set text to green if FineAlign Completes
                 for ii in range(self.checkList.GetItemCount()):
                     if self.checkList.GetItemText(ii) == device.getDeviceID():
                         self.checkList.SetItemTextColour(ii, wx.Colour(0, 255, 0))
@@ -380,7 +377,7 @@ class autoMeasure(object):
 
                                 # save all associated files
                                 self.saveFiles(device, 'Voltage (V)', 'Current (A)', ii, VoltA, CurA,
-                                            'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
+                                               'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
                             if B:
                                 self.graph.canvas.sweepResultDict['voltage'] = VoltB
                                 self.graph.canvas.sweepResultDict['current'] = CurB
@@ -388,7 +385,7 @@ class autoMeasure(object):
 
                                 # save all associated files
                                 self.saveFiles(device, 'Voltage (V)', 'Current (A)', ii, VoltB, CurB,
-                                            'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
+                                               'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
 
                         if RV:
                             self.graph.axes.set_xlabel('Voltage (V)')
@@ -401,7 +398,7 @@ class autoMeasure(object):
 
                                 # save all associated files
                                 self.saveFiles(device, 'Voltage (V)', 'Resistance (Ohms)', ii, VoltA, ResA,
-                                            'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
+                                               'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
 
                             if B:
                                 self.graph.canvas.sweepResultDict['voltage'] = VoltB
@@ -410,7 +407,7 @@ class autoMeasure(object):
 
                                 # save all associated files
                                 self.saveFiles(device, 'Voltage (V)', 'Resistance (Ohms)', ii, VoltB, ResB,
-                                            'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
+                                               'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
                         if PV:
                             self.graph.axes.set_xlabel('Voltage (V)')
                             self.graph.axes.set_ylabel('Power (W)')
@@ -422,7 +419,7 @@ class autoMeasure(object):
 
                                 # save all associated files
                                 self.saveFiles(device, 'Voltage (V)', 'Power (W)', ii, VoltA, PowA,
-                                            'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
+                                               'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
 
                             if B:
                                 self.graph.canvas.sweepResultDict['voltage'] = VoltB
@@ -431,7 +428,7 @@ class autoMeasure(object):
 
                                 # save all associated files
                                 self.saveFiles(device, 'Voltage (V)', 'Power (W)', ii, VoltB, PowB,
-                                            'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
+                                               'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
 
                 if device.currentSweeps:
                     currentSweeps = device.getCurrentSweeps()
@@ -460,7 +457,7 @@ class autoMeasure(object):
 
                                 # save all associated files
                                 self.saveFiles(device, 'Voltage (V)', 'Current (A)', ii, VoltA, CurA,
-                                            'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
+                                               'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
                             if B:
                                 self.graph.canvas.sweepResultDict['voltage'] = VoltB
                                 self.graph.canvas.sweepResultDict['current'] = CurB
@@ -468,7 +465,7 @@ class autoMeasure(object):
 
                                 # save all associated files
                                 self.saveFiles(device, 'Voltage (V)', 'Current (A)', ii, VoltB, CurB,
-                                            'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
+                                               'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
 
                         if RV:
                             self.graph.axes.set_xlabel('Voltage (V)')
@@ -481,7 +478,7 @@ class autoMeasure(object):
 
                                 # save all associated files
                                 self.saveFiles(device, 'Voltage (V)', 'Resistance (Ohms)', ii, VoltA, ResA,
-                                            'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
+                                               'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
 
                             if B:
                                 self.graph.canvas.sweepResultDict['voltage'] = VoltB
@@ -490,7 +487,7 @@ class autoMeasure(object):
 
                                 # save all associated files
                                 self.saveFiles(device, 'Voltage (V)', 'Resistance (Ohms)', ii, VoltB, ResB,
-                                            'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
+                                               'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
                         if PV:
                             self.graph.axes.set_xlabel('Voltage (V)')
                             self.graph.axes.set_ylabel('Power (W)')
@@ -502,7 +499,7 @@ class autoMeasure(object):
 
                                 # save all associated files
                                 self.saveFiles(device, 'Voltage (V)', 'Power (W)', ii, VoltA, PowA,
-                                            'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
+                                               'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
 
                             if B:
                                 self.graph.canvas.sweepResultDict['voltage'] = VoltB
@@ -511,7 +508,7 @@ class autoMeasure(object):
 
                                 # save all associated files
                                 self.saveFiles(device, 'Voltage (V)', 'Power (W)', ii, VoltB, PowB,
-                                            'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
+                                               'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
 
                 if device.wavelengthSweeps:
                     wavelengthSweeps = device.getWavelengthSweeps()
@@ -538,7 +535,7 @@ class autoMeasure(object):
                         self.graph.canvas.sweepResultDict['power'] = pow
                         self.drawGraph(wav * 1e9, pow, self.graph)
 
-                        #save all associated files
+                        # save all associated files
                         self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', ii, wav, pow,
                                        'Wavelength sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
 
@@ -570,7 +567,8 @@ class autoMeasure(object):
 
                                 # save all associated files
                                 self.saveFiles(device, 'Voltage (V)', 'Current (A)', ii, VoltA, CurA,
-                                            'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop, chipTimeStart)
+                                               'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                               chipTimeStart)
                             if B:
                                 self.graph.canvas.sweepResultDict['voltage'] = VoltB
                                 self.graph.canvas.sweepResultDict['current'] = CurB
@@ -578,7 +576,8 @@ class autoMeasure(object):
 
                                 # save all associated files
                                 self.saveFiles(device, 'Voltage (V)', 'Current (A)', ii, VoltB, CurB,
-                                            'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop, chipTimeStart)
+                                               'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                               chipTimeStart)
 
                         if RV:
                             self.graph.axes.set_xlabel('Voltage (V)')
@@ -591,7 +590,8 @@ class autoMeasure(object):
 
                                 # save all associated files
                                 self.saveFiles(device, 'Voltage (V)', 'Resistance (Ohms)', ii, VoltA, ResA,
-                                            'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop, chipTimeStart)
+                                               'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                               chipTimeStart)
 
                             if B:
                                 self.graph.canvas.sweepResultDict['voltage'] = VoltB
@@ -600,7 +600,8 @@ class autoMeasure(object):
 
                                 # save all associated files
                                 self.saveFiles(device, 'Voltage (V)', 'Resistance (Ohms)', ii, VoltB, ResB,
-                                            'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop, chipTimeStart)
+                                               'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                               chipTimeStart)
                         if PV:
                             self.graph.axes.set_xlabel('Voltage (V)')
                             self.graph.axes.set_ylabel('Power (W)')
@@ -612,7 +613,8 @@ class autoMeasure(object):
 
                                 # save all associated files
                                 self.saveFiles(device, 'Voltage (V)', 'Power (W)', ii, VoltA, PowA,
-                                            'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop, chipTimeStart)
+                                               'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                               chipTimeStart)
 
                             if B:
                                 self.graph.canvas.sweepResultDict['voltage'] = VoltB
@@ -621,7 +623,8 @@ class autoMeasure(object):
 
                                 # save all associated files
                                 self.saveFiles(device, 'Voltage (V)', 'Power (W)', ii, VoltB, PowB,
-                                            'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop, chipTimeStart)
+                                               'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                               chipTimeStart)
 
                 if device.setWavelengthCurrentSweeps:
                     currentSweeps = device.getSetWavelengthCurrentSweeps()
@@ -651,7 +654,8 @@ class autoMeasure(object):
 
                                 # save all associated files
                                 self.saveFiles(device, 'Voltage (V)', 'Current (A)', ii, VoltA, CurA,
-                                            'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop, chipTimeStart)
+                                               'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                               chipTimeStart)
                             if B:
                                 self.graph.canvas.sweepResultDict['voltage'] = VoltB
                                 self.graph.canvas.sweepResultDict['current'] = CurB
@@ -659,7 +663,8 @@ class autoMeasure(object):
 
                                 # save all associated files
                                 self.saveFiles(device, 'Voltage (V)', 'Current (A)', ii, VoltB, CurB,
-                                            'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop, chipTimeStart)
+                                               'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                               chipTimeStart)
 
                         if RV:
                             self.graph.axes.set_xlabel('Voltage (V)')
@@ -672,7 +677,8 @@ class autoMeasure(object):
 
                                 # save all associated files
                                 self.saveFiles(device, 'Voltage (V)', 'Resistance (Ohms)', ii, VoltA, ResA,
-                                            'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop, chipTimeStart)
+                                               'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                               chipTimeStart)
 
                             if B:
                                 self.graph.canvas.sweepResultDict['voltage'] = VoltB
@@ -681,7 +687,8 @@ class autoMeasure(object):
 
                                 # save all associated files
                                 self.saveFiles(device, 'Voltage (V)', 'Resistance (Ohms)', ii, VoltB, ResB,
-                                            'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop, chipTimeStart)
+                                               'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                               chipTimeStart)
                         if PV:
                             self.graph.axes.set_xlabel('Voltage (V)')
                             self.graph.axes.set_ylabel('Power (W)')
@@ -693,7 +700,8 @@ class autoMeasure(object):
 
                                 # save all associated files
                                 self.saveFiles(device, 'Voltage (V)', 'Power (W)', ii, VoltA, PowA,
-                                            'Curent Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop, chipTimeStart)
+                                               'Curent Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                               chipTimeStart)
 
                             if B:
                                 self.graph.canvas.sweepResultDict['voltage'] = VoltB
@@ -702,8 +710,8 @@ class autoMeasure(object):
 
                                 # save all associated files
                                 self.saveFiles(device, 'Voltage (V)', 'Power (W)', ii, VoltB, PowB,
-                                            'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop, chipTimeStart)
-
+                                               'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                               chipTimeStart)
 
                 if device.setVoltageWavelengthSweeps:
                     setVoltWavelengthSweeps = device.getSetVoltageWavelengthSweeps()
@@ -734,10 +742,10 @@ class autoMeasure(object):
                         self.graph.canvas.sweepResultDict['power'] = pow
                         self.drawGraph(wav * 1e9, pow, self.graph)
 
-                        #save all associated files
+                        # save all associated files
                         self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', ii, wav, pow,
-                                       'Wavelength sweep w Bias Voltage', motorCoordOpt, timeStart, timeStop, chipTimeStart)
-
+                                       'Wavelength sweep w Bias Voltage', motorCoordOpt, timeStart, timeStop,
+                                       chipTimeStart)
 
                 camera.stoprecord()
 
@@ -759,7 +767,7 @@ class autoMeasure(object):
         d1 = deviceObject.getDeviceID().replace(":", "")
         pdfFileName = os.path.join(path, self.saveFolder + "\\" + d1 + ".pdf")
         plt.figure()
-        plt.plot(xarr/1000, yarr/1000)
+        plt.plot(xarr / 1000, yarr / 1000)
         plt.xlabel(x)
         plt.ylabel(y)
         plt.savefig(pdfFileName)
@@ -937,6 +945,7 @@ class autoMeasure(object):
         self.save_pdf(deviceObject, x, y, xArray, yArray)
         self.save_mat(deviceObject, devNum, motorCoord, xArray, yArray, x, y)
         self.save_csv(deviceObject, testType, xArray, yArray, start, stop, chipStart, motorCoord, devNum)
+
 
 class CoordinateTransformException(Exception):
     pass
