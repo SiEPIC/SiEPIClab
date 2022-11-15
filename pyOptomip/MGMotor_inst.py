@@ -65,13 +65,17 @@ class MGMotor(object):
     isLaser=False
     isElec = True
         
-    def __init__(self, serialNum):
+    def __init__(self, serialNum, axes):
         self.COM_id = 'MGMOTOR.MGMotorCtrl.1'
         self.motorLst = list()
+        self.axes = axes
         self.frame = wx.Frame(None, -1, title='Thorlabs Motor Control')
         hbox = wx.BoxSizer(wx.HORIZONTAL)
-        for num in serialNum:
-            motor = MGMotorCtrl(self.frame, self.COM_id, serialNum=num)
+
+
+
+        for num in range(axes):
+            motor = MGMotorCtrl(self.frame, self.COM_id, serialNum=serialNum)
             hbox.Add(motor, proportion=1, flag=wx.EXPAND)
             self.motorLst.append(motor)
         
@@ -98,4 +102,49 @@ class MGMotor(object):
         for motor in self.motorLst:
             motor.Destroy()
         self.frame.Destroy()
+
+
+class MGMotor203(object):
+    name = 'Thorlabs BSC203'
+    isMotor = True
+    isLaser = False
+    isElec = True
+
+    def __init__(self, serialNum, axes):
+        self.COM_id = 'MGMOTOR.MGMotorCtrl.1'
+        self.motorLst = list()
+        self.axes = axes
+        self.frame = wx.Frame(None, -1, title='Thorlabs Motor Control')
+        hbox = wx.BoxSizer(wx.HORIZONTAL)
+
+        for num in axes:
+           motor = MGMotorCtrl(self.frame, self.COM_id, serialNum=str(num))
+           hbox.Add(motor, proportion=1, flag=wx.EXPAND)
+           self.motorLst.append(motor)
+
+
+        self.xMotor = self.motorLst[0]
+        #self.yMotor = self.motorLst[1]
+
+        self.frame.SetSizer(hbox)
+        self.frame.Show()
+
+    def moveRelative(self, dx, dy):
+        self.xMotor.moveRelative(dx)
+        self.yMotor.moveRelative(dy)
+
+    def moveAbsoluteXY(self, x, y):
+        self.xMotor.moveAbsolute(x)
+        self.yMotor.moveAbsolute(y)
+
+    def getPosition(self):
+        xpos = self.xMotor.getPosition()
+        ypos = self.yMotor.getPosition()
+        return (xpos, ypos)
+
+    def disconnect(self):
+        for motor in self.motorLst:
+            motor.Destroy()
+        self.frame.Destroy()
+
 

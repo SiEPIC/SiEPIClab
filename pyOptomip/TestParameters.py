@@ -20,12 +20,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-import keyboard
 import os
 import wx
 import re
 import yaml
-import ruamel_yaml
 from outputlogPanel import outputlogPanel
 from logWriter import logWriter, logWriterError
 import sys
@@ -305,8 +303,12 @@ class TopPanel(wx.Panel):
             self.devicedict[dev.getDeviceID()]['Opt x'].append(dev.getOpticalCoordinates()[0])
             self.devicedict[dev.getDeviceID()]['Opt y'].append(dev.getOpticalCoordinates()[1])
             self.devicedict[dev.getDeviceID()]['type'].append(dev.getDeviceType())
-            self.devicedict[dev.getDeviceID()]['Elec x'].append(dev.getElectricalCoordinates()[0])
-            self.devicedict[dev.getDeviceID()]['Elec y'].append(dev.getElectricalCoordinates()[1])
+            if dev.getElectricalCoordinates():
+                self.devicedict[dev.getDeviceID()]['Elec x'].append(dev.getElectricalCoordinates()[0][1])
+                self.devicedict[dev.getDeviceID()]['Elec y'].append(dev.getElectricalCoordinates()[0][2])
+            else:
+                self.devicedict[dev.getDeviceID()]['Elec x'].append(0)
+                self.devicedict[dev.getDeviceID()]['Elec y'].append(0)
 
             #electrical parameters of data
         self.data['index'] = []
@@ -1423,7 +1425,14 @@ class TopPanel(wx.Panel):
                         self.data['Opt x'][c] = x
                         self.data['Opt y'][c] = y
                         self.data['type'][c] = self.device_list[d].getDeviceType()
-                        x, y = self.device_list[d].getElectricalCoordinates()
+                        if self.device_list[d].getElectricalCoordinates():
+                            coordlist = self.device_list[d].getElectricalCoordinates()
+                            bondPad = coordlist[0]
+                            x = bondPad[1]
+                            y = bondPad[2]
+                        else:
+                            x= 0
+                            y= 0
                         self.data['Elec x'][c] = x
                         self.data['Elec y'][c] = y
 
@@ -1538,15 +1547,16 @@ class TopPanel(wx.Panel):
                 for c in range(len(self.device_list)):
 
                     if devicesetcheck[c] == False:
-                        f.write(',' + str(self.device_list[c].getDeviceID()) + ',' +
-                                 ',' + ',' + ','  + ',' + ','  + ',' + ',' + ','  + ',' + ',' + ',' + ',' + ',' + ',' +
-                                ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ','
-                                + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' +
-                                ',' + ',' +',' + ',' + ',' + ',' + ',' + ',' + ',' + str(self.device_list[c].getDeviceWavelength())
-                                + ',' + str(self.device_list[c].getDevicePolarization()) + ',' + str(
-                            self.device_list[c].getOpticalCoordinates()[0]) + ',' + str(self.device_list[c].getOpticalCoordinates()[1]) + ',' + str(
-                            self.device_list[c].getDeviceType()) + ',' + str(self.device_list[c].getElectricalCoordinates()[0])
-                                + ',' + str(self.device_list[c].getElectricalCoordinates()[1]) + ',' + '\n')
+                        if self.device_list[c].getElectricalCoordinates():
+                            f.write(',' + str(self.device_list[c].getDeviceID()) + ',' +
+                                     ',' + ',' + ','  + ',' + ','  + ',' + ',' + ','  + ',' + ',' + ',' + ',' + ',' + ',' +
+                                    ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ','
+                                    + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' + ',' +
+                                    ',' + ',' +',' + ',' + ',' + ',' + ',' + ',' + ',' + str(self.device_list[c].getDeviceWavelength())
+                                    + ',' + str(self.device_list[c].getDevicePolarization()) + ',' + str(
+                                self.device_list[c].getOpticalCoordinates()[0]) + ',' + str(self.device_list[c].getOpticalCoordinates()[1]) + ',' + str(
+                                self.device_list[c].getDeviceType()) + ',' + str(self.device_list[c].getElectricalCoordinates()[0][1])
+                                    + ',' + str(self.device_list[c].getElectricalCoordinates()[0][2]) + ',' + '\n')
 
 
 
@@ -1811,6 +1821,8 @@ class autoMeasure(object):
                     print(line)
                     matchRes = reg.findall(line)[0]
                     devName = matchRes[2]
+                    if devName in self.devSet:
+                        devName = "X:" + matchRes[0] + "Y:" + matchRes[1] + devName
                     for device in self.devices:
                         if device.getDeviceID() == devName:
                             device.addElectricalCoordinates(matchRes[3], float(matchRes[0]), float(matchRes[1]))
