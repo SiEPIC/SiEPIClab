@@ -31,6 +31,7 @@ from filterFrame import filterFrame
 import csv
 import numpy as np
 from ElectroOpticDevice import ElectroOpticDevice
+import yaml
 
 global deviceList
 global deviceListAsObjects
