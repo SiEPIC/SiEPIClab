@@ -359,6 +359,7 @@ class instrumentFrame_withtabs(wx.Frame):
             self.record = 0
             self.frame_width = int(self.cap.get(3))
             self.frame_height = int(self.cap.get(4))
+            self.cap.set(cv2.CAP_PROP_FPS, 10)
             self.recordflag = False
             self.switchcamera = False
 

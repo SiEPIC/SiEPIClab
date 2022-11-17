@@ -7,8 +7,6 @@ class ElectroOpticDevice:
         self.polarization = polarization
         self.opticalCoordinates = [x, y]
         self.type = type
-        a = 0
-        b = 0
         self.hasRoutines = False
         self.electricalCoordinates = []
         self.routines = []
@@ -27,7 +25,6 @@ class ElectroOpticDevice:
                                            'Sweepspeed': [], 'Laseroutput': [], 'Numscans': [],
                                            'InitialRange': [], 'RangeDec': [], 'ChannelA': [], 'ChannelB': [],
                                            'Voltage': []}
-        self.electricalCoordinates = [a, b]
 
     def addElectricalCoordinates(self, padName, x, y):
         """Associates a bondpad with the device"""

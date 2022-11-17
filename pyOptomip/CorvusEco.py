@@ -301,9 +301,9 @@ class CorvusEcoClass:
         self.waitMoveComplete()
 
     def moveAbsoluteXYZ(self, x, y, z):
-        xCurrentPos = self.getPosition()[0];
-        yCurrentPos = self.getPosition()[1];
-        zCurrentPos = self.getPosition()[2];
+        xCurrentPos = self.getPosition()[0]
+        yCurrentPos = self.getPosition()[1]
+        zCurrentPos = self.getPosition()[2]
         self.moveRelative(x - xCurrentPos, y - yCurrentPos, z - zCurrentPos)
 
     def waitMoveComplete(self):

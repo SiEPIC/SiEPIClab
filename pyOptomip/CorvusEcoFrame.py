@@ -27,21 +27,21 @@ import wx
 class topCorvusPanel(wx.Panel):
     def __init__(self, parent, motor):
         super(topCorvusPanel, self).__init__(parent)
-        self.motor = motor;
+        self.motor = motor
         self.maxaxis = motor.NumberOfAxis + 1
         self.InitUI()
 
     def InitUI(self):
-        sb = wx.StaticBox(self, label='Corvus');
+        sb = wx.StaticBox(self, label='Corvus')
         vbox = wx.StaticBoxSizer(sb, wx.VERTICAL)
 
         axis = 1
         for motorCtrl in range(axis, self.maxaxis):
-            motorPanel = CorvusPanel(self, motorCtrl, axis)
+            motorPanel = CorvusPanel(self, motorCtrl, self.motor)
             motorPanel.motor = self.motor
             vbox.Add(motorPanel, flag=wx.LEFT | wx.TOP | wx.ALIGN_LEFT, border=0, proportion=0)
             vbox.Add((-1, 2))
-            sl = wx.StaticLine(self);
+            sl = wx.StaticLine(self)
             vbox.Add(sl, flag=wx.EXPAND, border=0, proportion=0)
             vbox.Add((-1, 2))
             axis = axis + 1
@@ -51,10 +51,10 @@ class topCorvusPanel(wx.Panel):
 
 class CorvusPanel(wx.Panel):
 
-    def __init__(self, parent, motorCtrl, axis):
+    def __init__(self, parent, motorCtrl, motor):
         super(CorvusPanel, self).__init__(parent)
-        self.motorCtrl = motorCtrl
-        self.axis = axis
+        self.axis = motorCtrl
+        self.motor = motor
         self.InitUI()
 
     def InitUI(self):
@@ -65,11 +65,11 @@ class CorvusPanel(wx.Panel):
         st1 = wx.StaticText(self, label='')
         hbox.Add(st1, flag=wx.EXPAND, border=8, proportion=1)
         if self.axis == 1:
-            btn1 = wx.Button(self, label='Right', size=(80, 20))
-            btn2 = wx.Button(self, label='Left', size=(80, 20))
+            btn1 = wx.Button(self, label='Left', size=(80, 20))
+            btn2 = wx.Button(self, label='Right', size=(80, 20))
         elif self.axis ==2:
-            btn1 = wx.Button(self, label='Forwards', size=(80, 20))
-            btn2 = wx.Button(self, label='Back', size=(80, 20))
+            btn1 = wx.Button(self, label='Back', size=(80, 20))
+            btn2 = wx.Button(self, label='Forwards', size=(80, 20))
         else:
             btn1 = wx.Button(self, label='Up', size=(80, 20))
             btn2 = wx.Button(self, label='Down', size=(80, 20))
@@ -97,24 +97,24 @@ class CorvusPanel(wx.Panel):
     def OnButton_MinusButtonHandler(self, event):
 
         if self.axis == 1:
-            self.motor.moveRelative(-1 * self.getMoveValue());
+            self.motor.moveRelative(-1 * self.getMoveValue())
             print("Axis 1 Moved")
 
         if self.axis == 2:
-            self.motor.moveRelative(0, -1 * self.getMoveValue());
+            self.motor.moveRelative(0, -1 * self.getMoveValue())
             print("Axis 2 Moved")
         if self.axis == 3:
-            self.motor.moveRelative(0, 0, -1 * self.getMoveValue());
+            self.motor.moveRelative(0, 0, -1 * self.getMoveValue())
             print("Axis 3 Moved")
 
     def OnButton_PlusButtonHandler(self, event):
 
         if self.axis == 1:
-            self.motor.moveRelative(self.getMoveValue());
+            self.motor.moveRelative(self.getMoveValue())
             print("Axis 1 Moved")
         if self.axis == 2:
-            self.motor.moveRelative(0, self.getMoveValue());
+            self.motor.moveRelative(0, self.getMoveValue())
             print("Axis 2 Moved")
         if self.axis == 3:
-            self.motor.moveRelative(0, 0, self.getMoveValue());
+            self.motor.moveRelative(0, 0, self.getMoveValue())
             print("Axis 3 Moved")
