@@ -1171,8 +1171,19 @@ class TopPanel(wx.Panel):
         -------
 
         """
-        pass
-        #self.automeasure.import
+
+        deviceListAsObjects = []
+
+        for device in self.devicedict.keys():
+            deviceObject = ElectroOpticDevice(self.devicedict[device]['DeviceID'], self.devicedict[device]['Wavelength'],
+                                             self.devicedict[device]['Polarization'],
+                                            self.devicedict[device]['Optical Coordinates'], self.devicedict[device]['Type'])
+            deviceObject.hasroutines = self.devicedict[device]['RoutineCheck']
+            deviceObject.routines = self.devicedict[device]['Routines']
+            deviceListAsObjects.append(deviceObject)
+
+
+        self.autoMeasurePanel.importObjects(self.routinedict, deviceListAsObjects)
 
 
     def ExportButton(self, event):

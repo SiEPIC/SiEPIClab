@@ -4,11 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a8aeb52c-8b26-4e4f-bf5c-7cec241db66f" name="Changes" comment="yaml import additions, not finished">
-      <change afterPath="$PROJECT_DIR$/TestParameters_revised.py" afterDir="false" />
+    <list default="true" id="a8aeb52c-8b26-4e4f-bf5c-7cec241db66f" name="Changes" comment="modified test parameter gui and usage to be more user friendly and 3 dimensional">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ElectroOpticDevice.py" beforeDir="false" afterPath="$PROJECT_DIR$/ElectroOpticDevice.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/instrumentFrame_withtabs.py" beforeDir="false" afterPath="$PROJECT_DIR$/instrumentFrame_withtabs.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TestParameters_revised.py" beforeDir="false" afterPath="$PROJECT_DIR$/TestParameters_revised.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -503,7 +502,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667600237689</updated>
     </task>
-    <option name="localTasksCounter" value="47" />
+    <task id="LOCAL-00047" summary="modified test parameter gui and usage to be more user friendly and 3 dimensional">
+      <created>1668711479695</created>
+      <option name="number" value="00047" />
+      <option name="presentableId" value="LOCAL-00047" />
+      <option name="project" value="LOCAL" />
+      <updated>1668711479695</updated>
+    </task>
+    <option name="localTasksCounter" value="48" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -530,7 +536,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="fized issue caused by change of parameter inputs in internal automeasure class" />
     <MESSAGE value="added docstrings and updated documentation for testing parameters and SMU" />
     <MESSAGE value="added further docstrings" />
     <MESSAGE value="added to SMUtestsuite" />
@@ -555,14 +560,15 @@
     <MESSAGE value="began formatting for yml file" />
     <MESSAGE value="yml file output modified and fixed" />
     <MESSAGE value="yaml import additions, not finished" />
-    <option name="LAST_COMMIT_MESSAGE" value="yaml import additions, not finished" />
+    <MESSAGE value="modified test parameter gui and usage to be more user friendly and 3 dimensional" />
+    <option name="LAST_COMMIT_MESSAGE" value="modified test parameter gui and usage to be more user friendly and 3 dimensional" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/TestParameters_revised.py</url>
-          <line>1668</line>
+          <line>1339</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
