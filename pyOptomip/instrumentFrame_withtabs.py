@@ -30,7 +30,7 @@ from logWriter import logWriter, logWriterError
 from autoMeasurePanel import autoMeasurePanel
 from autoMeasure import autoMeasure
 import myMatplotlibPanel
-from TestParameters import TopPanel
+from TestParameters_revised import TopPanel
 import cv2
 import threading
 import time

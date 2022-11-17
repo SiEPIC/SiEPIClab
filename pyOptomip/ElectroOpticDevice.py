@@ -11,6 +11,7 @@ class ElectroOpticDevice:
         b = 0
         self.hasRoutines = False
         self.electricalCoordinates = []
+        self.routines = []
         self.wavelengthSweeps = {'Start': [], 'Stop': [], 'Stepsize': [], 'Sweeppower': [], 'Sweepspeed': [],
                                  'Laseroutput': [], 'Numscans': [], 'InitialRange': [], 'RangeDec': []}
         self.voltageSweeps = {'VoltMin': [], 'VoltMax': [], 'VoltRes': [], 'IV': [], 'RV': [], 'PV': [],
