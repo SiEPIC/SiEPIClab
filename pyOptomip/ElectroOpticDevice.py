@@ -1,14 +1,15 @@
 class ElectroOpticDevice:
 
-    def __init__(self, device_id, wavelength, polarization, x, y, type):
+    def __init__(self, device_id, wavelength, polarization, opticalcoords, type):
         """Object used to store all information associated with an electro-optic device"""
         self.device_id = device_id
         self.wavelength = wavelength
         self.polarization = polarization
-        self.opticalCoordinates = [x, y]
+        self.opticalCoordinates = opticalcoords
         self.type = type
         self.hasRoutines = False
         self.electricalCoordinates = []
+        self.routines = []
         self.wavelengthSweeps = {'Start': [], 'Stop': [], 'Stepsize': [], 'Sweeppower': [], 'Sweepspeed': [],
                                  'Laseroutput': [], 'Numscans': [], 'InitialRange': [], 'RangeDec': []}
         self.voltageSweeps = {'VoltMin': [], 'VoltMax': [], 'VoltRes': [], 'IV': [], 'RV': [], 'PV': [],
