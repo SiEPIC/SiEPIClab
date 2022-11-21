@@ -57,6 +57,7 @@ class autoMeasure(object):
         self.saveFolder = os.getcwd()
         self.graphPanel = graph
         self.devices = []
+        self.routines = []
 
     def readCoordFile(self, fileName):
         """
@@ -97,8 +98,7 @@ class autoMeasure(object):
                     devName = matchRes[6]
                     self.devSet.add(devName)
                     device = ElectroOpticDevice(devName, matchRes[4], matchRes[2], float(matchRes[0]),
-                                                float(matchRes[1]),
-                                                matchRes[5])
+                                                float(matchRes[1]), matchRes[5])
                     self.devices.append(device)
                 else:
                     if regElec.match(line):

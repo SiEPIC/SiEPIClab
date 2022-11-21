@@ -222,7 +222,7 @@ class coordinateMapPanel(wx.Panel):
                 optPosition = self.autoMeasure.motorOpt.getPosition()
                 elecPosition = self.autoMeasure.motorElec.getPosition()
                 relativePosition = []
-                relativePosition.append(elecPosition[0]-optPosition[0])
+                relativePosition.append(elecPosition[0] - optPosition[0])
                 relativePosition.append(elecPosition[1] - optPosition[1])
                 relativePosition.append(elecPosition[2] - optPosition[2])
                 xcoord.SetValue(str(relativePosition[0]))
@@ -920,125 +920,8 @@ class autoMeasurePanel(wx.Panel):
         deviceListAsObjects = []
 
         for file in Files:
-            self.readCSV(file)
+            self.readYAML(file)
         self.parametersImported = True
-
-    def readCSV2(self, originalFile):
-        """Reads a csv testing parameters file and stores the information as a list of electro-optic device
-         objects to be used for automated measurements."""
-
-        global deviceListAsObjects
-
-        with open(originalFile, 'r') as file:
-            rows = []
-            for row in file:
-                rows.append(row)
-
-            rows.pop(2)
-            rows.pop(1)
-            rows.pop(0)
-
-            for c in range(len(rows)):
-                x = rows[c].split(',')
-                deviceListAsObjects.append(ElectroOpticDevice(x[1], x[54], x[55], x[56], x[57], x[58]))
-
-            for c in range(len(rows)):
-                x = rows[c].split(',')
-
-                for device in deviceListAsObjects:
-
-                    if device.getDeviceID == x[1]:
-                        deviceToTest = device
-
-                    if x[2] == "True":
-                        """electrical routine"""
-                        if x[6] == "True":
-                            """voltage sweep"""
-                            deviceToTest.addVoltageSweep(x[8], x[9], x[12], x[14], x[15], x[16], x[17], x[18])
-                        if x[7] == "True":
-                            """Current sweep"""
-                            deviceToTest.addCurrentSweep(x[10], x[11], x[13], x[14], x[15], x[16], x[17], x[18])
-                    if x[3] == "True":
-                        """optical routine"""
-                        deviceToTest.addWavelengthSweep(x[19], x[20], x[21], x[22], x[23], x[24], x[25], x[26], x[27])
-                    if x[4] == "True":
-                        """set wavelength iv"""
-                        if x[28] == "True":
-                            """voltage sweep"""
-                            deviceToTest.addSetWavelengthVoltageSweep(x[30], x[31], x[34], x[36], x[37], x[38], x[39],
-                                                                      x[40], x[41])
-                        if x[29] == "True":
-                            """current sweep"""
-                            deviceToTest.addSetWavelengthCurrentSweep(x[32], x[33], x[35], x[36], x[37], x[38], x[39],
-                                                                      x[40], x[41])
-                    if x[5] == "True":
-                        """set voltage optical sweep"""
-                        deviceToTest.addSetVoltageWavelengthSweep(x[42], x[43], x[44], x[45], x[46], x[47], x[48],
-                                                                  x[49], x[50], x[51], x[52], x[53])
-
-    def readCSV(self, originalFile):
-        """Reads a csv testing parameters file and stores the information as a list of electro-optic device
-         objects to be used for automated measurements."""
-
-        global deviceListAsObjects
-        deviceListAsObjects = []
-
-        with open(originalFile, 'r') as file:
-            rows = []
-            for row in file:
-                rows.append(row)
-
-            rows.pop(2)
-            rows.pop(1)
-            rows.pop(0)
-
-            for c in range(len(rows)):
-                x = rows[c].split(',')
-
-                deviceToTest = False
-                deviceToTestFlag = True
-
-                if len(deviceListAsObjects) == 0:
-                    deviceToTest = ElectroOpticDevice(x[1], x[54], x[55], x[56], x[57], x[58])
-                    deviceToTest.addElectricalCoordinates("pad", x[59], x[60])
-                else:
-                    for device in deviceListAsObjects:
-                        if device.getDeviceID() == x[1]:
-                            deviceToTest = device
-                            deviceToTestFlag = False
-                    if deviceToTest == False:
-                        deviceToTest = ElectroOpticDevice(x[1], x[54], x[55], x[56], x[57], x[58])
-                        deviceToTest.addElectricalCoordinates("pad", x[59], x[60])
-
-                if x[2]:
-                    """electrical routine"""
-                    if x[6]:
-                        """voltage sweep"""
-                        deviceToTest.addVoltageSweep(x[8], x[9], x[12], x[14], x[15], x[16], x[17], x[18])
-                    if x[7]:
-                        """Current sweep"""
-                        deviceToTest.addCurrentSweep(x[10], x[11], x[13], x[14], x[15], x[16], x[17], x[18])
-                if x[3]:
-                    """optical routine"""
-                    deviceToTest.addWavelengthSweep(x[19], x[20], x[21], x[22], x[23], x[24], x[25], x[26], x[27])
-                if x[4]:
-                    """set wavelength iv"""
-                    if x[28]:
-                        """voltage sweep"""
-                        deviceToTest.addSetWavelengthVoltageSweep(x[30], x[31], x[34], x[36], x[37], x[38], x[39],
-                                                                  x[40], x[41])
-                    if x[29]:
-                        """current sweep"""
-                        deviceToTest.addSetWavelengthCurrentSweep(x[32], x[33], x[35], x[36], x[37], x[38], x[39],
-                                                                  x[40], x[41])
-                if x[5]:
-                    """set voltage optical sweep"""
-                    deviceToTest.addSetVoltageWavelengthSweep(x[42], x[43], x[44], x[45], x[46], x[47], x[48],
-                                                              x[49], x[50], x[51], x[52], x[53])
-                if deviceToTestFlag:
-                    deviceListAsObjects.append(deviceToTest)
-            self.importObjects(deviceListAsObjects)
-            return deviceListAsObjects
 
     def readYAML(self, originalFile):
         """Reads a csv testing parameters file and stores the information as a list of electro-optic device
@@ -1048,59 +931,32 @@ class autoMeasurePanel(wx.Panel):
         deviceListAsObjects = []
 
         with open(originalFile, 'r') as file:
-            rows = []
-            for row in file:
-                rows.append(row)
+            loadedYAML = yaml.safe_load(file)
 
-            rows.pop(2)
-            rows.pop(1)
-            rows.pop(0)
-
-            for c in range(len(rows)):
-                x = rows[c].split(',')
-
-                deviceToTest = False
-                deviceToTestFlag = True
-
+            for device in loadedYAML['Devices']:
+                devExists = False
                 if len(deviceListAsObjects) == 0:
-                    deviceToTest = ElectroOpticDevice(x[1], x[54], x[55], x[56], x[57], x[58])
+                    deviceToTest = ElectroOpticDevice(device['DeviceID'], float(device['Wavelength']),
+                                                      device['Polarization'], device['Optical Coordinates'],
+                                                      device['Type'])
+                    deviceToTest.addRoutines(device['Routines'])
                 else:
-                    for device in deviceListAsObjects:
-                        if device.getDeviceID() == x[1]:
+                    for deviceObj in deviceListAsObjects:
+                        if deviceObj.getDeviceID() == device['DeviceID']:
                             deviceToTest = device
-                            deviceToTestFlag = False
-                    if deviceToTest == False:
-                        deviceToTest = ElectroOpticDevice(x[1], x[54], x[55], x[56], x[57], x[58])
+                            deviceToTest.addRoutines(device['Routines'])
+                            devExists = True
+                    if not devExists:
+                        deviceToTest = ElectroOpticDevice(device['DeviceID'], float(device['Wavelength']),
+                                                          device['Polarization'], device['Optical Coordinates'],
+                                                          device['Type'])
+                        deviceToTest.addRoutines(device['Routines'])
+                deviceListAsObjects.append(deviceToTest)
+                for type in loadedYAML['Routines']:
+                    for routine in type:
+                        self.autoMeasure.routines.append(routine)
+        self.importObjects(deviceListAsObjects)
 
-                if x[2]:
-                    """electrical routine"""
-                    if x[6]:
-                        """voltage sweep"""
-                        deviceToTest.addVoltageSweep(x[8], x[9], x[12], x[14], x[15], x[16], x[17], x[18])
-                    if x[7]:
-                        """Current sweep"""
-                        deviceToTest.addCurrentSweep(x[10], x[11], x[13], x[14], x[15], x[16], x[17], x[18])
-                if x[3]:
-                    """optical routine"""
-                    deviceToTest.addWavelengthSweep(x[19], x[20], x[21], x[22], x[23], x[24], x[25], x[26], x[27])
-                if x[4]:
-                    """set wavelength iv"""
-                    if x[28]:
-                        """voltage sweep"""
-                        deviceToTest.addSetWavelengthVoltageSweep(x[30], x[31], x[34], x[36], x[37], x[38], x[39],
-                                                                  x[40], x[41])
-                    if x[29]:
-                        """current sweep"""
-                        deviceToTest.addSetWavelengthCurrentSweep(x[32], x[33], x[35], x[36], x[37], x[38], x[39],
-                                                                  x[40], x[41])
-                if x[5]:
-                    """set voltage optical sweep"""
-                    deviceToTest.addSetVoltageWavelengthSweep(x[42], x[43], x[44], x[45], x[46], x[47], x[48],
-                                                              x[49], x[50], x[51], x[52], x[53])
-                if deviceToTestFlag:
-                    deviceListAsObjects.append(deviceToTest)
-            self.importObjects(deviceListAsObjects)
-            return deviceListAsObjects
 
     def OnButton_CheckAll(self, event):
         """Selects all items in the devices check list"""
@@ -1129,6 +985,7 @@ class autoMeasurePanel(wx.Panel):
 
     # TODO: Modify to move laser out of the way
     def OnButton_GotoDeviceElec(self, event):
+
         """Move probe to selected device"""
         self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
                                                      self.coordMapPanelElec.getGdsCoordsElec())
@@ -1136,34 +993,19 @@ class autoMeasurePanel(wx.Panel):
         global deviceListAsObjects
         for device in deviceListAsObjects:
             if device.getDeviceID() == selectedDevice:
-                gdsCoord = (float(device.getElectricalCoordinates()[0][1]), float(device.getElectricalCoordinates()[0][2]))
+                gdsCoord = (
+                float(device.getElectricalCoordinates()[0][1]), float(device.getElectricalCoordinates()[0][2]))
                 motorCoord = self.autoMeasure.gdsToMotorCoordsElec(gdsCoord)
                 if self.autoMeasure.motorOpt and self.autoMeasure.motorElec:
                     optPosition = self.autoMeasure.motorOpt.getPosition()
-                    absolutex = motorCoord[0] + optPosition[1]
-                    absolutey = motorCoord[1] + optPosition[2]
-                    absolutez = motorCoord[2] + optPosition[0]
+                    absolutex = motorCoord[2] - optPosition[0]
+                    absolutey = motorCoord[0] - optPosition[1]
+                    absolutez = motorCoord[1] - optPosition[2]
                     self.autoMeasure.motorElec.moveAbsoluteXYZ(absolutex[0], absolutey[0], absolutez[0])
                     print("moved elec relative to opt")
                 else:
                     self.autoMeasure.motorElec.moveAbsoluteXYZ(motorCoord[0], motorCoord[1], motorCoord[2])
                     print("moved elec")
-
-    def OnButton_CalculateOpt(self, event):
-        """ Computes the optical coordinate transformation matrix. Used to align the laser with the stage.
-        Used for debugging."""
-        A = self.autoMeasure.findCoordinateTransformOpt(self.coordMapPanelOpt.getMotorCoords(),
-                                                        self.coordMapPanelOpt.getGdsCoordsOpt())
-        print('Coordinate transform matrix')
-        print(A)
-
-    def OnButton_CalculateElec(self, event):
-        """ Computes the electrical coordinate transformation matrix. Used to align the wedge probe with the
-        stage. Used for debugging."""
-        A = self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
-                                                         self.coordMapPanelElec.getGdsCoordsElec())
-        print('Coordinate transform matrix')
-        print(A)
 
     def OnButton_SelectOutputFolder(self, event):
         """ Opens a file dialog to select an output directory for automatic measurement results. """

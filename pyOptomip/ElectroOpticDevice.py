@@ -10,21 +10,6 @@ class ElectroOpticDevice:
         self.hasRoutines = False
         self.electricalCoordinates = []
         self.routines = []
-        self.wavelengthSweeps = {'Start': [], 'Stop': [], 'Stepsize': [], 'Sweeppower': [], 'Sweepspeed': [],
-                                 'Laseroutput': [], 'Numscans': [], 'InitialRange': [], 'RangeDec': []}
-        self.voltageSweeps = {'VoltMin': [], 'VoltMax': [], 'VoltRes': [], 'IV': [], 'RV': [], 'PV': [],
-                              'ChannelA': [], 'ChannelB': []}
-        self.currentSweeps = {'CurrentMin': [], 'CurrentMax': [], 'CurrentRes': [], 'IV': [], 'RV': [],
-                              'PV': [], 'ChannelA': [], 'ChannelB': []}
-        self.setWavelengthVoltageSweeps = {'VoltMin': [], 'VoltMax': [], 'VoltRes': [], 'IV': [], 'RV': [],
-                                           'PV': [], 'ChannelA': [], 'ChannelB': [], 'Wavelength': []}
-        self.setWavelengthCurrentSweeps = {'CurrentMin': [], 'CurrentMax': [], 'CurrentRes': [], 'IV': [],
-                                           'RV': [], 'PV': [], 'ChannelA': [], 'ChannelB': [],
-                                           'Wavelength': []}
-        self.setVoltageWavelengthSweeps = {'Start': [], 'Stop': [], 'Stepsize': [], 'Sweeppower': [],
-                                           'Sweepspeed': [], 'Laseroutput': [], 'Numscans': [],
-                                           'InitialRange': [], 'RangeDec': [], 'ChannelA': [], 'ChannelB': [],
-                                           'Voltage': []}
 
     def addElectricalCoordinates(self, padName, x, y):
         """Associates a bondpad with the device"""
@@ -64,6 +49,11 @@ class ElectroOpticDevice:
                 if bondPad[1] < reference[1]:
                     reference = bondPad
             return reference
+
+    def addRoutines(self, routines):
+        """Adds the names of routines to be performed on this device to a list."""
+        self.routines.append(routines)
+
 
     def addWavelengthSweep(self, start, stop, stepsize, sweeppower, sweepspeed, laseroutput, numscans,
                            initialrange, rangedec):
@@ -148,30 +138,6 @@ class ElectroOpticDevice:
             self.setVoltageWavelengthSweeps['ChannelB'].append(initialrange)
             self.setVoltageWavelengthSweeps['Voltage'].append(voltage)
             self.hasRoutines = True
-
-    def getWavelengthSweeps(self):
-        """Returns a dictionary of the wavelength sweep routines associated with this device"""
-        return self.wavelengthSweeps
-
-    def getVoltageSweeps(self):
-        """Returns a dictionary of the voltage sweep routines associated with this device"""
-        return self.voltageSweeps
-
-    def getCurrentSweeps(self):
-        """Returns a dictionary of the current sweep routines associated with this device"""
-        return self.currentSweeps
-
-    def getSetWavelengthVoltageSweeps(self):
-        """Returns a dictionary of the set wavelength voltage sweep routines associated with this device"""
-        return self.setWavelengthVoltageSweeps
-
-    def getSetWavelengthCurrentSweeps(self):
-        """Returns a dictionary of the set wavelength current sweep routines associated with this device"""
-        return self.setWavelengthCurrentSweeps
-
-    def getSetVoltageWavelengthSweeps(self):
-        """Returns a dictionary of the set voltage wavelength sweep routines associated with this device"""
-        return self.setVoltageWavelengthSweeps
 
 
 
