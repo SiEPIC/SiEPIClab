@@ -1,13 +1,12 @@
 class ElectroOpticDevice:
 
-    def __init__(self, device_id, wavelength, polarization, opticalcoords, type):
+    def __init__(self, device_id, wavelength, polarization, opticalCoords, type):
         """Object used to store all information associated with an electro-optic device"""
         self.device_id = device_id
         self.wavelength = wavelength
         self.polarization = polarization
-        self.opticalCoordinates = opticalcoords
+        self.opticalCoordinates = opticalCoords
         self.type = type
-        self.hasRoutines = False
         self.electricalCoordinates = []
         self.routines = []
 
@@ -50,94 +49,63 @@ class ElectroOpticDevice:
                     reference = bondPad
             return reference
 
+    def hasRoutines(self):
+        if self.routines:
+            return True
+        else:
+            return False
+
+    def getWavelengthSweepRoutines(self):
+        wavelengthSweepRoutines = []
+        for routine in self.routines:
+            routineType = routine.split(':')[0]
+            if routineType == 'Wavelength Sweep':
+                wavelengthSweepRoutines.append(routine.split(':')[1])
+        return wavelengthSweepRoutines
+
+    def getVoltageSweepRoutines(self):
+        voltageSweepRoutines = []
+        for routine in self.routines:
+            routineType = routine.split(':')[0]
+            if routineType == 'Voltage Sweep':
+                voltageSweepRoutines.append(routine.split(':')[1])
+        return voltageSweepRoutines
+
+    def getCurrentSweepRoutines(self):
+        currentSweepRoutines = []
+        for routine in self.routines:
+            routineType = routine.split(':')[0]
+            if routineType == 'Current Sweep':
+                currentSweepRoutines.append(routine.split(':')[1])
+        return currentSweepRoutines
+
+    def getSetWavelengthVoltageSweepRoutines(self):
+        setWavelengthVoltageSweepRoutines = []
+        for routine in self.routines:
+            routineType = routine.split(':')[0]
+            if routineType == 'Set Wavelength Voltage Sweep':
+                setWavelengthVoltageSweepRoutines.append(routine.split(':')[1])
+        return setWavelengthVoltageSweepRoutines
+
+    def getSetWavelengthCurrentSweepRoutines(self):
+        setWavelengthCurrentSweepRoutines = []
+        for routine in self.routines:
+            routineType = routine.split(':')[0]
+            if routineType == 'Set Wavelength Current Sweep':
+                setWavelengthCurrentSweepRoutines.append(routine.split(':')[1])
+        return setWavelengthCurrentSweepRoutines
+
+    def getSetVoltageWavelengthSweepRoutines(self):
+        setVoltageWavelengthSweepRoutines = []
+        for routine in self.routines:
+            routineType = routine.split(':')[0]
+            if routineType == 'Set Voltage Wavelength Sweep':
+                setVoltageWavelengthSweepRoutines.append(routine.split(':')[1])
+        return setVoltageWavelengthSweepRoutines
+
     def addRoutines(self, routines):
         """Adds the names of routines to be performed on this device to a list."""
-        self.routines.append(routines)
-
-
-    def addWavelengthSweep(self, start, stop, stepsize, sweeppower, sweepspeed, laseroutput, numscans,
-                           initialrange, rangedec):
-        """Associates a wavelength sweep routine with this device"""
-        self.wavelengthSweeps['Start'].append(start)
-        self.wavelengthSweeps['Stop'].append(stop)
-        self.wavelengthSweeps['Stepsize'].append(stepsize)
-        self.wavelengthSweeps['Sweeppower'].append(sweeppower)
-        self.wavelengthSweeps['Sweepspeed'].append(sweepspeed)
-        self.wavelengthSweeps['Laseroutput'].append(laseroutput)
-        self.wavelengthSweeps['Numscans'].append(numscans)
-        self.wavelengthSweeps['InitialRange'].append(initialrange)
-        self.wavelengthSweeps['RangeDec'].append(rangedec)
-        self.hasRoutines = True
-
-    def addVoltageSweep(self, voltmin, voltmax, voltres, iv, rv, pv, a, b):
-        """Associates a voltage sweep routine with this device"""
-        self.voltageSweeps['VoltMin'].append(voltmin)
-        self.voltageSweeps['VoltMax'].append(voltmax)
-        self.voltageSweeps['VoltRes'].append(voltres)
-        self.voltageSweeps['IV'].append(iv)
-        self.voltageSweeps['RV'].append(rv)
-        self.voltageSweeps['PV'].append(pv)
-        self.voltageSweeps['ChannelA'].append(a)
-        self.voltageSweeps['ChannelB'].append(b)
-        self.hasRoutines = True
-
-    def addCurrentSweep(self, currentmin, currentmax, currentres, iv, rv, pv, a, b):
-        """Associates a current sweep routine with this device"""
-        self.currentSweeps['CurrentMin'].append(currentmin)
-        self.currentSweeps['CurrentMax'].append(currentmax)
-        self.currentSweeps['CurrentRes'].append(currentres)
-        self.currentSweeps['IV'].append(iv)
-        self.currentSweeps['RV'].append(rv)
-        self.currentSweeps['PV'].append(pv)
-        self.currentSweeps['ChannelA'].append(a)
-        self.currentSweeps['ChannelB'].append(b)
-        self.hasRoutines = True
-
-    def addSetWavelengthVoltageSweep(self, voltmin, voltmax, voltres, iv, rv, pv, a, b, wavelengths):
-        """"""
-        for wavelength in wavelengths:
-            self.setWavelengthVoltageSweeps['VoltMin'].append(voltmin)
-            self.setWavelengthVoltageSweeps['VoltMax'].append(voltmax)
-            self.setWavelengthVoltageSweeps['VoltRes'].append(voltres)
-            self.setWavelengthVoltageSweeps['IV'].append(iv)
-            self.setWavelengthVoltageSweeps['RV'].append(rv)
-            self.setWavelengthVoltageSweeps['PV'].append(pv)
-            self.setWavelengthVoltageSweeps['ChannelA'].append(a)
-            self.setWavelengthVoltageSweeps['ChannelB'].append(b)
-            self.setWavelengthVoltageSweeps['Wavelength'].append(wavelength)
-            self.hasRoutines = True
-
-    def addSetWavelengthCurrentSweep(self, currentmin, currentmax, currentres, iv, rv, pv, a, b, wavelengths):
-        """"""
-        for wavelength in wavelengths:
-            self.setWavelengthCurrentSweeps['CurrentMin'].append(currentmin)
-            self.setWavelengthCurrentSweeps['CurrentMax'].append(currentmax)
-            self.setWavelengthCurrentSweeps['CurrentRes'].append(currentres)
-            self.setWavelengthCurrentSweeps['IV'].append(iv)
-            self.setWavelengthCurrentSweeps['RV'].append(rv)
-            self.setWavelengthCurrentSweeps['PV'].append(pv)
-            self.setWavelengthCurrentSweeps['ChannelA'].append(a)
-            self.setWavelengthCurrentSweeps['ChannelB'].append(b)
-            self.setWavelengthCurrentSweeps['Wavelength'].append(wavelength)
-            self.hasRoutines = True
-
-    def addSetVoltageWavelengthSweep(self, start, stop, stepsize, sweeppower, sweepspeed, laseroutput,
-                                     numscans, initialrange, rangedec, a, b, voltages):
-        """"""
-        for voltage in voltages:
-            self.setVoltageWavelengthSweeps['Start'].append(start)
-            self.setVoltageWavelengthSweeps['Stop'].append(stop)
-            self.setVoltageWavelengthSweeps['Stepsize'].append(stepsize)
-            self.setVoltageWavelengthSweeps['Sweeppower'].append(sweeppower)
-            self.setVoltageWavelengthSweeps['Sweepspeed'].append(sweepspeed)
-            self.setVoltageWavelengthSweeps['Laseroutput'].append(laseroutput)
-            self.setVoltageWavelengthSweeps['Numscans'].append(numscans)
-            self.setVoltageWavelengthSweeps['InitialRange'].append(initialrange)
-            self.setVoltageWavelengthSweeps['RangeDec'].append(rangedec)
-            self.setVoltageWavelengthSweeps['ChannelA'].append(a)
-            self.setVoltageWavelengthSweeps['ChannelB'].append(initialrange)
-            self.setVoltageWavelengthSweeps['Voltage'].append(voltage)
-            self.hasRoutines = True
+        self.routines.extend(routines)
 
 
 

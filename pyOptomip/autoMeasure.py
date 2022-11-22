@@ -57,7 +57,21 @@ class autoMeasure(object):
         self.saveFolder = os.getcwd()
         self.graphPanel = graph
         self.devices = []
-        self.routines = []
+        self.wavelengthSweeps = {'RoutineName': [], 'Start': [], 'Stop': [], 'Stepsize': [], 'Sweeppower': [], 'Sweepspeed': [],
+                                 'Laseroutput': [], 'Numscans': [], 'InitialRange': [], 'RangeDec': []}
+        self.voltageSweeps = {'RoutineName': [], 'VoltMin': [], 'VoltMax': [], 'VoltRes': [], 'IV': [], 'RV': [], 'PV': [],
+                              'ChannelA': [], 'ChannelB': []}
+        self.currentSweeps = {'RoutineName': [], 'CurrentMin': [], 'CurrentMax': [], 'CurrentRes': [], 'IV': [], 'RV': [],
+                              'PV': [], 'ChannelA': [], 'ChannelB': []}
+        self.setWavelengthVoltageSweeps = {'RoutineName': [], 'VoltMin': [], 'VoltMax': [], 'VoltRes': [], 'IV': [], 'RV': [],
+                                           'PV': [], 'ChannelA': [], 'ChannelB': [], 'Wavelength': []}
+        self.setWavelengthCurrentSweeps = {'RoutineName': [], 'CurrentMin': [], 'CurrentMax': [], 'CurrentRes': [], 'IV': [],
+                                           'RV': [], 'PV': [], 'ChannelA': [], 'ChannelB': [],
+                                           'Wavelength': []}
+        self.setVoltageWavelengthSweeps = {'RoutineName': [], 'Start': [], 'Stop': [], 'Stepsize': [], 'Sweeppower': [],
+                                           'Sweepspeed': [], 'Laseroutput': [], 'Numscans': [],
+                                           'InitialRange': [], 'RangeDec': [], 'ChannelA': [], 'ChannelB': [],
+                                           'Voltage': []}
 
     def readCoordFile(self, fileName):
         """
@@ -85,7 +99,7 @@ class autoMeasure(object):
         for ii, line in enumerate(dataStrip2):
             if reg.match(line):
                 matchRes = reg.findall(line)[0]
-                devName = matchRes[6]
+                devName = matchRes[5]
                 self.devSet.add(devName)
 
         # Parse the data in each line and put it into a list of devices
@@ -97,8 +111,8 @@ class autoMeasure(object):
                     matchRes = reg.findall(line)[0]
                     devName = matchRes[6]
                     self.devSet.add(devName)
-                    device = ElectroOpticDevice(devName, matchRes[4], matchRes[2], float(matchRes[0]),
-                                                float(matchRes[1]), matchRes[5])
+                    device = ElectroOpticDevice(devName, matchRes[4], matchRes[2], [float(matchRes[0]),
+                                                float(matchRes[1])], matchRes[5])
                     self.devices.append(device)
                 else:
                     if regElec.match(line):
@@ -272,6 +286,97 @@ class autoMeasure(object):
 
         return newMotorCoords
 
+
+    def addWavelengthSweep(self, name, start, stop, stepsize, sweeppower, sweepspeed, laseroutput, numscans,
+                           initialrange, rangedec):
+        """Associates a wavelength sweep routine with this device"""
+        self.wavelengthSweeps['Start'].append(start)
+        self.wavelengthSweeps['Stop'].append(stop)
+        self.wavelengthSweeps['Stepsize'].append(stepsize)
+        self.wavelengthSweeps['Sweeppower'].append(sweeppower)
+        self.wavelengthSweeps['Sweepspeed'].append(sweepspeed)
+        self.wavelengthSweeps['Laseroutput'].append(laseroutput)
+        self.wavelengthSweeps['Numscans'].append(numscans)
+        self.wavelengthSweeps['InitialRange'].append(initialrange)
+        self.wavelengthSweeps['RangeDec'].append(rangedec)
+        self.wavelengthSweeps['RoutineName'].append(name)
+        self.hasRoutines = True
+
+    def addVoltageSweep(self, name, voltmin, voltmax, voltres, iv, rv, pv, a, b):
+        """Associates a voltage sweep routine with this device"""
+        self.voltageSweeps['VoltMin'].append(voltmin)
+        self.voltageSweeps['VoltMax'].append(voltmax)
+        self.voltageSweeps['VoltRes'].append(voltres)
+        self.voltageSweeps['IV'].append(iv)
+        self.voltageSweeps['RV'].append(rv)
+        self.voltageSweeps['PV'].append(pv)
+        self.voltageSweeps['ChannelA'].append(a)
+        self.voltageSweeps['ChannelB'].append(b)
+        self.voltageSweeps['RoutineName'].append(name)
+        self.hasRoutines = True
+
+    def addCurrentSweep(self, name, currentmin, currentmax, currentres, iv, rv, pv, a, b):
+        """Associates a current sweep routine with this device"""
+        self.currentSweeps['CurrentMin'].append(currentmin)
+        self.currentSweeps['CurrentMax'].append(currentmax)
+        self.currentSweeps['CurrentRes'].append(currentres)
+        self.currentSweeps['IV'].append(iv)
+        self.currentSweeps['RV'].append(rv)
+        self.currentSweeps['PV'].append(pv)
+        self.currentSweeps['ChannelA'].append(a)
+        self.currentSweeps['ChannelB'].append(b)
+        self.currentSweeps['RoutineName'].append(name)
+        self.hasRoutines = True
+
+    def addSetWavelengthVoltageSweep(self, name, voltmin, voltmax, voltres, iv, rv, pv, a, b, wavelengths):
+        """"""
+        for wavelength in wavelengths:
+            self.setWavelengthVoltageSweeps['VoltMin'].append(voltmin)
+            self.setWavelengthVoltageSweeps['VoltMax'].append(voltmax)
+            self.setWavelengthVoltageSweeps['VoltRes'].append(voltres)
+            self.setWavelengthVoltageSweeps['IV'].append(iv)
+            self.setWavelengthVoltageSweeps['RV'].append(rv)
+            self.setWavelengthVoltageSweeps['PV'].append(pv)
+            self.setWavelengthVoltageSweeps['ChannelA'].append(a)
+            self.setWavelengthVoltageSweeps['ChannelB'].append(b)
+            self.setWavelengthVoltageSweeps['Wavelength'].append(wavelength)
+            self.setWavelengthVoltageSweeps['RoutineName'].append(name)
+            self.hasRoutines = True
+
+    def addSetWavelengthCurrentSweep(self, name, currentmin, currentmax, currentres, iv, rv, pv, a, b, wavelengths):
+        """"""
+        for wavelength in wavelengths:
+            self.setWavelengthCurrentSweeps['CurrentMin'].append(currentmin)
+            self.setWavelengthCurrentSweeps['CurrentMax'].append(currentmax)
+            self.setWavelengthCurrentSweeps['CurrentRes'].append(currentres)
+            self.setWavelengthCurrentSweeps['IV'].append(iv)
+            self.setWavelengthCurrentSweeps['RV'].append(rv)
+            self.setWavelengthCurrentSweeps['PV'].append(pv)
+            self.setWavelengthCurrentSweeps['ChannelA'].append(a)
+            self.setWavelengthCurrentSweeps['ChannelB'].append(b)
+            self.setWavelengthCurrentSweeps['Wavelength'].append(wavelength)
+            self.setWavelengthCurrentSweeps['RoutineName'].append(name)
+            self.hasRoutines = True
+
+    def addSetVoltageWavelengthSweep(self, name, start, stop, stepsize, sweeppower, sweepspeed, laseroutput,
+                                     numscans, initialrange, rangedec, a, b, voltages):
+        """"""
+        for voltage in voltages:
+            self.setVoltageWavelengthSweeps['Start'].append(start)
+            self.setVoltageWavelengthSweeps['Stop'].append(stop)
+            self.setVoltageWavelengthSweeps['Stepsize'].append(stepsize)
+            self.setVoltageWavelengthSweeps['Sweeppower'].append(sweeppower)
+            self.setVoltageWavelengthSweeps['Sweepspeed'].append(sweepspeed)
+            self.setVoltageWavelengthSweeps['Laseroutput'].append(laseroutput)
+            self.setVoltageWavelengthSweeps['Numscans'].append(numscans)
+            self.setVoltageWavelengthSweeps['InitialRange'].append(initialrange)
+            self.setVoltageWavelengthSweeps['RangeDec'].append(rangedec)
+            self.setVoltageWavelengthSweeps['ChannelA'].append(a)
+            self.setVoltageWavelengthSweeps['ChannelB'].append(initialrange)
+            self.setVoltageWavelengthSweeps['Voltage'].append(voltage)
+            self.setVoltageWavelengthSweeps['RoutineName'].append(name)
+            self.hasRoutines = True
+
     def beginMeasure(self, devices, checkList, activeDetectors, graph, camera, abortFunction=None, updateFunction=None,
                      updateGraph=True):
         """ Runs an automated measurement. For each device, wedge probe is moved out of the way, chip stage is moved
@@ -332,8 +437,8 @@ class autoMeasure(object):
             if device.getElectricalCoordinates():
                 if elec:
                     # Move wedge probe and compensate for movement of chip stage
-                    self.motorElec.moveAbsoluteXYZElec(motorCoordElec[0] + x, motorCoordElec[1] + y,
-                                                       motorCoordElec[2] + z)
+                    self.motorElec.moveAbsoluteXYZElec(motorCoordElec[2] - x, motorCoordElec[0] - y,
+                                                       motorCoordElec[1] - z)
 
             # Fine align to device
             res, completed = self.fineAlign.doFineAlign()
@@ -350,19 +455,20 @@ class autoMeasure(object):
                         self.checkList.SetItemTextColour(ii, wx.Colour(0, 255, 0))
 
                 # Check which type of measurement is to be completed
-                if device.voltageSweeps:
-                    voltageSweeps = device.getVoltageSweeps()
-                    for ii in range(len(voltageSweeps)):
+
+                if device.getVoltageSweeps():
+                    for routine in device.getVoltageSweeps():
                         timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
-                        print("Performing Voltage Sweep")
-                        voltmin = voltageSweeps['VoltMin'][ii]
-                        voltmax = voltageSweeps['VoltMax'][ii]
-                        voltres = voltageSweeps['VoltRes'][ii]
-                        A = voltageSweeps['ChannelA'][ii]
-                        B = voltageSweeps['ChannelB'][ii]
-                        IV = voltageSweeps['IV'][ii]
-                        RV = voltageSweeps['RV'][ii]
-                        PV = voltageSweeps['PV'][ii]
+                        print("Performing Voltage Sweep {}".format(routine))
+                        ii = self.voltageSweeps['RoutineName'].index(routine)
+                        voltmin = self.voltageSweeps['VoltMin'][ii]
+                        voltmax = self.voltageSweeps['VoltMax'][ii]
+                        voltres = self.voltageSweeps['VoltRes'][ii]
+                        A = self.voltageSweeps['ChannelA'][ii]
+                        B = self.voltageSweeps['ChannelB'][ii]
+                        IV = self.voltageSweeps['IV'][ii]
+                        RV = self.voltageSweeps['RV'][ii]
+                        PV = self.voltageSweeps['PV'][ii]
                         VoltA, CurA, ResA, PowA, VoltB, CurB, ResB, PowB = \
                             measurement.voltageSweep(voltmin, voltmax, voltres, A, B)
                         timeStop = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
@@ -430,19 +536,20 @@ class autoMeasure(object):
                                 self.saveFiles(device, 'Voltage (V)', 'Power (W)', ii, VoltB, PowB,
                                                'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
 
-                if device.currentSweeps:
-                    currentSweeps = device.getCurrentSweeps()
-                    for ii in range(len(currentSweeps)):
+                if device.getCurrentSweeps():
+                    for routine in device.getCurrentSweeps():
+                        ii = self.currentSweeps['RoutineName'].index(routine)
                         timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
-                        print("Performing Current Sweep")
-                        imin = currentSweeps['CurrentMin'][ii]
-                        imax = currentSweeps['CurrentMax'][ii]
-                        ires = currentSweeps['CurrentRes'][ii]
-                        A = currentSweeps['ChannelA'][ii]
-                        B = currentSweeps['ChannelB'][ii]
-                        IV = currentSweeps['IV'][ii]
-                        RV = currentSweeps['RV'][ii]
-                        PV = currentSweeps['PV'][ii]
+                        routineName = self.currentSweeps['Routine Name'][ii]
+                        print("Performing Current Sweep {}".format(routineName))
+                        imin = self.currentSweeps['CurrentMin'][ii]
+                        imax = self.currentSweeps['CurrentMax'][ii]
+                        ires = self.currentSweeps['CurrentRes'][ii]
+                        A = self.currentSweeps['ChannelA'][ii]
+                        B = self.currentSweeps['ChannelB'][ii]
+                        IV = self.currentSweeps['IV'][ii]
+                        RV = self.currentSweeps['RV'][ii]
+                        PV = self.currentSweeps['PV'][ii]
                         VoltA, CurA, ResA, PowA, VoltB, CurB, ResB, PowB = \
                             measurement.currentSweep(imin, imax, ires, A, B)
                         timeStop = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
@@ -510,20 +617,21 @@ class autoMeasure(object):
                                 self.saveFiles(device, 'Voltage (V)', 'Power (W)', ii, VoltB, PowB,
                                                'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
 
-                if device.wavelengthSweeps:
-                    wavelengthSweeps = device.getWavelengthSweeps()
-                    for ii in range(len(wavelengthSweeps)):
+                if device.getWavelengthSweeps():
+                    for routine in device.getWavelengthSweeps():
+                        ii = self.wavelengthSweeps['RoutineName'].index(routine)
                         timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
-                        print("Performing Optical Test")
-                        start = wavelengthSweeps['Start'][ii]
-                        stop = wavelengthSweeps['Stop'][ii]
-                        stepsize = wavelengthSweeps['Stepsize'][ii]
-                        sweepspeed = wavelengthSweeps['Sweepspeed'][ii]
-                        sweeppower = wavelengthSweeps['Sweeppower'][ii]
-                        laseroutput = wavelengthSweeps['Laseroutput'][ii]
-                        numscans = wavelengthSweeps['Numscans'][ii]
-                        initrange = wavelengthSweeps['InitialRange'][ii]
-                        rangedec = wavelengthSweeps['RangeDec'][ii]
+                        routineName = wavelengthSweeps['Routine Name'][ii]
+                        print("Performing Optical Test {}".format(routineName))
+                        start = self.wavelengthSweeps['Start'][ii]
+                        stop = self.wavelengthSweeps['Stop'][ii]
+                        stepsize = self.wavelengthSweeps['Stepsize'][ii]
+                        sweepspeed = self.wavelengthSweeps['Sweepspeed'][ii]
+                        sweeppower = self.wavelengthSweeps['Sweeppower'][ii]
+                        laseroutput = self.wavelengthSweeps['Laseroutput'][ii]
+                        numscans = self.wavelengthSweeps['Numscans'][ii]
+                        initrange = self.wavelengthSweeps['InitialRange'][ii]
+                        rangedec = self.wavelengthSweeps['RangeDec'][ii]
                         wav, pow = measurement.opticalSweep(start, stop, stepsize, sweepspeed, sweeppower,
                                                             laseroutput, numscans, initrange, rangedec)
                         timeStop = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
@@ -539,9 +647,9 @@ class autoMeasure(object):
                         self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', ii, wav, pow,
                                        'Wavelength sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
 
-                if device.setWavelengthVoltageSweeps:
-                    voltageSweeps = device.getSetWavelengthVoltageSweeps()
-                    for ii in range(len(voltageSweeps)):
+                if device.getSetWavelengthVoltageSweeps():
+                    for routine in device.getSetWavelengthVoltageSweeps():
+                        ii = self.setWavelengthVoltageSweeps['RoutineName'].index(routine)
                         timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
                         print("Performing Voltage Sweep with set wavelength")
                         voltmin = voltageSweeps['VoltMin'][ii]
@@ -626,9 +734,10 @@ class autoMeasure(object):
                                                'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
                                                chipTimeStart)
 
-                if device.setWavelengthCurrentSweeps:
+                if device.getSetWavelengthCurrentSweeps():
                     currentSweeps = device.getSetWavelengthCurrentSweeps()
-                    for ii in range(len(currentSweeps)):
+                    for routine in device.getSetWavelengthCurrentSweeps():
+                        ii = self.setWavelengthCurrentSweeps['RoutineName'].index(routine)
                         timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
                         print("Performing Current Sweep with set wavelength")
                         imin = currentSweeps['CurrentMin'][ii]
@@ -713,9 +822,9 @@ class autoMeasure(object):
                                                'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
                                                chipTimeStart)
 
-                if device.setVoltageWavelengthSweeps:
-                    setVoltWavelengthSweeps = device.getSetVoltageWavelengthSweeps()
-                    for ii in range(len(setVoltWavelengthSweeps)):
+                if device.getSetVoltageWavelengthSweeps():
+                    for routine in device.getSetVoltageWavelengthSweeps():
+                        ii = self.setVoltageWavelengthSweeps['RoutineName'].index(routine)
                         timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
                         print("Performing Optical Test with Bias Voltage")
                         start = setVoltWavelengthSweeps['Start'][ii]
