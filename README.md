@@ -33,7 +33,7 @@ To build you own probe station, view instructions [here](https://github.com/SiEP
 	
 	Download from: https://www.keysight.com/ca/en/lib/software-detail/driver/816x-vxi-plugplay-driver-112417.html
         
-### Instructions for running the GUI software:
+## Instructions for running the GUI software:
 
 **Option 1**: To run from within Spyder, add the pyOptomip folder to the PYTHONPATH. Then, run the pyOptomip.pyw script.
 
