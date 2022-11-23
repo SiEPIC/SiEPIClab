@@ -5,7 +5,7 @@ Python code for <a href="https://siepic.ubc.ca/silicon-photonics-design-book/aut
 	
 To build you own probe station, view instructions [here](https://github.com/SiEPIC/pyOptomip/blob/d737b29963befef6f050b565618b35107469369b/Documentation/Assembly%20Instructions.pdf)
   
-## Installation instructions:
+## Installation Instructions:
 
 1. Download Anaconda 64 bit Python 3.9 - **wxpython currently does not work on anything above 3.10**:
 
@@ -33,14 +33,14 @@ To build you own probe station, view instructions [here](https://github.com/SiEP
 	
 	Download from: https://www.keysight.com/ca/en/lib/software-detail/driver/816x-vxi-plugplay-driver-112417.html
         
-## Instructions for running the GUI software:
+## Instructions for Running the GUI Software:
 
 **Option 1**: To run from within Spyder, add the pyOptomip folder to the PYTHONPATH. Then, run the pyOptomip.pyw script.
 
 **Option 2**: To run as a standalone application, set the file association so that pyOptomip.pyw opens with pythonw.exe (found in C:\Anaconda). This
 is the preferred way of running the program.
 
-**Option 3**: Create a batch file with the following contents:
+**Option 3**: Another way to run as a standalone application is to create a batch file with the following contents:
 	
 	
 	@echo off
@@ -56,7 +56,7 @@ is the preferred way of running the program.
 
 ---
 
-### Known issues:
+### Known Issues:
 
 When using hp816x_N77Det, if there are any detectors plugged into the 8163 or 8164 mainframe, the detectors listed on the Instrument Control 
 window will not correspond to the labels on the detectors. This can cause unexpected sweep measurement results. The workaround is to unplug 
