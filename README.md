@@ -42,10 +42,10 @@ is the preferred way of running the program.
 
 **Option 3**: Create a batch file with the following contents:
 	
-	```
+	
 	@echo off
 	"path to python executable""path to pyOptomip.pyw"
-	```
+	
 ---
 	
 [PyOptomip User's Guide](https://github.com/SiEPIC/pyOptomip/blob/d737b29963befef6f050b565618b35107469369b/Documentation/PyOptomip%20User's%20Guide.pdf)
