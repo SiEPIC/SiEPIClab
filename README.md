@@ -40,6 +40,11 @@ To build you own probe station, view instructions [here](https://github.com/SiEP
 **Option 2**: To run as a standalone application, set the file association so that pyOptomip.pyw opens with pythonw.exe (found in C:\Anaconda). This
 is the preferred way of running the program.
 
+**Option 3**: Create a batch file with the following contents:
+	```
+	@echo off
+	"path to python executable""path to pyOptomip.pyw"
+	```
 ---
 	
 [PyOptomip User's Guide](https://github.com/SiEPIC/pyOptomip/blob/d737b29963befef6f050b565618b35107469369b/Documentation/PyOptomip%20User's%20Guide.pdf)
@@ -58,21 +63,3 @@ all detectors from the mainframe when using the N77xx detectors.
 
 When not using the N77xx detector, if there is a detector plugged into the mainframe which stores less than 20001 datapoints (e.g. 81634A),
 then stitching will not work.
-
-## Update Steps:
-
-Open D:\Anaconda3\Library\site-packages\comptypes\_init_.py
-	edit lines 375 and 394 to read: 
-		except COMError as err:
-	edit line 577 to read: 
-		except KeyError as err:	
-	change all instances of unicode to str
-		
-Open D:\Anaconda3\Library\site-packages\comptypes\GUID.py
-	change all instances of unicode to str
-
-Open D:\Anaconda3\Library\site-packages\comptypes\automation.py
-	remove trailing L from line 542
-	change line 776 to read:
-		except COMError as err:
-
