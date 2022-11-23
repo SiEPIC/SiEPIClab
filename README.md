@@ -29,7 +29,7 @@ To build you own probe station, view instructions [here](https://github.com/SiEP
 	
 	Download from: https://www.ni.com/en-ca/support/downloads/drivers/download.system-configuration.html#371210
 	
-4. Install keysight 816x Instrument driver version 4.6.3 (has support for 64-bit):
+4. Install Keysight 816x Instrument driver version 4.6.3 (has support for 64-bit):
 	
 	Download from: https://www.keysight.com/ca/en/lib/software-detail/driver/816x-vxi-plugplay-driver-112417.html
         
@@ -39,12 +39,16 @@ To build you own probe station, view instructions [here](https://github.com/SiEP
 
 **Option 2**: To run as a standalone application, set the file association so that pyOptomip.pyw opens with pythonw.exe (found in C:\Anaconda). This
 is the preferred way of running the program.
+
+---
 	
 [PyOptomip User's Guide](https://github.com/SiEPIC/pyOptomip/blob/d737b29963befef6f050b565618b35107469369b/Documentation/PyOptomip%20User's%20Guide.pdf)
 
 [TroubleShooting Guide](https://github.com/SiEPIC/pyOptomip/blob/d737b29963befef6f050b565618b35107469369b/Documentation/Troubleshooting%20Guide.pdf)
 
 [Instrument Information and Manuals](https://github.com/SiEPIC/pyOptomip/blob/d737b29963befef6f050b565618b35107469369b/Documentation/Instruments.pdf)
+
+---
 
 ### Known issues:
 
