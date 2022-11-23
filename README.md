@@ -7,19 +7,19 @@ Python code for <a href="https://siepic.ubc.ca/silicon-photonics-design-book/aut
   
 ## Installation instructions:
 
-1. Download Anaconda 64 bit (Python 3.9) *wxpython currently does not work on anything above 3.10*:
+1. Download Anaconda 64 bit Python 3.9 - *wxpython currently does not work on anything above 3.10*:
 
     Download from: http://continuum.io/downloads
 	
 2. In a command prompt, run 
-	'python -m pip install -U wxPython'
-	'pip install pyvisa=="1.11.3"'
-	'pip install comtypes=="1.1.11"'
-	'pip install thorlabs_apt_device'
-	'pip install matplotlib=="3.4.3"'
-	'pip install numpy=="1.20.3"'
-	'pip install keithley2600'
-	'pip install scipy=="1.9.0"'
+	`python -m pip install -U wxPython`
+	`pip install pyvisa=="1.11.3"`
+	`pip install comtypes=="1.1.11"`
+	`pip install thorlabs_apt_device`
+	`pip install matplotlib=="3.4.3"`
+	`pip install numpy=="1.20.3"`
+	`pip install keithley2600`
+	`pip install scipy=="1.9.0"`
 	
 	**Make sure the correct versions are downloaded and the previous versions have been uninstalled**
         
