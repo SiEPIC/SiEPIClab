@@ -41,6 +41,7 @@ To build you own probe station, view instructions [here](https://github.com/SiEP
 is the preferred way of running the program.
 
 **Option 3**: Create a batch file with the following contents:
+	
 	```
 	@echo off
 	"path to python executable""path to pyOptomip.pyw"
