@@ -44,7 +44,7 @@ is the preferred way of running the program.
 	
 	
 	@echo off
-	"path to python executable""path to pyOptomip.pyw"
+	"path to python.exe""path to pyOptomip.pyw"
 	
 ---
 	
