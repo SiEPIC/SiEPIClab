@@ -35,13 +35,15 @@ To build you own probe station, view instructions [here](https://github.com/SiEP
         
 ### Instructions for running the GUI software:
 
-*Option 1*: To run from within Spyder, add the pyOptomip folder to the PYTHONPATH. Then, run the pyOptomip.pyw script.
+**Option 1**: To run from within Spyder, add the pyOptomip folder to the PYTHONPATH. Then, run the pyOptomip.pyw script.
 
-*Option 2*: To run as a standalone application, set the file association so that pyOptomip.pyw opens with pythonw.exe (found in C:\Anaconda). This
+**Option 2**: To run as a standalone application, set the file association so that pyOptomip.pyw opens with pythonw.exe (found in C:\Anaconda). This
 is the preferred way of running the program.
 	
 [PyOptomip User's Guide](https://github.com/SiEPIC/pyOptomip/blob/d737b29963befef6f050b565618b35107469369b/Documentation/PyOptomip%20User's%20Guide.pdf)
+
 [TroubleShooting Guide](https://github.com/SiEPIC/pyOptomip/blob/d737b29963befef6f050b565618b35107469369b/Documentation/Troubleshooting%20Guide.pdf)
+
 [Instrument Information and Manuals](https://github.com/SiEPIC/pyOptomip/blob/d737b29963befef6f050b565618b35107469369b/Documentation/Instruments.pdf)
 
 ### Known issues:
