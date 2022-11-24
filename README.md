@@ -16,11 +16,11 @@ To build you own probe station, view instructions [here](https://github.com/SiEP
 	python -m pip install -U wxPython
 	pip install pyvisa=="1.11.3"
 	pip install comtypes=="1.1.11"
-	pip install thorlabs_apt_device
+	pip install scipy=="1.9.0"
 	pip install matplotlib=="3.4.3"
 	pip install numpy=="1.20.3"
 	pip install keithley2600
-	pip install scipy=="1.9.0"
+	pip install thorlabs_apt_device
 	```
 	
 	**Make sure the correct versions are downloaded and the previous versions have been uninstalled**
@@ -32,6 +32,10 @@ To build you own probe station, view instructions [here](https://github.com/SiEP
 4. Install Keysight 816x Instrument driver version 4.6.3 (has support for 64-bit):
 	
 	Download from: https://www.keysight.com/ca/en/lib/software-detail/driver/816x-vxi-plugplay-driver-112417.html
+
+5. Install APT 64-bit software:
+
+	Download from: https://www.thorlabs.com/software_pages/viewsoftwarepage.cfm?code=Motion_Control
         
 ## Instructions for Running the GUI Software:
 
