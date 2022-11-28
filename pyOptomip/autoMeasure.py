@@ -57,6 +57,7 @@ class autoMeasure(object):
         self.saveFolder = os.getcwd()
         self.graphPanel = graph
         self.devices = []
+        self.devnamecheck = []
 
     def readCoordFile(self, fileName):
         """
@@ -65,6 +66,7 @@ class autoMeasure(object):
         Args:
             fileName: Path to desired text file, a string
         """
+        self.devices = []
         with open(fileName, 'r') as f:
             data = f.readlines()
 
@@ -79,13 +81,13 @@ class autoMeasure(object):
         # x, y, deviceid, padname, params
         regElec = re.compile(r'(.-?[0-9]*),(.-?[0-9]*),(.+),(.+),(.*)')
 
-        self.devSet = set()
+        self.devSet = []
 
         for ii, line in enumerate(dataStrip2):
             if reg.match(line):
                 matchRes = reg.findall(line)[0]
                 devName = matchRes[6]
-                self.devSet.add(devName)
+                self.devSet.append(devName)
 
         # Parse the data in each line and put it into a list of devices
         for ii, line in enumerate(dataStrip2):
@@ -95,9 +97,9 @@ class autoMeasure(object):
                 if reg.match(line):
                     matchRes = reg.findall(line)[0]
                     devName = matchRes[6]
-                    self.devSet.add(devName)
-                    device = ElectroOpticDevice(devName, matchRes[4], matchRes[2], float(matchRes[0]),
-                                                float(matchRes[1]),
+                    self.devSet.append(devName)
+                    opticalcoords = [float(matchRes[0]), float(matchRes[1])]
+                    device = ElectroOpticDevice(devName, matchRes[4], matchRes[2], opticalcoords,
                                                 matchRes[5])
                     self.devices.append(device)
                 else:

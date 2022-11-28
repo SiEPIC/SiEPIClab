@@ -208,6 +208,7 @@ class TopPanel(wx.Panel):
                                 "Text Files (*.txt)|*.txt",
                                 wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
         fileDlg.ShowModal()
+        self.filter = []
         self.coordFileTb.SetValue(fileDlg.GetFilenames()[0])
         # fileDlg.Destroy()
         self.autoMeasure.readCoordFile(fileDlg.GetPath())
@@ -298,6 +299,7 @@ class TopPanel(wx.Panel):
             self.devicedict[dev]['Elec y'] = []
 
         for dev in self.device_list:
+            self.filter.append(self.devicedict[dev.getDeviceID()]['DeviceID'])
             self.devicedict[dev.getDeviceID()]['Wavelength'].append(dev.getDeviceWavelength())
             self.devicedict[dev.getDeviceID()]['Polarization'].append(dev.getDevicePolarization())
             self.devicedict[dev.getDeviceID()]['Opt x'].append(dev.getOpticalCoordinates()[0])
@@ -310,72 +312,6 @@ class TopPanel(wx.Panel):
                 self.devicedict[dev.getDeviceID()]['Elec x'].append(0)
                 self.devicedict[dev.getDeviceID()]['Elec y'].append(0)
 
-            #electrical parameters of data
-        self.data['index'] = []
-        self.data['device'] = [] #* self.checkList.GetItemCount()
-        self.data['Voltsel'] = [] #* self.checkList.GetItemCount()
-        self.data['Currentsel'] = []# * self.checkList.GetItemCount()
-        self.data['VoltMin'] = [] #* self.checkList.GetItemCount()
-        self.data['VoltMax'] = [] #* self.checkList.GetItemCount()
-        self.data['CurrentMin'] = []# * self.checkList.GetItemCount()
-        self.data['CurrentMax'] = [] #* self.checkList.GetItemCount()
-        self.data['VoltRes'] = [] #* self.checkList.GetItemCount()
-        self.data['CurrentRes'] = [] #* self.checkList.GetItemCount()
-        self.data['IV'] = [] #* self.checkList.GetItemCount()
-        self.data['RV'] = [] #* self.checkList.GetItemCount()
-        self.data['PV'] = [] #* self.checkList.GetItemCount()
-        self.data['ChannelA'] = [] #* self.checkList.GetItemCount()
-        self.data['ChannelB'] = [] #* self.checkList.GetItemCount()
-
-            #optical parameters of data
-        self.data['Start'] = [] #* self.checkList.GetItemCount()
-        self.data['Stop'] = [] #* self.checkList.GetItemCount()
-        self.data['Stepsize'] = [] #* self.checkList.GetItemCount()
-        self.data['Sweeppower'] = [] #* self.checkList.GetItemCount()
-        self.data['Sweepspeed'] = [] #* self.checkList.GetItemCount()
-        self.data['Laseroutput'] = [] #* self.checkList.GetItemCount()
-        self.data['Numscans'] = [] #* self.checkList.GetItemCount()
-        self.data['InitialRange'] = [] #* self.checkList.GetItemCount()
-        self.data['RangeDec'] = [] #* self.checkList.GetItemCount()
-
-            #set wavelength parameters of data
-        self.data['setwVoltsel'] = [] #* self.checkList.GetItemCount()
-        self.data['setwCurrentsel'] = [] #* self.checkList.GetItemCount()
-        self.data['setwVoltMin'] = [] #* self.checkList.GetItemCount()
-        self.data['setwVoltMax'] = [] #* self.checkList.GetItemCount()
-        self.data['setwCurrentMin'] = [] #* self.checkList.GetItemCount()
-        self.data['setwCurrentMax'] = [] #* self.checkList.GetItemCount()
-        self.data['setwVoltRes'] = [] #* self.checkList.GetItemCount()
-        self.data['setwCurrentRes'] = [] #* self.checkList.GetItemCount()
-        self.data['setwIV'] = [] #* self.checkList.GetItemCount()
-        self.data['setwRV'] = [] #* self.checkList.GetItemCount()
-        self.data['setwPV'] = [] #* self.checkList.GetItemCount()
-        self.data['setwChannelA'] = [] #* self.checkList.GetItemCount()
-        self.data['setwChannelB'] = [] #* self.checkList.GetItemCount()
-        self.data['Wavelengths'] = [] #* self.checkList.GetItemCount()
-
-            #set voltage parameters of data
-        self.data['setvStart'] = [] #* self.checkList.GetItemCount()
-        self.data['setvStop'] = [] #* self.checkList.GetItemCount()
-        self.data['setvStepsize'] = [] #* self.checkList.GetItemCount()
-        self.data['setvSweeppower'] = [] #* self.checkList.GetItemCount()
-        self.data['setvSweepspeed'] = [] #* self.checkList.GetItemCount()
-        self.data['setvLaseroutput'] = [] #* self.checkList.GetItemCount()
-        self.data['setvNumscans'] = [] #* self.checkList.GetItemCount()
-        self.data['setvInitialRange'] = [] #* self.checkList.GetItemCount()
-        self.data['setvRangeDec'] = [] #* self.checkList.GetItemCount()
-        self.data['setvChannelA'] = [] #* self.checkList.GetItemCount()
-        self.data['setvChannelB'] = []# * self.checkList.GetItemCount()
-        self.data['Voltages'] = []# * self.checkList.GetItemCount()
-
-            #set device properties
-        self.data['Wavelength'] = []
-        self.data['Polarization'] = []
-        self.data['Opt x'] = []
-        self.data['Opt y'] = []
-        self.data['type'] = []
-        self.data['Elec x'] = []
-        self.data['Elec y'] = []
 
         global fileLoaded
         fileLoaded = True

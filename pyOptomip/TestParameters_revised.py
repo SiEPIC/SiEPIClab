@@ -194,16 +194,27 @@ class TopPanel(wx.Panel):
         self.groupcheckList.Bind(wx.EVT_LIST_ITEM_CHECKED, self.groupchecklistcheckuncheck)
         self.groupcheckList.Bind(wx.EVT_LIST_ITEM_UNCHECKED, self.groupchecklistcheckuncheck)
         self.devicecheckList = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
-        self.devicecheckList.InsertColumn(0, 'Devices', width=400)
+        self.devicecheckList.InsertColumn(0, 'Devices', width=175)
         self.devicecheckList.Bind(wx.EVT_LIST_ITEM_CHECKED, self.checkListchecked)
         self.devicecheckList.Bind(wx.EVT_LIST_ITEM_UNCHECKED, self.checkListunchecked)
+        self.devicedatacheckList = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
+        self.devicedatacheckList.InsertColumn(0, 'Device Data', width=225)
+
+        self.deviceroutinecheckList = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
+        self.deviceroutinecheckList.InsertColumn(0, 'Associated Routines', width=225)
+
+        self.removeroutineBtn = wx.Button(self, label='Remove Routine', size=(50, 20))
+        self.removeroutineBtn.Bind(wx.EVT_BUTTON, self.removeRoutine)
+
+        vboxchecklist = wx.BoxSizer(wx.VERTICAL)
+        vboxchecklist.AddMany([(self.devicedatacheckList, 1, wx.EXPAND), (self.deviceroutinecheckList, 1, wx.EXPAND), (self.removeroutineBtn, 0, wx.EXPAND)])
 
         hboxset = wx.BoxSizer(wx.HORIZONTAL)
         self.setdeviceBtn = wx.Button(self, label='Set', size=(50, 20))
         self.setdeviceBtn.Bind(wx.EVT_BUTTON, self.deviceset)
         hboxset.Add(self.setdeviceBtn, 1, wx.EXPAND)
 
-        hboxdevices.AddMany([(self.groupcheckList, 1, wx.EXPAND), (self.devicecheckList, 1, wx.EXPAND)])
+        hboxdevices.AddMany([(self.groupcheckList, 1, wx.EXPAND), (self.devicecheckList, 1, wx.EXPAND), (vboxchecklist, 1, wx.EXPAND)])
         vboxdevices.AddMany([(hboxfilter, 0, wx.EXPAND), (hboxfilter2, 0, wx.EXPAND), (hboxdevices, 1, wx.EXPAND), (hboxset, 0, wx.EXPAND)])
 
         hboxmain.AddMany([(vboxroutine, 0, wx.EXPAND), (vboxdevices, 1, wx.EXPAND)])
@@ -225,15 +236,15 @@ class TopPanel(wx.Panel):
         vboxOuter.Add(hboxsave2, 0, wx.EXPAND)
 
         hboxexport = wx.BoxSizer(wx.HORIZONTAL)
-        self.setBtn = wx.Button(self, label='Set', size=(50, 20))
+        self.setBtn = wx.Button(self, label='Send to Automeasure', size=(150, 20))
         self.setBtn.Bind(wx.EVT_BUTTON, self.SetButton)
         self.importBtn = wx.Button(self, label='Import', size=(50, 20))
         self.importBtn.Bind(wx.EVT_BUTTON, self.ImportButton)
         self.exportBtn = wx.Button(self, label='Export', size=(50, 20))
         self.exportBtn.Bind(wx.EVT_BUTTON, self.ExportButton)
-        hboxexport.AddMany([(self.setBtn, 0, wx.EXPAND), (self.importBtn, 0, wx.EXPAND), (self.exportBtn, 0, wx.EXPAND)])
+        hboxexport.AddMany([((1,1),1), (self.setBtn, 0, wx.EXPAND), (self.importBtn, 0, wx.EXPAND), (self.exportBtn, 0, wx.EXPAND)])
 
-        vboxOuter.Add(hboxexport, 0, wx.EXPAND)
+        vboxOuter.AddMany([(hboxexport, 0, wx.EXPAND)])
 
         self.SetSizer(vboxOuter)
 
@@ -255,14 +266,29 @@ class TopPanel(wx.Panel):
                                 "Text Files (*.txt)|*.txt",
                                 wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
         fileDlg.ShowModal()
+        self.filter = []
         self.coordFileTb.SetValue(fileDlg.GetFilenames()[0])
         # fileDlg.Destroy()
         self.autoMeasure.readCoordFile(fileDlg.GetPath())
         global deviceListAsObjects
         deviceListAsObjects = self.autoMeasure.devices
         self.device_list = deviceListAsObjects
+        self.devicesselected = []
 
         self.devicedict = {}
+        self.devnames = []
+
+        for dev in deviceListAsObjects:
+            self.devnames.append(dev.device_id)
+
+        a = 1
+
+        for index, dev in enumerate(deviceListAsObjects):
+            for num in range(index):
+                if dev.device_id == deviceListAsObjects[num].device_id:
+                    dev.device_id = dev.device_id + str(a)
+                    a = a + 1
+
 
         for device in deviceListAsObjects:
             self.devicedict[device.device_id] = {}
@@ -294,6 +320,8 @@ class TopPanel(wx.Panel):
 
         for device in self.devicedict.keys():
             deviceList.append(self.devicedict[device]['DeviceID'])
+            self.filter.append(self.devicedict[device]['DeviceID'])
+
 
 
 
@@ -317,7 +345,7 @@ class TopPanel(wx.Panel):
             #self.groupcheckList.SetItemData(ii, index)
         self.groupcheckList.SortItems(self.checkListSort)  # Make sure items in list are sorted
         self.groupcheckList.EnableCheckBoxes()
-        self.set = [False] * self.groupcheckList.GetItemCount()
+        #self.set = [False] * self.groupcheckList.GetItemCount()
 
         for ii, device in enumerate(deviceList):
             self.devicecheckList.InsertItem(ii, device)
@@ -327,7 +355,7 @@ class TopPanel(wx.Panel):
             #self.devicecheckList.SetItemData(ii, index)
         self.devicecheckList.SortItems(self.checkListSort)  # Make sure items in list are sorted
         self.devicecheckList.EnableCheckBoxes()
-        #self.set = [False] * self.devicecheckList.GetItemCount()
+        self.set = [False] * self.devicecheckList.GetItemCount()
         
 
 
@@ -524,7 +552,7 @@ class TopPanel(wx.Panel):
             #self.routinecheckList.SetItemData(ii, index)
         self.routinecheckList.SortItems(self.checkListSort)  # Make sure items in list are sorted
         self.routinecheckList.EnableCheckBoxes()
-        self.set = [False] * self.routinecheckList.GetItemCount()
+        #self.set = [False] * self.routinecheckList.GetItemCount()
 
 
         global fileLoaded
@@ -606,6 +634,17 @@ class TopPanel(wx.Panel):
         self.subroutinecheckList.SortItems(self.checkListSort)  # Make sure items in list are sorted
         self.subroutinecheckList.EnableCheckBoxes()
         # self.set = [False] * self.devicecheckList.GetItemCount()
+
+
+    def removeRoutine(self, event):
+
+        for num in range(self.deviceroutinecheckList.GetItemCount()):
+            if self.deviceroutinecheckList.IsItemChecked(num):
+                self.devicedict[self.devicesselected[0]]['Routines'].remove(self.deviceroutinecheckList.GetItemText(num))
+                if len(self.devicedict[self.devicesselected[0]]['Routines']) == 0:
+                    self.devicedict[self.devicesselected[0]]['RoutineCheck'] = False
+
+        self.showdeviceinfo()
 
 
     def routinesavebutton(self, event):
@@ -1053,8 +1092,27 @@ class TopPanel(wx.Panel):
         c = event.GetIndex()
 
         self.devicesselected.append(self.devicecheckList.GetItemText(c))
+        self.deviceroutinecheckList.DeleteAllItems()
+        self.showdeviceinfo()
 
-        print(self.devicesselected)
+
+    def showdeviceinfo(self):
+
+        self.deviceroutinecheckList.DeleteAllItems()
+        self.devicedatacheckList.DeleteAllItems()
+
+        if len(self.devicesselected) == 1:
+            optcoordstring = '(' + str(self.devicedict[self.devicesselected[0]]['Optical Coordinates'][0]) + ',' + str(self.devicedict[self.devicesselected[0]]['Optical Coordinates'][1]) + ')'
+            self.devicedatacheckList.InsertItem(0, 'Optical Coordinates:' + ' ' + optcoordstring)
+            #self.deviceroutinecheckList.InsertItem(1, optcoordstring)
+            self.devicedatacheckList.InsertItem(1, 'Polarization:' + ' ' + self.devicedict[self.devicesselected[0]]['Polarization'])
+            self.devicedatacheckList.InsertItem(4, 'Wavelength:' + ' ' + self.devicedict[self.devicesselected[0]]['Wavelength'])
+            self.devicedatacheckList.InsertItem(6, 'Type:' + ' ' + self.devicedict[self.devicesselected[0]]['Type'])
+
+            for l in range(len(self.devicedict[self.devicesselected[0]]['Routines'])):
+                self.deviceroutinecheckList.InsertItem(l, self.devicedict[self.devicesselected[0]]['Routines'][l])
+
+            self.deviceroutinecheckList.EnableCheckBoxes(True)
 
 
     def deviceset(self, event):
@@ -1066,8 +1124,6 @@ class TopPanel(wx.Panel):
                     routinecode = self.routinetype + ':' + self.subroutinecheckList.GetItemText(routine)
                     self.devicedict[device]['Routines'].append(routinecode)
                     self.devicedict[device]['RoutineCheck'] = True
-
-        print(self.devicedict.items())
 
 
     def groupchecklistcheckuncheck(self, event):
@@ -1107,6 +1163,8 @@ class TopPanel(wx.Panel):
         self.devicecheckList.EnableCheckBoxes()
         self.set = [False] * self.devicecheckList.GetItemCount()
 
+        self.showdeviceinfo()
+
 
     def checkListunchecked(self, event):
         """
@@ -1123,6 +1181,8 @@ class TopPanel(wx.Panel):
         """
         x = event.GetIndex()
         self.devicesselected.remove(self.devicecheckList.GetItemText(x))
+
+        self.showdeviceinfo()
 
 
     def OnButton_SelectOutputFolder(self, event):
@@ -1312,8 +1372,6 @@ class TopPanel(wx.Panel):
             global fileLoaded
             fileLoaded = True
             self.Refresh()
-
-
 
 
     def Merge(self, dict1, dict2):
