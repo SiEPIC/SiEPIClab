@@ -106,23 +106,23 @@ class CorvusPanel(wx.Panel):
 
         if self.axis == 1:
             self.motor.moveRelative(-1 * self.getMoveValue())
-            print("Axis 1 Moved")
+            print("Axis 1 Moved Negative")
 
         if self.axis == 2:
             self.motor.moveRelative(0, -1 * self.getMoveValue())
-            print("Axis 2 Moved")
+            print("Axis 2 Moved Negative")
         if self.axis == 3:
             self.motor.moveRelative(0, 0, -1 * self.getMoveValue())
-            print("Axis 3 Moved")
+            print("Axis 3 Moved Negative")
 
     def OnButton_PlusButtonHandler(self, event):
 
         if self.axis == 1:
             self.motor.moveRelative(self.getMoveValue())
-            print("Axis 1 Moved")
+            print("Axis 1 Moved Positive")
         if self.axis == 2:
             self.motor.moveRelative(0, self.getMoveValue())
-            print("Axis 2 Moved")
+            print("Axis 2 Moved Positive")
         if self.axis == 3:
             self.motor.moveRelative(0, 0, self.getMoveValue())
-            print("Axis 3 Moved")
+            print("Axis 3 Moved Positive")

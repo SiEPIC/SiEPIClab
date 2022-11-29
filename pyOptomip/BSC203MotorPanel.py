@@ -14,7 +14,7 @@ class topBSC203MotorPanel(wx.Panel):
         vbox = wx.StaticBoxSizer(sb, wx.VERTICAL)
 
         for axis in range(0, self.numAxes):
-            motorPanel = BSC203Panel(self, axis)
+            motorPanel = BSC203Panel(self, axis+1)
             motorPanel.motor = self.bsc
             vbox.Add(motorPanel, flag=wx.LEFT | wx.TOP | wx.ALIGN_LEFT, border=0, proportion=0)
             vbox.Add((-1, 2))
@@ -41,14 +41,14 @@ class BSC203Panel(wx.Panel):
         st1 = wx.StaticText(self, label='')
         hbox.Add(st1, flag=wx.EXPAND, border=8, proportion=1)
         if self.axis == 1:
-            btn1 = wx.Button(self, label='Down', size=(80, 20))
-            btn2 = wx.Button(self, label='Up', size=(80, 20))
+            btn1 = wx.Button(self, label='Left', size=(80, 20))
+            btn2 = wx.Button(self, label='Right', size=(80, 20))
         elif self.axis ==2:
-            btn1 = wx.Button(self, label='Right', size=(80, 20))
-            btn2 = wx.Button(self, label='Left', size=(80, 20))
+            btn1 = wx.Button(self, label='Back', size=(80, 20))
+            btn2 = wx.Button(self, label='Forwards', size=(80, 20))
         else:
-            btn1 = wx.Button(self, label='Forwards', size=(80, 20))
-            btn2 = wx.Button(self, label='Back', size=(80, 20))
+            btn1 = wx.Button(self, label='Up', size=(80, 20))
+            btn2 = wx.Button(self, label='Down', size=(80, 20))
 
         self.initialvalue = 0
         if self.axis == 1:
@@ -82,28 +82,32 @@ class BSC203Panel(wx.Panel):
 
     def OnButton_MinusButtonHandler(self, event):
 
-        if self.axis == 2:
-            self.parent.bsc.bsc.move_relative(distance=int((1000)*-1*self.getMoveValue()), channel=0)
-            print("Axis 1 Moved")
-
         if self.axis == 1:
-            self.parent.bsc.bsc.move_relative(distance=int((1000)*-1*self.getMoveValue()), bay=2, channel=0)
-            print("Axis 2 Moved")
+            #self.parent.bsc.bsc.move_relative(distance=int((1000)*self.getMoveValue()), channel=0)
+            self.parent.bsc.moveRelativeXYZ(int(self.getMoveValue()), 0, 0)
+            print("Axis 1 Moved Negative")
 
-        if self.axis == 0:
-            self.parent.bsc.bsc.move_relative(distance=int((1000)*-1*self.getMoveValue()), bay=1, channel=0)
-            print("Axis 3 Moved")
+        if self.axis == 2:
+            #self.parent.bsc.bsc.move_relative(distance=int((1000)*self.getMoveValue()), bay=1, channel=0)
+            self.parent.bsc.moveRelativeXYZ(0, int(self.getMoveValue()), 0)
+            print("Axis 2 Moved Negative")
+
+        if self.axis == 3:
+            #self.parent.bsc.bsc.move_relative(distance=int((1000)*self.getMoveValue()), bay=2, channel=0)
+            self.parent.bsc.moveRelativeXYZ(0,0, int(self.getMoveValue()))
+            print("Axis 3 Moved Negative")
 
     def OnButton_PlusButtonHandler(self, event):
-        if self.axis == 2:
-            self.parent.bsc.bsc.move_relative(distance=int((1000)*self.getMoveValue()), bay=0, channel=0)
-            self.parent.bsc.bsc.identify()
-            print("Axis 1 Moved")
-
         if self.axis == 1:
-            self.parent.bsc.bsc.move_relative(distance=int((1000)*self.getMoveValue()), bay=2, channel=0)
-            print("Axis 2 Moved")
+            self.parent.bsc.moveRelativeXYZ(int((-1)*self.getMoveValue()), 0,0)
+            print("Axis 1 Moved Positive")
 
-        if self.axis == 0:
-            self.parent.bsc.bsc.move_relative(distance=int((1000)*self.getMoveValue()), bay=1, channel=0)
-            print("Axis 3 Moved")
+        if self.axis == 2:
+            #self.parent.bsc.bsc.move_relative(distance=int((1000)*(-1)*self.getMoveValue()), bay=1, channel=0)
+            self.parent.bsc.moveRelativeXYZ(0, int((-1) * self.getMoveValue()), 0)
+            print("Axis 2 Moved Positive")
+
+        if self.axis == 3:
+            #self.parent.bsc.bsc.move_relative(distance=int((1000)*(-1)*self.getMoveValue()), bay=2, channel=0)
+            self.parent.bsc.moveRelativeXYZ(0,0, int((-1) * self.getMoveValue()))
+            print("Axis 3 Moved Positive")

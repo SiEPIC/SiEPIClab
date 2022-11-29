@@ -15,6 +15,7 @@ class BSC203Motor:
     def __init__(self):
         self.bsc = None
         self.numAxes = 0
+        self.position = [0, 0, 0]
 
     def connect(self, SerialPortName, NumberOfAxis):
         numbers = re.findall('[0-9]+', SerialPortName)
@@ -36,20 +37,38 @@ class BSC203Motor:
     # Moves all the axis together
     # can be used regardless of how many axis are enabled
     def moveAbsoluteXYZ(self, x, y, z):
-        self.bsc.move_absolute(position= int(x), bay=1, channel=0)
-        self.bsc.move_absolute(position= int(y), bay=2, channel=0)
-        self.bsc.move_absolute(position= int(z), bay=0, channel=0)
+        self.bsc.move_absolute(position= int((-1000)*x), bay=0, channel=0)
+        self.bsc.move_absolute(position= int((-1000)*y), bay=1, channel=0)
+        self.bsc.move_absolute(position= int((-1000)*z), bay=2, channel=0)
 
     def moveRelativeXYZ(self, x, y, z):
-        self.bsc.move_relative(distance=int(1000 * x), bay = 1, channel=0)
-        self.bsc.move_relative(distance=int(1000 * y), bay = 2, channel=0)
-        self.bsc.move_relative(distance=int(1000 * z), bay=0, channel=0)
+        self.bsc.move_relative(distance=int(1000 * x), bay = 0, channel=0)
+        self.bsc.move_relative(distance=int(1000 * y), bay = 1, channel=0)
+        self.bsc.move_relative(distance=int(1000 * z), bay= 2, channel=0)
+        self.position[0] = self.position[0] - x
+        self.position[1] = self.position[1] - y
+        self.position[2] = self.position[2] - z
+
+    def moveRelativeX(self, x):
+        self.bsc.move_relative(distance=int(1000 * x), bay = 0, channel=0)
+        self.position[0] = self.position[0] - x
+        print(self.position)
+
+    def moveRelativeY(self, y):
+        self.bsc.move_relative(distance=int(1000 * y), bay=1, channel=0)
+        self.position[1] = self.position[1] - y
+        print(self.position)
+
+    def moveRelativeZ(self, z):
+        self.bsc.move_relative(distance=int(1000 * z), bay=2, channel=0)
+        self.position[2] = self.position[2] - z
+        print(self.position)
 
     def getPosition(self):
         try:
-            x = self.bsc.status_[0][0]["position"]
-            y = self.bsc.status_[1][0]["position"]
-            z = self.bsc.status_[2][0]["position"]
+            x = self.position[0]
+            y = self.position[1]
+            z = self.position[2]
             return [x,y,z]
         except Exception as e:
             print(e)

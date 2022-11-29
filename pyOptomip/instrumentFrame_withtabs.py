@@ -306,7 +306,7 @@ class instrumentFrame_withtabs(wx.Frame):
             wx.Panel.__init__(self, parent)
             vbox = wx.BoxSizer(wx.VERTICAL)
             hbox = wx.BoxSizer(wx.HORIZONTAL)
-            if laser and motorOpt:
+            if laser and motorOpt or SMU and motorElec:
                 self.fineAlign = fineAlign(laser, motorOpt)
                 try:
                     self.fineAlignPanel = fineAlignPanel(self, self.fineAlign)
