@@ -125,7 +125,7 @@ class TopPanel(wx.Panel):
         hboxroutine = wx.BoxSizer(wx.HORIZONTAL)
 
         self.routinecheckList = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
-        self.routinecheckList.InsertColumn(0, 'Routine', width=150)
+        self.routinecheckList.InsertColumn(0, 'Routine', width=200)
         self.routinecheckList.Bind(wx.EVT_LIST_ITEM_CHECKED, self.routinechecklistchecked)
         self.routinecheckList.Bind(wx.EVT_LIST_ITEM_UNCHECKED, self.routinechecklistunchecked)
         self.subroutinecheckList = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
@@ -157,6 +157,7 @@ class TopPanel(wx.Panel):
 
         hboxfilter = wx.BoxSizer(wx.HORIZONTAL)
         hboxfilter2 = wx.BoxSizer(wx.HORIZONTAL)
+        hboxfilter3 = wx.BoxSizer(wx.HORIZONTAL)
         self.checkAllBtn = wx.Button(self, label='Select All', size=(80, 20))
         self.checkAllBtn.Bind(wx.EVT_BUTTON, self.OnButton_CheckAll)
         self.uncheckAllBtn = wx.Button(self, label='Unselect All', size=(80, 20))
@@ -183,25 +184,46 @@ class TopPanel(wx.Panel):
         self.wav2.Bind(wx.EVT_CHECKBOX, self.wavelengthcheck)
 
 
-        hboxfilter2.AddMany([(setwaves, 0, wx.EXPAND), (self.wav1, 0, wx.EXPAND), (self.wav2, 0, wx.EXPAND)])
+        setalign = wx.StaticText(self, label='Select Polarization: ')
+        self.te = wx.CheckBox(self, label='TE', pos=(20, 20), size=(40, -1))
+        self.te.SetValue(True)
+        self.te.Bind(wx.EVT_CHECKBOX, self.wavelengthcheck)
 
+        self.tm = wx.CheckBox(self, label='TM', pos=(20, 20), size=(40, -1))
+        self.tm.SetValue(True)
+        self.tm.Bind(wx.EVT_CHECKBOX, self.wavelengthcheck)
+
+
+        hboxfilter2.AddMany([(setwaves, 0, wx.EXPAND), (self.wav1, 0, wx.EXPAND), (self.wav2, 0, wx.EXPAND)])
+        hboxfilter3.AddMany([(setalign, 0, wx.EXPAND), (self.te, 0, wx.EXPAND), (self.tm, 0, wx.EXPAND)])
 
         self.groupcheckList = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
         self.groupcheckList.InsertColumn(0, 'Group', width=100)
         self.groupcheckList.Bind(wx.EVT_LIST_ITEM_CHECKED, self.groupchecklistcheckuncheck)
         self.groupcheckList.Bind(wx.EVT_LIST_ITEM_UNCHECKED, self.groupchecklistcheckuncheck)
         self.devicecheckList = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
-        self.devicecheckList.InsertColumn(0, 'Devices', width=400)
+        self.devicecheckList.InsertColumn(0, 'Devices', width=175)
         self.devicecheckList.Bind(wx.EVT_LIST_ITEM_CHECKED, self.checkListchecked)
         self.devicecheckList.Bind(wx.EVT_LIST_ITEM_UNCHECKED, self.checkListunchecked)
+        self.devicedatacheckList = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
+        self.devicedatacheckList.InsertColumn(0, 'Device Data', width=200)
+
+        self.deviceroutinecheckList = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
+        self.deviceroutinecheckList.InsertColumn(0, 'Associated Routines', width=200)
+
+        self.removeroutineBtn = wx.Button(self, label='Remove Routine', size=(50, 20))
+        self.removeroutineBtn.Bind(wx.EVT_BUTTON, self.removeRoutine)
+
+        vboxchecklist = wx.BoxSizer(wx.VERTICAL)
+        vboxchecklist.AddMany([(self.devicedatacheckList, 1, wx.EXPAND), (self.deviceroutinecheckList, 1, wx.EXPAND), (self.removeroutineBtn, 0, wx.EXPAND)])
 
         hboxset = wx.BoxSizer(wx.HORIZONTAL)
         self.setdeviceBtn = wx.Button(self, label='Set', size=(50, 20))
         self.setdeviceBtn.Bind(wx.EVT_BUTTON, self.deviceset)
         hboxset.Add(self.setdeviceBtn, 1, wx.EXPAND)
 
-        hboxdevices.AddMany([(self.groupcheckList, 1, wx.EXPAND), (self.devicecheckList, 1, wx.EXPAND)])
-        vboxdevices.AddMany([(hboxfilter, 0, wx.EXPAND), (hboxfilter2, 0, wx.EXPAND), (hboxdevices, 1, wx.EXPAND), (hboxset, 0, wx.EXPAND)])
+        hboxdevices.AddMany([(self.groupcheckList, 1, wx.EXPAND), (self.devicecheckList, 1, wx.EXPAND), (vboxchecklist, 1, wx.EXPAND)])
+        vboxdevices.AddMany([(hboxfilter, 0, wx.EXPAND), (hboxfilter2, 0, wx.EXPAND), (hboxfilter3, 0, wx.EXPAND), (hboxdevices, 1, wx.EXPAND), (hboxset, 0, wx.EXPAND)])
 
         hboxmain.AddMany([(vboxroutine, 0, wx.EXPAND), (vboxdevices, 1, wx.EXPAND)])
         vboxOuter.Add(hboxmain, 1, wx.EXPAND)
@@ -222,15 +244,15 @@ class TopPanel(wx.Panel):
         vboxOuter.Add(hboxsave2, 0, wx.EXPAND)
 
         hboxexport = wx.BoxSizer(wx.HORIZONTAL)
-        self.setBtn = wx.Button(self, label='Set', size=(50, 20))
+        self.setBtn = wx.Button(self, label='Send to Automeasure', size=(150, 20))
         self.setBtn.Bind(wx.EVT_BUTTON, self.SetButton)
         self.importBtn = wx.Button(self, label='Import', size=(50, 20))
         self.importBtn.Bind(wx.EVT_BUTTON, self.ImportButton)
         self.exportBtn = wx.Button(self, label='Export', size=(50, 20))
         self.exportBtn.Bind(wx.EVT_BUTTON, self.ExportButton)
-        hboxexport.AddMany([(self.setBtn, 0, wx.EXPAND), (self.importBtn, 0, wx.EXPAND), (self.exportBtn, 0, wx.EXPAND)])
+        hboxexport.AddMany([((1,1),1), (self.setBtn, 0, wx.EXPAND), (self.importBtn, 0, wx.EXPAND), (self.exportBtn, 0, wx.EXPAND)])
 
-        vboxOuter.Add(hboxexport, 0, wx.EXPAND)
+        vboxOuter.AddMany([(hboxexport, 0, wx.EXPAND)])
 
         self.SetSizer(vboxOuter)
 
@@ -252,14 +274,29 @@ class TopPanel(wx.Panel):
                                 "Text Files (*.txt)|*.txt",
                                 wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
         fileDlg.ShowModal()
+        self.filter = []
         self.coordFileTb.SetValue(fileDlg.GetFilenames()[0])
         # fileDlg.Destroy()
         self.autoMeasure.readCoordFile(fileDlg.GetPath())
         global deviceListAsObjects
         deviceListAsObjects = self.autoMeasure.devices
         self.device_list = deviceListAsObjects
+        self.devicesselected = []
 
         self.devicedict = {}
+        self.devnames = []
+
+        for dev in deviceListAsObjects:
+            self.devnames.append(dev.device_id)
+
+        a = 1
+
+        for index, dev in enumerate(deviceListAsObjects):
+            for num in range(index):
+                if dev.device_id == deviceListAsObjects[num].device_id:
+                    dev.device_id = dev.device_id + str(a)
+                    a = a + 1
+
 
         for device in deviceListAsObjects:
             self.devicedict[device.device_id] = {}
@@ -289,6 +326,8 @@ class TopPanel(wx.Panel):
 
         for device in self.devicedict.keys():
             deviceList.append(self.devicedict[device]['DeviceID'])
+            self.filter.append(self.devicedict[device]['DeviceID'])
+
 
         #for group in deviceListAsObjects:
           #  for c in groupList:
@@ -310,7 +349,7 @@ class TopPanel(wx.Panel):
             #self.groupcheckList.SetItemData(ii, index)
         self.groupcheckList.SortItems(self.checkListSort)  # Make sure items in list are sorted
         self.groupcheckList.EnableCheckBoxes()
-        self.set = [False] * self.groupcheckList.GetItemCount()
+        #self.set = [False] * self.groupcheckList.GetItemCount()
 
         for ii, device in enumerate(deviceList):
             self.devicecheckList.InsertItem(ii, device)
@@ -320,7 +359,20 @@ class TopPanel(wx.Panel):
             #self.devicecheckList.SetItemData(ii, index)
         self.devicecheckList.SortItems(self.checkListSort)  # Make sure items in list are sorted
         self.devicecheckList.EnableCheckBoxes()
-        #self.set = [False] * self.devicecheckList.GetItemCount()
+
+        
+
+
+        
+        
+        
+        
+        
+        
+
+        #self.routineList = ['config', 'align', 'Wavelength Sweep', 'IV Sweep', 'Fixed Wavelength, IV Sweep', 'Fixed Voltage, Wavelength Sweep']
+
+        self.set = [False] * self.devicecheckList.GetItemCount()
 
         self.routineList = ['Wavelength Sweep', 'Voltage Sweep', 'Current Sweep', 'Set Wavelength Voltage Sweep',
                             'Set Wavelength Current Sweep', 'Set Voltage Wavelength Sweep']
@@ -328,7 +380,9 @@ class TopPanel(wx.Panel):
         self.subroutineList = {}
 
         for routine in self.routineList:
+
             self.subroutineList[routine] = ['Default']
+
 
         self.routinedict = {}
         for routine in self.routineList:
@@ -337,15 +391,15 @@ class TopPanel(wx.Panel):
             for x in sublist:
                 if routine == 'Wavelength Sweep':
                     self.routinedict[routine][x] = {}
-                    self.routinedict[routine][x]['ELECflag'] = 0
-                    self.routinedict[routine][x]['OPTICflag'] = 0
-                    self.routinedict[routine][x]['setwflag'] = 0
-                    self.routinedict[routine][x]['setvflag'] = 0
+                    self.routinedict[routine][x]['ELECflag'] = False
+                    self.routinedict[routine][x]['OPTICflag'] = False
+                    self.routinedict[routine][x]['setwflag'] = False
+                    self.routinedict[routine][x]['setvflag'] = False
                     self.routinedict[routine][x]['Voltsel'] = True
                     self.routinedict[routine][x]['Currentsel'] = False
                     self.routinedict[routine][x]['Min'] = '0'
-                    self.routinedict[routine][x]['Max'] = '1'
-                    self.routinedict[routine][x]['Res'] = '1'
+                    self.routinedict[routine][x]['Max'] = '5'
+                    self.routinedict[routine][x]['Res'] = '0.1'
                     self.routinedict[routine][x]['IV'] = True
                     self.routinedict[routine][x]['RV'] = True
                     self.routinedict[routine][x]['PV'] = True
@@ -365,15 +419,15 @@ class TopPanel(wx.Panel):
 
                 if routine == 'Voltage Sweep':
                     self.routinedict[routine][x] = {}
-                    self.routinedict[routine][x]['ELECflag'] = 0
-                    self.routinedict[routine][x]['OPTICflag'] = 0
-                    self.routinedict[routine][x]['setwflag'] = 0
-                    self.routinedict[routine][x]['setvflag'] = 0
-                    self.routinedict[routine][x]['Voltsel'] = True
+                    self.routinedict[routine][x]['ELECflag'] = False
+                    self.routinedict[routine][x]['OPTICflag'] = False
+                    self.routinedict[routine][x]['setwflag'] = False
+                    self.routinedict[routine][x]['setvflag'] = False
+                    self.routinedict[routine][x]['Voltsel'] = False
                     self.routinedict[routine][x]['Currentsel'] = False
-                    self.routinedict[routine][x]['Min'] = '0'
-                    self.routinedict[routine][x]['Max'] = '1'
-                    self.routinedict[routine][x]['Res'] = '1'
+                    self.routinedict[routine][x]['Min'] = ''
+                    self.routinedict[routine][x]['Max'] = ''
+                    self.routinedict[routine][x]['Res'] = ''
                     self.routinedict[routine][x]['IV'] = True
                     self.routinedict[routine][x]['RV'] = True
                     self.routinedict[routine][x]['PV'] = True
@@ -390,13 +444,14 @@ class TopPanel(wx.Panel):
                     self.routinedict[routine][x]['RangeDec'] = ''
                     self.routinedict[routine][x]['Wavelengths'] = ''
                     self.routinedict[routine][x]['Voltages'] = ''
+
 
                 if routine == 'Current Sweep':
                     self.routinedict[routine][x] = {}
-                    self.routinedict[routine][x]['ELECflag'] = 0
-                    self.routinedict[routine][x]['OPTICflag'] = 0
-                    self.routinedict[routine][x]['setwflag'] = 0
-                    self.routinedict[routine][x]['setvflag'] = 0
+                    self.routinedict[routine][x]['ELECflag'] = False
+                    self.routinedict[routine][x]['OPTICflag'] = True
+                    self.routinedict[routine][x]['setwflag'] = False
+                    self.routinedict[routine][x]['setvflag'] = False
                     self.routinedict[routine][x]['Voltsel'] = True
                     self.routinedict[routine][x]['Currentsel'] = False
                     self.routinedict[routine][x]['Min'] = '0'
@@ -419,12 +474,13 @@ class TopPanel(wx.Panel):
                     self.routinedict[routine][x]['Wavelengths'] = ''
                     self.routinedict[routine][x]['Voltages'] = ''
 
+
                 if routine == 'Set Wavelength Voltage Sweep':
                     self.routinedict[routine][x] = {}
-                    self.routinedict[routine][x]['ELECflag'] = 0
-                    self.routinedict[routine][x]['OPTICflag'] = 0
-                    self.routinedict[routine][x]['setwflag'] = 0
-                    self.routinedict[routine][x]['setvflag'] = 0
+                    self.routinedict[routine][x]['ELECflag'] = True
+                    self.routinedict[routine][x]['OPTICflag'] = False
+                    self.routinedict[routine][x]['setwflag'] = False
+                    self.routinedict[routine][x]['setvflag'] = False
                     self.routinedict[routine][x]['Voltsel'] = True
                     self.routinedict[routine][x]['Currentsel'] = False
                     self.routinedict[routine][x]['Min'] = '0'
@@ -449,15 +505,15 @@ class TopPanel(wx.Panel):
 
                 if routine == 'Set Wavelength Current Sweep':
                     self.routinedict[routine][x] = {}
-                    self.routinedict[routine][x]['ELECflag'] = 0
-                    self.routinedict[routine][x]['OPTICflag'] = 0
-                    self.routinedict[routine][x]['setwflag'] = 0
-                    self.routinedict[routine][x]['setvflag'] = 0
+                    self.routinedict[routine][x]['ELECflag'] = False
+                    self.routinedict[routine][x]['OPTICflag'] = False
+                    self.routinedict[routine][x]['setwflag'] = True
+                    self.routinedict[routine][x]['setvflag'] = False
                     self.routinedict[routine][x]['Voltsel'] = True
                     self.routinedict[routine][x]['Currentsel'] = False
                     self.routinedict[routine][x]['Min'] = '0'
-                    self.routinedict[routine][x]['Max'] = '1'
-                    self.routinedict[routine][x]['Res'] = '1'
+                    self.routinedict[routine][x]['Max'] = '5'
+                    self.routinedict[routine][x]['Res'] = '0.1'
                     self.routinedict[routine][x]['IV'] = True
                     self.routinedict[routine][x]['RV'] = True
                     self.routinedict[routine][x]['PV'] = True
@@ -470,9 +526,9 @@ class TopPanel(wx.Panel):
                     self.routinedict[routine][x]['Sweepspeed'] = 'auto'
                     self.routinedict[routine][x]['Laseroutput'] = 'High power'
                     self.routinedict[routine][x]['Numscans'] = '1'
-                    self.routinedict[routine][x]['Initialrange'] = ''
-                    self.routinedict[routine][x]['RangeDec'] = ''
-                    self.routinedict[routine][x]['Wavelengths'] = ''
+                    self.routinedict[routine][x]['Initialrange'] = '-20'
+                    self.routinedict[routine][x]['RangeDec'] = '-20'
+                    self.routinedict[routine][x]['Wavelengths'] = '1480, 1500, 1550'
                     self.routinedict[routine][x]['Voltages'] = ''
 
                 if routine == 'Set Voltage Wavelength Sweep':
@@ -483,25 +539,28 @@ class TopPanel(wx.Panel):
                     self.routinedict[routine][x]['setvflag'] = 0
                     self.routinedict[routine][x]['Voltsel'] = True
                     self.routinedict[routine][x]['Currentsel'] = False
-                    self.routinedict[routine][x]['Min'] = '0'
-                    self.routinedict[routine][x]['Max'] = '1'
-                    self.routinedict[routine][x]['Res'] = '1'
+                    self.routinedict[routine][x]['Min'] = ''
+                    self.routinedict[routine][x]['Max'] = ''
+                    self.routinedict[routine][x]['Res'] = ''
                     self.routinedict[routine][x]['IV'] = True
                     self.routinedict[routine][x]['RV'] = True
                     self.routinedict[routine][x]['PV'] = True
                     self.routinedict[routine][x]['Channel A'] = True
                     self.routinedict[routine][x]['Channel B'] = False
-                    self.routinedict[routine][x]['Start'] = ''
-                    self.routinedict[routine][x]['Stop'] = ''
-                    self.routinedict[routine][x]['Stepsize'] = ''
+                    self.routinedict[routine][x]['Start'] = '1480'
+                    self.routinedict[routine][x]['Stop'] = '1580'
+                    self.routinedict[routine][x]['Stepsize'] = '1'
                     self.routinedict[routine][x]['Sweeppower'] = ''
                     self.routinedict[routine][x]['Sweepspeed'] = 'auto'
                     self.routinedict[routine][x]['Laseroutput'] = 'High power'
                     self.routinedict[routine][x]['Numscans'] = '1'
-                    self.routinedict[routine][x]['Initialrange'] = ''
-                    self.routinedict[routine][x]['RangeDec'] = ''
+                    self.routinedict[routine][x]['Initialrange'] = '-20'
+                    self.routinedict[routine][x]['RangeDec'] = '-20'
                     self.routinedict[routine][x]['Wavelengths'] = ''
-                    self.routinedict[routine][x]['Voltages'] = ''
+                    self.routinedict[routine][x]['Voltages'] = '1, 2, 3'
+
+        self.routinecheckList.DeleteAllItems()
+        self.subroutinecheckList.DeleteAllItems()
 
         for ii, routine in enumerate(self.routineList):
             self.routinecheckList.InsertItem(ii, routine)
@@ -511,7 +570,7 @@ class TopPanel(wx.Panel):
             #self.routinecheckList.SetItemData(ii, index)
         self.routinecheckList.SortItems(self.checkListSort)  # Make sure items in list are sorted
         self.routinecheckList.EnableCheckBoxes()
-        self.set = [False] * self.routinecheckList.GetItemCount()
+        #self.set = [False] * self.routinecheckList.GetItemCount()
 
 
         global fileLoaded
@@ -522,18 +581,37 @@ class TopPanel(wx.Panel):
     def wavelengthcheck(self, event):
 
         self.filter = []
+        self.filterdevices = []
 
         if self.wav1.GetValue() == True:
 
             for device in self.devicedict.keys():
                 if self.devicedict[device]['Wavelength'] == '1310':
                     self.filter.append(self.devicedict[device]['DeviceID'])
+                    self.filterdevices.append(device)
 
         if self.wav2.GetValue() == True:
 
             for device in self.devicedict.keys():
                 if self.devicedict[device]['Wavelength'] == '1550':
                     self.filter.append(self.devicedict[device]['DeviceID'])
+                    self.filterdevices.append(device)
+
+
+        if self.te.GetValue() == False:
+
+                for device in self.filterdevices:
+                    if self.devicedict[device]['Polarization'] == 'TE':
+                        self.filter.remove(self.devicedict[device]['DeviceID'])
+                        #self.filterdevices.remove(device)
+
+        if self.tm.GetValue() == False:
+
+            for device in self.filterdevices:
+                if self.devicedict[device]['Polarization'] == 'TM':
+                    self.filter.remove(self.devicedict[device]['DeviceID'])
+                    # self.filterdevices.remove(device)
+
 
         self.groupchecklistcheckuncheck(wx.EVT_BUTTON)
 
@@ -593,6 +671,17 @@ class TopPanel(wx.Panel):
         self.subroutinecheckList.SortItems(self.checkListSort)  # Make sure items in list are sorted
         self.subroutinecheckList.EnableCheckBoxes()
         # self.set = [False] * self.devicecheckList.GetItemCount()
+
+
+    def removeRoutine(self, event):
+
+        for num in range(self.deviceroutinecheckList.GetItemCount()):
+            if self.deviceroutinecheckList.IsItemChecked(num):
+                self.devicedict[self.devicesselected[0]]['Routines'].remove(self.deviceroutinecheckList.GetItemText(num))
+                if len(self.devicedict[self.devicesselected[0]]['Routines']) == 0:
+                    self.devicedict[self.devicesselected[0]]['RoutineCheck'] = False
+
+        self.showdeviceinfo()
 
 
     def routinesavebutton(self, event):
@@ -698,6 +787,8 @@ class TopPanel(wx.Panel):
 
         self.subroutineselected = True
 
+        subroutinetype = 'default'
+
         for group in range(self.subroutinecheckList.GetItemCount()):
             if self.subroutinecheckList.IsItemChecked(group):
                 subroutinetype = self.subroutinecheckList.GetItemText(group)
@@ -730,6 +821,8 @@ class TopPanel(wx.Panel):
 
         c = event.GetIndex()
         self.newlyselectedroutine = c
+        self.subroutineselected = False
+
 
         if self.routineselected == True:
             self.routinecheckList.CheckItem(self.currentlycheckedroutine, False)
@@ -1040,8 +1133,27 @@ class TopPanel(wx.Panel):
         c = event.GetIndex()
 
         self.devicesselected.append(self.devicecheckList.GetItemText(c))
+        self.deviceroutinecheckList.DeleteAllItems()
+        self.showdeviceinfo()
 
-        print(self.devicesselected)
+
+    def showdeviceinfo(self):
+
+        self.deviceroutinecheckList.DeleteAllItems()
+        self.devicedatacheckList.DeleteAllItems()
+
+        if len(self.devicesselected) == 1:
+            optcoordstring = '(' + str(self.devicedict[self.devicesselected[0]]['Optical Coordinates'][0]) + ',' + str(self.devicedict[self.devicesselected[0]]['Optical Coordinates'][1]) + ')'
+            self.devicedatacheckList.InsertItem(0, 'Optical Coordinates:' + ' ' + optcoordstring)
+            #self.deviceroutinecheckList.InsertItem(1, optcoordstring)
+            self.devicedatacheckList.InsertItem(1, 'Polarization:' + ' ' + self.devicedict[self.devicesselected[0]]['Polarization'])
+            self.devicedatacheckList.InsertItem(4, 'Wavelength:' + ' ' + self.devicedict[self.devicesselected[0]]['Wavelength'])
+            self.devicedatacheckList.InsertItem(6, 'Type:' + ' ' + self.devicedict[self.devicesselected[0]]['Type'])
+
+            for l in range(len(self.devicedict[self.devicesselected[0]]['Routines'])):
+                self.deviceroutinecheckList.InsertItem(l, self.devicedict[self.devicesselected[0]]['Routines'][l])
+
+            self.deviceroutinecheckList.EnableCheckBoxes(True)
 
 
     def deviceset(self, event):
@@ -1053,8 +1165,7 @@ class TopPanel(wx.Panel):
                     routinecode = self.routinetype + ':' + self.subroutinecheckList.GetItemText(routine)
                     self.devicedict[device]['Routines'].append(routinecode)
                     self.devicedict[device]['RoutineCheck'] = True
-
-        print(self.devicedict.items())
+                    print("Set routine: " + routinecode + " for " + self.devicedict[device]['DeviceID'])
 
 
     def groupchecklistcheckuncheck(self, event):
@@ -1094,6 +1205,8 @@ class TopPanel(wx.Panel):
         self.devicecheckList.EnableCheckBoxes()
         self.set = [False] * self.devicecheckList.GetItemCount()
 
+        self.showdeviceinfo()
+
 
     def checkListunchecked(self, event):
         """
@@ -1110,6 +1223,8 @@ class TopPanel(wx.Panel):
         """
         x = event.GetIndex()
         self.devicesselected.remove(self.devicecheckList.GetItemText(x))
+
+        self.showdeviceinfo()
 
 
     def OnButton_SelectOutputFolder(self, event):
@@ -1206,7 +1321,7 @@ class TopPanel(wx.Panel):
         with open(primarysavefileyml, 'w') as f:
             documents = yaml.dump(outputyaml, f)
 
-        print('Exported YAML file to ' + primarysavefileyml)
+        print('Exported YAML file as ' + primarysavefileyml)
 
 
     def ImportButton(self, event):
@@ -1299,8 +1414,6 @@ class TopPanel(wx.Panel):
             global fileLoaded
             fileLoaded = True
             self.Refresh()
-
-
 
 
     def Merge(self, dict1, dict2):

@@ -57,6 +57,7 @@ class autoMeasure(object):
         self.saveFolder = os.getcwd()
         self.graphPanel = graph
         self.devices = []
+
         self.wavelengthSweeps = {'RoutineName': [], 'Start': [], 'Stop': [], 'Stepsize': [], 'Sweeppower': [], 'Sweepspeed': [],
                                  'Laseroutput': [], 'Numscans': [], 'InitialRange': [], 'RangeDec': []}
         self.voltageSweeps = {'RoutineName': [], 'VoltMin': [], 'VoltMax': [], 'VoltRes': [], 'IV': [], 'RV': [], 'PV': [],
@@ -73,6 +74,7 @@ class autoMeasure(object):
                                            'InitialRange': [], 'RangeDec': [], 'ChannelA': [], 'ChannelB': [],
                                            'Voltage': []}
 
+
     def readCoordFile(self, fileName):
         """
         Reads a coordinate file generated using the automated coordinate extraction in k-layout.
@@ -80,6 +82,7 @@ class autoMeasure(object):
         Args:
             fileName: Path to desired text file, a string
         """
+        self.devices = []
         with open(fileName, 'r') as f:
             data = f.readlines()
 
@@ -94,13 +97,14 @@ class autoMeasure(object):
         # x, y, deviceid, padname, params
         regElec = re.compile(r'(.-?[0-9]*),(.-?[0-9]*),(.+),(.+),(.*)')
 
-        self.devSet = set()
+        self.devSet = []
 
         for ii, line in enumerate(dataStrip2):
             if reg.match(line):
                 matchRes = reg.findall(line)[0]
-                devName = matchRes[5]
-                self.devSet.add(devName)
+
+                devName = matchRes[6]
+                self.devSet.append(devName)
 
         # Parse the data in each line and put it into a list of devices
         for ii, line in enumerate(dataStrip2):
@@ -110,6 +114,7 @@ class autoMeasure(object):
                 if reg.match(line):
                     matchRes = reg.findall(line)[0]
                     devName = matchRes[6]
+
                     self.devSet.add(devName)
                     device = ElectroOpticDevice(devName, matchRes[4], matchRes[2], [float(matchRes[0]),
                                                 float(matchRes[1])], matchRes[5])

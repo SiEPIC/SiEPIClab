@@ -46,7 +46,15 @@ class CorvusPanel(wx.Panel):
         hbox.Add(btn1, flag=wx.EXPAND | wx.RIGHT, proportion=0, border=8)
         btn1.Bind(wx.EVT_BUTTON, self.OnButton_MinusButtonHandler)
 
-        self.tc = wx.TextCtrl(self, value=str(self.axis))  # change str(self.axis) to '0'
+        self.initialvalue = 0
+        if self.axis == 1:
+            self.initialvalue = 100
+        elif self.axis == 2:
+            self.initialvalue = 100
+        elif self.axis == 3:
+            self.initialvalue = 0
+
+        self.tc = wx.TextCtrl(self, value=str(self.initialvalue))  # change str(self.axis) to '0'
         hbox.Add(self.tc, proportion=2, flag=wx.EXPAND)
 
         st1 = wx.StaticText(self, label='um')
