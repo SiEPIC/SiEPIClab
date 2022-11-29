@@ -20,12 +20,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-import keyboard
 import os
 import wx
 import re
 import yaml
-import ruamel_yaml
 from outputlogPanel import outputlogPanel
 from logWriter import logWriter, logWriterError
 import sys
@@ -270,7 +268,7 @@ class TopPanel(wx.Panel):
             self.devicedict[device.device_id]['Polarization'] = device.polarization
             self.devicedict[device.device_id]['Optical Coordinates'] = device.opticalCoordinates
             self.devicedict[device.device_id]['Type'] = device.type
-            self.devicedict[device.device_id]['RoutineCheck'] = device.hasRoutines
+            self.devicedict[device.device_id]['RoutineCheck'] = device.hasRoutines()
             self.devicedict[device.device_id]['Routines'] = device.routines
             self.devicedict[device.device_id]['Electrical Coordinates'] = device.electricalCoordinates
 

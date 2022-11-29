@@ -10,9 +10,9 @@ class ElectroOpticDevice:
         self.electricalCoordinates = []
         self.routines = []
 
-    def addElectricalCoordinates(self, padName, x, y):
+    def addElectricalCoordinates(self, elecCoords):
         """Associates a bondpad with the device"""
-        self.electricalCoordinates.append([padName, x, y])
+        self.electricalCoordinates.append(elecCoords)
 
     def getOpticalCoordinates(self):
         """Returns the coordinates of the optical input for the device as [x coordinate, y coordinate]"""
@@ -47,6 +47,7 @@ class ElectroOpticDevice:
             for bondPad in self.electricalCoordinates:
                 if bondPad[1] < reference[1]:
                     reference = bondPad
+            print(reference)
             return reference
 
     def hasRoutines(self):

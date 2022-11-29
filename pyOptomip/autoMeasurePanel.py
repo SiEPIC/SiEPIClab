@@ -222,9 +222,11 @@ class coordinateMapPanel(wx.Panel):
                 optPosition = self.autoMeasure.motorOpt.getPosition()
                 elecPosition = self.autoMeasure.motorElec.getPosition()
                 relativePosition = []
-                relativePosition.append(elecPosition[2] - optPosition[0])
-                relativePosition.append(elecPosition[0] - optPosition[1])
-                relativePosition.append(elecPosition[1] - optPosition[2])
+                relativePosition.append(elecPosition[0] - optPosition[0])
+                relativePosition.append(elecPosition[1] - optPosition[1])
+                print("Electrical Motor Position:")
+                print(elecPosition)
+                relativePosition.append(elecPosition[2])
                 xcoord.SetValue(str(relativePosition[0]))
                 ycoord.SetValue(str(relativePosition[1]))
                 zcoord.SetValue(str(relativePosition[2]))
@@ -254,10 +256,12 @@ class coordinateMapPanel(wx.Panel):
             if self.autoMeasure.motorOpt and self.autoMeasure.motorElec:
                 optPosition = self.autoMeasure.motorOpt.getPosition()
                 elecPosition = self.autoMeasure.motorElec.getPosition()
+                print("Electrical Motor Position:")
+                print(elecPosition)
                 relativePosition = []
-                relativePosition.append(elecPosition[2] - optPosition[0])
-                relativePosition.append(elecPosition[0] - optPosition[1])
-                relativePosition.append(elecPosition[1] - optPosition[2])
+                relativePosition.append(elecPosition[0] - optPosition[0])
+                relativePosition.append(elecPosition[1] - optPosition[1])
+                relativePosition.append(elecPosition[2])
                 xcoord.SetValue(str(relativePosition[0]))
                 ycoord.SetValue(str(relativePosition[1]))
                 zcoord.SetValue(str(relativePosition[2]))
@@ -287,10 +291,12 @@ class coordinateMapPanel(wx.Panel):
             if self.autoMeasure.motorOpt and self.autoMeasure.motorElec:
                 optPosition = self.autoMeasure.motorOpt.getPosition()
                 elecPosition = self.autoMeasure.motorElec.getPosition()
+                print("Electrical Motor Position:")
+                print(elecPosition)
                 relativePosition = []
-                relativePosition.append(elecPosition[2] - optPosition[0])
-                relativePosition.append(elecPosition[0] - optPosition[1])
-                relativePosition.append(elecPosition[1] - optPosition[2])
+                relativePosition.append(elecPosition[0] - optPosition[0])
+                relativePosition.append(elecPosition[1] - optPosition[1])
+                relativePosition.append(elecPosition[2])
                 xcoord.SetValue(str(relativePosition[0]))
                 ycoord.SetValue(str(relativePosition[1]))
                 zcoord.SetValue(str(relativePosition[2]))
@@ -680,13 +686,13 @@ class autoMeasurePanel(wx.Panel):
                                                          self.coordMapPanelElec.getGdsCoordsElec())
 
         # Make a folder with the current time
-        fileName = self.coordFileTb.GetValue()
+        fileName = self.outputFolderTb.GetValue()
         timeStr = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
         csvFileName = os.path.join(self.outputFolderTb.GetValue(), timeStr + '_{}.csv'.format(fileName))
 
         f = open(csvFileName, 'w', newline='')
         writer = csv.writer(f)
-        textFilePath = [self.coordFilePath]
+        textFilePath = [fileName]
         writer.writerow(textFilePath)
         optCoords = self.coordMapPanelOpt.getMotorCoords()
         Opt = ['Optical Alignment']
@@ -740,7 +746,7 @@ class autoMeasurePanel(wx.Panel):
         reader = csv.reader(f)
         textCoordPath = next(reader)
         self.coordFilePath = textCoordPath[0]
-        self.parseCoordFile(textCoordPath[0])
+        self.autoMeasure.parseCoordFile(textCoordPath[0])
         next(reader)
         next(reader)
         optDev1 = next(reader)
@@ -862,18 +868,30 @@ class autoMeasurePanel(wx.Panel):
                                                       device['Polarization'], device['Optical Coordinates'],
                                                       device['Type'])
                     deviceToTest.addRoutines(device['Routines'])
-                    deviceToTest.addRoutines(device['Routines'])
+                    if device['Electrical Coordinates']:
+                        for pad in device['Electrical Coordinates']:
+                            electricalCoords = []
+                            electricalCoords.extend(pad)
+                            deviceToTest.addElectricalCoordinates(electricalCoords)
                 else:
                     for deviceObj in deviceListAsObjects:
                         if deviceObj.getDeviceID() == device['DeviceID']:
                             deviceToTest = device
                             deviceToTest.addRoutines(device['Routines'])
+                            for pad in device['Electrical Coordinates']:
+                                electricalCoords = []
+                                electricalCoords.extend(pad)
+                                deviceToTest.addElectricalCoordinates(electricalCoords)
                             devExists = True
                     if not devExists:
                         deviceToTest = ElectroOpticDevice(device['DeviceID'], device['Wavelength'],
                                                           device['Polarization'], device['Optical Coordinates'],
                                                           device['Type'])
                         deviceToTest.addRoutines(device['Routines'])
+                        for pad in device['Electrical Coordinates']:
+                            electricalCoords = []
+                            electricalCoords.extend(pad)
+                            deviceToTest.addElectricalCoordinates(electricalCoords)
                 deviceListAsObjects.append(deviceToTest)
                 for type in loadedYAML['Routines']:
                     if type == 'Wavelength Sweep':
@@ -948,27 +966,36 @@ class autoMeasurePanel(wx.Panel):
 
     # TODO: Modify to move laser out of the way
     def OnButton_GotoDeviceElec(self, event):
-
-        """Move probe to selected device"""
+        """
+        Move probe to selected device
+        """
         self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
                                                      self.coordMapPanelElec.getGdsCoordsElec())
         selectedDevice = self.devSelectCb.GetString(self.devSelectCb.GetSelection())
         global deviceListAsObjects
         for device in deviceListAsObjects:
             if device.getDeviceID() == selectedDevice:
-                gdsCoord = (
-                float(device.getElectricalCoordinates()[0][1]), float(device.getElectricalCoordinates()[0][2]))
+                gdsCoord = (float(device.getElectricalCoordinates()[0][1]), float(device.getElectricalCoordinates()[0][2]))
                 motorCoord = self.autoMeasure.gdsToMotorCoordsElec(gdsCoord)
-                if self.autoMeasure.motorOpt and self.autoMeasure.motorElec:
+                self.autoMeasure.motorElec.moveRelativeZ(1000)
+
+                if [self.autoMeasure.motorOpt] and [self.autoMeasure.motorElec]:
+                    print("moving relative")
                     optPosition = self.autoMeasure.motorOpt.getPosition()
-                    absolutex = motorCoord[2] - optPosition[0]
-                    absolutey = motorCoord[0] - optPosition[1]
-                    absolutez = motorCoord[1] - optPosition[2]
-                    self.autoMeasure.motorElec.moveAbsoluteXYZ(absolutex[0], absolutey[0], absolutez[0])
-                    print("moved elec relative to opt")
+                    elecPosition = self.autoMeasure.motorElec.getPosition()
+                    absolutex = motorCoord[0] + optPosition[0]
+                    absolutey = motorCoord[1] + optPosition[1]
+                    absolutez = motorCoord[2]
+                    relativex = absolutex[0] - elecPosition[0]
+                    relativey = absolutey[0] - elecPosition[1]
+                    relativez = absolutez[0] - elecPosition[2]
+                    self.autoMeasure.motorElec.moveRelativeX(-relativex)
+                    time.sleep(2)
+                    self.autoMeasure.motorElec.moveRelativeY(-relativey)
+                    time.sleep(2)
+                    self.autoMeasure.motorElec.moveRelativeZ(-relativez)
                 else:
                     self.autoMeasure.motorElec.moveAbsoluteXYZ(motorCoord[0], motorCoord[1], motorCoord[2])
-                    print("moved elec")
 
     def OnButton_SelectOutputFolder(self, event):
         """ Opens a file dialog to select an output directory for automatic measurement results. """
