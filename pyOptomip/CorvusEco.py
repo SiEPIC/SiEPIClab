@@ -282,8 +282,8 @@ class CorvusEcoClass:
     def moveRelative(self, x, y=0, z=0):
         if self.NumberOfAxis == 1:
             try:
-                self.ser.write('%.6f r' % (x))
-                self.position[0] = self.position[0] + x
+                self.ser.write('%.6f r' % (0.95*x))
+                self.position[0] = x
                 print(self.position)
                 # print ('Move Complete')
             except:
@@ -292,9 +292,9 @@ class CorvusEcoClass:
 
         if self.NumberOfAxis == 2:
             try:
-                self.ser.write('%.6f %.6f r' % (x, y))
-                self.position[0] = self.position[0] + x
-                self.position[1] = self.position[1] + y
+                self.ser.write('%.6f %.6f r' % (0.95*x, 0.95*y))
+                self.position[0] = x
+                self.position[1] = y
                 print(self.position)
                 # print ('Move Complete')
             except:
@@ -303,10 +303,10 @@ class CorvusEcoClass:
 
         if self.NumberOfAxis == 3:
             try:
-                self.ser.write('%.6f %.6f %.6f r' % (x, y, z))
-                self.position[0] = self.position[0] + x
-                self.position[1] = self.position[1] + y
-                self.position[2] = self.position[2] + z
+                self.ser.write('%.6f %.6f %.6f r' % (0.95*x, 0.95*y, 0.95*z))
+                self.position[0] = x
+                self.position[1] = y
+                self.position[2] = z
                 print(self.position)
                 # print ('Move Complete')
             except:

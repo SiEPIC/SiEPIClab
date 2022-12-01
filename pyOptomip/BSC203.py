@@ -37,45 +37,26 @@ class BSC203Motor:
         self.bsc.close()
 
     def moveRelativeXYZ(self, x, y, z):
-        if self.minPositionSet is False:
-            if x is not 0:
-                print('Please Set Minimum Position in X Axis.')
-            else:
-                self.bsc.move_relative(distance=int(1000 * y), bay=1, channel=0)
-                self.bsc.move_relative(distance=int(1000 * z), bay=2, channel=0)
-                self.position[1] = self.position[1] - y
-                self.position[2] = self.position[2] - z
-        else:
-            if self.position[0] - x < self.minXPosition:
-                print("Cannot Move Past Minimum Position.")
-                x = self.position[0] - self.minXPosition
-                self.bsc.move_relative(distance=int(1000 * x), bay = 0, channel=0)
-                self.bsc.move_relative(distance=int(1000 * y), bay = 1, channel=0)
-                self.bsc.move_relative(distance=int(1000 * z), bay= 2, channel=0)
-                self.position[0] = self.position[0] - x
-                self.position[1] = self.position[1] - y
-                self.position[2] = self.position[2] - z
-            else:
-                self.bsc.move_relative(distance=int(1000 * x), bay = 0, channel=0)
-                self.bsc.move_relative(distance=int(1000 * y), bay = 1, channel=0)
-                self.bsc.move_relative(distance=int(1000 * z), bay= 2, channel=0)
-                self.position[0] = self.position[0] - x
-                self.position[1] = self.position[1] - y
-                self.position[2] = self.position[2] - z
+        self.bsc.move_relative(distance=int(1000 * x), bay = 0, channel=0)
+        self.bsc.move_relative(distance=int(1000 * y), bay = 1, channel=0)
+        self.bsc.move_relative(distance=int(1000 * z), bay= 2, channel=0)
+        self.position[0] = self.position[0] - x
+        self.position[1] = self.position[1] - y
+        self.position[2] = self.position[2] - z
 
     def moveRelativeX(self, x):
         if self.minPositionSet is False:
-            if x is not 0:
+            if x != 0:
                 print('Please Set Minimum Position in X Axis.')
             else:
                 pass
         else:
             if self.position[0] - x < self.minXPosition:
                 print("Cannot Move Past Minimum Position.")
-                x = self.position[0] - self.minXPosition
-            self.bsc.move_relative(distance=int(1000 * x), bay = 0, channel=0)
-            self.position[0] = self.position[0] - x
-            print(self.position)
+            else:
+                self.bsc.move_relative(distance=int(1000 * x), bay = 0, channel=0)
+                self.position[0] = self.position[0] - x
+                print(self.position)
 
     def moveRelativeY(self, y):
         self.bsc.move_relative(distance=int(1000 * y), bay=1, channel=0)
