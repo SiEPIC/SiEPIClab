@@ -347,7 +347,7 @@ class SMUClass:
         return r
 
 
-    def ivsweep(self, min:float, max:float, resolution:float, independantvar):
+    def ivsweep(self, minVar:float, maxVar:float, resolution:float, independantvar):
         """
         Performs a current sweep or a voltage sweep depending on inputs
         Parameters
@@ -376,10 +376,10 @@ class SMUClass:
 
         if independantvar == 'Voltage':
 
-            sweeplist = [min]
-            x = min
+            sweeplist = [minVar]
+            x = minVar
 
-            while x < max:
+            while x < maxVar:
                 sweeplist.append(x + resolution / 1000)
                 x = x + resolution / 1000
 
@@ -436,10 +436,10 @@ class SMUClass:
 
         if independantvar == 'Current':
 
-            sweeplist = [min / 1000]
-            x = min / 1000
+            sweeplist = [minVar / 1000]
+            x = minVar / 1000
 
-            while x < max / 1000:
+            while x < maxVar / 1000:
                 sweeplist.append(x + resolution / 1000)
                 x = x + resolution / 1000
 

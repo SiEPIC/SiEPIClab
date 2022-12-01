@@ -375,9 +375,26 @@ class instrumentFrame_withtabs(wx.Frame):
             while self.cap.isOpened():
                 if self.show:
                     ret, frame = self.cap.read()
+                    width = frame.shape[1]
+                    font = cv.FONT_HERSHEY_SIMPLEX
 
                     if self.camID == 1:
                         frame = cv2.flip(frame, 1)
+                        #Draw axes here:
+                        cv2.arrowedLine(frame, (width/6, width/6), ((2*width)/6, width/6), (0, 0, 255), 5)
+                        cv2.arrowedLine(frame, (width / 6, width / 6), (width / 6, 2*width / 6), (0, 0, 255), 5)
+                        cv2.putText(frame, 'X', ((2*width/6)+10, width/6), font, 2, (0, 0, 255), 2, cv2.LINE_AA)
+                        cv2.putText(frame, 'Y', ((width / 6) -10, (2*width / 6)+ 30), font, 2, (0, 0, 255), 2, cv2.LINE_AA)
+                        cv2.putText(frame, 'Z', ((width / 6) - 10, (width / 6) - 30), font, 2, (0, 0, 255), 2, cv2.LINE_AA)
+
+                    if self.camID == 0:
+                        #draw axes here
+                        cv2.arrowedLine(frame, (width / 6, width/6), ((2 * width) / 6, width/6), (0, 0, 255), 5)
+                        cv2.arrowedLine(frame, (width / 6, width / 6), (width / 6, 2*width / 6), (0, 0, 255), 5)
+                        cv2.circle(frame, (width/6,width/6), width/20, (0, 0, 255), -1)
+                        cv2.putText(frame, 'X', ((2*width/6)+10, width/6), font, 2, (0, 0, 255), 2, cv2.LINE_AA)
+                        cv2.putText(frame, 'Z', ((width / 6) -10, (2*width / 6)+ 30), font, 2, (0, 0, 255), 2, cv2.LINE_AA)
+                        cv2.putText(frame, 'Y', ((width / 6) - 20, (width / 6) - 20), font, 2, (0, 0, 255), 2, cv2.LINE_AA)
 
                     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
