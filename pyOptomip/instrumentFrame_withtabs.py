@@ -187,11 +187,14 @@ class instrumentFrame_withtabs(wx.Frame):
         Args:
             event:
         """
-        self.camera.cap.release()
-        cv2.destroyAllWindows()
-        for inst in self.instList:
-            inst.disconnect()
-        self.Destroy()
+        if self.camera.show is True:
+            print("Close Camera before Exiting.")
+        else:
+            self.camera.cap.release()
+            cv2.destroyAllWindows()
+            for inst in self.instList:
+                inst.disconnect()
+            self.Destroy()
 
     class HomeTab(wx.Panel):
         def __init__(self, parent, laserWithDetector, opticalStage, electricalStage, camera, instr):
@@ -272,7 +275,6 @@ class instrumentFrame_withtabs(wx.Frame):
             self.Layout()
             self.Show()
 
-
     class OpticalTab(wx.Panel):
         def __init__(self, parent, laserWithDetector):
             """
@@ -293,7 +295,6 @@ class instrumentFrame_withtabs(wx.Frame):
             self.SetSizer(vbox)
             self.Layout()
             self.Show()
-
 
     class AutoMeasureTab(wx.Panel):
         def __init__(self, parent, laser, motorOpt, motorElec, SMU, camera):
@@ -325,7 +326,6 @@ class instrumentFrame_withtabs(wx.Frame):
 
                 vbox.Add(hbox, 3, wx.EXPAND)
                 self.SetSizer(vbox)
-
 
     class TestingParametersTab(wx.Panel):
         def __init__(self, parent, automeasurePanel):
