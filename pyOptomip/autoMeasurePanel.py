@@ -937,12 +937,15 @@ class autoMeasurePanel(wx.Panel):
                     print("moving relative")
                     optPosition = self.autoMeasure.motorOpt.getPosition()
                     elecPosition = self.autoMeasure.motorElec.getPosition()
-                    absolutex = motorCoord[0] + optPosition[0]
-                    absolutey = motorCoord[1] + optPosition[1]
+                    adjustment = self.autoMeasure.motorOpt.getPositionforRelativeMovement()
+                    adjustx = adjustment[0]/20
+                    adjusty = adjustment[1]/20
+                    absolutex = motorCoord[0] + optPosition[0] #- adjustment[0]/20
+                    absolutey = motorCoord[1] + optPosition[1] #- adjustment[1]/20
                     absolutez = motorCoord[2]
                     relativex = absolutex[0] - elecPosition[0]
                     relativey = absolutey[0] - elecPosition[1]
-                    relativez = absolutez[0] - elecPosition[2]
+                    relativez = absolutez[0] - elecPosition[2] + 30
                     if relativex < 0:
                         relativex = relativex
                     if relativey < 0:
