@@ -37,7 +37,7 @@ class fineAlignPanel(wx.Panel):
         self.InitUI()
 
     def InitUI(self):
-        sbOuter = wx.StaticBox(self, label='Fine align');
+        sbOuter = wx.StaticBox(self, label='Fine align')
         vboxOuter = wx.StaticBoxSizer(sbOuter, wx.VERTICAL)
 
         hbox = wx.BoxSizer(wx.HORIZONTAL)

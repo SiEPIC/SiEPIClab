@@ -309,7 +309,8 @@ class instrumentFrame_withtabs(wx.Frame):
             if laser and motorOpt or SMU and motorElec:
                 self.fineAlign = fineAlign(laser, motorOpt)
                 try:
-                    self.fineAlignPanel = fineAlignPanel(self, self.fineAlign)
+                    pass
+                    #self.fineAlignPanel = fineAlignPanel(self, self.fineAlign)
                 except Exception as e:
                     dial = wx.MessageDialog(None, 'Could not initiate instrument control. ' + traceback.format_exc(),
                                             'Error', wx.ICON_ERROR)

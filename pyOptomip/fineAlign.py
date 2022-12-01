@@ -57,8 +57,8 @@ class fineAlign(object):
         self.stage = stage
 
     def doFineAlign(self):
-        xStartPos = self.stage.getPosition()[0];
-        yStartPos = self.stage.getPosition()[1];
+        xStartPos = self.stage.getPosition()[0]
+        yStartPos = self.stage.getPosition()[1]
 
         for det in self.detectorPriority:
             maxSteps = math.ceil(self.scanWindowSize / float(self.stepSize))
