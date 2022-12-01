@@ -60,6 +60,7 @@ class CorvusEcoClass:
         self.ser = rm.open_resource(visaName)  # Connects to device with pyVisa
         self.ser.baud_rate = 57600  # Sets baudrate
         self.ser.write('identify')  # Asks for identification
+        self.position = [0,0,0]
         print((self.ser.read() + ' [Model Name][Hardware Ver][Software Ver][Internal Use][Dip-Switch]'))
         print('Connected\n')
 
@@ -216,6 +217,7 @@ class CorvusEcoClass:
         if self.NumberOfAxis == 1:
             try:
                 self.ser.write(str(distance) + ' r')
+                self.position[0] = self.position[0] + distance
                 # print ('Move Complete')
             except:
                 print('An Error has occured')
@@ -244,6 +246,7 @@ class CorvusEcoClass:
         if self.NumberOfAxis == 2:
             try:
                 self.ser.write('0 ' + str(distance) + ' r')
+                self.position[1] = self.position[1] + distance
                 # print ('Move Complete')
             except:
                 print('An Error has occured')
@@ -252,6 +255,7 @@ class CorvusEcoClass:
         if self.NumberOfAxis == 3:
             try:
                 self.ser.write('0 ' + str(distance) + ' 0 r')
+                self.position[1] = self.position[1] + distance
                 # print ('Move Complete')
             except:
                 print('An Error has occured')
@@ -267,6 +271,7 @@ class CorvusEcoClass:
         if self.NumberOfAxis == 3:
             try:
                 self.ser.write('0 0 ' + str(distance) + ' r')
+                self.position[2] = self.position[2] + distance
                 # print ('Move Complete')
             except:
                 print('An Error has occured')
@@ -278,6 +283,8 @@ class CorvusEcoClass:
         if self.NumberOfAxis == 1:
             try:
                 self.ser.write('%.6f r' % (x))
+                self.position[0] = self.position[0] + x
+                print(self.position)
                 # print ('Move Complete')
             except:
                 print('An Error has occured')
@@ -286,6 +293,9 @@ class CorvusEcoClass:
         if self.NumberOfAxis == 2:
             try:
                 self.ser.write('%.6f %.6f r' % (x, y))
+                self.position[0] = self.position[0] + x
+                self.position[1] = self.position[1] + y
+                print(self.position)
                 # print ('Move Complete')
             except:
                 print('An Error has occured')
@@ -294,6 +304,10 @@ class CorvusEcoClass:
         if self.NumberOfAxis == 3:
             try:
                 self.ser.write('%.6f %.6f %.6f r' % (x, y, z))
+                self.position[0] = self.position[0] + x
+                self.position[1] = self.position[1] + y
+                self.position[2] = self.position[2] + z
+                print(self.position)
                 # print ('Move Complete')
             except:
                 print('An Error has occured')
@@ -353,6 +367,9 @@ class CorvusEcoClass:
             print('An Error has occured')
             self.showErr()
         return res
+
+    def getPositionforRelativeMovement(self):
+        return self.position
 
     def clear(self):  # Should clear any lingering messages in the device
         try:
