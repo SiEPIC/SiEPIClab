@@ -978,7 +978,7 @@ class autoMeasurePanel(wx.Panel):
                 gdsCoord = (float(device.getElectricalCoordinates()[0][1]), float(device.getElectricalCoordinates()[0][2]))
                 motorCoord = self.autoMeasure.gdsToMotorCoordsElec(gdsCoord)
                 self.autoMeasure.motorElec.moveRelativeZ(1000)
-
+                time.sleep(2)
                 if [self.autoMeasure.motorOpt] and [self.autoMeasure.motorElec]:
                     print("moving relative")
                     optPosition = self.autoMeasure.motorOpt.getPosition()
@@ -989,6 +989,14 @@ class autoMeasurePanel(wx.Panel):
                     relativex = absolutex[0] - elecPosition[0]
                     relativey = absolutey[0] - elecPosition[1]
                     relativez = absolutez[0] - elecPosition[2]
+                    if relativex < 0:
+                        relativex = relativex
+                    if relativey < 0:
+                        relativey = relativey
+                    if relativex > 0:
+                        relativex = relativex
+                    if relativey > 0:
+                        relativey = relativey
                     self.autoMeasure.motorElec.moveRelativeX(-relativex)
                     time.sleep(2)
                     self.autoMeasure.motorElec.moveRelativeY(-relativey)

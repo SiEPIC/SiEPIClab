@@ -64,6 +64,8 @@ class topSMUPanel(wx.Panel):
         self.SetSizer(hbox)
 
 
+
+
 class SMUPanel(wx.Panel):
 
     def __init__(self, parent, graph):
@@ -766,4 +768,34 @@ class SMUPanel(wx.Panel):
             self.maxunit.SetLabel('mA')
             self.resunit.SetLabel('mA')
             print('Set to Current sweep')
+
+
+class resistancePanel(wx.Panel):
+    def __init__(self, parent, smu):
+        super(resistancePanel, self).__init__(parent)
+        self.smu = smu
+        self.InitUI()
+
+    def InitUI(self):
+        vboxOuter = wx.BoxSizer(wx.VERTICAL)
+
+        stres = wx.StaticText(self, label='Resistance (Ω): ')
+        self.rdetA = wx.StaticText(self, label="0")
+        self.rdetB = wx.StaticText(self, label="0")
+        vboxOuter.AddMany([(stres, 1, wx.EXPAND), (self.rdetA, 1, wx.EXPAND), (self.rdetB, 1, wx.EXPAND)])
+
+        self.timer2 = wx.Timer(self, wx.ID_ANY)
+        self.Bind(wx.EVT_TIMER, self.UpdateResMeasurement, self.timer2)
+        self.timer2.Start(1000)
+        self.SetSizer(vboxOuter)
+
+    def UpdateResMeasurement(self, event):
+        ra = self.smu.getresistanceA()
+        ra = float(ra)
+        self.rdetA.SetLabel(str(ra))
+
+        rb = self.smu.getresistanceB()
+        rb = float(rb)
+        self.rdetB.SetLabel(str(rb))
+
 

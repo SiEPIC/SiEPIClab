@@ -37,6 +37,7 @@ import time
 from documentationpanel import docPanel
 from CameraPanel import cameraPanel
 from instr_status import statusPanel
+from SMUFrame import resistancePanel
 
 
 class instrumentFrame_withtabs(wx.Frame):
@@ -105,7 +106,7 @@ class instrumentFrame_withtabs(wx.Frame):
         #self.side_camera.start()
 
         """Create the tab windows"""
-        tab1 = self.HomeTab(nb, self.laserWithDetector, self.opticalStage, self.electricalStage, self.camera, self.instList)
+        tab1 = self.HomeTab(nb, self.laserWithDetector, self.opticalStage, self.electricalStage, self.camera, self.instList, self.SMU)
         if self.SMU:
             tab2 = self.ElectricalTab(nb, self.SMU)
         tab3 = self.OpticalTab(nb, self.laserWithDetector)
@@ -194,7 +195,7 @@ class instrumentFrame_withtabs(wx.Frame):
         self.Destroy()
 
     class HomeTab(wx.Panel):
-        def __init__(self, parent, laserWithDetector, opticalStage, electricalStage, camera, instr):
+        def __init__(self, parent, laserWithDetector, opticalStage, electricalStage, camera, instr, SMU):
             """
 
             Args:
@@ -225,6 +226,12 @@ class instrumentFrame_withtabs(wx.Frame):
             if electricalStage:
                 electricalStagePanel = electricalStage.panelClass(self, electricalStage)
                 homeVbox.Add(electricalStagePanel, proportion=0, border=0, flag=wx.EXPAND)
+                if SMU:
+
+                    smuPanel = resistancePanel(self, SMU)
+                    smuHbox = wx.BoxSizer(wx.HORIZONTAL)
+                    smuHbox.Add(smuPanel, proportion=1, border=0, flag=wx.EXPAND)
+                    homeVbox.Add(smuHbox, 1, wx.EXPAND)
             if laserWithDetector:
                 detectorPanel = laserWithDetector.panelClass(self, laserWithDetector, False, True)
                 detectHbox = wx.BoxSizer(wx.HORIZONTAL)
@@ -232,6 +239,7 @@ class instrumentFrame_withtabs(wx.Frame):
                 docpanel = docPanel(self)
                 detectHbox.Add(docpanel, 1, wx.EXPAND)
                 homeVbox.Add(detectHbox, 1, wx.EXPAND)
+
 
 
             camerapanel = cameraPanel(self, camera)
@@ -349,7 +357,7 @@ class instrumentFrame_withtabs(wx.Frame):
 
         def __init__(self):
             threading.Thread.__init__(self)
-            self.camID = 0
+            self.camID = 1
 
         def run(self, *args, **kwargs):
             self.cap = cv2.VideoCapture(self.camID)
@@ -367,7 +375,8 @@ class instrumentFrame_withtabs(wx.Frame):
                 if self.show:
                     ret, frame = self.cap.read()
 
-                    frame = cv2.flip(frame, 1)
+                    if self.camID == 1:
+                        frame = cv2.flip(frame, 1)
 
                     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
