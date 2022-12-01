@@ -38,7 +38,7 @@ class BSC203Motor:
 
     def moveRelativeXYZ(self, x, y, z):
         if self.minPositionSet is False:
-            if x is not 0:
+            if x != 0:
                 print('Please Set Minimum Position in X Axis.')
             else:
                 self.bsc.move_relative(distance=int(1000 * y), bay=1, channel=0)
@@ -65,7 +65,7 @@ class BSC203Motor:
 
     def moveRelativeX(self, x):
         if self.minPositionSet is False:
-            if x is not 0:
+            if x != 0:
                 print('Please Set Minimum Position in X Axis.')
             else:
                 pass
