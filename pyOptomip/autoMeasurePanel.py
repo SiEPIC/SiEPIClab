@@ -590,6 +590,7 @@ class autoMeasurePanel(wx.Panel):
         """ Called when the button is pressed to get the current motor coordinates, and put it into the text box. """
         elecPosition = self.autoMeasure.motorElec.getPosition()
         xcoord.SetValue(str(elecPosition[0]))
+        self.autoMeasure.motorElec.setMinXPosition(elecPosition[0])
 
     def importObjects(self, listOfDevicesAsObjects):
         """Given a list of electro-optic device objects, this method populates all drop-down menus and
