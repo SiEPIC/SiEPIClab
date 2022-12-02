@@ -226,7 +226,6 @@ class coordinateMapPanel(wx.Panel):
                 relativePosition.append(elecPosition[1] - optPosition[1]*0.8)
                 print("Electrical Motor Position:")
                 print(elecPosition)
-                self.autoMeasure.saveoptposition1 = optPosition
                 relativePosition.append(elecPosition[2])
                 xcoord.SetValue(str(relativePosition[0]))
                 ycoord.SetValue(str(relativePosition[1]))
@@ -259,7 +258,6 @@ class coordinateMapPanel(wx.Panel):
                 elecPosition = self.autoMeasure.motorElec.getPosition()
                 print("Electrical Motor Position:")
                 print(elecPosition)
-                #self.autoMeasure.saveoptposition2 = optPosition - self.autoMeasure.saveoptposition1
                 relativePosition = []
                 relativePosition.append(elecPosition[0] - optPosition[0]*0.82)
                 relativePosition.append(elecPosition[1] - optPosition[1]*0.8)
@@ -295,7 +293,6 @@ class coordinateMapPanel(wx.Panel):
                 elecPosition = self.autoMeasure.motorElec.getPosition()
                 print("Electrical Motor Position:")
                 print(elecPosition)
-                #self.autoMeasure.saveoptposition3 = optPosition - self.autoMeasure.saveoptposition1
                 relativePosition = []
                 relativePosition.append(elecPosition[0] - optPosition[0]*0.82)
                 relativePosition.append(elecPosition[1] - optPosition[1]*0.8)
@@ -507,28 +504,16 @@ class autoMeasurePanel(wx.Panel):
         saveBox.AddMany([(self.outputFolderTb, 1, wx.EXPAND), (self.outputFolderBtn, 0, wx.EXPAND)])
 
         # Add "Align Laser" label
-        st3 = wx.StaticText(self, label='Align Laser')
+        st3 = wx.StaticText(self, label='Align to Device')
         moveLabelBox = wx.BoxSizer(wx.HORIZONTAL)
         moveLabelBox.Add(st3, proportion=1, flag=wx.EXPAND)
-
-        # Add "Align Electrical Probe" label
-        st = wx.StaticText(self, label='Align Electrical Probe')
-        moveElecLabelBox = wx.BoxSizer(wx.HORIZONTAL)
-        moveElecLabelBox.Add(st, proportion=1, flag=wx.EXPAND)
-
-        # Add Measurement Buttons
-        self.devSelectCbOpt = wx.ComboBox(self, style=wx.CB_READONLY, size=(200, 20))
-        self.gotoDevBtnOpt = wx.Button(self, label='Go', size=(70, 20))
-        self.gotoDevBtnOpt.Bind(wx.EVT_BUTTON, self.OnButton_GotoDeviceOpt)
-        goBoxOpt = wx.BoxSizer(wx.HORIZONTAL)
-        goBoxOpt.AddMany([(self.devSelectCbOpt, 1, wx.EXPAND), (self.gotoDevBtnOpt, 0, wx.EXPAND)])
 
         # Add Measurement Buttons
         self.devSelectCb = wx.ComboBox(self, style=wx.CB_READONLY, size=(200, 20))
         self.gotoDevBtn = wx.Button(self, label='Go', size=(70, 20))
-        self.gotoDevBtn.Bind(wx.EVT_BUTTON, self.OnButton_GotoDeviceElec)
-        goBoxElec = wx.BoxSizer(wx.HORIZONTAL)
-        goBoxElec.AddMany([(self.devSelectCb, 1, wx.EXPAND), (self.gotoDevBtn, 0, wx.EXPAND)])
+        self.gotoDevBtn.Bind(wx.EVT_BUTTON, self.OnButton_GotoDevice)
+        goBox = wx.BoxSizer(wx.HORIZONTAL)
+        goBox.AddMany([(self.devSelectCb, 1, wx.EXPAND), (self.gotoDevBtn, 0, wx.EXPAND)])
 
         vboxUpload.AddMany([(saveLabelBox, 0, wx.EXPAND), (saveBox, 0, wx.EXPAND)])
 
@@ -540,8 +525,7 @@ class autoMeasurePanel(wx.Panel):
 
         # Populate Measurement Box with drop down menu and go button
         vboxMeasurement.AddMany(
-            [(moveLabelBox, 0, wx.EXPAND), (goBoxOpt, 0, wx.EXPAND),
-             (moveElecLabelBox, 0, wx.EXPAND), (goBoxElec, 0, wx.EXPAND)])
+            [(moveLabelBox, 0, wx.EXPAND), (goBox, 0, wx.EXPAND)])
 
         topBox = wx.BoxSizer(wx.HORIZONTAL)
         topBox.AddMany([(vboxUpload, 1, wx.EXPAND), (vboxMeasurement, 0, wx.EXPAND)])
@@ -550,7 +534,7 @@ class autoMeasurePanel(wx.Panel):
         checkBox.AddMany([(checkListBox, 0, wx.EXPAND), (searchListBox, 0, wx.EXPAND), (selectBox, 0, wx.EXPAND),
                           (selectBox2, 0, wx.EXPAND)])
 
-        #Add box to enter minimum wedge probe position in x
+        # Add box to enter minimum wedge probe position in x
         stMinPosition = wx.StaticText(self, label='Minimum Wedge Probe Position in X:')
         hBoxMinElec = wx.BoxSizer(wx.HORIZONTAL)
         self.tbxMotorCoord = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
@@ -584,7 +568,7 @@ class autoMeasurePanel(wx.Panel):
 
         # Add all boxes to outer box
         vboxOuter.AddMany([(topBox, 0, wx.EXPAND), (checkBox, 0, wx.EXPAND), (vboxOptical, 0, wx.EXPAND),
-                           (vboxElectrical, 0, wx.EXPAND), (vBoxMinElec, 0, wx.EXPAND),(vboxDetectors, 0, wx.EXPAND)])
+                           (vboxElectrical, 0, wx.EXPAND), (vBoxMinElec, 0, wx.EXPAND), (vboxDetectors, 0, wx.EXPAND)])
         matPlotBox.Add(vboxOuter, flag=wx.LEFT | wx.TOP | wx.ALIGN_LEFT, border=0, proportion=0)
 
         self.SetSizer(matPlotBox)
@@ -607,8 +591,6 @@ class autoMeasurePanel(wx.Panel):
             deviceList.append(device.getDeviceID())
         self.devSelectCb.Clear()
         self.devSelectCb.AppendItems(deviceList)
-        self.devSelectCbOpt.Clear()
-        self.devSelectCbOpt.AppendItems(deviceList)
         # Adds items to the checklist
         self.checkList.DeleteAllItems()
         for ii, device in enumerate(deviceList):
@@ -881,74 +863,74 @@ class autoMeasurePanel(wx.Panel):
                         for routine in type:
                             routine = type[routine]
                             self.autoMeasure.addSetWavelengthVoltageSweep(routine, routine['Min'], routine['Max'],
-                                                             routine['Res'], routine['IV'], routine['RV'],
-                                                             routine['PV'], routine['Channel A'],
-                                                             routine['Channel B'], routine['Wavelengths'])
+                                                                          routine['Res'], routine['IV'], routine['RV'],
+                                                                          routine['PV'], routine['Channel A'],
+                                                                          routine['Channel B'], routine['Wavelengths'])
                     if type == 'Set Wavelength Current Sweep':
                         type = loadedYAML['Routines']['Set Wavelength Current Sweep']
                         for routine in type:
                             routine = type[routine]
                             self.autoMeasure.addSetWavelengthCurrentSweep(routine, routine['Min'], routine['Max'],
-                                                             routine['Res'], routine['IV'], routine['RV'],
-                                                             routine['PV'], routine['Channel A'],
-                                                             routine['Channel B'], routine['Wavelengths'])
+                                                                          routine['Res'], routine['IV'], routine['RV'],
+                                                                          routine['PV'], routine['Channel A'],
+                                                                          routine['Channel B'], routine['Wavelengths'])
                     if type == 'Set Voltage Wavelength Sweep':
                         type = loadedYAML['Routines']['Set Voltage Wavelength Sweep']
                         for routine in type:
                             routine = type[routine]
                             self.autoMeasure.addSetVoltageWavelengthSweep(routine, routine['Start'], routine['Stop'],
-                                                                routine['Stepsize'], routine['Sweeppower'],
-                                                                routine['Sweepspeed'], routine['Laseroutput'],
-                                                                routine['Numscans'], routine['Initialrange'],
-                                                                routine['RangeDec'], routine['Channel A'],
-                                                                routine['Channel B'], routine['Voltages'])
+                                                                          routine['Stepsize'], routine['Sweeppower'],
+                                                                          routine['Sweepspeed'], routine['Laseroutput'],
+                                                                          routine['Numscans'], routine['Initialrange'],
+                                                                          routine['RangeDec'], routine['Channel A'],
+                                                                          routine['Channel B'], routine['Voltages'])
 
         self.importObjects(deviceListAsObjects)
 
-
-    # TODO: Modify to move probe out of the way and keep track of chip stage movement
-    def OnButton_GotoDeviceOpt(self, event):
-        """Moves laser to selected device"""
-        self.autoMeasure.findCoordinateTransformOpt(self.coordMapPanelOpt.getMotorCoords(),
-                                                    self.coordMapPanelOpt.getGdsCoordsOpt())
-        selectedDevice = self.devSelectCbOpt.GetString(self.devSelectCbOpt.GetSelection())
-        global deviceListAsObjects
-        for device in deviceListAsObjects:
-            if device.getDeviceID() == selectedDevice:
-                gdsCoord = (device.getOpticalCoordinates[0], device.getOpticalCoordinates[1])
-                motorCoord = self.autoMeasure.gdsToMotorCoordsOpt(gdsCoord)
-                # Get wedge probe coordinates
-                # Calculate laser coordinates
-                self.autoMeasure.motorOpt.moveAbsoluteXYZ(motorCoord[0], motorCoord[1], motorCoord[2])
-
-    # TODO: Modify to move laser out of the way
-    def OnButton_GotoDeviceElec(self, event):
+    def OnButton_GotoDevice(self, event):
         """
-        Move probe to selected device
+        Move laser and or probe to selected device
         """
-        self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
-                                                     self.coordMapPanelElec.getGdsCoordsElec())
-        selectedDevice = self.devSelectCb.GetString(self.devSelectCb.GetSelection())
-        global deviceListAsObjects
-        for device in deviceListAsObjects:
-            if device.getDeviceID() == selectedDevice:
-                gdsCoord = (float(device.getElectricalCoordinates()[0][1]), float(device.getElectricalCoordinates()[0][2]))
-                motorCoord = self.autoMeasure.gdsToMotorCoordsElec(gdsCoord)
-                #self.autoMeasure.motorElec.moveRelativeZ(1000)
+        # If laser and probe are connected
+        if self.autoMeasure.laser and self.autoMeasure.motorElec:
+            # Calculate transform matrices
+            self.autoMeasure.findCoordinateTransformOpt(self.coordMapPanelOpt.getMotorCoords(),
+                                                        self.coordMapPanelOpt.getGdsCoordsOpt())
+            self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
+                                                         self.coordMapPanelElec.getGdsCoordsElec())
+            # lift wedge probe
+            self.autoMeasure.motorElec.moveRelativeZ(1000)
+            time.sleep(2)
+            # move wedge probe out of the way
+            elecPosition = self.autoMeasure.motorElec.getPosition()
+            if elecPosition[0] < self.autoMeasure.motorElec.minXPosition:
+                relativex = self.autoMeasure.motorElec.minXPosition - elecPosition[0]
+                self.autoMeasure.motorElec.moveRelativeX(-relativex)
                 time.sleep(2)
-                if [self.autoMeasure.motorOpt] and [self.autoMeasure.motorElec]:
-                    print("moving relative")
+            selectedDevice = self.devSelectCb.GetString(self.devSelectCb.GetSelection())
+            # find device object
+            for device in self.autoMeasure.devices:
+                if device.getDeviceID() == selectedDevice:
+                    gdsCoordOpt = (device.getOpticalCoordinates()[0], device.getOpticalCoordinates()[1])
+                    motorCoordOpt = self.autoMeasure.gdsToMotorCoordsOpt(gdsCoordOpt)
+                    # Move chip stage
+                    self.autoMeasure.motorOpt.moveAbsoluteXYZ(motorCoordOpt[0], motorCoordOpt[1], motorCoordOpt[2])
+                    # Fine align to device
+                    self.autoMeasure.fineAlign.doFineAlign()
+                    # Find relative probe position
+                    gdsCoordElec = (float(device.getElectricalCoordinates()[0][1]), float(device.getElectricalCoordinates()[0][2]))
+                    motorCoordElec = self.autoMeasure.gdsToMotorCoordsElec(gdsCoordElec)
                     optPosition = self.autoMeasure.motorOpt.getPosition()
                     elecPosition = self.autoMeasure.motorElec.getPosition()
                     adjustment = self.autoMeasure.motorOpt.getPositionforRelativeMovement()
-                    adjustx = adjustment[0]/5
-                    adjusty = adjustment[1]/5
-                    absolutex = motorCoord[0] + optPosition[0]*0.82 #- adjustx
-                    absolutey = motorCoord[1] + optPosition[1]*0.8 #- adjusty
-                    absolutez = motorCoord[2]
+                    adjustx = adjustment[0] / 20
+                    adjusty = adjustment[1] / 20
+                    absolutex = motorCoordElec[0] + optPosition[0]  # - adjustment[0]/20
+                    absolutey = motorCoordElec[1] + optPosition[1]  # - adjustment[1]/20
+                    absolutez = motorCoordElec[2]
                     relativex = absolutex[0] - elecPosition[0]
                     relativey = absolutey[0] - elecPosition[1]
-                    relativez = absolutez[0] - elecPosition[2] + 10
+                    relativez = absolutez[0] - elecPosition[2] + 30
                     if relativex < 0:
                         relativex = relativex
                     if relativey < 0:
@@ -957,13 +939,70 @@ class autoMeasurePanel(wx.Panel):
                         relativex = relativex
                     if relativey > 0:
                         relativey = relativey
+                    # Move probe to device
                     self.autoMeasure.motorElec.moveRelativeX(-relativex)
                     time.sleep(2)
                     self.autoMeasure.motorElec.moveRelativeY(-relativey)
                     time.sleep(2)
-                    #self.autoMeasure.motorElec.moveRelativeZ(-relativez)
-                else:
-                    self.autoMeasure.motorElec.moveAbsoluteXYZ(motorCoord[0], motorCoord[1], motorCoord[2])
+                    self.autoMeasure.motorElec.moveRelativeZ(-relativez)
+                    # Fine align to device again
+                    self.autoMeasure.fineAlign.doFineAlign()
+
+        # if laser is connected but probe isn't
+        elif self.autoMeasure.laser and not self.autoMeasure.motorElec:
+            # Calculate optical transform matrix
+            self.autoMeasure.findCoordinateTransformOpt(self.coordMapPanelOpt.getMotorCoords(),
+                                                        self.coordMapPanelOpt.getGdsCoordsOpt())
+            selectedDevice = self.devSelectCb.GetString(self.devSelectCb.GetSelection())
+            # find device object
+            for device in self.autoMeasure.devices:
+                if device.getDeviceID() == selectedDevice:
+                    gdsCoordOpt = (device.getOpticalCoordinates()[0], device.getOpticalCoordinates()[1])
+                    motorCoordOpt = self.autoMeasure.gdsToMotorCoordsOpt(gdsCoordOpt)
+                    # Move chip stage
+                    self.autoMeasure.motorOpt.moveAbsoluteXYZ(motorCoordOpt[0], motorCoordOpt[1], motorCoordOpt[2])
+
+                    # Fine align to device
+                    self.autoMeasure.fineAlign.doFineAlign()
+
+        # if probe is connected but laser isn't
+        elif not self.autoMeasure.laser and self.autoMeasure.motorElec:
+            self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
+                                                         self.coordMapPanelElec.getGdsCoordsElec())
+            selectedDevice = self.devSelectCb.GetString(self.devSelectCb.GetSelection())
+            for device in self.autoMeasure.devices:
+                if device.getDeviceID() == selectedDevice:
+                    gdsCoord = (
+                    float(device.getElectricalCoordinates()[0][1]), float(device.getElectricalCoordinates()[0][2]))
+                    motorCoord = self.autoMeasure.gdsToMotorCoordsElec(gdsCoord)
+                    self.autoMeasure.motorElec.moveRelativeZ(1000)
+                    time.sleep(2)
+                    if [self.autoMeasure.motorOpt] and [self.autoMeasure.motorElec]:
+                        print("moving relative")
+                        optPosition = self.autoMeasure.motorOpt.getPosition()
+                        elecPosition = self.autoMeasure.motorElec.getPosition()
+                        adjustment = self.autoMeasure.motorOpt.getPositionforRelativeMovement()
+                        adjustx = adjustment[0] / 20
+                        adjusty = adjustment[1] / 20
+                        absolutex = motorCoord[0] + optPosition[0]  # - adjustment[0]/20
+                        absolutey = motorCoord[1] + optPosition[1]  # - adjustment[1]/20
+                        absolutez = motorCoord[2]
+                        relativex = absolutex[0] - elecPosition[0]
+                        relativey = absolutey[0] - elecPosition[1]
+                        relativez = absolutez[0] - elecPosition[2] + 30
+                        if relativex < 0:
+                            relativex = relativex
+                        if relativey < 0:
+                            relativey = relativey
+                        if relativex > 0:
+                            relativex = relativex
+                        if relativey > 0:
+                            relativey = relativey
+                        self.autoMeasure.motorElec.moveRelativeX(-relativex)
+                        time.sleep(2)
+                        self.autoMeasure.motorElec.moveRelativeY(-relativey)
+                        time.sleep(2)
+                        self.autoMeasure.motorElec.moveRelativeZ(-relativez)
 
     def OnButton_SelectOutputFolder(self, event):
         """ Opens a file dialog to select an output directory for automatic measurement results. """
