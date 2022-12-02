@@ -887,20 +887,6 @@ class autoMeasurePanel(wx.Panel):
 
         self.importObjects(deviceListAsObjects)
 
-    def OnButton_GotoDeviceOpt(self, event):
-        """Moves laser to selected device"""
-        self.autoMeasure.findCoordinateTransformOpt(self.coordMapPanelOpt.getMotorCoords(),
-                                                    self.coordMapPanelOpt.getGdsCoordsOpt())
-        selectedDevice = self.devSelectCbOpt.GetString(self.devSelectCbOpt.GetSelection())
-        global deviceListAsObjects
-        for device in deviceListAsObjects:
-            if device.getDeviceID() == selectedDevice:
-                gdsCoord = (device.getOpticalCoordinates[0], device.getOpticalCoordinates[1])
-                motorCoord = self.autoMeasure.gdsToMotorCoordsOpt(gdsCoord)
-                # Get wedge probe coordinates
-                # Calculate laser coordinates
-                self.autoMeasure.motorOpt.moveAbsoluteXYZ(motorCoord[0], motorCoord[1], motorCoord[2])
-
     def OnButton_GotoDevice(self, event):
         """
         Move laser and or probe to selected device
@@ -922,9 +908,8 @@ class autoMeasurePanel(wx.Panel):
                 self.autoMeasure.motorElec.moveRelativeX(-relativex)
                 time.sleep(2)
             selectedDevice = self.devSelectCb.GetString(self.devSelectCb.GetSelection())
-            global deviceListAsObjects
             # find device object
-            for device in deviceListAsObjects:
+            for device in self.autoMeasure.devices:
                 if device.getDeviceID() == selectedDevice:
                     gdsCoordOpt = (device.getOpticalCoordinates()[0], device.getOpticalCoordinates()[1])
                     motorCoordOpt = self.autoMeasure.gdsToMotorCoordsOpt(gdsCoordOpt)
@@ -969,9 +954,8 @@ class autoMeasurePanel(wx.Panel):
             self.autoMeasure.findCoordinateTransformOpt(self.coordMapPanelOpt.getMotorCoords(),
                                                         self.coordMapPanelOpt.getGdsCoordsOpt())
             selectedDevice = self.devSelectCb.GetString(self.devSelectCb.GetSelection())
-            global deviceListAsObjects
             # find device object
-            for device in deviceListAsObjects:
+            for device in self.autoMeasure.devices:
                 if device.getDeviceID() == selectedDevice:
                     gdsCoordOpt = (device.getOpticalCoordinates()[0], device.getOpticalCoordinates()[1])
                     motorCoordOpt = self.autoMeasure.gdsToMotorCoordsOpt(gdsCoordOpt)
@@ -986,8 +970,7 @@ class autoMeasurePanel(wx.Panel):
             self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
                                                          self.coordMapPanelElec.getGdsCoordsElec())
             selectedDevice = self.devSelectCb.GetString(self.devSelectCb.GetSelection())
-            global deviceListAsObjects
-            for device in deviceListAsObjects:
+            for device in self.autoMeasure.devices:
                 if device.getDeviceID() == selectedDevice:
                     gdsCoord = (
                     float(device.getElectricalCoordinates()[0][1]), float(device.getElectricalCoordinates()[0][2]))
