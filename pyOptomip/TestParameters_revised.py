@@ -283,6 +283,7 @@ class TopPanel(wx.Panel):
         self.device_list = deviceListAsObjects
         self.devicesselected = []
 
+
         self.devicedict = {}
         self.devnames = []
 
