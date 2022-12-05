@@ -129,7 +129,7 @@ class autoMeasure(object):
                         for device in self.devices:
                             if device.getDeviceID() == devName:
                                 print("adding elec coords to device")
-                                device.addElectricalCoordinates(matchRes[3], float(matchRes[0]), float(matchRes[1]))
+                                device.addElectricalCoordinates((matchRes[3], float(matchRes[0]), float(matchRes[1])))
                     else:
                         print('Warning: The entry\n%s\nis not formatted correctly.' % line)
 
