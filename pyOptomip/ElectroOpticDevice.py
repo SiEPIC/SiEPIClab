@@ -106,8 +106,7 @@ class ElectroOpticDevice:
 
     def addRoutines(self, routines):
         """Adds the names of routines to be performed on this device to a list."""
-        if len(routines) != 0:
-            self.routines.extend(routines)
+        self.routines.extend(routines)
 
 
 
