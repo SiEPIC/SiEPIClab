@@ -36,19 +36,24 @@ class BSC203Panel(wx.Panel):
     def InitUI(self):
 
         hbox = wx.BoxSizer(wx.HORIZONTAL)
-        st1 = wx.StaticText(self, label='Electrical Probing Control')
+        if self.axis == 1:
+            st1 = wx.StaticText(self, label='X')
+        if self.axis == 2:
+            st1 = wx.StaticText(self, label='Y')
+        if self.axis == 3:
+            st1 = wx.StaticText(self, label='Z')
         hbox.Add(st1, flag=wx.ALIGN_LEFT, border=8)
         st1 = wx.StaticText(self, label='')
         hbox.Add(st1, flag=wx.EXPAND, border=8, proportion=1)
         if self.axis == 1:
-            btn1 = wx.Button(self, label='Left', size=(80, 20))
-            btn2 = wx.Button(self, label='Right', size=(80, 20))
+            btn1 = wx.Button(self, label='-', size=(80, 20))
+            btn2 = wx.Button(self, label='+', size=(80, 20))
         elif self.axis ==2:
-            btn1 = wx.Button(self, label='Back', size=(80, 20))
-            btn2 = wx.Button(self, label='Forwards', size=(80, 20))
+            btn1 = wx.Button(self, label='-', size=(80, 20))
+            btn2 = wx.Button(self, label='+', size=(80, 20))
         else:
-            btn1 = wx.Button(self, label='Up', size=(80, 20))
-            btn2 = wx.Button(self, label='Down', size=(80, 20))
+            btn1 = wx.Button(self, label='-', size=(80, 20))
+            btn2 = wx.Button(self, label='+', size=(80, 20))
 
         self.initialvalue = 0
         if self.axis == 1:
