@@ -308,7 +308,7 @@ class TopPanel(wx.Panel):
             self.devicedict[device.device_id]['Type'] = device.type
             self.devicedict[device.device_id]['RoutineCheck'] = device.hasRoutines()
             self.devicedict[device.device_id]['Routines'] = device.routines
-            self.devicedict[device.device_id]['Electrical Coordinates'] = device.electricalCoordinates
+            self.devicedict[device.device_id]['Electrical Coordinates'] = [device.electricalCoordinates[1], device.electricalCoordinates[2], device.electricalCoordinates[0]]
 
         global deviceList
         global groupList
