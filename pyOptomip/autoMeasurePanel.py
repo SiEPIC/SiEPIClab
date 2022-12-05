@@ -438,7 +438,7 @@ class autoMeasurePanel(wx.Panel):
 
         # Add MatPlotLib Panel
         matPlotBox = wx.BoxSizer(wx.HORIZONTAL)
-        self.graph = myMatplotlibPanel.myMatplotlibPanel(self)  # use for regular mymatplotlib file
+        self.graph = self.autoMeasure.graphPanel  # use for regular mymatplotlib file
         matPlotBox.Add(self.graph, flag=wx.EXPAND, border=0, proportion=1)
 
         # Add Selection Buttons and Filter
