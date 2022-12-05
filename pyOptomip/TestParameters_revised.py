@@ -1274,18 +1274,34 @@ class TopPanel(wx.Panel):
 
         """
 
-        deviceListAsObjects = []
+        ROOT_DIR = format(os.getcwd())
+        primarysavefilecsv = ROOT_DIR + '\TestParameters.csv'
+        primarysavefileymlcwd = ROOT_DIR + '\TestParameters.yaml'
 
-        for device in self.devicedict.keys():
-            deviceObject = ElectroOpticDevice(self.devicedict[device]['DeviceID'], self.devicedict[device]['Wavelength'],
-                                             self.devicedict[device]['Polarization'],
-                                            self.devicedict[device]['Optical Coordinates'], self.devicedict[device]['Type'])
-            deviceObject.hasroutines = self.devicedict[device]['RoutineCheck']
-            deviceObject.routines = self.devicedict[device]['Routines']
-            deviceListAsObjects.append(deviceObject)
+        # dump deviceListAsObjects which contains all the electroopticdevice objects to a file in selected output folder
+        # with open(primarysavefileyml, 'w') as f:
+        # documents = yaml.dump(deviceListAsObjects, f)
+
+        outputyaml = self.Merge(self.routinedict, self.devicedict)
+
+        # dump deviceListAsObjects which contains all the electroopticdevice objects to a file in current working directory
+        with open(primarysavefileymlcwd, 'w') as f:
+            documents = yaml.dump(outputyaml, f)
+
+        self.autoMeasurePanel.readYAML(primarysavefileymlcwd)
+
+        #deviceListAsObjects = []
+
+        #for device in self.devicedict.keys():
+          #  deviceObject = ElectroOpticDevice(self.devicedict[device]['DeviceID'], self.devicedict[device]['Wavelength'],
+                                  #           self.devicedict[device]['Polarization'],
+                                  #          self.devicedict[device]['Optical Coordinates'], self.devicedict[device]['Type'])
+          #  deviceObject.hasroutines = self.devicedict[device]['RoutineCheck']
+           # deviceObject.routines = self.devicedict[device]['Routines']
+           # deviceListAsObjects.append(deviceObject)
 
 
-        self.autoMeasurePanel.importObjects(self.routinedict, deviceListAsObjects)
+        #self.autoMeasurePanel.importObjects(self.routinedict, deviceListAsObjects)
 
 
     def ExportButton(self, event):
