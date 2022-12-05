@@ -582,13 +582,10 @@ class autoMeasurePanel(wx.Panel):
     def importObjects(self, listOfDevicesAsObjects):
         """Given a list of electro-optic device objects, this method populates all drop-down menus and
         checklists in the automeasure panel."""
-        global deviceListAsObjects
-        deviceListAsObjects = listOfDevicesAsObjects
-        self.device_list = listOfDevicesAsObjects
-        global deviceList
         deviceList = []
         for device in listOfDevicesAsObjects:
             deviceList.append(device.getDeviceID())
+            self.autoMeasure.devices.append(device)
         self.devSelectCb.Clear()
         self.devSelectCb.AppendItems(deviceList)
         # Adds items to the checklist
@@ -793,8 +790,7 @@ class autoMeasurePanel(wx.Panel):
         """Reads a yaml testing parameters file and stores the information as a list of electro-optic device
          objects to be used for automated measurements as well as a dictionary of routines."""
 
-        global deviceListAsObjects
-        deviceListAsObjects = []
+        deviceList = []
 
         with open(originalFile, 'r') as file:
             loadedYAML = yaml.safe_load(file)
@@ -831,7 +827,7 @@ class autoMeasurePanel(wx.Panel):
                             electricalCoords = []
                             electricalCoords.extend(pad)
                             deviceToTest.addElectricalCoordinates(electricalCoords)
-                deviceListAsObjects.append(deviceToTest)
+                deviceList.append(deviceToTest)
                 for type in loadedYAML['Routines']:
                     if type == 'Wavelength Sweep':
                         type = loadedYAML['Routines']['Wavelength Sweep']
@@ -885,7 +881,7 @@ class autoMeasurePanel(wx.Panel):
                                                                           routine['RangeDec'], routine['Channel A'],
                                                                           routine['Channel B'], routine['Voltages'])
 
-        self.importObjects(deviceListAsObjects)
+        self.importObjects(deviceList)
 
     def OnButton_GotoDevice(self, event):
         """

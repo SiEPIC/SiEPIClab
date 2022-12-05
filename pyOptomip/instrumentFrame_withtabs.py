@@ -382,16 +382,16 @@ class instrumentFrame_withtabs(wx.Frame):
                     if self.camID == 1:
                         frame = cv2.flip(frame, 1)
                         #Draw axes here:
-                        cv2.arrowedLine(frame, (int(width/6), int(width/6)), (int(2*width/6), int(width/6)), (0, 0, 255), 5)
-                        cv2.arrowedLine(frame, (int(width/6), int(width/6)), (int(width/6), int(2*width/6)), (0, 0, 255), 5)
+                        cv2.arrowedLine(frame, (int(width/9), int(width/9)), (int(2*width/6), int(width/6)), (0, 0, 255), 5)
+                        cv2.arrowedLine(frame, (int(width/9), int(width/9)), (int(width/6), int(2*width/6)), (0, 0, 255), 5)
                         cv2.putText(frame, 'X', ((int(2*width/6))+10, int(width/6)), font, 2, (0, 0, 255), 2, cv2.LINE_AA)
-                        cv2.putText(frame, 'Y', (int(width / 6) -10, int(2*width/6)+ 30), font, 2, (0, 0, 255), 2, cv2.LINE_AA)
+                        cv2.putText(frame, 'Y', (int(width / 6) -10, int(2*width/6)+ 50), font, 2, (0, 0, 255), 2, cv2.LINE_AA)
                         cv2.putText(frame, 'Z', (int(width / 6) - 10, int(width / 6) - 30), font, 2, (0, 0, 255), 2, cv2.LINE_AA)
 
                     if self.camID == 0:
                         #draw axes here
-                        cv2.arrowedLine(frame, (int(width / 6), int(width/6)), (int((2 * width) / 6),int(width/6)), (0, 0, 255), 5)
-                        cv2.arrowedLine(frame, (int(width / 6), int(width / 6)), (int(width / 6), int(2*width / 6)), (0, 0, 255), 5)
+                        cv2.arrowedLine(frame, (int(width / 9), int(width/9)), (int((2 * width) / 6),int(width/6)), (0, 0, 255), 5)
+                        cv2.arrowedLine(frame, (int(width / 9), int(width / 9)), (int(width / 6), int(2*width / 6)), (0, 0, 255), 5)
                         cv2.circle(frame, (int(width/6), int(width/6)), int(width/20), (0, 0, 255), -1)
                         cv2.putText(frame, 'X', (int(2*width/6)+10, int(width/6)), font, 2, (0, 0, 255), 2, cv2.LINE_AA)
                         cv2.putText(frame, 'Z', (int(width / 6) -10, int(2*width / 6)+ 30), font, 2, (0, 0, 255), 2, cv2.LINE_AA)

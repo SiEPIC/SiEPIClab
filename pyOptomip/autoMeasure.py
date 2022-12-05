@@ -102,12 +102,12 @@ class autoMeasure(object):
 
         self.devSet = []
 
-        for ii, line in enumerate(dataStrip2):
-            if reg.match(line):
-                matchRes = reg.findall(line)[0]
+        #for ii, line in enumerate(dataStrip2):
+            #if reg.match(line):
+               # matchRes = reg.findall(line)[0]
 
-                devName = matchRes[6]
-                self.devSet.append(devName)
+                #devName = matchRes[6]
+               # self.devSet.append(devName)
 
         # Parse the data in each line and put it into a list of devices
         for ii, line in enumerate(dataStrip2):
@@ -118,7 +118,7 @@ class autoMeasure(object):
                     matchRes = reg.findall(line)[0]
                     devName = matchRes[6]
 
-                    self.devSet.add(devName)
+                    self.devSet.append(devName)
                     device = ElectroOpticDevice(devName, matchRes[4], matchRes[2], [float(matchRes[0]),
                                                 float(matchRes[1])], matchRes[5])
                     self.devices.append(device)
