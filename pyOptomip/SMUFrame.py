@@ -777,12 +777,19 @@ class resistancePanel(wx.Panel):
         self.InitUI()
 
     def InitUI(self):
-        vboxOuter = wx.BoxSizer(wx.VERTICAL)
+        sb = wx.StaticBox(self, label='Electrical Connection Detector')
+        vboxOuter = wx.StaticBoxSizer(sb, wx.VERTICAL)
+
+        hbox = wx.BoxSizer(wx.HORIZONTAL)
 
         stres = wx.StaticText(self, label='Resistance (Ω): ')
         self.rdetA = wx.StaticText(self, label="0")
         self.rdetB = wx.StaticText(self, label="0")
-        vboxOuter.AddMany([(stres, 1, wx.EXPAND), (self.rdetA, 1, wx.EXPAND), (self.rdetB, 1, wx.EXPAND)])
+        self.chanA = wx.StaticText(self, label="Channel A:")
+        self.chanB = wx.StaticText(self, label="Channel B:")
+
+        hbox.AddMany([(self.chanA, 1, wx.EXPAND), (self.rdetA, 1, wx.EXPAND), (self.chanB, 1, wx.EXPAND), (self.rdetB, 1, wx.EXPAND)])
+        vboxOuter.AddMany([(stres, 0, wx.EXPAND), (hbox, 0, wx.EXPAND)])
 
         self.timer2 = wx.Timer(self, wx.ID_ANY)
         self.Bind(wx.EVT_TIMER, self.UpdateResMeasurement, self.timer2)

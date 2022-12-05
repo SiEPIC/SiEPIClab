@@ -292,7 +292,7 @@ class CorvusEcoClass:
 
         if self.NumberOfAxis == 2:
             try:
-                self.ser.write('%.6f %.6f r' % (x, y))
+                self.ser.write('%.6f %.6f r' % (x,y))
                 self.position[0] = self.position[0] + x
                 self.position[1] = self.position[1] + y
                 print(self.position)

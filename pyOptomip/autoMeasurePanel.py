@@ -222,8 +222,8 @@ class coordinateMapPanel(wx.Panel):
                 optPosition = self.autoMeasure.motorOpt.getPosition()
                 elecPosition = self.autoMeasure.motorElec.getPosition()
                 relativePosition = []
-                relativePosition.append(elecPosition[0] - optPosition[0])
-                relativePosition.append(elecPosition[1] - optPosition[1])
+                relativePosition.append(elecPosition[0] - optPosition[0]*0.82)
+                relativePosition.append(elecPosition[1] - optPosition[1]*0.8)
                 print("Electrical Motor Position:")
                 print(elecPosition)
                 relativePosition.append(elecPosition[2])
@@ -259,8 +259,8 @@ class coordinateMapPanel(wx.Panel):
                 print("Electrical Motor Position:")
                 print(elecPosition)
                 relativePosition = []
-                relativePosition.append(elecPosition[0] - optPosition[0])
-                relativePosition.append(elecPosition[1] - optPosition[1])
+                relativePosition.append(elecPosition[0] - optPosition[0]*0.82)
+                relativePosition.append(elecPosition[1] - optPosition[1]*0.8)
                 relativePosition.append(elecPosition[2])
                 xcoord.SetValue(str(relativePosition[0]))
                 ycoord.SetValue(str(relativePosition[1]))
@@ -294,8 +294,8 @@ class coordinateMapPanel(wx.Panel):
                 print("Electrical Motor Position:")
                 print(elecPosition)
                 relativePosition = []
-                relativePosition.append(elecPosition[0] - optPosition[0])
-                relativePosition.append(elecPosition[1] - optPosition[1])
+                relativePosition.append(elecPosition[0] - optPosition[0]*0.82)
+                relativePosition.append(elecPosition[1] - optPosition[1]*0.8)
                 relativePosition.append(elecPosition[2])
                 xcoord.SetValue(str(relativePosition[0]))
                 ycoord.SetValue(str(relativePosition[1]))
@@ -888,6 +888,7 @@ class autoMeasurePanel(wx.Panel):
         Move laser and or probe to selected device
         """
         # If laser and probe are connected
+        print('Moving to device')
         if self.autoMeasure.laser and self.autoMeasure.motorElec:
             # Calculate transform matrices
             self.autoMeasure.findCoordinateTransformOpt(self.coordMapPanelOpt.getMotorCoords(),
@@ -921,8 +922,8 @@ class autoMeasurePanel(wx.Panel):
                     adjustment = self.autoMeasure.motorOpt.getPositionforRelativeMovement()
                     adjustx = adjustment[0] / 20
                     adjusty = adjustment[1] / 20
-                    absolutex = motorCoordElec[0] + optPosition[0]  # - adjustment[0]/20
-                    absolutey = motorCoordElec[1] + optPosition[1]  # - adjustment[1]/20
+                    absolutex = motorCoordElec[0] + optPosition[0]*0.82  # - adjustment[0]/20
+                    absolutey = motorCoordElec[1] + optPosition[1]*0.8  # - adjustment[1]/20
                     absolutez = motorCoordElec[2]
                     relativex = absolutex[0] - elecPosition[0]
                     relativey = absolutey[0] - elecPosition[1]
@@ -940,7 +941,7 @@ class autoMeasurePanel(wx.Panel):
                     time.sleep(2)
                     self.autoMeasure.motorElec.moveRelativeY(-relativey)
                     time.sleep(2)
-                    self.autoMeasure.motorElec.moveRelativeZ(-relativez)
+                    #self.autoMeasure.motorElec.moveRelativeZ(-relativez)
                     # Fine align to device again
                     self.autoMeasure.fineAlign.doFineAlign()
 
@@ -971,7 +972,7 @@ class autoMeasurePanel(wx.Panel):
                     gdsCoord = (
                     float(device.getElectricalCoordinates()[0][1]), float(device.getElectricalCoordinates()[0][2]))
                     motorCoord = self.autoMeasure.gdsToMotorCoordsElec(gdsCoord)
-                    self.autoMeasure.motorElec.moveRelativeZ(1000)
+                    #self.autoMeasure.motorElec.moveRelativeZ(1000)
                     time.sleep(2)
                     if [self.autoMeasure.motorOpt] and [self.autoMeasure.motorElec]:
                         print("moving relative")
@@ -980,8 +981,8 @@ class autoMeasurePanel(wx.Panel):
                         adjustment = self.autoMeasure.motorOpt.getPositionforRelativeMovement()
                         adjustx = adjustment[0] / 20
                         adjusty = adjustment[1] / 20
-                        absolutex = motorCoord[0] + optPosition[0]  # - adjustment[0]/20
-                        absolutey = motorCoord[1] + optPosition[1]  # - adjustment[1]/20
+                        absolutex = motorCoord[0] + optPosition[0]*0.82  # - adjustment[0]/20
+                        absolutey = motorCoord[1] + optPosition[1]*0.8  # - adjustment[1]/20
                         absolutez = motorCoord[2]
                         relativex = absolutex[0] - elecPosition[0]
                         relativey = absolutey[0] - elecPosition[1]
@@ -998,7 +999,7 @@ class autoMeasurePanel(wx.Panel):
                         time.sleep(2)
                         self.autoMeasure.motorElec.moveRelativeY(-relativey)
                         time.sleep(2)
-                        self.autoMeasure.motorElec.moveRelativeZ(-relativez)
+                        #self.autoMeasure.motorElec.moveRelativeZ(-relativez)
 
     def OnButton_SelectOutputFolder(self, event):
         """ Opens a file dialog to select an output directory for automatic measurement results. """
