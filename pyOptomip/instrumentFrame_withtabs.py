@@ -376,6 +376,7 @@ class instrumentFrame_withtabs(wx.Frame):
                 if self.show:
                     ret, frame = self.cap.read()
                     width = self.cap.get(3)
+                    #print("width: {}".format(width))
                     font = 0
 
                     if self.camID == 1:
@@ -467,7 +468,9 @@ class instrumentFrame_withtabs(wx.Frame):
             print("Recording Stopped")
 
         def close(self):
+            print('Closing camera')
             self.show = False
 
         def open(self):
+            print('Opening camera')
             self.show = True

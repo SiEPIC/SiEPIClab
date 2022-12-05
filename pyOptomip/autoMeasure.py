@@ -57,6 +57,9 @@ class autoMeasure(object):
         self.saveFolder = os.getcwd()
         self.graphPanel = graph
         self.devices = []
+        self.saveoptposition1 = []
+        self.saveoptposition2 = []
+        self.saveoptposition3 = []
 
         self.wavelengthSweeps = {'RoutineName': [], 'Start': [], 'Stop': [], 'Stepsize': [], 'Sweeppower': [], 'Sweepspeed': [],
                                  'Laseroutput': [], 'Numscans': [], 'InitialRange': [], 'RangeDec': []}
