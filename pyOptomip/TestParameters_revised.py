@@ -1146,6 +1146,7 @@ class TopPanel(wx.Panel):
         if len(self.devicesselected) == 1:
             optcoordstring = '(' + str(self.devicedict[self.devicesselected[0]]['Optical Coordinates'][0]) + ',' + str(self.devicedict[self.devicesselected[0]]['Optical Coordinates'][1]) + ')'
             self.devicedatacheckList.InsertItem(0, 'Optical Coordinates:' + ' ' + optcoordstring)
+            #self.devicedatacheckList.InsertItem(2, 'Electrical Coordinates' + '' )
             #self.deviceroutinecheckList.InsertItem(1, optcoordstring)
             self.devicedatacheckList.InsertItem(1, 'Polarization:' + ' ' + self.devicedict[self.devicesselected[0]]['Polarization'])
             self.devicedatacheckList.InsertItem(4, 'Wavelength:' + ' ' + self.devicedict[self.devicesselected[0]]['Wavelength'])
