@@ -793,9 +793,6 @@ class autoMeasurePanel(wx.Panel):
         """Reads a yaml testing parameters file and stores the information as a list of electro-optic device
          objects to be used for automated measurements as well as a dictionary of routines."""
 
-        global deviceListAsObjects
-        deviceListAsObjects = []
-
         with open(originalFile, 'r') as file:
             loadedYAML = yaml.safe_load(file)
 
@@ -831,7 +828,7 @@ class autoMeasurePanel(wx.Panel):
                             electricalCoords = []
                             electricalCoords.extend(pad)
                             deviceToTest.addElectricalCoordinates(electricalCoords)
-                deviceListAsObjects.append(deviceToTest)
+                self.autoMeasure.devices.append(deviceToTest)
                 for type in loadedYAML['Routines']:
                     if type == 'Wavelength Sweep':
                         type = loadedYAML['Routines']['Wavelength Sweep']
@@ -885,7 +882,7 @@ class autoMeasurePanel(wx.Panel):
                                                                           routine['RangeDec'], routine['Channel A'],
                                                                           routine['Channel B'], routine['Voltages'])
 
-        self.importObjects(deviceListAsObjects)
+        self.importObjects(self.autoMeasure.devices)
 
     def OnButton_GotoDevice(self, event):
         """
