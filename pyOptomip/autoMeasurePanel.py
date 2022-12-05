@@ -34,7 +34,6 @@ from ElectroOpticDevice import ElectroOpticDevice
 import yaml
 
 global deviceList
-global deviceListAsObjects
 
 
 class coordinateMapPanel(wx.Panel):
@@ -50,6 +49,8 @@ class coordinateMapPanel(wx.Panel):
         super(coordinateMapPanel, self).__init__(parent)
         self.autoMeasure = autoMeasure
         self.type = type  # "opt" or "elec"
+        self.deviceList = []
+
         self.InitUI()
 
     def InitUI(self):
@@ -174,38 +175,38 @@ class coordinateMapPanel(wx.Panel):
     def on_drop_down1(self, event):
         """Drop down menu for the first device. When a device is selected, its coordinates are added to the
         gds coordinates list"""
-        for dev in deviceListAsObjects:
+        for dev in self.autoMeasure.devices:
             if self.GDSDevList[0].GetString(self.GDSDevList[0].GetSelection()) == dev.getDeviceID():
                 if dev.getOpticalCoordinates() is not None:
                     self.stxGdsCoordLst[0] = dev.getOpticalCoordinates()[0]
                     self.styGdsCoordLst[0] = dev.getOpticalCoordinates()[1]
                 if dev.getReferenceBondPad() is not None:
-                    self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
-                    self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
+                    self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[0])
+                    self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[1])
 
     def on_drop_down2(self, event):
         """Drop down menu for the second device. When a device is selected, its coordinates are added to the
         gds coordinates list and associated motor coordinates are added to the motor coordinates list"""
-        for dev in deviceListAsObjects:
+        for dev in self.autoMeasure.devices:
             if self.GDSDevList[1].GetString(self.GDSDevList[1].GetSelection()) == dev.getDeviceID():
                 if dev.getOpticalCoordinates() is not None:
                     self.stxGdsCoordLst[1] = dev.getOpticalCoordinates()[0]
                     self.styGdsCoordLst[1] = dev.getOpticalCoordinates()[1]
                 if dev.getReferenceBondPad() is not None:
-                    self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
-                    self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
+                    self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[0])
+                    self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[1])
 
     def on_drop_down3(self, event):
         """Drop down menu for the third device. When a device is selected, its coordinates are added to the
         gds coordinates list and associated motor coordinates are added to the motor coordinates list"""
-        for dev in deviceListAsObjects:
+        for dev in self.autoMeasure.devices:
             if self.GDSDevList[2].GetString(self.GDSDevList[2].GetSelection()) == dev.getDeviceID():
                 if dev.getOpticalCoordinates() is not None:
                     self.stxGdsCoordLst[2] = dev.getOpticalCoordinates()[0]
                     self.styGdsCoordLst[2] = dev.getOpticalCoordinates()[1]
                 if dev.getReferenceBondPad() is not None:
-                    self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[1])
-                    self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[2])
+                    self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[0])
+                    self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[1])
 
     def Event_OnCoordButton1(self, event, xcoord, ycoord, zcoord):
         """ Called when the button is pressed to get the current motor coordinates, and put it into the text box. """
@@ -349,36 +350,34 @@ class coordinateMapPanel(wx.Panel):
 
     def PopulateDropDowns(self):
         """Populates drop down menu for device selection within the coordinate map panel"""
-        global deviceList
+        for device in self.autoMeasure.devices:
+            self.deviceList.append(device.getDeviceID())
         for GDSDevice in self.GDSDevList:
-            GDSDevice.AppendItems(deviceList)
+            GDSDevice.AppendItems(self.deviceList)
 
     def SortDropDowns1(self, event):
         """Sort drop downs based on search"""
-        global deviceList
         GDSDevice = self.GDSDevList[0]
 
-        deviceList.sort(key=lambda x: 1 if GDSDevice.GetValue() not in x else 0)
+        self.deviceList.sort(key=lambda x: 1 if GDSDevice.GetValue() not in x else 0)
         GDSDevice.Clear()
-        GDSDevice.AppendItems(deviceList)
+        GDSDevice.AppendItems(self.deviceList)
 
     def SortDropDowns2(self, event):
         """Sort drop downs based on search"""
-        global deviceList
         GDSDevice = self.GDSDevList[1]
 
-        deviceList.sort(key=lambda x: 1 if GDSDevice.GetValue() not in x else 0)
+        self.deviceList.sort(key=lambda x: 1 if GDSDevice.GetValue() not in x else 0)
         GDSDevice.Clear()
-        GDSDevice.AppendItems(deviceList)
+        GDSDevice.AppendItems(self.deviceList)
 
     def SortDropDowns3(self, event):
         """Sort drop downs based on search"""
-        global deviceList
         GDSDevice = self.GDSDevList[2]
 
-        deviceList.sort(key=lambda x: 1 if GDSDevice.GetValue() not in x else 0)
+        self.deviceList.sort(key=lambda x: 1 if GDSDevice.GetValue() not in x else 0)
         GDSDevice.Clear()
-        GDSDevice.AppendItems(deviceList)
+        GDSDevice.AppendItems(self.deviceList)
 
 
 class autoMeasurePanel(wx.Panel):
@@ -411,8 +410,7 @@ class autoMeasurePanel(wx.Panel):
         """Sets up the layout for the autoMeasurePanel"""
 
         # List of devices as ElectroOpticDevice objects
-        global deviceListAsObjects
-        deviceListAsObjects = []
+
 
         # Create Automated Measurements Panel
         sbOuter = wx.StaticBox(self, label='Automated Measurements')
@@ -594,8 +592,6 @@ class autoMeasurePanel(wx.Panel):
             self.checkList.InsertItem(ii, device)
             for dev in listOfDevicesAsObjects:
                 if dev.getDeviceID() == device:
-                    index = deviceListAsObjects.index(dev)  # Stores index of device in list
-                    self.checkList.SetItemData(ii, index)
                     if not dev.hasRoutines():
                         self.checkList.SetItemTextColour(ii, wx.Colour(211, 211, 211))
         self.checkList.EnableCheckBoxes()
@@ -625,10 +621,10 @@ class autoMeasurePanel(wx.Panel):
         def checkListSort(item1, item2):
             """Used for sorting the checklist of devices on the chip"""
             # Items are the client data associated with each entry
-            if term in deviceListAsObjects[item2].getDeviceID() and term not in deviceListAsObjects[
+            if term in self.autoMeasure.devices[item2].getDeviceID() and term not in self.autoMeasure.devices[
                 item1].getDeviceID():
                 return 1
-            elif term in deviceListAsObjects[item1].getDeviceID() and term not in deviceListAsObjects[
+            elif term in self.autoMeasure.devices[item1].getDeviceID() and term not in self.autoMeasure.devices[
                 item2].getDeviceID():
                 return -1
             else:
@@ -715,7 +711,7 @@ class autoMeasurePanel(wx.Panel):
         optDev1 = optDev1  # [dev name, x motor coord, y motor coord, z motor coord]
         self.coordMapPanelOpt.tbGdsDevice1.SetString(0, optDev1[0])
         self.coordMapPanelOpt.tbGdsDevice1.SetSelection(0)
-        for dev in deviceListAsObjects:
+        for dev in self.autoMeasure.devices:
             if optDev1[0] == dev.getDeviceID():
                 if dev.getOpticalCoordinates() is not None:
                     self.coordMapPanelOpt.stxGdsCoordLst[0] = dev.getOpticalCoordinates()[0]
@@ -734,7 +730,7 @@ class autoMeasurePanel(wx.Panel):
         optDev2 = optDev2
         self.coordMapPanelOpt.tbGdsDevice2.SetString(0, optDev2[0])
         self.coordMapPanelOpt.tbGdsDevice2.SetSelection(0)
-        for dev in deviceListAsObjects:
+        for dev in self.autoMeasure.devices:
             if optDev2[0] == dev.getDeviceID():
                 if dev.getOpticalCoordinates() is not None:
                     self.coordMapPanelOpt.stxGdsCoordLst[1] = dev.getOpticalCoordinates()[0]
@@ -753,7 +749,7 @@ class autoMeasurePanel(wx.Panel):
         optDev3 = optDev3
         self.coordMapPanelOpt.tbGdsDevice3.SetString(0, optDev3[0])
         self.coordMapPanelOpt.tbGdsDevice3.SetSelection(0)
-        for dev in deviceListAsObjects:
+        for dev in self.autoMeasure.devices:
             if optDev3[0] == dev.getDeviceID():
                 if dev.getOpticalCoordinates() is not None:
                     self.coordMapPanelOpt.stxGdsCoordLst[2] = dev.getOpticalCoordinates()[0]
@@ -798,20 +794,17 @@ class autoMeasurePanel(wx.Panel):
             for device in loadedYAML['Devices']:
                 devExists = False
                 device = loadedYAML['Devices'][device]
-                if len(deviceListAsObjects) == 0:
+                if len(self.autoMeasure.devices) == 0:
                     deviceToTest = ElectroOpticDevice(device['DeviceID'], device['Wavelength'],
                                                       device['Polarization'], device['Optical Coordinates'],
                                                       device['Type'])
                     deviceToTest.addRoutines(device['Routines'])
                     if device['Electrical Coordinates']:
-                        for pad in device['Electrical Coordinates']:
-                            electricalCoords = []
-                            electricalCoords.extend(pad)
-                            deviceToTest.addElectricalCoordinates(electricalCoords)
+                            deviceToTest.addElectricalCoordinates(device['Electrical Coordinates'])
                 else:
-                    for deviceObj in deviceListAsObjects:
+                    for deviceObj in self.autoMeasure.devices:
                         if deviceObj.getDeviceID() == device['DeviceID']:
-                            deviceToTest = device
+                            deviceToTest = deviceObj
                             deviceToTest.addRoutines(device['Routines'])
                             for pad in device['Electrical Coordinates']:
                                 electricalCoords = []
@@ -896,7 +889,7 @@ class autoMeasurePanel(wx.Panel):
             self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
                                                          self.coordMapPanelElec.getGdsCoordsElec())
             # lift wedge probe
-            self.autoMeasure.motorElec.moveRelativeZ(1000)
+            #self.autoMeasure.motorElec.moveRelativeZ(1000)
             time.sleep(2)
             # move wedge probe out of the way
             elecPosition = self.autoMeasure.motorElec.getPosition()

@@ -386,8 +386,7 @@ class instrumentFrame_withtabs(wx.Frame):
                         cv2.putText(frame, 'X', ((int(2*width/12))+10, int(width/12)), font, 1, (0, 0, 255), 2, cv2.LINE_AA)
                         cv2.putText(frame, 'Y', (int(width / 12) -10, int(2*width/12)+ 50), font, 1, (0, 0, 255), 2, cv2.LINE_AA)
                         cv2.putText(frame, 'Z', (int(width / 12) - 10, int(width / 12) - 30), font, 1, (0, 0, 255), 2, cv2.LINE_AA)
-                        cv2.putText(frame, 'X', ((int(width / 12)) - 30, int(width / 12) + 60), font, 1, (0, 0, 255), 5,
-                                    cv2.LINE_AA)
+                        cv2.putText(frame, 'X', ((int(width / 12)-10), int(width / 12)+10), font, 1, (0, 0, 255), 5, cv2.LINE_AA)
 
                     if self.camID == 0:
                         #draw axes here
