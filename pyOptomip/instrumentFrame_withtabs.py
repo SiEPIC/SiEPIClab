@@ -230,10 +230,9 @@ class instrumentFrame_withtabs(wx.Frame):
                 electricalStagePanel = electricalStage.panelClass(self, electricalStage)
                 homeVbox.Add(electricalStagePanel, proportion=0, border=0, flag=wx.EXPAND)
                 if SMU:
-
                     smuPanel = resistancePanel(self, SMU)
                     smuHbox = wx.BoxSizer(wx.HORIZONTAL)
-                    smuHbox.Add(smuPanel, proportion=1, border=0, flag=wx.EXPAND)
+                    smuHbox.Add(smuPanel, proportion=0, border=0, flag=wx.EXPAND)
                     homeVbox.Add(smuHbox, 1, wx.EXPAND)
             if laserWithDetector:
                 detectorPanel = laserWithDetector.panelClass(self, laserWithDetector, False, True)
@@ -249,7 +248,7 @@ class instrumentFrame_withtabs(wx.Frame):
             homeVbox2.Add(camerapanel, 0, wx.EXPAND)
 
             statuspanel = statusPanel(self, instr)
-            homeVbox2.Add(statuspanel, 1, wx.EXPAND)
+            homeVbox2.Add(statuspanel, proportion=0, border=0, flag=wx.EXPAND)
 
             #docpanel = docPanel(self)
             #homeVbox2.Add(docpanel, 1, wx.EXPAND)
