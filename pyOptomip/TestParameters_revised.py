@@ -788,7 +788,7 @@ class TopPanel(wx.Panel):
 
         self.subroutineselected = True
 
-        subroutinetype = 'default'
+        subroutinetype = 'Default'
 
         for group in range(self.subroutinecheckList.GetItemCount()):
             if self.subroutinecheckList.IsItemChecked(group):
