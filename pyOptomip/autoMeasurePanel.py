@@ -433,7 +433,7 @@ class autoMeasurePanel(wx.Panel):
         vboxMeasurement = wx.StaticBoxSizer(sbMeasurement, wx.VERTICAL)
 
         # Create Detector Selection Box
-        sbDetectors = wx.StaticBox(self, label='Choose Detectors')
+        sbDetectors = wx.StaticBox(self, label='Choose Detectors for fine align')
         vboxDetectors = wx.StaticBoxSizer(sbDetectors, wx.VERTICAL)
 
         # Add MatPlotLib Panel
@@ -965,7 +965,7 @@ class autoMeasurePanel(wx.Panel):
                     gdsCoord = (
                     float(device.getElectricalCoordinates()[0][0]), float(device.getElectricalCoordinates()[0][1]))
                     motorCoord = self.autoMeasure.gdsToMotorCoordsElec(gdsCoord)
-                    #self.autoMeasure.motorElec.moveRelativeZ(1000)
+                    self.autoMeasure.motorElec.moveRelativeZ(1000)
                     time.sleep(2)
                     if [self.autoMeasure.motorOpt] and [self.autoMeasure.motorElec]:
                         print("moving relative")
@@ -979,7 +979,7 @@ class autoMeasurePanel(wx.Panel):
                         absolutez = motorCoord[2]
                         relativex = absolutex[0] - elecPosition[0]
                         relativey = absolutey[0] - elecPosition[1]
-                        relativez = absolutez[0] - elecPosition[2] + 30
+                        relativez = absolutez[0] - elecPosition[2] + 20
                         if relativex < 0:
                             relativex = relativex
                         if relativey < 0:
@@ -992,7 +992,7 @@ class autoMeasurePanel(wx.Panel):
                         time.sleep(2)
                         self.autoMeasure.motorElec.moveRelativeY(-relativey)
                         time.sleep(2)
-                        #self.autoMeasure.motorElec.moveRelativeZ(-relativez)
+                        self.autoMeasure.motorElec.moveRelativeZ(-relativez)
 
     def OnButton_SelectOutputFolder(self, event):
         """ Opens a file dialog to select an output directory for automatic measurement results. """

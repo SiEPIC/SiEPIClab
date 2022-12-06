@@ -44,6 +44,7 @@ class hp816x_N77Det(hp816x_instr.hp816x):
 
         queryID = 1  # The instrument ignores this value.
         res = self.hp816x_init(n77DetAddr.encode('utf-8'), queryID, reset, byref(self.hN77Det))
+        self.ress = res
         self.checkErrorN77(res)
         self.registerMainframe(self.hN77Det)
         self.N77SlotInfo = self.getN77SlotInfo()  # Keep mainframe slot info
