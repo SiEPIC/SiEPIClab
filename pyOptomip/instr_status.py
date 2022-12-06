@@ -48,15 +48,16 @@ class statusPanel(wx.Panel):
             self.instrumentList.InsertItem(ii, str(inst.name + ':' + inst.visaName))
 
         for ii, instrument in enumerate(self.instr):
-            self.visaName = instrument.visaName
-            self.inst = rm.open_resource(self.visaName)
-            print(self.inst.query("*IDN?\n"))
-            response = self.inst.query("*IDN?\n")
-            print(response)
-            if response == _____: #test in lab
-                self.connectList.InsertItem(ii, 'Connected')
-            else:
-                self.connectList.InsertItem(ii, 'Error')
+            if instrument.name != 'Wedge Probe Stage':
+                self.visaName = instrument.visaName
+                self.inst = rm.open_resource(self.visaName)
+                print(self.inst.query("*IDN?\n"))
+                response = self.inst.query("*IDN?\n")
+                print(response)
+                if response == _____: #test in lab
+                    self.connectList.InsertItem(ii, 'Connected')
+                else:
+                    self.connectList.InsertItem(ii, 'Error')
 
         #for a in range(len(inst)):
 
