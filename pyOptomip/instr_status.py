@@ -48,16 +48,39 @@ class statusPanel(wx.Panel):
             self.instrumentList.InsertItem(ii, str(inst.name + ':' + inst.visaName))
 
         for ii, instrument in enumerate(self.instr):
-            if instrument.name != 'Wedge Probe Stage':
+
+            if instrument.name == 'Chip Stage':
                 self.visaName = instrument.visaName
                 self.inst = rm.open_resource(self.visaName)
-                print(self.inst.query("*IDN?\n"))
+                # print(self.inst.query("*IDN?\n"))
+                try:
+                    self.inst.write('identify')
+                    response = self.inst.read()
+                    if response == 'Corvus Eco 1 456 1 200\r\n':  # test in lab
+                        self.connectList.InsertItem(ii, 'Connected')
+                    else:
+                        self.connectList.InsertItem(ii, 'Error')
+                except:
+                    self.connectList.InsertItem(ii, 'Error')
+            elif instrument.name == 'SMU':
+                self.visaName = instrument.visaName
+                self.inst = rm.open_resource(self.visaName)
+                #print(self.inst.query("*IDN?\n"))
                 response = self.inst.query("*IDN?\n")
                 print(response)
-                if response == _____: #test in lab
+                if response == 'Keithley Instruments Inc., Model 2604B, 4371376, 3.2.2\n': #test in lab
                     self.connectList.InsertItem(ii, 'Connected')
                 else:
                     self.connectList.InsertItem(ii, 'Error')
+            elif instrument.name == 'Wedge Probe Stage':
+                    self.connectList.InsertItem(ii, 'Connected')
+            elif instrument.name == 'hp816x N77 Detector':
+                try:
+                    instrument.checkErrorN77(instrument.ress)
+                    self.connectList.InsertItem(ii, 'Connected')
+                except:
+                    self.connectList.InsertItem(ii, 'Error')
+
 
         #for a in range(len(inst)):
 
