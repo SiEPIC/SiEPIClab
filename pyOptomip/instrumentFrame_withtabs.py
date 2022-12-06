@@ -228,6 +228,7 @@ class instrumentFrame_withtabs(wx.Frame):
             if electricalStage:
                 electricalStagePanel = electricalStage.panelClass(self, electricalStage)
                 homeVbox.Add(electricalStagePanel, proportion=0, border=0, flag=wx.EXPAND)
+
                 if SMU:
                     smuPanel = resistancePanel(self, SMU)
                     smuHbox = wx.BoxSizer(wx.HORIZONTAL)
