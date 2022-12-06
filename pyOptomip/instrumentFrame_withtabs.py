@@ -260,7 +260,6 @@ class instrumentFrame_withtabs(wx.Frame):
             self.Layout()
             self.Show()
 
-
     class ElectricalTab(wx.Panel):
         def __init__(self, parent, SMU):
             """
