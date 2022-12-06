@@ -231,8 +231,8 @@ class instrumentFrame_withtabs(wx.Frame):
                 if SMU:
                     smuPanel = resistancePanel(self, SMU)
                     smuHbox = wx.BoxSizer(wx.HORIZONTAL)
-                    smuHbox.Add(smuPanel, proportion=0, border=0, flag=wx.EXPAND)
-                    homeVbox.Add(smuHbox, 1, wx.EXPAND)
+                    smuHbox.Add(smuPanel, proportion=1, border=0, flag=wx.EXPAND)
+                    homeVbox.Add(smuHbox, 0, wx.EXPAND)
             if laserWithDetector:
                 detectorPanel = laserWithDetector.panelClass(self, laserWithDetector, False, True)
                 detectHbox = wx.BoxSizer(wx.HORIZONTAL)
