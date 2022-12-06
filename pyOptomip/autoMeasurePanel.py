@@ -34,6 +34,8 @@ from ElectroOpticDevice import ElectroOpticDevice
 import yaml
 
 global deviceList
+global xscalevar
+global yscalevar
 
 
 class coordinateMapPanel(wx.Panel):
@@ -210,6 +212,8 @@ class coordinateMapPanel(wx.Panel):
 
     def Event_OnCoordButton1(self, event, xcoord, ycoord, zcoord):
         """ Called when the button is pressed to get the current motor coordinates, and put it into the text box. """
+        global xscalevar
+        global yscalevar
         if self.type == "opt":
             motorPosition = self.autoMeasure.motorOpt.getPosition()
             xcoord.SetValue(str(motorPosition[0]))
@@ -223,8 +227,8 @@ class coordinateMapPanel(wx.Panel):
                 optPosition = self.autoMeasure.motorOpt.getPosition()
                 elecPosition = self.autoMeasure.motorElec.getPosition()
                 relativePosition = []
-                relativePosition.append(elecPosition[0] - optPosition[0]*0.82)
-                relativePosition.append(elecPosition[1] - optPosition[1]*0.8)
+                relativePosition.append(elecPosition[0] - optPosition[0]*xscalevar)
+                relativePosition.append(elecPosition[1] - optPosition[1]*yscalevar)
                 print("Electrical Motor Position:")
                 print(elecPosition)
                 relativePosition.append(elecPosition[2])
@@ -260,8 +264,8 @@ class coordinateMapPanel(wx.Panel):
                 print("Electrical Motor Position:")
                 print(elecPosition)
                 relativePosition = []
-                relativePosition.append(elecPosition[0] - optPosition[0]*0.82)
-                relativePosition.append(elecPosition[1] - optPosition[1]*0.8)
+                relativePosition.append(elecPosition[0] - optPosition[0]*xscalevar)
+                relativePosition.append(elecPosition[1] - optPosition[1]*yscalevar)
                 relativePosition.append(elecPosition[2])
                 xcoord.SetValue(str(relativePosition[0]))
                 ycoord.SetValue(str(relativePosition[1]))
@@ -295,8 +299,8 @@ class coordinateMapPanel(wx.Panel):
                 print("Electrical Motor Position:")
                 print(elecPosition)
                 relativePosition = []
-                relativePosition.append(elecPosition[0] - optPosition[0]*0.82)
-                relativePosition.append(elecPosition[1] - optPosition[1]*0.8)
+                relativePosition.append(elecPosition[0] - optPosition[0]*xscalevar)
+                relativePosition.append(elecPosition[1] - optPosition[1]*yscalevar)
                 relativePosition.append(elecPosition[2])
                 xcoord.SetValue(str(relativePosition[0]))
                 ycoord.SetValue(str(relativePosition[1]))
@@ -402,6 +406,10 @@ class autoMeasurePanel(wx.Panel):
         # List of all the names of devices on the chip
         self.device_list = []
         self.camera = camera
+        global xscalevar
+        global yscalevar
+        xscalevar = 0.82
+        yscalevar = 0.8
         # No testing parameters have been uploaded
         self.parametersImported = False
         self.InitUI()
@@ -881,6 +889,8 @@ class autoMeasurePanel(wx.Panel):
         Move laser and or probe to selected device
         """
         # If laser and probe are connected
+        global xscalevar
+        global yscalevar
         print('Moving to device')
         if self.autoMeasure.laser and self.autoMeasure.motorElec:
             # Calculate transform matrices
@@ -915,8 +925,8 @@ class autoMeasurePanel(wx.Panel):
                     adjustment = self.autoMeasure.motorOpt.getPositionforRelativeMovement()
                     adjustx = adjustment[0] / 20
                     adjusty = adjustment[1] / 20
-                    absolutex = motorCoordElec[0] + optPosition[0]*0.82  # - adjustment[0]/20
-                    absolutey = motorCoordElec[1] + optPosition[1]*0.8  # - adjustment[1]/20
+                    absolutex = motorCoordElec[0] + optPosition[0]*xscalevar  # - adjustment[0]/20
+                    absolutey = motorCoordElec[1] + optPosition[1]*yscalevar  # - adjustment[1]/20
                     absolutez = motorCoordElec[2]
                     relativex = absolutex[0] - elecPosition[0]
                     relativey = absolutey[0] - elecPosition[1]
@@ -974,8 +984,8 @@ class autoMeasurePanel(wx.Panel):
                         adjustment = self.autoMeasure.motorOpt.getPositionforRelativeMovement()
                         adjustx = adjustment[0] / 20
                         adjusty = adjustment[1] / 20
-                        absolutex = motorCoord[0] + optPosition[0]*0.82  # - adjustment[0]/20
-                        absolutey = motorCoord[1] + optPosition[1]*0.8  # - adjustment[1]/20
+                        absolutex = motorCoord[0] + optPosition[0]*xscalevar  # - adjustment[0]/20
+                        absolutey = motorCoord[1] + optPosition[1]*yscalevar  # - adjustment[1]/20
                         absolutez = motorCoord[2]
                         relativex = absolutex[0] - elecPosition[0]
                         relativey = absolutey[0] - elecPosition[1]
