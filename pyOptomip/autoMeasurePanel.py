@@ -908,7 +908,7 @@ class autoMeasurePanel(wx.Panel):
                     # Fine align to device
                     self.autoMeasure.fineAlign.doFineAlign()
                     # Find relative probe position
-                    gdsCoordElec = (float(device.getElectricalCoordinates()[0][1]), float(device.getElectricalCoordinates()[0][2]))
+                    gdsCoordElec = (float(device.getElectricalCoordinates()[0][0]), float(device.getElectricalCoordinates()[0][1]))
                     motorCoordElec = self.autoMeasure.gdsToMotorCoordsElec(gdsCoordElec)
                     optPosition = self.autoMeasure.motorOpt.getPosition()
                     elecPosition = self.autoMeasure.motorElec.getPosition()
@@ -963,7 +963,7 @@ class autoMeasurePanel(wx.Panel):
             for device in self.autoMeasure.devices:
                 if device.getDeviceID() == selectedDevice:
                     gdsCoord = (
-                    float(device.getElectricalCoordinates()[0][1]), float(device.getElectricalCoordinates()[0][2]))
+                    float(device.getElectricalCoordinates()[0][0]), float(device.getElectricalCoordinates()[0][1]))
                     motorCoord = self.autoMeasure.gdsToMotorCoordsElec(gdsCoord)
                     #self.autoMeasure.motorElec.moveRelativeZ(1000)
                     time.sleep(2)
