@@ -20,6 +20,7 @@ class BSC203Motor:
         self.minXPosition = 0
 
     def connect(self, SerialPortName, NumberOfAxis):
+        self.visaName = SerialPortName
         numbers = re.findall('[0-9]+', SerialPortName)
         COM = "COM" + numbers[0]
         self.bsc = BSC(serial_port=COM, x=NumberOfAxis, home = False)
