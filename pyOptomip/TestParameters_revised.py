@@ -140,9 +140,9 @@ class TopPanel(wx.Panel):
         self.subsave = wx.Button(self, label='Save as Subroutine', size=(120, 25))
         self.subsave.Bind(wx.EVT_BUTTON, self.subroutinesavebutton)
 
-        self.routinesave = wx.Button(self, label='Save as Routine', size=(120, 25))
-        self.routinesave.Bind(wx.EVT_BUTTON, self.routinesavebutton)
-        optsavebox.AddMany([((1, 1), 1), (self.routinesave, 0, wx.EXPAND), (self.subsave, 0, wx.EXPAND)])
+        #self.routinesave = wx.Button(self, label='Save as Routine', size=(120, 25))
+        #self.routinesave.Bind(wx.EVT_BUTTON, self.routinesavebutton)
+        optsavebox.AddMany([((1, 1), 1), (self.subsave, 0, wx.EXPAND)]) #(self.routinesave, 0, wx.EXPAND),
 
         vboxparameters.AddMany([(self.parameterPanel, 0, wx.EXPAND), (optsavebox, 0, wx.EXPAND)])
         hboxroutine.AddMany([(self.routinecheckList, 0, wx.EXPAND), (self.subroutinecheckList, 0, wx.EXPAND), (vboxparameters, 0, wx.EXPAND)])
@@ -1146,6 +1146,7 @@ class TopPanel(wx.Panel):
         if len(self.devicesselected) == 1:
             optcoordstring = '(' + str(self.devicedict[self.devicesselected[0]]['Optical Coordinates'][0]) + ',' + str(self.devicedict[self.devicesselected[0]]['Optical Coordinates'][1]) + ')'
             self.devicedatacheckList.InsertItem(0, 'Optical Coordinates:' + ' ' + optcoordstring)
+            #self.devicedatacheckList.InsertItem(2, 'Electrical Coordinates' + '' )
             #self.deviceroutinecheckList.InsertItem(1, optcoordstring)
             self.devicedatacheckList.InsertItem(1, 'Polarization:' + ' ' + self.devicedict[self.devicesselected[0]]['Polarization'])
             self.devicedatacheckList.InsertItem(4, 'Wavelength:' + ' ' + self.devicedict[self.devicesselected[0]]['Wavelength'])
