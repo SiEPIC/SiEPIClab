@@ -39,7 +39,7 @@ import pyvisa as visa
 
 class CorvusEcoClass:
     NumberOfAxis = 3  # default the axis number @ 3 just in case.
-    name = 'CorvusEco'
+    name = 'Chip Stage'
     isSMU = False
     isMotor = True
     isOpt = True
@@ -57,6 +57,7 @@ class CorvusEcoClass:
             Acceleration:
             NumberOfAxis:
         """
+        self.visaName = visaName
         self.ser = rm.open_resource(visaName)  # Connects to device with pyVisa
         self.ser.baud_rate = 57600  # Sets baudrate
         self.ser.write('identify')  # Asks for identification
