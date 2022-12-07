@@ -127,6 +127,7 @@ class TopPanel(wx.Panel):
         self.routinecheckList = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
         self.routinecheckList.InsertColumn(0, 'Routine', width=200)
         self.routinecheckList.Bind(wx.EVT_LIST_ITEM_CHECKED, self.routinechecklistchecked)
+        #self.routinecheckList.Bind(wx.EVT_LIST_ITEM_CHECKED, self.reorganizeparameters)
         self.routinecheckList.Bind(wx.EVT_LIST_ITEM_UNCHECKED, self.routinechecklistunchecked)
         self.subroutinecheckList = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
         self.subroutinecheckList.InsertColumn(0, 'Subroutine', width=150)
@@ -255,7 +256,6 @@ class TopPanel(wx.Panel):
         vboxOuter.AddMany([(hboxexport, 0, wx.EXPAND)])
 
         self.SetSizer(vboxOuter)
-
 
     def OnButton_ChooseCoordFile(self, event):
         """
@@ -579,7 +579,6 @@ class TopPanel(wx.Panel):
         fileLoaded = True
         self.Refresh()
 
-
     def wavelengthcheck(self, event):
 
         self.filter = []
@@ -616,7 +615,6 @@ class TopPanel(wx.Panel):
 
 
         self.groupchecklistcheckuncheck(wx.EVT_BUTTON)
-
 
     def subroutinesavebutton(self, event):
 
@@ -674,7 +672,6 @@ class TopPanel(wx.Panel):
         self.subroutinecheckList.EnableCheckBoxes()
         # self.set = [False] * self.devicecheckList.GetItemCount()
 
-
     def removeRoutine(self, event):
 
         for num in range(self.deviceroutinecheckList.GetItemCount()):
@@ -684,7 +681,6 @@ class TopPanel(wx.Panel):
                     self.devicedict[self.devicesselected[0]]['RoutineCheck'] = False
 
         self.showdeviceinfo()
-
 
     def routinesavebutton(self, event):
 
@@ -743,7 +739,6 @@ class TopPanel(wx.Panel):
         self.routinecheckList.EnableCheckBoxes()
         #self.set = [False] * self.routinecheckList.GetItemCount()
 
-
     def clearparameters(self):
 
         self.parameterPanel.name.SetValue('')
@@ -769,13 +764,11 @@ class TopPanel(wx.Panel):
         self.parameterPanel.wavesetTc2.SetValue('')
         self.parameterPanel.voltagesetTc2.SetValue('')
 
-
     def subroutineunchecked(self, event):
 
         c = event.GetIndex()
         if c == self.newlyselected:
             self.subroutineselected = False
-
 
     def subroutinechecked(self, event):
 
@@ -817,7 +810,6 @@ class TopPanel(wx.Panel):
         self.parameterPanel.rangedecTc.SetValue(self.routinedict[self.routinetype][subroutinetype]['RangeDec'])
         self.parameterPanel.wavesetTc2.SetValue(self.routinedict[self.routinetype][subroutinetype]['Wavelengths'])
         self.parameterPanel.voltagesetTc2.SetValue(self.routinedict[self.routinetype][subroutinetype]['Voltages'])
-
 
     def routinechecklistchecked(self, event):
 
@@ -878,7 +870,6 @@ class TopPanel(wx.Panel):
         self.subroutinecheckList.EnableCheckBoxes()
         #self.set = [False] * self.devicecheckList.GetItemCount()
 
-
     def routinechecklistunchecked(self, event):
 
         c = event.GetIndex()
@@ -887,7 +878,6 @@ class TopPanel(wx.Panel):
             self.clearparameters()
             self.subroutineselected = False
             self.subroutinecheckList.DeleteAllItems()
-
 
     def OnButton_CheckAll(self, event):
         """
@@ -907,7 +897,6 @@ class TopPanel(wx.Panel):
                     self.devicecheckList.CheckItem(ii, True)
         else:
             return
-
 
     def retrievedata(self, event):
         """
@@ -953,7 +942,6 @@ class TopPanel(wx.Panel):
         #self.retrievedataselected
         #for c in self.set
 
-
     def OnButton_UncheckAll(self, event):
         """
         Uncheck all items in the checklist
@@ -968,7 +956,6 @@ class TopPanel(wx.Panel):
 
         for ii in range(self.devicecheckList.GetItemCount()):
             self.devicecheckList.CheckItem(ii, False)
-
 
     def highlight(self, event):
         """
@@ -990,7 +977,6 @@ class TopPanel(wx.Panel):
 
             if self.searchFile.GetValue() == '':
                 self.devicecheckList.SetItemBackgroundColour(c, wx.Colour(255,255,255))
-
 
     def retrievehighlight(self, index):
         """
@@ -1032,7 +1018,6 @@ class TopPanel(wx.Panel):
                 d = self.data['index'][c]
                 self.checkList.SetItemBackgroundColour(d, wx.Colour(255, 255, 0))
 
-
     def retrieveunhighlight(self, index):
         """
         When the device that was previosuly selected becomes unselected this function unhighlights all similar routine devices
@@ -1063,7 +1048,6 @@ class TopPanel(wx.Panel):
                     d = self.data['index'][c]
                     self.checkList.SetItemBackgroundColour(d, wx.Colour(255, 255, 255))
 
-
     def SearchDevices(self, event):
         """
         When the search devices button is clicked this function selects all devices in the checklist that contain the string in searchfile textctrl box
@@ -1080,7 +1064,6 @@ class TopPanel(wx.Panel):
             if self.set[c] != True and self.searchFile.GetValue() != '' and self.searchFile.GetValue() in self.devicecheckList.GetItemText(c, 0):
                 self.devicecheckList.CheckItem(c, True)
 
-
     def unSearchDevices(self, event):
         """
         Unselects all devices in checklist that contain the string in searchfile textctrl box
@@ -1096,7 +1079,6 @@ class TopPanel(wx.Panel):
         for c in range(len(self.set)):
             if self.set[c] != True and self.searchFile.GetValue() != '' and self.searchFile.GetValue() in self.devicecheckList.GetItemText(c, 0):
                 self.devicecheckList.CheckItem(c, False)
-
 
     def checkListSort(self, item1, item2):
         """
@@ -1119,7 +1101,6 @@ class TopPanel(wx.Panel):
         else:
             return 0
 
-
     def checkListchecked(self, event):
         """
         If in set data mode this function adds the now checked device to a list of selected devices, if in retrieve
@@ -1137,7 +1118,6 @@ class TopPanel(wx.Panel):
         self.devicesselected.append(self.devicecheckList.GetItemText(c))
         self.deviceroutinecheckList.DeleteAllItems()
         self.showdeviceinfo()
-
 
     def showdeviceinfo(self):
 
@@ -1161,7 +1141,6 @@ class TopPanel(wx.Panel):
 
             self.deviceroutinecheckList.EnableCheckBoxes(True)
 
-
     def deviceset(self, event):
 
         for device in self.devicesselected:
@@ -1172,7 +1151,6 @@ class TopPanel(wx.Panel):
                     self.devicedict[device]['Routines'].append(routinecode)
                     self.devicedict[device]['RoutineCheck'] = True
                     print("Set routine: " + routinecode + " for " + self.devicedict[device]['DeviceID'])
-
 
     def groupchecklistcheckuncheck(self, event):
 
@@ -1213,7 +1191,6 @@ class TopPanel(wx.Panel):
 
         self.showdeviceinfo()
 
-
     def checkListunchecked(self, event):
         """
         If in set data mode this function removes the now unchecked device from the list of selected devices, if in
@@ -1232,7 +1209,6 @@ class TopPanel(wx.Panel):
 
         self.showdeviceinfo()
 
-
     def OnButton_SelectOutputFolder(self, event):
         """
         Opens the file explorer and allows user to choose the location to save the exported csv file
@@ -1249,7 +1225,6 @@ class TopPanel(wx.Panel):
         self.outputFolderTb.SetValue(dirDlg.GetPath())
         dirDlg.Destroy()
 
-
     def OnButton_SelectImportFile(self, event):
         """
         Opens the file explorer and allows user to choose the location to save the exported csv file
@@ -1265,7 +1240,6 @@ class TopPanel(wx.Panel):
         dirDlg.ShowModal()
         self.importFolderTb = dirDlg.GetPath()
         dirDlg.Destroy()
-
 
     def SetButton(self, event):
         """
@@ -1309,7 +1283,6 @@ class TopPanel(wx.Panel):
 
         #self.autoMeasurePanel.importObjects(self.routinedict, deviceListAsObjects)
 
-
     def ExportButton(self, event):
         """
         This function takes the data contained in the data dictionary and formats it into a csv file
@@ -1344,7 +1317,6 @@ class TopPanel(wx.Panel):
             documents = yaml.dump(outputyaml, f)
 
         print('Exported YAML file as ' + primarysavefileyml)
-
 
     def ImportButton(self, event):
 
@@ -1437,7 +1409,6 @@ class TopPanel(wx.Panel):
             fileLoaded = True
             self.Refresh()
 
-
     def Merge(self, dict1, dict2):
 
         output = {}
@@ -1446,6 +1417,12 @@ class TopPanel(wx.Panel):
 
         return output
 
+    def reorganizeparameters(self, event):
+
+        routine = self.routinecheckList.GetLabel(self.currentlycheckedroutine)
+
+        if routine == 'Wavelength Sweep':
+            self.parameterPanel.paramvbox.remove(self.parameterPanel.opt_hbox8_2)
 
 
 class autoMeasure(object):
@@ -1846,15 +1823,15 @@ class ParameterPanel(wx.Panel):
 
         #create electrical panel sizer and necessary vboxes and hboxes
         sb = wx.StaticBox(self, label='Parameters')
-        paramvbox = wx.StaticBoxSizer(sb, wx.VERTICAL)
-        paramvbox.SetMinSize(300, 400)
+        self.paramvbox = wx.StaticBoxSizer(sb, wx.VERTICAL)
+        self.paramvbox.SetMinSize(300, 400)
 
         hboxname = wx.BoxSizer(wx.HORIZONTAL)
         sqname = wx.StaticText(self, label='Routine Name: ')
         self.name = wx.TextCtrl(self, size=(60, -1))
         hboxname.AddMany([(sqname, 0, wx.EXPAND), (self.name, 1, wx.EXPAND)])
 
-        paramvbox.Add(hboxname, 1, wx.EXPAND)
+        self.paramvbox.Add(hboxname, 1, wx.EXPAND)
 
         #Independent Variable selection
         hbox1 = wx.BoxSizer(wx.HORIZONTAL)
@@ -1867,7 +1844,7 @@ class ParameterPanel(wx.Panel):
         self.currentsel.Bind(wx.EVT_CHECKBOX, self.trueorfalse)
         hbox1.AddMany([(sq1_1, 0, wx.EXPAND), (self.voltsel, 1, wx.EXPAND), (self.currentsel, 0, wx.EXPAND)])
 
-        paramvbox.Add(hbox1, 1, wx.EXPAND)
+        self.paramvbox.Add(hbox1, 1, wx.EXPAND)
 
         #Voltage and Current maximum select
         hbox2 = wx.BoxSizer(wx.HORIZONTAL)
@@ -1882,7 +1859,7 @@ class ParameterPanel(wx.Panel):
         #self.maxsetcurrent.SetForegroundColour(wx.Colour(211,211,211))
         hbox2.AddMany([(sw1, 1, wx.EXPAND), (self.maxsetvoltage, 0, wx.EXPAND)])# (self.maxsetcurrent, 0, wx.EXPAND)])
 
-        paramvbox.Add(hbox2, 1, wx.EXPAND)
+        self.paramvbox.Add(hbox2, 1, wx.EXPAND)
 
         #Voltage and current minimum select
         hbox3 = wx.BoxSizer(wx.HORIZONTAL)
@@ -1897,7 +1874,7 @@ class ParameterPanel(wx.Panel):
         #self.minsetvoltage.SetForegroundColour(wx.Colour(211, 211, 211))
         hbox3.AddMany([(sw2, 1, wx.EXPAND), (self.minsetvoltage, 0, wx.EXPAND)])# (self.minsetcurrent, 0, wx.EXPAND)])
 
-        paramvbox.Add(hbox3, 1, wx.EXPAND)
+        self.paramvbox.Add(hbox3, 1, wx.EXPAND)
 
         #Voltage and Current resolution select
         hbox4 = wx.BoxSizer(wx.HORIZONTAL)
@@ -1912,7 +1889,7 @@ class ParameterPanel(wx.Panel):
         #self.resocurrent.SetForegroundColour(wx.Colour(211, 211, 211))
         hbox4.AddMany([(sw3, 1, wx.EXPAND), (self.resovoltage, 0, wx.EXPAND)]) #(self.resocurrent, 0, wx.EXPAND)])
 
-        paramvbox.Add(hbox4, 1, wx.EXPAND)
+        self.paramvbox.Add(hbox4, 1, wx.EXPAND)
 
         #Plot type selection checkboxes
         hbox5 = wx.BoxSizer(wx.HORIZONTAL)
@@ -1926,7 +1903,7 @@ class ParameterPanel(wx.Panel):
         hbox5.AddMany([(sh2, 1, wx.EXPAND), (self.typesel, 1, wx.EXPAND), (self.type2sel, 1, wx.EXPAND),
                        (self.type3sel, 1, wx.EXPAND)])
 
-        paramvbox.Add(hbox5, 1, wx.EXPAND)
+        self.paramvbox.Add(hbox5, 1, wx.EXPAND)
 
         #electrical SMU channel select checkboxes and elecrical save button
         hbox6 = wx.BoxSizer(wx.HORIZONTAL)
@@ -1939,7 +1916,7 @@ class ParameterPanel(wx.Panel):
         self.Bsel.Bind(wx.EVT_CHECKBOX, self.trueorfalse)
         hbox6.AddMany([(sq6_1, 1, wx.EXPAND), (self.Asel, 1, wx.EXPAND), (self.Bsel, 0, wx.EXPAND)])
 
-        paramvbox.Add(hbox6, 1, wx.EXPAND)
+        self.paramvbox.Add(hbox6, 1, wx.EXPAND)
 
         #optical start wavelength select
         opt_hbox = wx.BoxSizer(wx.HORIZONTAL)
@@ -1948,7 +1925,7 @@ class ParameterPanel(wx.Panel):
         self.startWvlTc.SetValue('0')
         opt_hbox.AddMany([(st4, 1, wx.EXPAND), (self.startWvlTc, 1, wx.EXPAND)])
 
-        paramvbox.Add(opt_hbox, 1, wx.EXPAND)
+        self.paramvbox.Add(opt_hbox, 1, wx.EXPAND)
 
         #optical stop wavelength select
         opt_hbox2 = wx.BoxSizer(wx.HORIZONTAL)
@@ -1957,7 +1934,7 @@ class ParameterPanel(wx.Panel):
         self.stopWvlTc.SetValue('0')
         opt_hbox2.AddMany([(st5, 1, wx.EXPAND), (self.stopWvlTc, 1, wx.EXPAND)])
 
-        paramvbox.Add(opt_hbox2, 1, wx.EXPAND)
+        self.paramvbox.Add(opt_hbox2, 1, wx.EXPAND)
 
         #optical step size select
         opt_hbox3 = wx.BoxSizer(wx.HORIZONTAL)
@@ -1966,7 +1943,7 @@ class ParameterPanel(wx.Panel):
         self.stepWvlTc.SetValue('0')
         opt_hbox3.AddMany([(st6, 1, wx.EXPAND), (self.stepWvlTc, 1, wx.EXPAND)])
 
-        paramvbox.Add(opt_hbox3, 1, wx.EXPAND)
+        self.paramvbox.Add(opt_hbox3, 1, wx.EXPAND)
 
         #optical sweep power tab
         opt_hbox4 = wx.BoxSizer(wx.HORIZONTAL)
@@ -1975,7 +1952,7 @@ class ParameterPanel(wx.Panel):
         self.sweepPowerTc.SetValue('0')
         opt_hbox4.AddMany([(sweepPowerSt, 1, wx.EXPAND), (self.sweepPowerTc, 1, wx.EXPAND)])
 
-        paramvbox.Add(opt_hbox4, 1, wx.EXPAND)
+        self.paramvbox.Add(opt_hbox4, 1, wx.EXPAND)
 
         #optical Initial range tab
         opt_hbox4_5 = wx.BoxSizer(wx.HORIZONTAL)
@@ -1984,7 +1961,7 @@ class ParameterPanel(wx.Panel):
         self.sweepinitialrangeTc.SetValue('0')
         opt_hbox4_5.AddMany([(sweepinitialrangeSt, 1, wx.EXPAND), (self.sweepinitialrangeTc, 1, wx.EXPAND)])
 
-        paramvbox.Add(opt_hbox4_5, 1, wx.EXPAND)
+        self.paramvbox.Add(opt_hbox4_5, 1, wx.EXPAND)
 
         #optical range decrement tab
         opt_hbox4_6 = wx.BoxSizer(wx.HORIZONTAL)
@@ -1993,7 +1970,7 @@ class ParameterPanel(wx.Panel):
         self.rangedecTc.SetValue('0')
         opt_hbox4_6.AddMany([(rangedecSt, 1, wx.EXPAND), (self.rangedecTc, 1, wx.EXPAND)])
 
-        paramvbox.Add(opt_hbox4_6, 1, wx.EXPAND)
+        self.paramvbox.Add(opt_hbox4_6, 1, wx.EXPAND)
 
         #optical sweep speed tab
         opt_hbox5 = wx.BoxSizer(wx.HORIZONTAL)
@@ -2002,7 +1979,7 @@ class ParameterPanel(wx.Panel):
         self.sweepSpeedCb = wx.ComboBox(self, choices=sweepSpeedOptions, style=wx.CB_READONLY, value='auto')
         opt_hbox5.AddMany([(st7, 1, wx.EXPAND), (self.sweepSpeedCb, 1, wx.EXPAND)])
 
-        paramvbox.Add(opt_hbox5, 1, wx.EXPAND)
+        self.paramvbox.Add(opt_hbox5, 1, wx.EXPAND)
 
         #optical laser output tab
         opt_hbox6 = wx.BoxSizer(wx.HORIZONTAL)
@@ -2011,7 +1988,7 @@ class ParameterPanel(wx.Panel):
         self.laserOutputCb = wx.ComboBox(self, choices=laserOutputOptions, style=wx.CB_READONLY, value='High power')
         opt_hbox6.AddMany([(st8, 1, wx.EXPAND), (self.laserOutputCb, 1, wx.EXPAND)])
 
-        paramvbox.Add(opt_hbox6, 1, wx.EXPAND)
+        self.paramvbox.Add(opt_hbox6, 1, wx.EXPAND)
 
         #optical number of scans tab
         opt_hbox7 = wx.BoxSizer(wx.HORIZONTAL)
@@ -2020,7 +1997,7 @@ class ParameterPanel(wx.Panel):
         self.numSweepCb = wx.ComboBox(self, choices=numSweepOptions, style=wx.CB_READONLY, value='1')
         opt_hbox7.AddMany([(st9, 1, wx.EXPAND), (self.numSweepCb, 1, wx.EXPAND)])
 
-        paramvbox.Add(opt_hbox7, 1, wx.EXPAND)
+        self.paramvbox.Add(opt_hbox7, 1, wx.EXPAND)
 
 
         #set wavelength, wavelength select
@@ -2030,18 +2007,18 @@ class ParameterPanel(wx.Panel):
         self.wavesetTc2.SetValue('0')
         hbox7_2.AddMany([(wavesetst, 1, wx.EXPAND), (self.wavesetTc2, 1, wx.EXPAND)])
 
-        paramvbox.Add(hbox7_2, 1, wx.EXPAND)
+        self.paramvbox.Add(hbox7_2, 1, wx.EXPAND)
 
         #set voltage, voltage selection
-        opt_hbox8_2 = wx.BoxSizer(wx.HORIZONTAL)
+        self.opt_hbox8_2 = wx.BoxSizer(wx.HORIZONTAL)
         voltagesetst = wx.StaticText(self, label='Voltages (V)')
         self.voltagesetTc2 = wx.TextCtrl(self)
         self.voltagesetTc2.SetValue('0')
-        opt_hbox8_2.AddMany([(voltagesetst, 1, wx.EXPAND), (self.voltagesetTc2, 1, wx.EXPAND)])
+        self.opt_hbox8_2.AddMany([(voltagesetst, 1, wx.EXPAND), (self.voltagesetTc2, 1, wx.EXPAND)])
 
-        paramvbox.Add(opt_hbox8_2, 1, wx.EXPAND)
+        self.paramvbox.Add(self.opt_hbox8_2, 1, wx.EXPAND)
 
-        self.SetSizer(paramvbox)
+        self.SetSizer(self.paramvbox)
 
 
     def cleartext(self, event):
