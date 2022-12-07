@@ -568,14 +568,15 @@ class autoMeasurePanel(wx.Panel):
 
         hboxDetectors = wx.BoxSizer(wx.HORIZONTAL)
 
-        # Format check boxes for detector selection
-        self.numDetectors = self.autoMeasure.laser.numPWMSlots - 1
-        self.detectorList = []
-        for ii in range(self.numDetectors):
-            self.sel = wx.CheckBox(self, label='Slot {} Det 1'.format(ii+1), pos=(20, 20))
-            self.sel.SetValue(False)
-            self.detectorList.append(self.sel)
-            hboxDetectors.AddMany([(self.sel, 1, wx.EXPAND)])
+        if self.laser:
+            # Format check boxes for detector selection
+            self.numDetectors = self.autoMeasure.laser.numPWMSlots - 1
+            self.detectorList = []
+            for ii in range(self.numDetectors):
+                self.sel = wx.CheckBox(self, label='Slot {} Det 1'.format(ii+1), pos=(20, 20))
+                self.sel.SetValue(False)
+                self.detectorList.append(self.sel)
+                hboxDetectors.AddMany([(self.sel, 1, wx.EXPAND)])
 
         vboxDetectors.AddMany([(hboxDetectors, 0, wx.EXPAND)])
 
@@ -953,7 +954,7 @@ class autoMeasurePanel(wx.Panel):
             self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
                                                          self.coordMapPanelElec.getGdsCoordsElec())
             # lift wedge probe
-            #self.autoMeasure.motorElec.moveRelativeZ(1000)
+            self.autoMeasure.motorElec.moveRelativeZ(1000)
             time.sleep(2)
             # move wedge probe out of the way
             elecPosition = self.autoMeasure.motorElec.getPosition()
@@ -977,28 +978,18 @@ class autoMeasurePanel(wx.Panel):
                     optPosition = self.autoMeasure.motorOpt.getPosition()
                     elecPosition = self.autoMeasure.motorElec.getPosition()
                     adjustment = self.autoMeasure.motorOpt.getPositionforRelativeMovement()
-                    adjustx = adjustment[0] / 20
-                    adjusty = adjustment[1] / 20
-                    absolutex = motorCoordElec[0] + optPosition[0]*xscalevar  # - adjustment[0]/20
-                    absolutey = motorCoordElec[1] + optPosition[1]*yscalevar  # - adjustment[1]/20
+                    absolutex = motorCoordElec[0] + optPosition[0]*xscalevar
+                    absolutey = motorCoordElec[1] + optPosition[1]*yscalevar
                     absolutez = motorCoordElec[2]
                     relativex = absolutex[0] - elecPosition[0]
                     relativey = absolutey[0] - elecPosition[1]
                     relativez = absolutez[0] - elecPosition[2] + 30
-                    if relativex < 0:
-                        relativex = relativex
-                    if relativey < 0:
-                        relativey = relativey
-                    if relativex > 0:
-                        relativex = relativex
-                    if relativey > 0:
-                        relativey = relativey
                     # Move probe to device
                     self.autoMeasure.motorElec.moveRelativeX(-relativex)
                     time.sleep(2)
                     self.autoMeasure.motorElec.moveRelativeY(-relativey)
                     time.sleep(2)
-                    #self.autoMeasure.motorElec.moveRelativeZ(-relativez)
+                    self.autoMeasure.motorElec.moveRelativeZ(-relativez)
                     # Fine align to device again
                     self.autoMeasure.fineAlign.doFineAlign()
 
@@ -1036,22 +1027,12 @@ class autoMeasurePanel(wx.Panel):
                         optPosition = self.autoMeasure.motorOpt.getPosition()
                         elecPosition = self.autoMeasure.motorElec.getPosition()
                         adjustment = self.autoMeasure.motorOpt.getPositionforRelativeMovement()
-                        adjustx = adjustment[0] / 20
-                        adjusty = adjustment[1] / 20
-                        absolutex = motorCoord[0] + optPosition[0]*xscalevar  # - adjustment[0]/20
-                        absolutey = motorCoord[1] + optPosition[1]*yscalevar  # - adjustment[1]/20
+                        absolutex = motorCoord[0] + optPosition[0]*xscalevar
+                        absolutey = motorCoord[1] + optPosition[1]*yscalevar
                         absolutez = motorCoord[2]
                         relativex = absolutex[0] - elecPosition[0]
                         relativey = absolutey[0] - elecPosition[1]
                         relativez = absolutez[0] - elecPosition[2] + 20
-                        if relativex < 0:
-                            relativex = relativex
-                        if relativey < 0:
-                            relativey = relativey
-                        if relativex > 0:
-                            relativex = relativex
-                        if relativey > 0:
-                            relativey = relativey
                         self.autoMeasure.motorElec.moveRelativeX(-relativex)
                         time.sleep(2)
                         self.autoMeasure.motorElec.moveRelativeY(-relativey)
@@ -1094,6 +1075,11 @@ class autoMeasurePanel(wx.Panel):
                             checkedDevicesText.append(self.checkList.GetItemText(i))
 
         activeDetectors = self.getActiveDetectors()
+
+        # Set scaling factor within automeasure
+        global xscalevar
+        global yscalevar
+        self.autoMeasure.setScale(xscalevar, yscalevar)
 
         # Start measurement using the autoMeasure device
         self.autoMeasure.beginMeasure(devices=checkedDevicesText, checkList=self.checkList,
