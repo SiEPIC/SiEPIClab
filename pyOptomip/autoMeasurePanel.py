@@ -446,11 +446,11 @@ class autoMeasurePanel(wx.Panel):
         matPlotBox.Add(self.graph, flag=wx.EXPAND, border=0, proportion=1)
 
         # Add Selection Buttons and Filter
-        self.checkAllBtn = wx.Button(self, label='Select All', size=(80, 20))
+        self.checkAllBtn = wx.Button(self, label='Select All', size=(100, 20))
         self.checkAllBtn.Bind(wx.EVT_BUTTON, self.OnButton_CheckAll)
-        self.uncheckAllBtn = wx.Button(self, label='Unselect All', size=(80, 20))
+        self.uncheckAllBtn = wx.Button(self, label='Unselect All', size=(100, 20))
         self.uncheckAllBtn.Bind(wx.EVT_BUTTON, self.OnButton_UncheckAll)
-        self.filterBtn = wx.Button(self, label='Filter', size=(70, 20))
+        self.filterBtn = wx.Button(self, label='Filter', size=(100, 20))
         self.filterBtn.Bind(wx.EVT_BUTTON, self.OnButton_Filter)
 
         # Add devices checklist
@@ -475,7 +475,7 @@ class autoMeasurePanel(wx.Panel):
         electricalBox = wx.BoxSizer(wx.HORIZONTAL)
         electricalBox.Add(self.coordMapPanelElec, proportion=1, flag=wx.EXPAND)
 
-        self.startBtn = wx.Button(self, label='Start Measurements', size=(200, 20))
+        self.startBtn = wx.Button(self, label='Start Measurements', size=(550, 20))
         self.startBtn.Bind(wx.EVT_BUTTON, self.OnButton_Start)
         self.saveBtn = wx.Button(self, label='Save Optical Alignment', size=(200, 20))
         self.saveBtn.Bind(wx.EVT_BUTTON, self.OnButton_Save)
@@ -486,14 +486,11 @@ class autoMeasurePanel(wx.Panel):
         self.importBtnCSV.Bind(wx.EVT_BUTTON, self.OnButton_ImportTestingParameters)
 
         selectBox = wx.BoxSizer(wx.HORIZONTAL)
-        selectBox.AddMany([(self.checkAllBtn, 0, wx.EXPAND), (self.uncheckAllBtn, 0, wx.EXPAND),
+        selectBox.AddMany([(self.importBtnCSV, 0, wx.EXPAND), (self.checkAllBtn, 0, wx.EXPAND), (self.uncheckAllBtn, 0, wx.EXPAND),
                            (self.filterBtn, 0, wx.EXPAND)])
 
         alignmentBox = wx.BoxSizer(wx.HORIZONTAL)
         alignmentBox.AddMany([(self.saveBtn, 0, wx.EXPAND), (self.importBtn, 0, wx.EXPAND)])
-
-        importBox = wx.BoxSizer(wx.HORIZONTAL)
-        importBox.AddMany([(self.importBtnCSV, 0, wx.EXPAND)])
 
         startBox = wx.BoxSizer(wx.HORIZONTAL)
         startBox.AddMany([(self.startBtn, 0, wx.EXPAND)])
@@ -504,11 +501,11 @@ class autoMeasurePanel(wx.Panel):
         self.setscaleBtn = wx.Button(self, label='Set Scale Adjustment', size=(150, 20))
         self.setscaleBtn.Bind(wx.EVT_BUTTON, self.changescale)
 
-        sw1 = wx.StaticText(self, label='  X: ')
+        sw1 = wx.StaticText(self, label='X: ')
         self.xadjust = wx.TextCtrl(self, size=(60, 18))
         self.xadjust.SetValue('')
 
-        sw2 = wx.StaticText(self, label='  Y: ')
+        sw2 = wx.StaticText(self, label='Y: ')
         self.yadjust = wx.TextCtrl(self, size=(60, 18))
         self.yadjust.SetValue('')
 
@@ -557,17 +554,17 @@ class autoMeasurePanel(wx.Panel):
         checkBox.AddMany([(checkListBox, 0, wx.EXPAND), (searchListBox, 0, wx.EXPAND)])
 
         # Add box to enter minimum wedge probe position in x
-        stMinPosition = wx.StaticText(self, label='Minimum Wedge Probe Position in X:')
-        hBoxMinElec = wx.BoxSizer(wx.HORIZONTAL)
+        stMinPosition = wx.StaticBox(self, label='Minimum Wedge Probe Position in X:  ')
+        hBoxMinElec = wx.StaticBoxSizer(stMinPosition, wx.HORIZONTAL)
         self.tbxMotorCoord = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
-        btnGetMotorCoord = wx.Button(self, label='Get Pos.', size=(50, 20))
+        btnGetMotorCoord = wx.Button(self, label='Set Position', size=(120, 20))
         btnGetMotorCoord.Bind(wx.EVT_BUTTON,
                               lambda event, xcoord=self.tbxMotorCoord: self.Event_OnCoordButton(
                                   event, xcoord))
         hBoxMinElec.AddMany([(self.tbxMotorCoord, 1, wx.EXPAND), (btnGetMotorCoord, 1, wx.EXPAND)])
-        vBoxMinElec = wx.BoxSizer(wx.VERTICAL)
-        vBoxMinElec.AddMany([(stMinPosition, 1, wx.EXPAND), (hBoxMinElec, 1, wx.EXPAND)])
 
+        elecAdjustBox = wx.BoxSizer(wx.HORIZONTAL)
+        elecAdjustBox.AddMany([(hBoxMinElec, 0, wx.EXPAND), (scalehbox, 0, wx.EXPAND)])
 
         hboxDetectors = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -583,9 +580,9 @@ class autoMeasurePanel(wx.Panel):
         vboxDetectors.AddMany([(hboxDetectors, 0, wx.EXPAND)])
 
         # Add all boxes to outer box
-        vboxOuter.AddMany([(importBox, 0, wx.EXPAND), (checkBox, 0, wx.EXPAND), (selectBox, 0, wx.EXPAND),
-                           (vboxOptical, 0, wx.EXPAND), (vBoxMinElec, 0, wx.EXPAND), (vboxElectrical, 0, wx.EXPAND),
-                           (scalehbox, 0, wx.EXPAND), (vboxDetectors, 0, wx.EXPAND), (topBox, 0, wx.EXPAND),
+        vboxOuter.AddMany([(checkBox, 0, wx.EXPAND), (selectBox, 0, wx.EXPAND),
+                           (vboxOptical, 0, wx.EXPAND), (vboxElectrical, 0, wx.EXPAND),
+                           (elecAdjustBox, 0, wx.EXPAND), (vboxDetectors, 0, wx.EXPAND), (topBox, 0, wx.EXPAND),
                            (startBox, 0, wx.EXPAND)])
         matPlotBox.Add(vboxOuter, flag=wx.LEFT | wx.TOP | wx.ALIGN_LEFT, border=0, proportion=0)
 
