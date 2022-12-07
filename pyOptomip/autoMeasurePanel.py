@@ -642,6 +642,7 @@ class autoMeasurePanel(wx.Panel):
         elecPosition = self.autoMeasure.motorElec.getPosition()
         xcoord.SetValue(str(elecPosition[0]))
         self.autoMeasure.motorElec.setMinXPosition(elecPosition[0])
+        self.autoMeasure.motorElec.minPositionSet = True
 
     def importObjects(self, listOfDevicesAsObjects):
         """Given a list of electro-optic device objects, this method populates all drop-down menus and
