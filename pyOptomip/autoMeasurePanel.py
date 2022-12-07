@@ -773,7 +773,7 @@ class autoMeasurePanel(wx.Panel):
         reader = csv.reader(f)
         textCoordPath = next(reader)
         self.coordFilePath = textCoordPath[0]
-        self.autoMeasure.parseCoordFile(textCoordPath[0])
+        self.autoMeasure.readCoordFile(textCoordPath[0])
         next(reader)
         next(reader)
         optDev1 = next(reader)
@@ -983,7 +983,7 @@ class autoMeasurePanel(wx.Panel):
                     absolutez = motorCoordElec[2]
                     relativex = absolutex[0] - elecPosition[0]
                     relativey = absolutey[0] - elecPosition[1]
-                    relativez = absolutez[0] - elecPosition[2] + 30
+                    relativez = absolutez[0] - elecPosition[2] + 10
                     # Move probe to device
                     self.autoMeasure.motorElec.moveRelativeX(-relativex)
                     time.sleep(2)
@@ -1032,7 +1032,7 @@ class autoMeasurePanel(wx.Panel):
                         absolutez = motorCoord[2]
                         relativex = absolutex[0] - elecPosition[0]
                         relativey = absolutey[0] - elecPosition[1]
-                        relativez = absolutez[0] - elecPosition[2] + 20
+                        relativez = absolutez[0] - elecPosition[2] + 10
                         self.autoMeasure.motorElec.moveRelativeX(-relativex)
                         time.sleep(2)
                         self.autoMeasure.motorElec.moveRelativeY(-relativey)
@@ -1079,6 +1079,8 @@ class autoMeasurePanel(wx.Panel):
         # Set scaling factor within automeasure
         global xscalevar
         global yscalevar
+        xtest = xscalevar
+        ytest = yscalevar
         self.autoMeasure.setScale(xscalevar, yscalevar)
 
         # Start measurement using the autoMeasure device
