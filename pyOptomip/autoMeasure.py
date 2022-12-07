@@ -60,6 +60,8 @@ class autoMeasure(object):
         self.saveoptposition1 = []
         self.saveoptposition2 = []
         self.saveoptposition3 = []
+        self.xscalevar = 0
+        self.yscalevar = 0
 
         self.wavelengthSweeps = {'RoutineName': [], 'Start': [], 'Stop': [], 'Stepsize': [], 'Sweeppower': [], 'Sweepspeed': [],
                                  'Laseroutput': [], 'Numscans': [], 'InitialRange': [], 'RangeDec': []}
@@ -849,6 +851,101 @@ class autoMeasure(object):
                 return
             if updateFunction is not None:
                 updateFunction(i)
+
+    def setScale(self, x, y):
+        self.xscalevar = x
+        self.yscalevar = y
+
+    def moveToDevice(self, deviceName):
+        """
+        Move laser and or probe to selected device
+        """
+        # If laser and probe are connected
+        print('Moving to device')
+        if self.laser and self.motorElec:
+            # lift wedge probe
+            self.motorElec.moveRelativeZ(1000)
+            time.sleep(2)
+            # move wedge probe out of the way
+            elecPosition = self.motorElec.getPosition()
+            if elecPosition[0] < self.motorElec.minXPosition:
+                relativex = self.motorElec.minXPosition - elecPosition[0]
+                self.motorElec.moveRelativeX(-relativex)
+                time.sleep(2)
+            selectedDevice = deviceName
+            # find device object
+            for device in self.devices:
+                if device.getDeviceID() == selectedDevice:
+                    gdsCoordOpt = (device.getOpticalCoordinates()[0], device.getOpticalCoordinates()[1])
+                    motorCoordOpt = self.gdsToMotorCoordsOpt(gdsCoordOpt)
+                    # Move chip stage
+                    self.motorOpt.moveAbsoluteXYZ(motorCoordOpt[0], motorCoordOpt[1], motorCoordOpt[2])
+                    # Fine align to device
+                    self.fineAlign.doFineAlign()
+                    # Find relative probe position
+                    gdsCoordElec = (float(device.getElectricalCoordinates()[0][0]), float(device.getElectricalCoordinates()[0][1]))
+                    motorCoordElec = self.gdsToMotorCoordsElec(gdsCoordElec)
+                    optPosition = self.motorOpt.getPosition()
+                    elecPosition = self.motorElec.getPosition()
+                    adjustment = self.motorOpt.getPositionforRelativeMovement()
+                    absolutex = motorCoordElec[0] + optPosition[0]*self.xscalevar
+                    absolutey = motorCoordElec[1] + optPosition[1]*self.yscalevar
+                    absolutez = motorCoordElec[2]
+                    relativex = absolutex[0] - elecPosition[0]
+                    relativey = absolutey[0] - elecPosition[1]
+                    relativez = absolutez[0] - elecPosition[2] + 30
+                    # Move probe to device
+                    self.motorElec.moveRelativeX(-relativex)
+                    time.sleep(2)
+                    self.motorElec.moveRelativeY(-relativey)
+                    time.sleep(2)
+                    self.motorElec.moveRelativeZ(-relativez)
+                    # Fine align to device again
+                    self.fineAlign.doFineAlign()
+
+        # if laser is connected but probe isn't
+        elif self.laser and not self.motorElec:
+            # Calculate optical transform matrix
+            selectedDevice = deviceName
+            # find device object
+            for device in self.devices:
+                if device.getDeviceID() == selectedDevice:
+                    gdsCoordOpt = (device.getOpticalCoordinates()[0], device.getOpticalCoordinates()[1])
+                    motorCoordOpt = self.gdsToMotorCoordsOpt(gdsCoordOpt)
+                    # Move chip stage
+                    self.motorOpt.moveAbsoluteXYZ(motorCoordOpt[0], motorCoordOpt[1], motorCoordOpt[2])
+
+                    # Fine align to device
+                    self.fineAlign.doFineAlign()
+
+        # if probe is connected but laser isn't
+        elif not self.laser and self.motorElec:
+            selectedDevice = deviceName
+            for device in self.devices:
+                if device.getDeviceID() == selectedDevice:
+                    gdsCoord = (
+                    float(device.getElectricalCoordinates()[0][0]), float(device.getElectricalCoordinates()[0][1]))
+                    motorCoord = self.gdsToMotorCoordsElec(gdsCoord)
+                    self.motorElec.moveRelativeZ(1000)
+                    time.sleep(2)
+                    if [self.motorOpt] and [self.motorElec]:
+                        print("moving relative")
+                        optPosition = self.motorOpt.getPosition()
+                        elecPosition = self.motorElec.getPosition()
+                        adjustment = self.motorOpt.getPositionforRelativeMovement()
+                        adjustx = adjustment[0] / 20
+                        adjusty = adjustment[1] / 20
+                        absolutex = motorCoord[0] + optPosition[0]*self.xscalevar
+                        absolutey = motorCoord[1] + optPosition[1]*self.yscalevar
+                        absolutez = motorCoord[2]
+                        relativex = absolutex[0] - elecPosition[0]
+                        relativey = absolutey[0] - elecPosition[1]
+                        relativez = absolutez[0] - elecPosition[2] + 20
+                        self.motorElec.moveRelativeX(-relativex)
+                        time.sleep(2)
+                        self.motorElec.moveRelativeY(-relativey)
+                        time.sleep(2)
+                        self.motorElec.moveRelativeZ(-relativez)
 
     def drawGraph(self, x, y, graphPanel, xlabel, ylabel):
         graphPanel.axes.cla()
