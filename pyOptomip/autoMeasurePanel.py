@@ -568,7 +568,7 @@ class autoMeasurePanel(wx.Panel):
 
         hboxDetectors = wx.BoxSizer(wx.HORIZONTAL)
 
-        if self.laser:
+        if self.autoMeasure.laser:
             # Format check boxes for detector selection
             self.numDetectors = self.autoMeasure.laser.numPWMSlots - 1
             self.detectorList = []
@@ -593,44 +593,56 @@ class autoMeasurePanel(wx.Panel):
         global xscalevar
         global yscalevar
 
-        xscalevar = self.xadjust.GetValue()
-        yscalevar = self.yadjust.GetValue()
+        if self.xadjust.GetValue() == '' or self.yadjust.GetValue() == '':
+            return
+
+        xscalevar = float(self.xadjust.GetValue())
+        yscalevar = float(self.yadjust.GetValue())
+
+        if xscalevar >= 1.5 or yscalevar >= 1.5 or xscalevar <= 0.7 or yscalevar <= 0.7:
+            xscalevar = 0.82
+            yscalevar = 0.8
+            print("Cannot scale by that amount, please choose scaling factors between 0.7 and 1.5")
+            return
+
+        print('Set X scaling factor to ' + str(xscalevar))
+        print('Set Y scaling factor to ' + str(yscalevar))
 
         relativePosition = []
 
-        if self.coordMapPanelElec.tbxMotorCoord1.GetValue() != '':
+        if self.coordMapPanelElec.tbxMotorCoord1.GetValue():
             relativePosition.append(self.coordMapPanelElec.saveelecposition1[0] - self.coordMapPanelElec.saveoptposition1[0] * xscalevar)
             relativePosition.append(self.coordMapPanelElec.saveelecposition1[1] - self.coordMapPanelElec.saveoptposition1[1] * yscalevar)
             relativePosition.append(self.coordMapPanelElec.saveelecposition1[2])
             self.coordMapPanelElec.tbxMotorCoord1.SetValue(str(relativePosition[0]))
-            self.coordMapPanelElec.tbxMotorCoord1.SetValue(str(relativePosition[1]))
-            self.coordMapPanelElec.tbxMotorCoord1.SetValue(str(relativePosition[2]))
+            self.coordMapPanelElec.tbyMotorCoord1.SetValue(str(relativePosition[1]))
+            self.coordMapPanelElec.tbzMotorCoord1.SetValue(str(relativePosition[2]))
             self.coordMapPanelElec.stxMotorCoordLst[0] = self.coordMapPanelElec.tbxMotorCoord1.GetValue()
             self.coordMapPanelElec.styMotorCoordLst[0] = self.coordMapPanelElec.tbyMotorCoord1.GetValue()
             self.coordMapPanelElec.stzMotorCoordLst[0] = self.coordMapPanelElec.tbzMotorCoord1.GetValue()
 
         relativePosition = []
 
-        if self.coordMapPanelElec.tbxMotorCoord2.GetValue() != '':
+        if self.coordMapPanelElec.tbxMotorCoord2.GetValue():
             relativePosition.append(self.coordMapPanelElec.saveelecposition2[0] - self.coordMapPanelElec.saveoptposition2[0] * xscalevar)
             relativePosition.append(self.coordMapPanelElec.saveelecposition2[1] - self.coordMapPanelElec.saveoptposition2[1] * yscalevar)
             relativePosition.append(self.coordMapPanelElec.saveelecposition2[2])
             self.coordMapPanelElec.tbxMotorCoord2.SetValue(str(relativePosition[0]))
-            self.coordMapPanelElec.tbxMotorCoord2.SetValue(str(relativePosition[1]))
-            self.coordMapPanelElec.tbxMotorCoord2.SetValue(str(relativePosition[2]))
+            self.coordMapPanelElec.tbyMotorCoord2.SetValue(str(relativePosition[1]))
+            self.coordMapPanelElec.tbzMotorCoord2.SetValue(str(relativePosition[2]))
             self.coordMapPanelElec.stxMotorCoordLst[1] = self.coordMapPanelElec.tbxMotorCoord2.GetValue()
             self.coordMapPanelElec.styMotorCoordLst[1] = self.coordMapPanelElec.tbyMotorCoord2.GetValue()
             self.coordMapPanelElec.stzMotorCoordLst[1] = self.coordMapPanelElec.tbzMotorCoord2.GetValue()
 
         relativePosition = []
 
-        if self.coordMapPanelElec.tbxMotorCoord3.GetValue() != '':
+        if self.coordMapPanelElec.tbxMotorCoord3.GetValue():
             relativePosition.append(self.coordMapPanelElec.saveelecposition3[0] - self.coordMapPanelElec.saveoptposition3[0] * xscalevar)
             relativePosition.append(self.coordMapPanelElec.saveelecposition3[1] - self.coordMapPanelElec.saveoptposition3[1] * yscalevar)
             relativePosition.append(self.coordMapPanelElec.saveelecposition3[2])
             self.coordMapPanelElec.tbxMotorCoord3.SetValue(str(relativePosition[0]))
-            self.coordMapPanelElec.tbxMotorCoord3.SetValue(str(relativePosition[1]))
-            self.coordMapPanelElec.tbxMotorCoord3.SetValue(str(relativePosition[2]))
+            self.coordMapPanelElec.tbyMotorCoord3.SetValue(str(relativePosition[1]))
+            self.coordMapPanelElec.tbzMotorCoord3.SetValue(str(relativePosition[2]))
             self.coordMapPanelElec.stxMotorCoordLst[2] = self.coordMapPanelElec.tbxMotorCoord3.GetValue()
             self.coordMapPanelElec.styMotorCoordLst[2] = self.coordMapPanelElec.tbyMotorCoord3.GetValue()
             self.coordMapPanelElec.stzMotorCoordLst[2] = self.coordMapPanelElec.tbzMotorCoord3.GetValue()
