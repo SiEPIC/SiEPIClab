@@ -965,7 +965,6 @@ class autoMeasurePanel(wx.Panel):
                     motorCoordElec = self.autoMeasure.gdsToMotorCoordsElec(gdsCoordElec)
                     optPosition = self.autoMeasure.motorOpt.getPosition()
                     elecPosition = self.autoMeasure.motorElec.getPosition()
-                    adjustment = self.autoMeasure.motorOpt.getPositionforRelativeMovement()
                     absolutex = motorCoordElec[0] + optPosition[0]*xscalevar
                     absolutey = motorCoordElec[1] + optPosition[1]*yscalevar
                     absolutez = motorCoordElec[2]
@@ -1014,7 +1013,6 @@ class autoMeasurePanel(wx.Panel):
                         print("moving relative")
                         optPosition = self.autoMeasure.motorOpt.getPosition()
                         elecPosition = self.autoMeasure.motorElec.getPosition()
-                        adjustment = self.autoMeasure.motorOpt.getPositionforRelativeMovement()
                         absolutex = motorCoord[0] + optPosition[0]*xscalevar
                         absolutey = motorCoord[1] + optPosition[1]*yscalevar
                         absolutez = motorCoord[2]
@@ -1071,9 +1069,8 @@ class autoMeasurePanel(wx.Panel):
 
         # Start measurement using the autoMeasure device
         self.autoMeasure.beginMeasure(devices=checkedDevicesText, checkList=self.checkList,
-                                      activeDetectors=activeDetectors, graph=self.graph,
-                                      camera=self.camera, abortFunction=None, updateFunction=None,
-                                      updateGraph=True)
+                                      activeDetectors=activeDetectors, camera=self.camera, abortFunction=None,
+                                      updateFunction=None, updateGraph=True)
 
         # Create a measurement progress dialog.
         autoMeasureDlg = autoMeasureProgressDialog(self, title='Automatic measurement')

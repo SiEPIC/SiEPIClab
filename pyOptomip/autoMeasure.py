@@ -386,7 +386,7 @@ class autoMeasure(object):
             self.setVoltageWavelengthSweeps['RoutineName'].append(name)
             self.hasRoutines = True
 
-    def beginMeasure(self, devices, checkList, activeDetectors, graph, camera, abortFunction=None, updateFunction=None,
+    def beginMeasure(self, devices, checkList, activeDetectors, camera, abortFunction=None, updateFunction=None,
                      updateGraph=True):
         """ Runs an automated measurement. For each device, wedge probe is moved out of the way, chip stage is moved
         so laser in aligned, wedge probe is moved to position. Various tests are performed depending on the contents
@@ -406,7 +406,7 @@ class autoMeasure(object):
 
         self.checkList = checkList
         self.activeDetectors = activeDetectors
-        self.graph = graph
+        self.graph = self.graphPanel
 
         checkedDevices = []
         for device in self.devices:
