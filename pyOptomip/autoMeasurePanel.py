@@ -446,11 +446,11 @@ class autoMeasurePanel(wx.Panel):
         matPlotBox.Add(self.graph, flag=wx.EXPAND, border=0, proportion=1)
 
         # Add Selection Buttons and Filter
-        self.checkAllBtn = wx.Button(self, label='Select All', size=(80, 20))
+        self.checkAllBtn = wx.Button(self, label='Select All', size=(100, 20))
         self.checkAllBtn.Bind(wx.EVT_BUTTON, self.OnButton_CheckAll)
-        self.uncheckAllBtn = wx.Button(self, label='Unselect All', size=(80, 20))
+        self.uncheckAllBtn = wx.Button(self, label='Unselect All', size=(100, 20))
         self.uncheckAllBtn.Bind(wx.EVT_BUTTON, self.OnButton_UncheckAll)
-        self.filterBtn = wx.Button(self, label='Filter', size=(70, 20))
+        self.filterBtn = wx.Button(self, label='Filter', size=(100, 20))
         self.filterBtn.Bind(wx.EVT_BUTTON, self.OnButton_Filter)
 
         # Add devices checklist
@@ -475,7 +475,7 @@ class autoMeasurePanel(wx.Panel):
         electricalBox = wx.BoxSizer(wx.HORIZONTAL)
         electricalBox.Add(self.coordMapPanelElec, proportion=1, flag=wx.EXPAND)
 
-        self.startBtn = wx.Button(self, label='Start Measurements', size=(500, 20))
+        self.startBtn = wx.Button(self, label='Start Measurements', size=(550, 20))
         self.startBtn.Bind(wx.EVT_BUTTON, self.OnButton_Start)
         self.saveBtn = wx.Button(self, label='Save Optical Alignment', size=(200, 20))
         self.saveBtn.Bind(wx.EVT_BUTTON, self.OnButton_Save)
@@ -557,7 +557,7 @@ class autoMeasurePanel(wx.Panel):
         stMinPosition = wx.StaticBox(self, label='Minimum Wedge Probe Position in X:  ')
         hBoxMinElec = wx.StaticBoxSizer(stMinPosition, wx.HORIZONTAL)
         self.tbxMotorCoord = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
-        btnGetMotorCoord = wx.Button(self, label='Set Pos.', size=(80, 20))
+        btnGetMotorCoord = wx.Button(self, label='Set Position', size=(120, 20))
         btnGetMotorCoord.Bind(wx.EVT_BUTTON,
                               lambda event, xcoord=self.tbxMotorCoord: self.Event_OnCoordButton(
                                   event, xcoord))
