@@ -23,7 +23,6 @@
 import traceback
 import wx
 import wx.lib.mixins.listctrl
-import myMatplotlibPanel
 from autoMeasureProgressDialog import autoMeasureProgressDialog
 import os
 import time
@@ -231,8 +230,6 @@ class coordinateMapPanel(wx.Panel):
                 self.saveoptposition1 = [optPosition[0], optPosition[1]]
                 relativePosition.append(elecPosition[0] - optPosition[0]*xscalevar)
                 relativePosition.append(elecPosition[1] - optPosition[1]*yscalevar)
-                print("Electrical Motor Position:")
-                print(elecPosition)
                 relativePosition.append(elecPosition[2])
                 xcoord.SetValue(str(relativePosition[0]))
                 ycoord.SetValue(str(relativePosition[1]))
@@ -263,8 +260,6 @@ class coordinateMapPanel(wx.Panel):
             if self.autoMeasure.motorOpt and self.autoMeasure.motorElec:
                 optPosition = self.autoMeasure.motorOpt.getPosition()
                 elecPosition = self.autoMeasure.motorElec.getPosition()
-                print("Electrical Motor Position:")
-                print(elecPosition)
                 relativePosition = []
                 self.saveelecposition2 = [elecPosition[0], elecPosition[1], elecPosition[2]]
                 self.saveoptposition2 = [optPosition[0], optPosition[1]]
@@ -300,8 +295,6 @@ class coordinateMapPanel(wx.Panel):
             if self.autoMeasure.motorOpt and self.autoMeasure.motorElec:
                 optPosition = self.autoMeasure.motorOpt.getPosition()
                 elecPosition = self.autoMeasure.motorElec.getPosition()
-                print("Electrical Motor Position:")
-                print(elecPosition)
                 relativePosition = []
                 self.saveelecposition3 = [elecPosition[0], elecPosition[1], elecPosition[2]]
                 self.saveoptposition3 = [optPosition[0], optPosition[1]]
@@ -423,9 +416,6 @@ class autoMeasurePanel(wx.Panel):
     def InitUI(self):
         """Sets up the layout for the autoMeasurePanel"""
 
-        # List of devices as ElectroOpticDevice objects
-
-
         # Create Automated Measurements Panel
         sbOuter = wx.StaticBox(self, label='Automated Measurements')
         vboxOuter = wx.StaticBoxSizer(sbOuter, wx.VERTICAL)
@@ -447,24 +437,24 @@ class autoMeasurePanel(wx.Panel):
         vboxMeasurement = wx.StaticBoxSizer(sbMeasurement, wx.VERTICAL)
 
         # Create Detector Selection Box
-        sbDetectors = wx.StaticBox(self, label='Choose Detectors for fine align')
+        sbDetectors = wx.StaticBox(self, label='Choose Detectors for Automated Measurements')
         vboxDetectors = wx.StaticBoxSizer(sbDetectors, wx.VERTICAL)
 
         # Add MatPlotLib Panel
         matPlotBox = wx.BoxSizer(wx.HORIZONTAL)
-        self.graph = self.autoMeasure.graphPanel  # use for regular mymatplotlib file
+        self.graph = self.autoMeasure.graphPanel
         matPlotBox.Add(self.graph, flag=wx.EXPAND, border=0, proportion=1)
 
         # Add Selection Buttons and Filter
-        self.checkAllBtn = wx.Button(self, label='Select All', size=(80, 20))
+        self.checkAllBtn = wx.Button(self, label='Select All', size=(100, 20))
         self.checkAllBtn.Bind(wx.EVT_BUTTON, self.OnButton_CheckAll)
-        self.uncheckAllBtn = wx.Button(self, label='Unselect All', size=(80, 20))
+        self.uncheckAllBtn = wx.Button(self, label='Unselect All', size=(100, 20))
         self.uncheckAllBtn.Bind(wx.EVT_BUTTON, self.OnButton_UncheckAll)
-        self.filterBtn = wx.Button(self, label='Filter', size=(70, 20))
+        self.filterBtn = wx.Button(self, label='Filter', size=(100, 20))
         self.filterBtn.Bind(wx.EVT_BUTTON, self.OnButton_Filter)
 
         # Add devices checklist
-        self.checkList = wx.ListCtrl(self, -1, style=wx.LC_REPORT)
+        self.checkList = wx.ListCtrl(self, size = (500, 100),  style=wx.LC_REPORT)
         self.checkList.InsertColumn(0, 'Device', width=500)
         checkListBox = wx.BoxSizer(wx.HORIZONTAL)
         checkListBox.Add(self.checkList, proportion=1, flag=wx.EXPAND)
@@ -485,52 +475,44 @@ class autoMeasurePanel(wx.Panel):
         electricalBox = wx.BoxSizer(wx.HORIZONTAL)
         electricalBox.Add(self.coordMapPanelElec, proportion=1, flag=wx.EXPAND)
 
-        self.startBtn = wx.Button(self, label='Start Measurements', size=(120, 20))
+        self.startBtn = wx.Button(self, label='Start Measurements', size=(550, 20))
         self.startBtn.Bind(wx.EVT_BUTTON, self.OnButton_Start)
-        self.saveBtn = wx.Button(self, label='Save Alignment', size=(120, 20))
+        self.saveBtn = wx.Button(self, label='Save Optical Alignment', size=(200, 20))
         self.saveBtn.Bind(wx.EVT_BUTTON, self.OnButton_Save)
-        self.importBtn = wx.Button(self, label='Import Alignment', size=(120, 20))
+        self.importBtn = wx.Button(self, label='Import Optical Alignment', size=(200, 20))
         self.importBtn.Bind(wx.EVT_BUTTON, self.OnButton_Import)
 
-        self.importBtnCSV = wx.Button(self, label='Import Testing Parameters', size=(150, 20))
+        self.importBtnCSV = wx.Button(self, label='Import Testing Parameters', size=(200, 20))
         self.importBtnCSV.Bind(wx.EVT_BUTTON, self.OnButton_ImportTestingParameters)
 
-        buttonBox = wx.BoxSizer(wx.VERTICAL)
-
         selectBox = wx.BoxSizer(wx.HORIZONTAL)
-        selectBox.AddMany([(self.checkAllBtn, 0, wx.EXPAND), (self.uncheckAllBtn, 0, wx.EXPAND),
-                           (self.filterBtn, 0, wx.EXPAND), (self.importBtnCSV, 0, wx.EXPAND)])
+        selectBox.AddMany([(self.importBtnCSV, 0, wx.EXPAND), (self.checkAllBtn, 0, wx.EXPAND), (self.uncheckAllBtn, 0, wx.EXPAND),
+                           (self.filterBtn, 0, wx.EXPAND)])
 
-        selectBox2 = wx.BoxSizer(wx.HORIZONTAL)
-        selectBox2.AddMany([(self.saveBtn, 0, wx.EXPAND),
-                            (self.importBtn, 0, wx.EXPAND), (self.startBtn, 0, wx.EXPAND)])
+        alignmentBox = wx.BoxSizer(wx.HORIZONTAL)
+        alignmentBox.AddMany([(self.saveBtn, 0, wx.EXPAND), (self.importBtn, 0, wx.EXPAND)])
 
-        buttonBox.AddMany([(selectBox, 0, wx.EXPAND), (selectBox2, 0, wx.EXPAND)])
-
-        butandscaleBox = wx.BoxSizer(wx.HORIZONTAL)
+        startBox = wx.BoxSizer(wx.HORIZONTAL)
+        startBox.AddMany([(self.startBtn, 0, wx.EXPAND)])
 
         scaletext = wx.StaticBox(self, label='Scale Adjust')
-        scalevbox = wx.StaticBoxSizer(scaletext, wx.VERTICAL)
-        scalehbox = wx.BoxSizer(wx.HORIZONTAL)
+        scalehbox = wx.StaticBoxSizer(scaletext, wx.HORIZONTAL)
 
         self.setscaleBtn = wx.Button(self, label='Set Scale Adjustment', size=(150, 20))
         self.setscaleBtn.Bind(wx.EVT_BUTTON, self.changescale)
 
-        sw1 = wx.StaticText(self, label='X:')
-        self.xadjust = wx.TextCtrl(self, size=(60, -1))
+        sw1 = wx.StaticText(self, label='X: ')
+        self.xadjust = wx.TextCtrl(self, size=(60, 18))
         self.xadjust.SetValue('')
 
-        sw2 = wx.StaticText(self, label='Y:')
-        self.yadjust = wx.TextCtrl(self, size=(60, -1))
+        sw2 = wx.StaticText(self, label='Y: ')
+        self.yadjust = wx.TextCtrl(self, size=(60, 18))
         self.yadjust.SetValue('')
 
-        scalehbox.AddMany([(sw1, 0, wx.EXPAND), (self.xadjust, 0, wx.EXPAND), (sw2, 0, wx.EXPAND), (self.yadjust, 0, wx.EXPAND)])
-        scalevbox.AddMany([(self.setscaleBtn, 0, wx.EXPAND), (scalehbox, 0, wx.EXPAND)])
-
-        butandscaleBox.AddMany([(buttonBox, 0, wx.EXPAND), (scalevbox, 0, wx.EXPAND)])
+        scalehbox.AddMany([(sw1, 0, wx.EXPAND), (self.xadjust, 0, wx.EXPAND), (sw2, 0, wx.EXPAND), (self.yadjust, 0, wx.EXPAND), (self.setscaleBtn, 0, wx.EXPAND)])
 
         # Add Save folder label
-        st2 = wx.StaticText(self, label='Save folder:')
+        st2 = wx.StaticText(self, label='Save Folder:')
         saveLabelBox = wx.BoxSizer(wx.HORIZONTAL)
         saveLabelBox.Add(st2, proportion=1, flag=wx.EXPAND)
 
@@ -548,7 +530,7 @@ class autoMeasurePanel(wx.Panel):
 
         # Add Measurement Buttons
         self.devSelectCb = wx.ComboBox(self, style=wx.CB_READONLY, size=(200, 20))
-        self.gotoDevBtn = wx.Button(self, label='Go', size=(70, 20))
+        self.gotoDevBtn = wx.Button(self, label='Go', size=(70, 22))
         self.gotoDevBtn.Bind(wx.EVT_BUTTON, self.OnButton_GotoDevice)
         goBox = wx.BoxSizer(wx.HORIZONTAL)
         goBox.AddMany([(self.devSelectCb, 1, wx.EXPAND), (self.gotoDevBtn, 0, wx.EXPAND)])
@@ -556,7 +538,7 @@ class autoMeasurePanel(wx.Panel):
         vboxUpload.AddMany([(saveLabelBox, 0, wx.EXPAND), (saveBox, 0, wx.EXPAND)])
 
         # Populate Optical Box with alignment and buttons
-        vboxOptical.AddMany([(opticalBox, 0, wx.EXPAND)])
+        vboxOptical.AddMany([(opticalBox, 0, wx.EXPAND), (alignmentBox, 0, wx.EXPAND)])
 
         # Populate Electrical Box with alignment and buttons
         vboxElectrical.AddMany([(electricalBox, 0, wx.EXPAND)])
@@ -569,43 +551,40 @@ class autoMeasurePanel(wx.Panel):
         topBox.AddMany([(vboxUpload, 1, wx.EXPAND), (vboxMeasurement, 0, wx.EXPAND)])
 
         checkBox = wx.BoxSizer(wx.VERTICAL)
-        checkBox.AddMany([(checkListBox, 0, wx.EXPAND), (searchListBox, 0, wx.EXPAND), (butandscaleBox, 0, wx.EXPAND)])
+        checkBox.AddMany([(checkListBox, 0, wx.EXPAND), (searchListBox, 0, wx.EXPAND)])
 
         # Add box to enter minimum wedge probe position in x
-        stMinPosition = wx.StaticText(self, label='Minimum Wedge Probe Position in X:')
-        hBoxMinElec = wx.BoxSizer(wx.HORIZONTAL)
+        stMinPosition = wx.StaticBox(self, label='Minimum Wedge Probe Position in X:  ')
+        hBoxMinElec = wx.StaticBoxSizer(stMinPosition, wx.HORIZONTAL)
         self.tbxMotorCoord = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
-        btnGetMotorCoord = wx.Button(self, label='Get Pos.', size=(50, 20))
+        btnGetMotorCoord = wx.Button(self, label='Set Position', size=(120, 20))
         btnGetMotorCoord.Bind(wx.EVT_BUTTON,
                               lambda event, xcoord=self.tbxMotorCoord: self.Event_OnCoordButton(
                                   event, xcoord))
         hBoxMinElec.AddMany([(self.tbxMotorCoord, 1, wx.EXPAND), (btnGetMotorCoord, 1, wx.EXPAND)])
-        vBoxMinElec = wx.BoxSizer(wx.VERTICAL)
-        vBoxMinElec.AddMany([(stMinPosition, 1, wx.EXPAND), (hBoxMinElec, 1, wx.EXPAND)])
 
-        # Format check boxes for detector selection
-        self.sel1 = wx.CheckBox(self, label='Slot 1 Det 1', pos=(20, 20))
-        self.sel1.SetValue(False)
+        elecAdjustBox = wx.BoxSizer(wx.HORIZONTAL)
+        elecAdjustBox.AddMany([(hBoxMinElec, 0, wx.EXPAND), (scalehbox, 0, wx.EXPAND)])
 
-        self.sel2 = wx.CheckBox(self, label='Slot 2 Det 1', pos=(20, 20))
-        self.sel2.SetValue(False)
-
-        self.sel3 = wx.CheckBox(self, label='Slot 3 Det 1', pos=(20, 20))
-        self.sel3.SetValue(False)
-
-        self.sel4 = wx.CheckBox(self, label='Slot 4 Det 1', pos=(20, 20))
-        self.sel4.SetValue(False)
-
-        # Populate Detector selection box with check boxes and text
         hboxDetectors = wx.BoxSizer(wx.HORIZONTAL)
-        hboxDetectors.AddMany([(self.sel1, 1, wx.EXPAND), (self.sel2, 1, wx.EXPAND), (self.sel3, 1, wx.EXPAND),
-                               (self.sel4, 1, wx.EXPAND)])
+
+        if self.autoMeasure.laser:
+            # Format check boxes for detector selection
+            self.numDetectors = self.autoMeasure.laser.numPWMSlots - 1
+            self.detectorList = []
+            for ii in range(self.numDetectors):
+                self.sel = wx.CheckBox(self, label='Slot {} Det 1'.format(ii+1), pos=(20, 20))
+                self.sel.SetValue(False)
+                self.detectorList.append(self.sel)
+                hboxDetectors.AddMany([(self.sel, 1, wx.EXPAND)])
 
         vboxDetectors.AddMany([(hboxDetectors, 0, wx.EXPAND)])
 
         # Add all boxes to outer box
-        vboxOuter.AddMany([(topBox, 0, wx.EXPAND), (checkBox, 0, wx.EXPAND), (vboxOptical, 0, wx.EXPAND),
-                           (vboxElectrical, 0, wx.EXPAND), (vBoxMinElec, 0, wx.EXPAND), (vboxDetectors, 0, wx.EXPAND)])
+        vboxOuter.AddMany([(checkBox, 0, wx.EXPAND), (selectBox, 0, wx.EXPAND),
+                           (vboxOptical, 0, wx.EXPAND), (vboxElectrical, 0, wx.EXPAND),
+                           (elecAdjustBox, 0, wx.EXPAND), (vboxDetectors, 0, wx.EXPAND), (topBox, 0, wx.EXPAND),
+                           (startBox, 0, wx.EXPAND)])
         matPlotBox.Add(vboxOuter, flag=wx.LEFT | wx.TOP | wx.ALIGN_LEFT, border=0, proportion=0)
 
         self.SetSizer(matPlotBox)
@@ -614,44 +593,56 @@ class autoMeasurePanel(wx.Panel):
         global xscalevar
         global yscalevar
 
-        xscalevar = self.xadjust.GetValue()
-        yscalevar = self.yadjust.GetValue()
+        if self.xadjust.GetValue() == '' or self.yadjust.GetValue() == '':
+            return
+
+        xscalevar = float(self.xadjust.GetValue())
+        yscalevar = float(self.yadjust.GetValue())
+
+        if xscalevar >= 1.5 or yscalevar >= 1.5 or xscalevar <= 0.7 or yscalevar <= 0.7:
+            xscalevar = 0.82
+            yscalevar = 0.8
+            print("Cannot scale by that amount, please choose scaling factors between 0.7 and 1.5")
+            return
+
+        print('Set X scaling factor to ' + str(xscalevar))
+        print('Set Y scaling factor to ' + str(yscalevar))
 
         relativePosition = []
 
-        if self.coordMapPanelElec.tbxMotorCoord1.GetValue() != '':
+        if self.coordMapPanelElec.tbxMotorCoord1.GetValue():
             relativePosition.append(self.coordMapPanelElec.saveelecposition1[0] - self.coordMapPanelElec.saveoptposition1[0] * xscalevar)
             relativePosition.append(self.coordMapPanelElec.saveelecposition1[1] - self.coordMapPanelElec.saveoptposition1[1] * yscalevar)
             relativePosition.append(self.coordMapPanelElec.saveelecposition1[2])
             self.coordMapPanelElec.tbxMotorCoord1.SetValue(str(relativePosition[0]))
-            self.coordMapPanelElec.tbxMotorCoord1.SetValue(str(relativePosition[1]))
-            self.coordMapPanelElec.tbxMotorCoord1.SetValue(str(relativePosition[2]))
+            self.coordMapPanelElec.tbyMotorCoord1.SetValue(str(relativePosition[1]))
+            self.coordMapPanelElec.tbzMotorCoord1.SetValue(str(relativePosition[2]))
             self.coordMapPanelElec.stxMotorCoordLst[0] = self.coordMapPanelElec.tbxMotorCoord1.GetValue()
             self.coordMapPanelElec.styMotorCoordLst[0] = self.coordMapPanelElec.tbyMotorCoord1.GetValue()
             self.coordMapPanelElec.stzMotorCoordLst[0] = self.coordMapPanelElec.tbzMotorCoord1.GetValue()
 
         relativePosition = []
 
-        if self.coordMapPanelElec.tbxMotorCoord2.GetValue() != '':
+        if self.coordMapPanelElec.tbxMotorCoord2.GetValue():
             relativePosition.append(self.coordMapPanelElec.saveelecposition2[0] - self.coordMapPanelElec.saveoptposition2[0] * xscalevar)
             relativePosition.append(self.coordMapPanelElec.saveelecposition2[1] - self.coordMapPanelElec.saveoptposition2[1] * yscalevar)
             relativePosition.append(self.coordMapPanelElec.saveelecposition2[2])
             self.coordMapPanelElec.tbxMotorCoord2.SetValue(str(relativePosition[0]))
-            self.coordMapPanelElec.tbxMotorCoord2.SetValue(str(relativePosition[1]))
-            self.coordMapPanelElec.tbxMotorCoord2.SetValue(str(relativePosition[2]))
+            self.coordMapPanelElec.tbyMotorCoord2.SetValue(str(relativePosition[1]))
+            self.coordMapPanelElec.tbzMotorCoord2.SetValue(str(relativePosition[2]))
             self.coordMapPanelElec.stxMotorCoordLst[1] = self.coordMapPanelElec.tbxMotorCoord2.GetValue()
             self.coordMapPanelElec.styMotorCoordLst[1] = self.coordMapPanelElec.tbyMotorCoord2.GetValue()
             self.coordMapPanelElec.stzMotorCoordLst[1] = self.coordMapPanelElec.tbzMotorCoord2.GetValue()
 
         relativePosition = []
 
-        if self.coordMapPanelElec.tbxMotorCoord3.GetValue() != '':
+        if self.coordMapPanelElec.tbxMotorCoord3.GetValue():
             relativePosition.append(self.coordMapPanelElec.saveelecposition3[0] - self.coordMapPanelElec.saveoptposition3[0] * xscalevar)
             relativePosition.append(self.coordMapPanelElec.saveelecposition3[1] - self.coordMapPanelElec.saveoptposition3[1] * yscalevar)
             relativePosition.append(self.coordMapPanelElec.saveelecposition3[2])
             self.coordMapPanelElec.tbxMotorCoord3.SetValue(str(relativePosition[0]))
-            self.coordMapPanelElec.tbxMotorCoord3.SetValue(str(relativePosition[1]))
-            self.coordMapPanelElec.tbxMotorCoord3.SetValue(str(relativePosition[2]))
+            self.coordMapPanelElec.tbyMotorCoord3.SetValue(str(relativePosition[1]))
+            self.coordMapPanelElec.tbzMotorCoord3.SetValue(str(relativePosition[2]))
             self.coordMapPanelElec.stxMotorCoordLst[2] = self.coordMapPanelElec.tbxMotorCoord3.GetValue()
             self.coordMapPanelElec.styMotorCoordLst[2] = self.coordMapPanelElec.tbyMotorCoord3.GetValue()
             self.coordMapPanelElec.stzMotorCoordLst[2] = self.coordMapPanelElec.tbzMotorCoord3.GetValue()
@@ -661,6 +652,7 @@ class autoMeasurePanel(wx.Panel):
         elecPosition = self.autoMeasure.motorElec.getPosition()
         xcoord.SetValue(str(elecPosition[0]))
         self.autoMeasure.motorElec.setMinXPosition(elecPosition[0])
+        self.autoMeasure.motorElec.minPositionSet = True
 
     def importObjects(self, listOfDevicesAsObjects):
         """Given a list of electro-optic device objects, this method populates all drop-down menus and
@@ -730,14 +722,9 @@ class autoMeasurePanel(wx.Panel):
 
     def getActiveDetectors(self):
         activeDetectorLst = list()
-        if self.sel1.GetValue() == True:
-            activeDetectorLst.append(0)
-        if self.sel2.GetValue() == True:
-            activeDetectorLst.append(1)
-        if self.sel3.GetValue() == True:
-            activeDetectorLst.append(2)
-        if self.sel4.GetValue() == True:
-            activeDetectorLst.append(3)
+        for ii in range(self.numDetectors):
+            if self.detectorList[ii].GetValue() == True:
+                activeDetectorLst.append(ii)
         return activeDetectorLst
 
     def OnButton_Save(self, event):
@@ -745,13 +732,10 @@ class autoMeasurePanel(wx.Panel):
         A = self.autoMeasure.findCoordinateTransformOpt(self.coordMapPanelOpt.getMotorCoords(),
                                                         self.coordMapPanelOpt.getGdsCoordsOpt())
 
-        B = self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
-                                                         self.coordMapPanelElec.getGdsCoordsElec())
-
         # Make a folder with the current time
         fileName = self.outputFolderTb.GetValue()
         timeStr = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
-        csvFileName = os.path.join(self.outputFolderTb.GetValue(), timeStr + '_{}.csv'.format(fileName))
+        csvFileName = os.path.join(self.outputFolderTb.GetValue(), timeStr + '.csv')
 
         f = open(csvFileName, 'w', newline='')
         writer = csv.writer(f)
@@ -762,7 +746,7 @@ class autoMeasurePanel(wx.Panel):
         writer.writerow(Opt)
         Opt = ['Device', 'Motor x', 'Motor y', 'Motor z']
         writer.writerow(Opt)
-        if not all(optCoords):
+        if not all(item == 0 for item in optCoords):
             dev1 = [self.coordMapPanelOpt.tbGdsDevice1.GetString(self.coordMapPanelOpt.tbGdsDevice1.GetSelection()),
                     optCoords[0][0], optCoords[0][1], optCoords[0][2]]
             dev2 = [self.coordMapPanelOpt.tbGdsDevice2.GetString(self.coordMapPanelOpt.tbGdsDevice2.GetSelection()),
@@ -891,20 +875,14 @@ class autoMeasurePanel(wx.Panel):
                         if deviceObj.getDeviceID() == device['DeviceID']:
                             deviceToTest = deviceObj
                             deviceToTest.addRoutines(device['Routines'])
-                            for pad in device['Electrical Coordinates']:
-                                electricalCoords = []
-                                electricalCoords.extend(pad)
-                                deviceToTest.addElectricalCoordinates(electricalCoords)
+                            deviceToTest.addElectricalCoordinates(device['Electrical Coordinates'])
                             devExists = True
                     if not devExists:
                         deviceToTest = ElectroOpticDevice(device['DeviceID'], device['Wavelength'],
                                                           device['Polarization'], device['Optical Coordinates'],
                                                           device['Type'])
                         deviceToTest.addRoutines(device['Routines'])
-                        for pad in device['Electrical Coordinates']:
-                            electricalCoords = []
-                            electricalCoords.extend(pad)
-                            deviceToTest.addElectricalCoordinates(electricalCoords)
+                        deviceToTest.addElectricalCoordinates(device['Electrical Coordinates'])
                 deviceList.append(deviceToTest)
                 for type in loadedYAML['Routines']:
                     if type == 'Wavelength Sweep':
@@ -976,7 +954,7 @@ class autoMeasurePanel(wx.Panel):
             self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
                                                          self.coordMapPanelElec.getGdsCoordsElec())
             # lift wedge probe
-            #self.autoMeasure.motorElec.moveRelativeZ(1000)
+            self.autoMeasure.motorElec.moveRelativeZ(1000)
             time.sleep(2)
             # move wedge probe out of the way
             elecPosition = self.autoMeasure.motorElec.getPosition()
@@ -999,29 +977,18 @@ class autoMeasurePanel(wx.Panel):
                     motorCoordElec = self.autoMeasure.gdsToMotorCoordsElec(gdsCoordElec)
                     optPosition = self.autoMeasure.motorOpt.getPosition()
                     elecPosition = self.autoMeasure.motorElec.getPosition()
-                    adjustment = self.autoMeasure.motorOpt.getPositionforRelativeMovement()
-                    adjustx = adjustment[0] / 20
-                    adjusty = adjustment[1] / 20
-                    absolutex = motorCoordElec[0] + optPosition[0]*xscalevar  # - adjustment[0]/20
-                    absolutey = motorCoordElec[1] + optPosition[1]*yscalevar  # - adjustment[1]/20
+                    absolutex = motorCoordElec[0] + optPosition[0]*xscalevar
+                    absolutey = motorCoordElec[1] + optPosition[1]*yscalevar
                     absolutez = motorCoordElec[2]
                     relativex = absolutex[0] - elecPosition[0]
                     relativey = absolutey[0] - elecPosition[1]
                     relativez = absolutez[0] - elecPosition[2] + 30
-                    if relativex < 0:
-                        relativex = relativex
-                    if relativey < 0:
-                        relativey = relativey
-                    if relativex > 0:
-                        relativex = relativex
-                    if relativey > 0:
-                        relativey = relativey
                     # Move probe to device
                     self.autoMeasure.motorElec.moveRelativeX(-relativex)
                     time.sleep(2)
                     self.autoMeasure.motorElec.moveRelativeY(-relativey)
                     time.sleep(2)
-                    #self.autoMeasure.motorElec.moveRelativeZ(-relativez)
+                    self.autoMeasure.motorElec.moveRelativeZ(-relativez)
                     # Fine align to device again
                     self.autoMeasure.fineAlign.doFineAlign()
 
@@ -1058,23 +1025,12 @@ class autoMeasurePanel(wx.Panel):
                         print("moving relative")
                         optPosition = self.autoMeasure.motorOpt.getPosition()
                         elecPosition = self.autoMeasure.motorElec.getPosition()
-                        adjustment = self.autoMeasure.motorOpt.getPositionforRelativeMovement()
-                        adjustx = adjustment[0] / 20
-                        adjusty = adjustment[1] / 20
-                        absolutex = motorCoord[0] + optPosition[0]*xscalevar  # - adjustment[0]/20
-                        absolutey = motorCoord[1] + optPosition[1]*yscalevar  # - adjustment[1]/20
+                        absolutex = motorCoord[0] + optPosition[0]*xscalevar
+                        absolutey = motorCoord[1] + optPosition[1]*yscalevar
                         absolutez = motorCoord[2]
                         relativex = absolutex[0] - elecPosition[0]
                         relativey = absolutey[0] - elecPosition[1]
                         relativez = absolutez[0] - elecPosition[2] + 20
-                        if relativex < 0:
-                            relativex = relativex
-                        if relativey < 0:
-                            relativey = relativey
-                        if relativex > 0:
-                            relativex = relativex
-                        if relativey > 0:
-                            relativey = relativey
                         self.autoMeasure.motorElec.moveRelativeX(-relativex)
                         time.sleep(2)
                         self.autoMeasure.motorElec.moveRelativeY(-relativey)
@@ -1118,11 +1074,15 @@ class autoMeasurePanel(wx.Panel):
 
         activeDetectors = self.getActiveDetectors()
 
+        # Set scaling factor within automeasure
+        global xscalevar
+        global yscalevar
+        self.autoMeasure.setScale(xscalevar, yscalevar)
+
         # Start measurement using the autoMeasure device
         self.autoMeasure.beginMeasure(devices=checkedDevicesText, checkList=self.checkList,
-                                      activeDetectors=activeDetectors, graph=self.graph,
-                                      camera=self.camera, abortFunction=None, updateFunction=None,
-                                      updateGraph=True)
+                                      activeDetectors=activeDetectors, camera=self.camera, abortFunction=None,
+                                      updateFunction=None, updateGraph=True)
 
         # Create a measurement progress dialog.
         autoMeasureDlg = autoMeasureProgressDialog(self, title='Automatic measurement')

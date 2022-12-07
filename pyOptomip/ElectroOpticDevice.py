@@ -47,7 +47,6 @@ class ElectroOpticDevice:
             for bondPad in self.electricalCoordinates:
                 if bondPad[1] < reference[1]:
                     reference = bondPad
-            print(reference)
             return reference
 
     def hasRoutines(self):

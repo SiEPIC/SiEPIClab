@@ -39,7 +39,7 @@ import pyvisa as visa
 
 class CorvusEcoClass:
     NumberOfAxis = 3  # default the axis number @ 3 just in case.
-    name = 'Chip Stage'
+    name = 'Corvus Eco'
     isSMU = False
     isMotor = True
     isOpt = True
@@ -285,7 +285,6 @@ class CorvusEcoClass:
             try:
                 self.ser.write('%.6f r' % (x))
                 self.position[0] = self.position[0] + x
-                print(self.position)
                 # print ('Move Complete')
             except:
                 print('An Error has occured')
@@ -296,7 +295,6 @@ class CorvusEcoClass:
                 self.ser.write('%.6f %.6f r' % (x,y))
                 self.position[0] = self.position[0] + x
                 self.position[1] = self.position[1] + y
-                print(self.position)
                 # print ('Move Complete')
             except:
                 print('An Error has occured')
@@ -308,7 +306,6 @@ class CorvusEcoClass:
                 self.position[0] = self.position[0] + x
                 self.position[1] = self.position[1] + y
                 self.position[2] = self.position[2] + z
-                print(self.position)
                 # print ('Move Complete')
             except:
                 print('An Error has occured')

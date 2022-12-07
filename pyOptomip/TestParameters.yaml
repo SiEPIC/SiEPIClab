@@ -1,75 +1,63 @@
 Devices:
-  FarmLeft1:
-    DeviceID: FarmLeft1
-    Electrical Coordinates: []
+  device1:
+    DeviceID: device1
+    Electrical Coordinates:
+    - 62.0
+    - 3560.0
+    - G
     Optical Coordinates:
-    - 1.0
-    - -3436.0
-    Polarization: TM
-    RoutineCheck: true
-    Routines:
-    - Wavelength Sweep:Default
-    Type: TMAlign
-    Wavelength: '1550'
-  FarmLeft2:
-    DeviceID: FarmLeft2
-    Electrical Coordinates: []
-    Optical Coordinates:
-    - 3.0
-    - -3436.0
-    Polarization: TM
-    RoutineCheck: true
-    Routines:
-    - Wavelength Sweep:Default
-    Type: TMAlign
-    Wavelength: '1550'
-  FarmLeft3:
-    DeviceID: FarmLeft3
-    Electrical Coordinates: []
-    Optical Coordinates:
-    - 6.0
-    - 2216.0
-    Polarization: TM
-    RoutineCheck: true
-    Routines:
-    - Wavelength Sweep:Default
-    Type: TMAlign
-    Wavelength: '1310'
-  FarmMiddle1:
-    DeviceID: FarmMiddle1
-    Electrical Coordinates: []
-    Optical Coordinates:
-    - 2.0
-    - -3356.0
-    Polarization: TM
-    RoutineCheck: true
-    Routines:
-    - Wavelength Sweep:Default
-    Type: TMAlign
-    Wavelength: '1550'
-  FarmMiddle2:
-    DeviceID: FarmMiddle2
-    Electrical Coordinates: []
-    Optical Coordinates:
-    - 4.0
-    - -3356.0
-    Polarization: TM
-    RoutineCheck: true
-    Routines:
-    - Wavelength Sweep:Default
-    Type: TMAlign
-    Wavelength: '1550'
-  FarmRight2:
-    DeviceID: FarmRight2
-    Electrical Coordinates: []
-    Optical Coordinates:
-    - 5.0
-    - -3489.0
+    - 131.0
+    - 479.0
     Polarization: TE
     RoutineCheck: true
     Routines:
-    - Wavelength Sweep:Default
-    Type: TEAlign
+    - Voltage Sweep:Default
+    Type: device
+    Wavelength: '1550'
+  device2:
+    DeviceID: device2
+    Electrical Coordinates:
+    - 52.0
+    - 3420.0
+    - G
+    Optical Coordinates:
+    - 68.0
+    - 419.0
+    Polarization: TE
+    RoutineCheck: true
+    Routines:
+    - Voltage Sweep:Default
+    Type: device
+    Wavelength: '1550'
+  device3:
+    DeviceID: device3
+    Electrical Coordinates:
+    - 751.0
+    - 3281.0
+    - G
+    Optical Coordinates:
+    - 639.0
+    - 119.0
+    Polarization: TE
+    RoutineCheck: true
+    Routines:
+    - Voltage Sweep:Default
+    Type: device
+    Wavelength: '1550'
+  device4:
+    DeviceID: device4
+    Electrical Coordinates:
+    - 813.0
+    - 2720.0
+    - G
+    Optical Coordinates:
+    - 830.0
+    - 299.0
+    Polarization: TE
+    RoutineCheck: true
+    Routines:
+    - Voltage Sweep:Default
+    Type: device
     Wavelength: '1550'
 Routines:
   Current Sweep:
