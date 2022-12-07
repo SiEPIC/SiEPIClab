@@ -409,6 +409,7 @@ class autoMeasurePanel(wx.Panel):
         global yscalevar
         xscalevar = 0.82
         yscalevar = 0.8
+        self.testParametersPath = []
         # No testing parameters have been uploaded
         self.parametersImported = False
         self.InitUI()
@@ -733,13 +734,12 @@ class autoMeasurePanel(wx.Panel):
                                                         self.coordMapPanelOpt.getGdsCoordsOpt())
 
         # Make a folder with the current time
-        fileName = self.outputFolderTb.GetValue()
         timeStr = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
         csvFileName = os.path.join(self.outputFolderTb.GetValue(), timeStr + '.csv')
 
         f = open(csvFileName, 'w', newline='')
         writer = csv.writer(f)
-        textFilePath = [fileName]
+        textFilePath = self.testParametersPath
         writer.writerow(textFilePath)
         optCoords = self.coordMapPanelOpt.getMotorCoords()
         Opt = ['Optical Alignment']
@@ -772,8 +772,8 @@ class autoMeasurePanel(wx.Panel):
         f = open(filePath, 'r', newline='')
         reader = csv.reader(f)
         textCoordPath = next(reader)
-        self.coordFilePath = textCoordPath[0]
-        self.autoMeasure.readCoordFile(textCoordPath[0])
+        for path in textCoordPath:
+            self.readYAML(path)
         next(reader)
         next(reader)
         optDev1 = next(reader)
@@ -983,7 +983,7 @@ class autoMeasurePanel(wx.Panel):
                     absolutez = motorCoordElec[2]
                     relativex = absolutex[0] - elecPosition[0]
                     relativey = absolutey[0] - elecPosition[1]
-                    relativez = absolutez[0] - elecPosition[2] + 10
+                    relativez = absolutez[0] - elecPosition[2] + 30
                     # Move probe to device
                     self.autoMeasure.motorElec.moveRelativeX(-relativex)
                     time.sleep(2)
@@ -1032,7 +1032,7 @@ class autoMeasurePanel(wx.Panel):
                         absolutez = motorCoord[2]
                         relativex = absolutex[0] - elecPosition[0]
                         relativey = absolutey[0] - elecPosition[1]
-                        relativez = absolutez[0] - elecPosition[2] + 10
+                        relativez = absolutez[0] - elecPosition[2] + 20
                         self.autoMeasure.motorElec.moveRelativeX(-relativex)
                         time.sleep(2)
                         self.autoMeasure.motorElec.moveRelativeY(-relativey)
@@ -1079,8 +1079,6 @@ class autoMeasurePanel(wx.Panel):
         # Set scaling factor within automeasure
         global xscalevar
         global yscalevar
-        xtest = xscalevar
-        ytest = yscalevar
         self.autoMeasure.setScale(xscalevar, yscalevar)
 
         # Start measurement using the autoMeasure device
