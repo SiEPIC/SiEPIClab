@@ -49,7 +49,7 @@ class SMUClass:
     isMotor = False
     isLaser = False
     isDetect = False
-    isElec =False
+    isElec = False
 
     def __init__(self):
         self.Aflag = False

@@ -789,7 +789,7 @@ class resistancePanel(wx.Panel):
         self.chanB = wx.StaticText(self, label="Channel B:")
 
         hbox.AddMany([(self.chanA, 1, wx.EXPAND), (self.rdetA, 1, wx.EXPAND), (self.chanB, 1, wx.EXPAND), (self.rdetB, 1, wx.EXPAND)])
-        vboxOuter.AddMany([(stres, 0, wx.EXPAND), (hbox, 0, wx.EXPAND)])
+        vboxOuter.AddMany([(stres, 0, wx.EXPAND), (hbox, 1, wx.EXPAND)])
 
         self.timer2 = wx.Timer(self, wx.ID_ANY)
         self.Bind(wx.EVT_TIMER, self.UpdateResMeasurement, self.timer2)

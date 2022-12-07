@@ -57,6 +57,7 @@ class CorvusEcoClass:
             Acceleration:
             NumberOfAxis:
         """
+        self.visaName = visaName
         self.ser = rm.open_resource(visaName)  # Connects to device with pyVisa
         self.ser.baud_rate = 57600  # Sets baudrate
         self.ser.write('identify')  # Asks for identification

@@ -308,7 +308,8 @@ class TopPanel(wx.Panel):
             self.devicedict[device.device_id]['Type'] = device.type
             self.devicedict[device.device_id]['RoutineCheck'] = device.hasRoutines()
             self.devicedict[device.device_id]['Routines'] = device.routines
-            self.devicedict[device.device_id]['Electrical Coordinates'] = [device.electricalCoordinates[0][1], device.electricalCoordinates[0][2], device.electricalCoordinates[0][0]]
+            if len(device.electricalCoordinates) != 0:
+                self.devicedict[device.device_id]['Electrical Coordinates'] = [device.electricalCoordinates[0][1], device.electricalCoordinates[0][2], device.electricalCoordinates[0][0]]
 
         global deviceList
         global groupList
@@ -1144,11 +1145,14 @@ class TopPanel(wx.Panel):
         self.devicedatacheckList.DeleteAllItems()
 
         if len(self.devicesselected) == 1:
-            optcoordstring = '(' + str(self.devicedict[self.devicesselected[0]]['Optical Coordinates'][0]) + ',' + str(self.devicedict[self.devicesselected[0]]['Optical Coordinates'][1]) + ')'
+            optcoordstring = '(' + str(self.devicedict[self.devicesselected[0]]['Optical Coordinates'][0]) + ',' + str(
+                self.devicedict[self.devicesselected[0]]['Optical Coordinates'][1]) + ')'
             self.devicedatacheckList.InsertItem(0, 'Optical Coordinates:' + ' ' + optcoordstring)
-            #self.devicedatacheckList.InsertItem(2, 'Electrical Coordinates' + '' )
-            #self.deviceroutinecheckList.InsertItem(1, optcoordstring)
-            self.devicedatacheckList.InsertItem(1, 'Polarization:' + ' ' + self.devicedict[self.devicesselected[0]]['Polarization'])
+            if len(self.devicedict[self.devicesselected[0]]['Electrical Coordinates']) != 0:
+                eleccoordstring = '(' + str(self.devicedict[self.devicesselected[0]]['Electrical Coordinates'][0]) + ',' + str(
+                    self.devicedict[self.devicesselected[0]]['Electrical Coordinates'][1]) + ')'
+                self.devicedatacheckList.InsertItem(1, 'Electrical Coordinates ' + eleccoordstring)
+            self.devicedatacheckList.InsertItem(2, 'Polarization:' + ' ' + self.devicedict[self.devicesselected[0]]['Polarization'])
             self.devicedatacheckList.InsertItem(4, 'Wavelength:' + ' ' + self.devicedict[self.devicesselected[0]]['Wavelength'])
             self.devicedatacheckList.InsertItem(6, 'Type:' + ' ' + self.devicedict[self.devicesselected[0]]['Type'])
 
