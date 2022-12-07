@@ -568,7 +568,7 @@ class autoMeasurePanel(wx.Panel):
 
         hboxDetectors = wx.BoxSizer(wx.HORIZONTAL)
 
-        if self.laser:
+        if self.autoMeasure.laser:
             # Format check boxes for detector selection
             self.numDetectors = self.autoMeasure.laser.numPWMSlots - 1
             self.detectorList = []
