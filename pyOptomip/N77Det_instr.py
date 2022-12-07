@@ -29,96 +29,95 @@ import math;
 
 class hp816x_N77Det(hp816x_instr.hp816x):
     name = 'hp816x N77 Detector'
-    numPWMSlots = 5;    
-    maxPWMPoints = 100000;
+    numPWMSlots = 5
+    maxPWMPoints = 100000
     isDetect = True
 
     
     def connect(self, visaAddr, n77DetAddr, reset = 0, forceTrans=1, autoErrorCheck=1):
         super(hp816x_N77Det, self).connect(visaAddr, reset, forceTrans, autoErrorCheck)
         
-        self.hN77Det = c_int32();
+        self.hN77Det = c_int32()
 
-        queryID = 1; # The instrument ignores this value.
-        res = self.hp816x_init(n77DetAddr.encode('utf-8'), queryID, reset, byref(self.hN77Det));
-        self.checkErrorN77(res);
-        self.registerMainframe(self.hN77Det);
-        self.N77SlotInfo = self.getN77SlotInfo(); # Keep mainframe slot info
-        self.pwmSlotIndex,self.pwmSlotMap = self.enumerateN77PWMSlots();
-        self.activeSlotIndex = self.pwmSlotIndex;
+        queryID = 1 # The instrument ignores this value.
+        res = self.hp816x_init(n77DetAddr.encode('utf-8'), queryID, reset, byref(self.hN77Det))
+        self.checkErrorN77(res)
+        self.registerMainframe(self.hN77Det)
+        self.N77SlotInfo = self.getN77SlotInfo() # Keep mainframe slot info
+        self.pwmSlotIndex,self.pwmSlotMap = self.enumerateN77PWMSlots()
+        self.activeSlotIndex = self.pwmSlotIndex
         return
         
     def disconnect(self):
-        super(hp816x_N77Det, self).disconnect();
-        self.unregisterMainframe(self.hN77Det);
+        super(hp816x_N77Det, self).disconnect()
+        self.unregisterMainframe(self.hN77Det)
 
-        res = self.hp816x_close(self.hN77Det);
-        self.checkErrorN77(res);
+        res = self.hp816x_close(self.hN77Det)
+        self.checkErrorN77(res)
         
     def getN77SlotInfo(self):
         slotInfoArr = (c_int32*self.numPWMSlots)()
         slotInfoArrPtr = cast(slotInfoArr, POINTER(c_int32))
         res = self.hp816x_getSlotInformation_Q(self.hN77Det, self.numPWMSlots, slotInfoArrPtr)
-        self.checkErrorN77(res);
+        self.checkErrorN77(res)
         return slotInfoArrPtr[:self.numPWMSlots]
         
     def enumerateN77PWMSlots(self):
-        pwmSlotIndex = list();
-        pwmSlotMap = list();
-        ii = 1;
+        pwmSlotIndex = list()
+        pwmSlotMap = list()
+        ii = 1
         for slot in self.N77SlotInfo:
             if slot == self.hp816x_SINGLE_SENSOR:
-                pwmSlotIndex.append(ii);
-                pwmSlotMap.append((ii,0));
-                ii += 1;
+                pwmSlotIndex.append(ii)
+                pwmSlotMap.append((ii, 0))
+                ii += 1
             elif slot == self.hp816x_DUAL_SENSOR:
-                pwmSlotIndex.append(ii);
-                pwmSlotMap.append((ii,0));
-                ii += 1;
-                pwmSlotIndex.append(ii);
-                pwmSlotMap.append((ii,1));
-                ii += 1;
-        return (pwmSlotIndex,pwmSlotMap)
+                pwmSlotIndex.append(ii)
+                pwmSlotMap.append((ii, 0))
+                ii += 1
+                pwmSlotIndex.append(ii)
+                pwmSlotMap.append((ii, 1))
+                ii += 1
+        return (pwmSlotIndex, pwmSlotMap)
         
     def getNumSweepChannels(self):
-        return len(self.pwmSlotIndex);
+        return len(self.pwmSlotIndex)
         
     def setRangeParams(self, chan, initialRange, rangeDecrement, reset=0):
-        res = self.hp816x_setInitialRangeParams(self.hN77Det, chan, reset, initialRange, rangeDecrement);
-        self.checkErrorN77(res);
-        return;
-    
-            
+        res = self.hp816x_setInitialRangeParams(self.hN77Det, chan, reset, initialRange, rangeDecrement)
+        self.checkErrorN77(res)
+        return
+
     def setPWMPowerUnit(self, slot, chan, unit):
-        res = self.hp816x_set_PWM_powerUnit(self.hN77Det, slot, chan, self.sweepUnitDict[unit]);
-        self.checkErrorN77(res);    
+        res = self.hp816x_set_PWM_powerUnit(self.hN77Det, slot, chan, self.sweepUnitDict[unit])
+        self.checkErrorN77(res)
           
     def setPWMPowerRange(self, slot, chan, rangeMode = 'auto', range=0):
-        res = self.hp816x_set_PWM_powerRange(self.hN77Det, slot, chan, self.rangeModeDict[rangeMode], range);
-        self.checkErrorN77(res);  
+        res = self.hp816x_set_PWM_powerRange(self.hN77Det, slot, chan, self.rangeModeDict[rangeMode], range)
+        self.checkErrorN77(res)
         
     def checkInstrumentErrorN77(self):
         """ Reads error messages from the instrument"""
-        ERROR_MSG_BUFFER_SIZE = 256;
-        instErr = c_int32();
-        c_errMsg = (c_char*ERROR_MSG_BUFFER_SIZE)();
-        c_errMsgPtr = cast(c_errMsg, c_char_p);
-        self.hp816x_error_query(self.hN77Det, byref(instErr), c_errMsgPtr);
+        ERROR_MSG_BUFFER_SIZE = 256
+        instErr = c_int32()
+        c_errMsg = (c_char*ERROR_MSG_BUFFER_SIZE)()
+        c_errMsgPtr = cast(c_errMsg, c_char_p)
+        self.hp816x_error_query(self.hN77Det, byref(instErr), c_errMsgPtr)
         return instErr.value,c_errMsg.value
     
     def checkErrorN77(self, errStatus):
-        ERROR_MSG_BUFFER_SIZE = 256;
+        ERROR_MSG_BUFFER_SIZE = 256
         if errStatus < self.hp816x_SUCCESS:
             if errStatus == self.hp816x_INSTR_ERROR_DETECTED:
                 instErr,instErrMsg = self.checkInstrumentError()
-                raise InstrumentError('Error '+str(instErr)+': '+instErrMsg);
+                raise InstrumentError('Error '+str(instErr)+': '+instErrMsg)
             else:
-                c_errMsg = (c_char*ERROR_MSG_BUFFER_SIZE)();
-                c_errMsgPtr = cast(c_errMsg, c_char_p);    
+                c_errMsg = (c_char*ERROR_MSG_BUFFER_SIZE)()
+                c_errMsgPtr = cast(c_errMsg, c_char_p)
 
-                self.hp816x_error_message(self.hN77Det, errStatus, c_errMsgPtr);
-                raise InstrumentError(c_errMsg.value);
-        return 0;
+                self.hp816x_error_message(self.hN77Det, errStatus, c_errMsgPtr)
+                raise InstrumentError(c_errMsg.value)
+        return 0
     
     def getLambdaScanResult(self, chan, useClipping, clipLimit, numPts):
         wavelengthArr = np.zeros(int(numPts));

@@ -278,28 +278,24 @@ class TopPanel(wx.Panel):
         self.coordFileTb.SetValue(fileDlg.GetFilenames()[0])
         # fileDlg.Destroy()
         self.autoMeasure.readCoordFile(fileDlg.GetPath())
-        global deviceListAsObjects
-        deviceListAsObjects = self.autoMeasure.devices
-        self.device_list = deviceListAsObjects
         self.devicesselected = []
-
 
         self.devicedict = {}
         self.devnames = []
 
-        for dev in deviceListAsObjects:
-            self.devnames.append(dev.device_id)
+        for dev in self.autoMeasure.devices:
+            self.devnames.append(dev.getDeviceID())
 
         a = 1
 
-        for index, dev in enumerate(deviceListAsObjects):
+        for index, dev in enumerate(self.autoMeasure.devices):
             for num in range(index):
-                if dev.device_id == deviceListAsObjects[num].device_id:
+                if dev.getDeviceID() == self.autoMeasure.devices[num].getDeviceID():
                     dev.device_id = dev.device_id + str(a)
                     a = a + 1
 
 
-        for device in deviceListAsObjects:
+        for device in self.autoMeasure.devices:
             self.devicedict[device.device_id] = {}
             self.devicedict[device.device_id]['DeviceID'] = device.device_id
             self.devicedict[device.device_id]['Wavelength'] = device.wavelength
