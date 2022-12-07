@@ -32,7 +32,7 @@ class topCorvusPanel(wx.Panel):
         self.InitUI()
 
     def InitUI(self):
-        sb = wx.StaticBox(self, label='Corvus')
+        sb = wx.StaticBox(self, label='Chip Stage')
         vbox = wx.StaticBoxSizer(sb, wx.VERTICAL)
 
         axis = 1
@@ -62,22 +62,17 @@ class CorvusPanel(wx.Panel):
         hbox = wx.BoxSizer(wx.HORIZONTAL)
         if self.axis == 1:
             st1 = wx.StaticText(self, label='X')
+            hbox.Add(st1, flag=wx.ALIGN_LEFT, border=8)
         if self.axis == 2:
             st1 = wx.StaticText(self, label='Y')
+            hbox.Add(st1, flag=wx.ALIGN_LEFT, border=8)
         if self.axis == 3:
             st1 = wx.StaticText(self, label='Z')
-        hbox.Add(st1, flag=wx.ALIGN_LEFT, border=8)
+            hbox.Add(st1, flag=wx.ALIGN_LEFT, border=8)
         st1 = wx.StaticText(self, label='')
         hbox.Add(st1, flag=wx.EXPAND, border=8, proportion=1)
-        if self.axis == 1:
-            btn1 = wx.Button(self, label='-', size=(80, 20))
-            btn2 = wx.Button(self, label='+', size=(80, 20))
-        elif self.axis == 2:
-            btn1 = wx.Button(self, label='-', size=(80, 20))
-            btn2 = wx.Button(self, label='+', size=(80, 20))
-        else:
-            btn1 = wx.Button(self, label='-', size=(80, 20))
-            btn2 = wx.Button(self, label='+', size=(80, 20))
+        btn1 = wx.Button(self, label='-', size=(50, 20))
+        btn2 = wx.Button(self, label='+', size=(50, 20))
 
         hbox.Add(btn1, flag=wx.EXPAND | wx.RIGHT, proportion=0, border=8)
         btn1.Bind(wx.EVT_BUTTON, self.OnButton_MinusButtonHandler)

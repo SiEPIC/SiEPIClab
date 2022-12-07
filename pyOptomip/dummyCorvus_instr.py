@@ -1,3 +1,5 @@
+from random import randint
+
 def connect():
     print("Connected to dummy Corvus.")
 
@@ -149,7 +151,8 @@ class dummyCorvus:
         self.moveRelative(x-self.x, y-self.y, z-self.z)
 
     def getPosition(self):
-        return self.x, self.y, self.z
+
+        return randint(0,1000), randint(0,1000), randint(0,1000)
 
     def clear(self):  # Should clear any lingering messages in the device
         try:

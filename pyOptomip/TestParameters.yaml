@@ -11,7 +11,7 @@ Devices:
     Polarization: TE
     RoutineCheck: true
     Routines:
-    - Voltage Sweep:voltage_sweep
+    - Voltage Sweep:new_v
     Type: device
     Wavelength: '1550'
   device2:
@@ -26,7 +26,7 @@ Devices:
     Polarization: TE
     RoutineCheck: true
     Routines:
-    - Voltage Sweep:voltage_sweep
+    - Voltage Sweep:new_v
     Type: device
     Wavelength: '1550'
   device3:
@@ -41,8 +41,7 @@ Devices:
     Polarization: TE
     RoutineCheck: true
     Routines:
-    - Voltage Sweep:voltage_sweep
-    - Set Wavelength Voltage Sweep:set_w_voltage_sweep
+    - Voltage Sweep:new_v
     Type: device
     Wavelength: '1550'
   device4:
@@ -57,8 +56,7 @@ Devices:
     Polarization: TE
     RoutineCheck: true
     Routines:
-    - Voltage Sweep:voltage_sweep
-    - Set Wavelength Voltage Sweep:set_w_voltage_sweep
+    - Voltage Sweep:new_v
     Type: device
     Wavelength: '1550'
 Routines:
@@ -170,28 +168,6 @@ Routines:
       Wavelengths: ''
       setvflag: false
       setwflag: false
-    set_w_voltage_sweep:
-      Channel A: true
-      Channel B: false
-      Currentsel: false
-      IV: true
-      Initialrange: ''
-      Laseroutput: High power
-      Max: '1'
-      Min: '0'
-      Numscans: '1'
-      PV: true
-      RV: true
-      RangeDec: ''
-      Res: '1'
-      Start: ''
-      Stepsize: ''
-      Stop: ''
-      Sweeppower: ''
-      Sweepspeed: auto
-      Voltages: ''
-      Voltsel: true
-      Wavelengths: 1540,1550,1560,1570
   Voltage Sweep:
     Default:
       Channel A: true
@@ -219,7 +195,7 @@ Routines:
       Wavelengths: ''
       setvflag: false
       setwflag: false
-    voltage_sweep:
+    new_v:
       Channel A: true
       Channel B: false
       Currentsel: false

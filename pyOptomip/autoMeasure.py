@@ -96,7 +96,7 @@ class autoMeasure(object):
             j = x.replace(" ", "")
             dataStrip2.append(j)
         # x,y,polarization,wavelength,type,deviceid,params
-        reg = re.compile(r'(.-?[0-9]*),(.-?[0-9]*),(T(E|M)),([0-9]+),(.+?),(.+),(.*)')
+        reg = re.compile(r'(.-?[0-9]*),(.-?[0-9]*),(T(E|M)),([0-9]+),(.+?),(.+)')
         # x, y, deviceid, padname, params
         regElec = re.compile(r'(.-?[0-9]*),(.-?[0-9]*),(.+),(.+),(.*)')
 

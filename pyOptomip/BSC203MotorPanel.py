@@ -10,7 +10,7 @@ class topBSC203MotorPanel(wx.Panel):
         self.InitUI()
 
     def InitUI(self):
-        sb = wx.StaticBox(self, label='BSC203')
+        sb = wx.StaticBox(self, label='Wedge Probe Stage')
         vbox = wx.StaticBoxSizer(sb, wx.VERTICAL)
 
         for axis in range(0, self.numAxes):
@@ -38,22 +38,17 @@ class BSC203Panel(wx.Panel):
         hbox = wx.BoxSizer(wx.HORIZONTAL)
         if self.axis == 1:
             st1 = wx.StaticText(self, label='X')
+            hbox.Add(st1, flag=wx.ALIGN_LEFT, border=8)
         if self.axis == 2:
             st1 = wx.StaticText(self, label='Y')
+            hbox.Add(st1, flag=wx.ALIGN_LEFT, border=8)
         if self.axis == 3:
             st1 = wx.StaticText(self, label='Z')
-        hbox.Add(st1, flag=wx.ALIGN_LEFT, border=8)
+            hbox.Add(st1, flag=wx.ALIGN_LEFT, border=8)
         st1 = wx.StaticText(self, label='')
         hbox.Add(st1, flag=wx.EXPAND, border=8, proportion=1)
-        if self.axis == 1:
-            btn1 = wx.Button(self, label='-', size=(80, 20))
-            btn2 = wx.Button(self, label='+', size=(80, 20))
-        elif self.axis ==2:
-            btn1 = wx.Button(self, label='-', size=(80, 20))
-            btn2 = wx.Button(self, label='+', size=(80, 20))
-        else:
-            btn1 = wx.Button(self, label='-', size=(80, 20))
-            btn2 = wx.Button(self, label='+', size=(80, 20))
+        btn1 = wx.Button(self, label='-', size=(50, 20))
+        btn2 = wx.Button(self, label='+', size=(50, 20))
 
         self.initialvalue = 0
         if self.axis == 1:
@@ -88,31 +83,26 @@ class BSC203Panel(wx.Panel):
     def OnButton_MinusButtonHandler(self, event):
 
         if self.axis == 1:
-            #self.parent.bsc.bsc.move_relative(distance=int((1000)*self.getMoveValue()), channel=0)
             self.parent.bsc.moveRelativeXYZ(int(self.getMoveValue()), 0, 0)
             print("Axis 1 Moved Negative")
 
         if self.axis == 2:
-            #self.parent.bsc.bsc.move_relative(distance=int((1000)*self.getMoveValue()), bay=1, channel=0)
             self.parent.bsc.moveRelativeXYZ(0, int(self.getMoveValue()), 0)
             print("Axis 2 Moved Negative")
 
         if self.axis == 3:
-            #self.parent.bsc.bsc.move_relative(distance=int((1000)*self.getMoveValue()), bay=2, channel=0)
             self.parent.bsc.moveRelativeXYZ(0,0, int(self.getMoveValue()))
             print("Axis 3 Moved Negative")
 
     def OnButton_PlusButtonHandler(self, event):
         if self.axis == 1:
-            self.parent.bsc.moveRelativeXYZ(int((-1)*self.getMoveValue()), 0,0)
+            self.parent.bsc.moveRelativeXYZ(int((-1)*self.getMoveValue()), 0, 0)
             print("Axis 1 Moved Positive")
 
         if self.axis == 2:
-            #self.parent.bsc.bsc.move_relative(distance=int((1000)*(-1)*self.getMoveValue()), bay=1, channel=0)
             self.parent.bsc.moveRelativeXYZ(0, int((-1) * self.getMoveValue()), 0)
             print("Axis 2 Moved Positive")
 
         if self.axis == 3:
-            #self.parent.bsc.bsc.move_relative(distance=int((1000)*(-1)*self.getMoveValue()), bay=2, channel=0)
             self.parent.bsc.moveRelativeXYZ(0,0, int((-1) * self.getMoveValue()))
             print("Axis 3 Moved Positive")
