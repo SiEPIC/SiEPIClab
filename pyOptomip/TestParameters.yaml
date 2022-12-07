@@ -1,0 +1,270 @@
+Devices:
+  device1:
+    DeviceID: device1
+    Electrical Coordinates:
+    - 62.0
+    - 3560.0
+    - G
+    Optical Coordinates:
+    - 131.0
+    - 479.0
+    Polarization: TE
+    RoutineCheck: true
+    Routines:
+    - Voltage Sweep:voltage_sweep
+    Type: device
+    Wavelength: '1550'
+  device2:
+    DeviceID: device2
+    Electrical Coordinates:
+    - 52.0
+    - 3420.0
+    - G
+    Optical Coordinates:
+    - 68.0
+    - 419.0
+    Polarization: TE
+    RoutineCheck: true
+    Routines:
+    - Voltage Sweep:voltage_sweep
+    Type: device
+    Wavelength: '1550'
+  device3:
+    DeviceID: device3
+    Electrical Coordinates:
+    - 751.0
+    - 3281.0
+    - G
+    Optical Coordinates:
+    - 639.0
+    - 119.0
+    Polarization: TE
+    RoutineCheck: true
+    Routines:
+    - Voltage Sweep:voltage_sweep
+    - Set Wavelength Voltage Sweep:set_w_voltage_sweep
+    Type: device
+    Wavelength: '1550'
+  device4:
+    DeviceID: device4
+    Electrical Coordinates:
+    - 813.0
+    - 2720.0
+    - G
+    Optical Coordinates:
+    - 830.0
+    - 299.0
+    Polarization: TE
+    RoutineCheck: true
+    Routines:
+    - Voltage Sweep:voltage_sweep
+    - Set Wavelength Voltage Sweep:set_w_voltage_sweep
+    Type: device
+    Wavelength: '1550'
+Routines:
+  Current Sweep:
+    Default:
+      Channel A: true
+      Channel B: false
+      Currentsel: false
+      ELECflag: false
+      IV: true
+      Initialrange: ''
+      Laseroutput: High power
+      Max: '1'
+      Min: '0'
+      Numscans: '1'
+      OPTICflag: true
+      PV: true
+      RV: true
+      RangeDec: ''
+      Res: '1'
+      Start: ''
+      Stepsize: ''
+      Stop: ''
+      Sweeppower: ''
+      Sweepspeed: auto
+      Voltages: ''
+      Voltsel: true
+      Wavelengths: ''
+      setvflag: false
+      setwflag: false
+  Set Voltage Wavelength Sweep:
+    Default:
+      Channel A: true
+      Channel B: false
+      Currentsel: false
+      ELECflag: 0
+      IV: true
+      Initialrange: '-20'
+      Laseroutput: High power
+      Max: ''
+      Min: ''
+      Numscans: '1'
+      OPTICflag: 0
+      PV: true
+      RV: true
+      RangeDec: '-20'
+      Res: ''
+      Start: '1480'
+      Stepsize: '1'
+      Stop: '1580'
+      Sweeppower: ''
+      Sweepspeed: auto
+      Voltages: 1, 2, 3
+      Voltsel: true
+      Wavelengths: ''
+      setvflag: 0
+      setwflag: 0
+  Set Wavelength Current Sweep:
+    Default:
+      Channel A: true
+      Channel B: false
+      Currentsel: false
+      ELECflag: false
+      IV: true
+      Initialrange: '-20'
+      Laseroutput: High power
+      Max: '5'
+      Min: '0'
+      Numscans: '1'
+      OPTICflag: false
+      PV: true
+      RV: true
+      RangeDec: '-20'
+      Res: '0.1'
+      Start: ''
+      Stepsize: ''
+      Stop: ''
+      Sweeppower: ''
+      Sweepspeed: auto
+      Voltages: ''
+      Voltsel: true
+      Wavelengths: 1480, 1500, 1550
+      setvflag: false
+      setwflag: true
+  Set Wavelength Voltage Sweep:
+    Default:
+      Channel A: true
+      Channel B: false
+      Currentsel: false
+      ELECflag: true
+      IV: true
+      Initialrange: ''
+      Laseroutput: High power
+      Max: '1'
+      Min: '0'
+      Numscans: '1'
+      OPTICflag: false
+      PV: true
+      RV: true
+      RangeDec: ''
+      Res: '1'
+      Start: ''
+      Stepsize: ''
+      Stop: ''
+      Sweeppower: ''
+      Sweepspeed: auto
+      Voltages: ''
+      Voltsel: true
+      Wavelengths: ''
+      setvflag: false
+      setwflag: false
+    set_w_voltage_sweep:
+      Channel A: true
+      Channel B: false
+      Currentsel: false
+      IV: true
+      Initialrange: ''
+      Laseroutput: High power
+      Max: '1'
+      Min: '0'
+      Numscans: '1'
+      PV: true
+      RV: true
+      RangeDec: ''
+      Res: '1'
+      Start: ''
+      Stepsize: ''
+      Stop: ''
+      Sweeppower: ''
+      Sweepspeed: auto
+      Voltages: ''
+      Voltsel: true
+      Wavelengths: 1540,1550,1560,1570
+  Voltage Sweep:
+    Default:
+      Channel A: true
+      Channel B: false
+      Currentsel: false
+      ELECflag: false
+      IV: true
+      Initialrange: ''
+      Laseroutput: High power
+      Max: ''
+      Min: ''
+      Numscans: '1'
+      OPTICflag: false
+      PV: true
+      RV: true
+      RangeDec: ''
+      Res: ''
+      Start: ''
+      Stepsize: ''
+      Stop: ''
+      Sweeppower: ''
+      Sweepspeed: auto
+      Voltages: ''
+      Voltsel: false
+      Wavelengths: ''
+      setvflag: false
+      setwflag: false
+    voltage_sweep:
+      Channel A: true
+      Channel B: false
+      Currentsel: false
+      IV: true
+      Initialrange: ''
+      Laseroutput: High power
+      Max: '1'
+      Min: '0'
+      Numscans: '1'
+      PV: true
+      RV: true
+      RangeDec: ''
+      Res: '100'
+      Start: ''
+      Stepsize: ''
+      Stop: ''
+      Sweeppower: ''
+      Sweepspeed: auto
+      Voltages: ''
+      Voltsel: true
+      Wavelengths: ''
+  Wavelength Sweep:
+    Default:
+      Channel A: true
+      Channel B: false
+      Currentsel: false
+      ELECflag: false
+      IV: true
+      Initialrange: ''
+      Laseroutput: High power
+      Max: '5'
+      Min: '0'
+      Numscans: '1'
+      OPTICflag: false
+      PV: true
+      RV: true
+      RangeDec: ''
+      Res: '0.1'
+      Start: ''
+      Stepsize: ''
+      Stop: ''
+      Sweeppower: ''
+      Sweepspeed: auto
+      Voltages: ''
+      Voltsel: true
+      Wavelengths: ''
+      setvflag: false
+      setwflag: false
