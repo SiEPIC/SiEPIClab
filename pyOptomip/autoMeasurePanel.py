@@ -409,6 +409,7 @@ class autoMeasurePanel(wx.Panel):
         global yscalevar
         xscalevar = 0.82
         yscalevar = 0.8
+        self.testParametersPath = []
         # No testing parameters have been uploaded
         self.parametersImported = False
         self.InitUI()
@@ -733,13 +734,12 @@ class autoMeasurePanel(wx.Panel):
                                                         self.coordMapPanelOpt.getGdsCoordsOpt())
 
         # Make a folder with the current time
-        fileName = self.outputFolderTb.GetValue()
         timeStr = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
         csvFileName = os.path.join(self.outputFolderTb.GetValue(), timeStr + '.csv')
 
         f = open(csvFileName, 'w', newline='')
         writer = csv.writer(f)
-        textFilePath = [fileName]
+        textFilePath = self.testParametersPath
         writer.writerow(textFilePath)
         optCoords = self.coordMapPanelOpt.getMotorCoords()
         Opt = ['Optical Alignment']
@@ -772,8 +772,8 @@ class autoMeasurePanel(wx.Panel):
         f = open(filePath, 'r', newline='')
         reader = csv.reader(f)
         textCoordPath = next(reader)
-        self.coordFilePath = textCoordPath[0]
-        self.autoMeasure.parseCoordFile(textCoordPath[0])
+        for path in textCoordPath:
+            self.readYAML(path)
         next(reader)
         next(reader)
         optDev1 = next(reader)
@@ -849,6 +849,7 @@ class autoMeasurePanel(wx.Panel):
 
         for file in Files:
             self.readYAML(file)
+            self.testParametersPath.append(file)
         self.parametersImported = True
 
     def readYAML(self, originalFile):
