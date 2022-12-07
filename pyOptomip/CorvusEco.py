@@ -39,7 +39,7 @@ import pyvisa as visa
 
 class CorvusEcoClass:
     NumberOfAxis = 3  # default the axis number @ 3 just in case.
-    name = 'Chip Stage'
+    name = 'Corvus Eco'
     isSMU = False
     isMotor = True
     isOpt = True

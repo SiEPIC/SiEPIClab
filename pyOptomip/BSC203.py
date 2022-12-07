@@ -4,7 +4,7 @@ import re
 
 
 class BSC203Motor:
-    name = 'Wedge Probe Stage'
+    name = 'BSC203'
     isMotor = True
     isOpt = False
     isElec = True
