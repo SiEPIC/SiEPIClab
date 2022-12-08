@@ -562,7 +562,9 @@ class autoMeasurePanel(wx.Panel):
         btnGetMotorCoord.Bind(wx.EVT_BUTTON,
                               lambda event, xcoord=self.tbxMotorCoord: self.Event_OnCoordButton(
                                   event, xcoord))
-        hBoxMinElec.AddMany([(self.tbxMotorCoord, 1, wx.EXPAND), (btnGetMotorCoord, 1, wx.EXPAND)])
+        btnUndoMotorCoord = wx.Button(self, label='Undo', size=(50, 20))
+        btnUndoMotorCoord.Bind(wx.EVT_BUTTON, self.OnButton_Undo)
+        hBoxMinElec.AddMany([(self.tbxMotorCoord, 1, wx.EXPAND), (btnGetMotorCoord, 1, wx.EXPAND), (btnUndoMotorCoord, 1, wx.EXPAND)])
 
         elecAdjustBox = wx.BoxSizer(wx.HORIZONTAL)
         elecAdjustBox.AddMany([(hBoxMinElec, 0, wx.EXPAND), (scalehbox, 0, wx.EXPAND)])
@@ -654,6 +656,9 @@ class autoMeasurePanel(wx.Panel):
         xcoord.SetValue(str(elecPosition[0]))
         self.autoMeasure.motorElec.setMinXPosition(elecPosition[0])
         self.autoMeasure.motorElec.minPositionSet = True
+
+    def OnButton_Undo(self):
+        self.autoMeasure.motorElec.minPositionSet = False
 
     def importObjects(self, listOfDevicesAsObjects):
         """Given a list of electro-optic device objects, this method populates all drop-down menus and
