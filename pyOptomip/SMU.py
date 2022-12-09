@@ -106,7 +106,6 @@ class SMUClass:
         #self.inst.write("disconnect()") #disconnect from smu
         print('SMU Disconnected')
 
-
     def setVoltage(self, voltage, channel):
         """
         Sets the source of the SMU to a specified voltage
@@ -141,7 +140,6 @@ class SMUClass:
             setvoltstring = "smub.source.levelv = " + str(voltage)
             self.inst.write(setvoltstring)
             print('Set channel B voltage to ' + str(float(voltage)) + 'V')
-
 
     def setCurrent(self, current, channel):
         """
@@ -179,7 +177,6 @@ class SMUClass:
             self.inst.write(setcurrentstring)
             print('Set channel B current to ' + str(float(current * 1e6) / 1000) + 'mA')
 
-
     def setcurrentlimit(self, currentlimit, channel):
         """
         Sets the current limit of the smu
@@ -211,7 +208,6 @@ class SMUClass:
             currentlimitstring = "smub.source.limiti = " + str(float(currentlimit / 1000))
             self.inst.write(currentlimitstring)
             print("Set channel B current limit to " + str(currentlimit) + "mA")
-
 
     def setvoltagelimit(self, voltagelimit, channel):
         """
@@ -245,7 +241,6 @@ class SMUClass:
             self.inst.write(voltagelimitstring)
             print("Set channel B voltage limit to " + str(voltagelimit) + " V")
 
-
     def setpowerlimit(self, powerlimit, channel):
         """
         Sets the power limit of the smu
@@ -278,7 +273,6 @@ class SMUClass:
             self.inst.write(powerlimitstring)
             print("Set channel B power limit to " + str(powerlimit) + " mW")
 
-
     def getvoltageA(self):
         """
         Queries the smu and returns the voltage measured at channel A
@@ -288,7 +282,6 @@ class SMUClass:
         """
         v = self.inst.query("print(smua.measure.v())")
         return v
-
 
     def getcurrentA(self):
         """
@@ -301,7 +294,6 @@ class SMUClass:
         i = self.inst.query("print(smua.measure.i())")
         return i
 
-
     def getvoltageB(self):
         """
         Queries the smu and returns the voltage measured at channel B
@@ -313,7 +305,6 @@ class SMUClass:
         v = self.inst.query("print(smub.measure.v())")
         return v
 
-
     def getcurrentB(self):
         """
         Queries the smu and returns the current measured at channel B
@@ -323,7 +314,6 @@ class SMUClass:
         """
         i = self.inst.query("print(smub.measure.r())")
         return i
-
 
     def getresistanceA(self):
         """
@@ -335,7 +325,6 @@ class SMUClass:
         r = self.inst.query("print(smua.measure.r())")
         return r
 
-
     def getresistanceB(self):
         """
         Queries the smu for resistance seen at channel A
@@ -345,7 +334,6 @@ class SMUClass:
         """
         r = self.inst.query("print(smub.measure.r())")
         return r
-
 
     def ivsweep(self, minVar:float, maxVar:float, resolution:float, independantvar):
         """
@@ -520,19 +508,23 @@ class SMUClass:
         if channel == 'A':
             self.inst.write("smua.source.output = smua.OUTPUT_ON")
             self.onflagA = 'ON'
+            self.Aflag = True
             print("Channel A ON")
 
         if channel == 'B':
             self.inst.write("smub.source.output = smub.OUTPUT_ON")
             self.onflagB = 'ON'
+            self.Bflag = True
             print("Channel B ON")
 
         if channel == 'All':
             self.inst.write("smua.source.output = smua.OUTPUT_ON")
             self.onflagA = 'ON'
+            self.Aflag = True
             print("Channel A ON")
             self.inst.write("smub.source.output = smub.OUTPUT_ON")
             self.onflagB = 'ON'
+            self.Bflag = True
             print("Channel B ON")
 
 
@@ -550,16 +542,20 @@ class SMUClass:
 
         if channel == 'A':
             self.inst.write("smua.source.output = smua.OUTPUT_OFF")
+            self.Aflag = False
             print("Channel A OFF")
 
         if channel == 'B':
             self.inst.write("smub.source.output = smub.OUTPUT_OFF")
+            self.Bflag = False
             print("Channel B OFF")
 
         if channel == 'All':
             self.inst.write("smua.source.output = smua.OUTPUT_OFF")
+            self.Aflag = False
             print("Channel A OFF")
             self.inst.write("smub.source.output = smub.OUTPUT_OFF")
+            self.Bflag = False
             print("Channel B OFF")
 
 

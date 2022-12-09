@@ -662,8 +662,10 @@ class autoMeasurePanel(wx.Panel):
         self.autoMeasure.motorElec.setMinXPosition(elecPosition[0])
         self.autoMeasure.motorElec.minPositionSet = True
 
-    def OnButton_Undo(self):
+    def OnButton_Undo(self, event):
         self.autoMeasure.motorElec.minPositionSet = False
+        self.tbxMotorCoord.SetValue('')
+
 
     def importObjects(self, listOfDevicesAsObjects):
         """Given a list of electro-optic device objects, this method populates all drop-down menus and

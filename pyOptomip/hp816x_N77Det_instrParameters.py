@@ -54,8 +54,8 @@ class hp816x_N77Det_instrParameters(wx.Panel):
         self.para2name = wx.StaticText(self, label='Detector Address')
         self.para2tc = wx.ComboBox(self, choices=self.visaAddrLst)
         for x in self.visaAddrLst:
-            if x == 'USB':
-                self.para1tc.SetValue('USB') #fill in when we have access to lab pc
+            if x == 'USB0::0x0957::0x3718::MY48102149::0::INSTR':
+                self.para2tc.SetValue('USB0::0x0957::0x3718::MY48102149::0::INSTR') #fill in when we have access to lab pc
         # self.para2tc = wx.TextCtrl(self,value='GPIB0::20::INSTR')
         self.para2.AddMany([(self.para2name, 1, wx.EXPAND), (self.para2tc, 1, wx.EXPAND)])
 

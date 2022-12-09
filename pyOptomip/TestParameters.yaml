@@ -11,7 +11,8 @@ Devices:
     Polarization: TE
     RoutineCheck: true
     Routines:
-    - Voltage Sweep:initialtest
+    - Wavelength Sweep:wave
+    - Set Wavelength Current Sweep:setwcurrent
     Type: device
     Wavelength: '1550'
   device2:
@@ -26,7 +27,8 @@ Devices:
     Polarization: TE
     RoutineCheck: true
     Routines:
-    - Set Wavelength Voltage Sweep:initialtest1
+    - Voltage Sweep:volt
+    - Set Voltage Wavelength Sweep:setvwave
     Type: device
     Wavelength: '1550'
   device3:
@@ -39,8 +41,9 @@ Devices:
     - 639.0
     - 119.0
     Polarization: TE
-    RoutineCheck: false
-    Routines: []
+    RoutineCheck: true
+    Routines:
+    - Current Sweep:current
     Type: device
     Wavelength: '1550'
   device4:
@@ -53,8 +56,9 @@ Devices:
     - 830.0
     - 299.0
     Polarization: TE
-    RoutineCheck: false
-    Routines: []
+    RoutineCheck: true
+    Routines:
+    - Set Wavelength Voltage Sweep:setwvolt
     Type: device
     Wavelength: '1550'
 Routines:
@@ -62,7 +66,6 @@ Routines:
     Default:
       Channel A: true
       Channel B: false
-      Currentsel: false
       ELECflag: false
       IV: true
       Initialrange: ''
@@ -81,15 +84,33 @@ Routines:
       Sweeppower: ''
       Sweepspeed: auto
       Voltages: ''
-      Voltsel: true
       Wavelengths: ''
       setvflag: false
       setwflag: false
+    current:
+      Channel A: true
+      Channel B: false
+      IV: true
+      Initialrange: ''
+      Laseroutput: High power
+      Max: '10'
+      Min: '0'
+      Numscans: '1'
+      PV: true
+      RV: true
+      RangeDec: ''
+      Res: '1'
+      Start: ''
+      Stepsize: ''
+      Stop: ''
+      Sweeppower: ''
+      Sweepspeed: auto
+      Voltages: ''
+      Wavelengths: ''
   Set Voltage Wavelength Sweep:
     Default:
       Channel A: true
       Channel B: false
-      Currentsel: false
       ELECflag: 0
       IV: true
       Initialrange: '-20'
@@ -108,15 +129,33 @@ Routines:
       Sweeppower: ''
       Sweepspeed: auto
       Voltages: 1, 2, 3
-      Voltsel: true
       Wavelengths: ''
       setvflag: 0
       setwflag: 0
+    setvwave:
+      Channel A: true
+      Channel B: false
+      IV: true
+      Initialrange: '-20'
+      Laseroutput: High power
+      Max: ''
+      Min: ''
+      Numscans: '1'
+      PV: true
+      RV: true
+      RangeDec: '-20'
+      Res: ''
+      Start: '1480'
+      Stepsize: '1'
+      Stop: '1580'
+      Sweeppower: '0'
+      Sweepspeed: auto
+      Voltages: 0, 0.2, 0.4
+      Wavelengths: ''
   Set Wavelength Current Sweep:
     Default:
       Channel A: true
       Channel B: false
-      Currentsel: false
       ELECflag: false
       IV: true
       Initialrange: '-20'
@@ -135,15 +174,33 @@ Routines:
       Sweeppower: ''
       Sweepspeed: auto
       Voltages: ''
-      Voltsel: true
       Wavelengths: 1480, 1500, 1550
       setvflag: false
       setwflag: true
+    setwcurrent:
+      Channel A: true
+      Channel B: false
+      IV: true
+      Initialrange: '-20'
+      Laseroutput: High power
+      Max: '10'
+      Min: '0'
+      Numscans: '1'
+      PV: true
+      RV: true
+      RangeDec: '-20'
+      Res: '1'
+      Start: ''
+      Stepsize: ''
+      Stop: ''
+      Sweeppower: ''
+      Sweepspeed: auto
+      Voltages: ''
+      Wavelengths: 1480, 1500, 1550
   Set Wavelength Voltage Sweep:
     Default:
       Channel A: true
       Channel B: false
-      Currentsel: false
       ELECflag: true
       IV: true
       Initialrange: ''
@@ -162,14 +219,12 @@ Routines:
       Sweeppower: ''
       Sweepspeed: auto
       Voltages: ''
-      Voltsel: true
       Wavelengths: ''
       setvflag: false
       setwflag: false
-    initialtest1:
+    setwvolt:
       Channel A: true
       Channel B: false
-      Currentsel: false
       IV: true
       Initialrange: ''
       Laseroutput: High power
@@ -186,13 +241,11 @@ Routines:
       Sweeppower: ''
       Sweepspeed: auto
       Voltages: ''
-      Voltsel: true
-      Wavelengths: 1540, 1550, 1560
+      Wavelengths: 1480, 1550, 1580
   Voltage Sweep:
     Default:
       Channel A: true
       Channel B: false
-      Currentsel: false
       ELECflag: false
       IV: true
       Initialrange: ''
@@ -211,14 +264,12 @@ Routines:
       Sweeppower: ''
       Sweepspeed: auto
       Voltages: ''
-      Voltsel: false
       Wavelengths: ''
       setvflag: false
       setwflag: false
-    initialtest:
+    volt:
       Channel A: true
       Channel B: false
-      Currentsel: false
       IV: true
       Initialrange: ''
       Laseroutput: High power
@@ -235,13 +286,11 @@ Routines:
       Sweeppower: ''
       Sweepspeed: auto
       Voltages: ''
-      Voltsel: true
       Wavelengths: ''
   Wavelength Sweep:
     Default:
       Channel A: true
       Channel B: false
-      Currentsel: false
       ELECflag: false
       IV: true
       Initialrange: ''
@@ -260,7 +309,26 @@ Routines:
       Sweeppower: ''
       Sweepspeed: auto
       Voltages: ''
-      Voltsel: true
       Wavelengths: ''
       setvflag: false
       setwflag: false
+    wave:
+      Channel A: true
+      Channel B: false
+      IV: true
+      Initialrange: '-20'
+      Laseroutput: High power
+      Max: '5'
+      Min: '0'
+      Numscans: '1'
+      PV: true
+      RV: true
+      RangeDec: '20'
+      Res: '0.1'
+      Start: '1480'
+      Stepsize: '1'
+      Stop: '1580'
+      Sweeppower: '0'
+      Sweepspeed: auto
+      Voltages: ''
+      Wavelengths: ''
