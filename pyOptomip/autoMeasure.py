@@ -33,12 +33,11 @@ import matplotlib.pyplot as plt
 from ElectroOpticDevice import ElectroOpticDevice
 from measurementRoutines import measurementRoutines
 import myMatplotlibPanel
-import myMatplotlibPanel_pyplot
 
 
 class autoMeasure(object):
 
-    def __init__(self, laser, motorOpt, motorElec, smu, fineAlign, graph):
+    def __init__(self, laser, motorOpt, motorElec, smu, fineAlign):
         """
         Creates an autoMeasure object which is used to coordinate motors and perform automated
         measurements.
@@ -55,7 +54,7 @@ class autoMeasure(object):
         self.smu = smu
         self.fineAlign = fineAlign
         self.saveFolder = os.getcwd()
-        self.graphPanel = graph
+        self.graphPanel = myMatplotlibPanel.myMatplotlibPanel(self)
         self.devices = []
         self.saveoptposition1 = []
         self.saveoptposition2 = []
