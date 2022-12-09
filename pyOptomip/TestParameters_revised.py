@@ -28,6 +28,8 @@ from outputlogPanel import outputlogPanel
 from logWriter import logWriter, logWriterError
 import sys
 from ElectroOpticDevice import ElectroOpticDevice
+from informationframes import infoFrame
+import traceback
 
 
 class testParameters(wx.Frame):
@@ -393,7 +395,7 @@ class TopPanel(wx.Panel):
                     self.routinedict[routine][x]['OPTICflag'] = False
                     self.routinedict[routine][x]['setwflag'] = False
                     self.routinedict[routine][x]['setvflag'] = False
-                    self.routinedict[routine][x]['Voltsel'] = True
+                    self.routinedict[routine][x]['Voltsel'] = False
                     self.routinedict[routine][x]['Currentsel'] = False
                     self.routinedict[routine][x]['Min'] = '0'
                     self.routinedict[routine][x]['Max'] = '5'
@@ -421,7 +423,7 @@ class TopPanel(wx.Panel):
                     self.routinedict[routine][x]['OPTICflag'] = False
                     self.routinedict[routine][x]['setwflag'] = False
                     self.routinedict[routine][x]['setvflag'] = False
-                    self.routinedict[routine][x]['Voltsel'] = False
+                    self.routinedict[routine][x]['Voltsel'] = True
                     self.routinedict[routine][x]['Currentsel'] = False
                     self.routinedict[routine][x]['Min'] = ''
                     self.routinedict[routine][x]['Max'] = ''
@@ -450,8 +452,8 @@ class TopPanel(wx.Panel):
                     self.routinedict[routine][x]['OPTICflag'] = True
                     self.routinedict[routine][x]['setwflag'] = False
                     self.routinedict[routine][x]['setvflag'] = False
-                    self.routinedict[routine][x]['Voltsel'] = True
-                    self.routinedict[routine][x]['Currentsel'] = False
+                    self.routinedict[routine][x]['Voltsel'] = False
+                    self.routinedict[routine][x]['Currentsel'] = True
                     self.routinedict[routine][x]['Min'] = '0'
                     self.routinedict[routine][x]['Max'] = '1'
                     self.routinedict[routine][x]['Res'] = '1'
@@ -507,8 +509,8 @@ class TopPanel(wx.Panel):
                     self.routinedict[routine][x]['OPTICflag'] = False
                     self.routinedict[routine][x]['setwflag'] = True
                     self.routinedict[routine][x]['setvflag'] = False
-                    self.routinedict[routine][x]['Voltsel'] = True
-                    self.routinedict[routine][x]['Currentsel'] = False
+                    self.routinedict[routine][x]['Voltsel'] = False
+                    self.routinedict[routine][x]['Currentsel'] = True
                     self.routinedict[routine][x]['Min'] = '0'
                     self.routinedict[routine][x]['Max'] = '5'
                     self.routinedict[routine][x]['Res'] = '0.1'
@@ -535,7 +537,7 @@ class TopPanel(wx.Panel):
                     self.routinedict[routine][x]['OPTICflag'] = 0
                     self.routinedict[routine][x]['setwflag'] = 0
                     self.routinedict[routine][x]['setvflag'] = 0
-                    self.routinedict[routine][x]['Voltsel'] = True
+                    self.routinedict[routine][x]['Voltsel'] = False
                     self.routinedict[routine][x]['Currentsel'] = False
                     self.routinedict[routine][x]['Min'] = ''
                     self.routinedict[routine][x]['Max'] = ''
@@ -738,8 +740,6 @@ class TopPanel(wx.Panel):
     def clearparameters(self):
 
         self.parameterPanel.name.SetValue('')
-        self.parameterPanel.voltsel.SetValue(False)
-        self.parameterPanel.currentsel.SetValue(False)
         self.parameterPanel.minsetvoltage.SetValue('')
         self.parameterPanel.maxsetvoltage.SetValue('')
         self.parameterPanel.resovoltage.SetValue('')
@@ -813,6 +813,9 @@ class TopPanel(wx.Panel):
         self.newlyselectedroutine = c
         self.subroutineselected = False
 
+        self.reorganizeparameters(c)
+
+
 
         if self.routineselected == True:
             self.routinecheckList.CheckItem(self.currentlycheckedroutine, False)
@@ -825,8 +828,6 @@ class TopPanel(wx.Panel):
 
         self.routineselected = True
 
-        self.parameterPanel.voltsel.SetValue(self.routinedict[self.routinetype]['Default']['Voltsel'])
-        self.parameterPanel.currentsel.SetValue(self.routinedict[self.routinetype]['Default']['Currentsel'])
         self.parameterPanel.minsetvoltage.SetValue(self.routinedict[self.routinetype]['Default']['Min'])
         self.parameterPanel.maxsetvoltage.SetValue(self.routinedict[self.routinetype]['Default']['Max'])
         self.parameterPanel.resovoltage.SetValue(self.routinedict[self.routinetype]['Default']['Res'])
@@ -1413,13 +1414,91 @@ class TopPanel(wx.Panel):
 
         return output
 
-    def reorganizeparameters(self, event):
+    def reorganizeparameters(self, c):
 
-        routine = self.routinecheckList.GetLabel(self.currentlycheckedroutine)
+
+        routine = self.routinecheckList.GetItemText(c)
+        self.parameterPanel.paramvbox.Show(self.parameterPanel.hbox2) #max
+        self.parameterPanel.paramvbox.Show(self.parameterPanel.hbox3) #min
+        self.parameterPanel.paramvbox.Show(self.parameterPanel.hbox4) #res
+        self.parameterPanel.paramvbox.Show(self.parameterPanel.hbox5) #graph type
+        self.parameterPanel.paramvbox.Show(self.parameterPanel.hbox6) #smu channel
+        self.parameterPanel.paramvbox.Show(self.parameterPanel.opt_hbox) #start
+        self.parameterPanel.paramvbox.Show(self.parameterPanel.opt_hbox2) #stop
+        self.parameterPanel.paramvbox.Show(self.parameterPanel.opt_hbox3) #step
+        self.parameterPanel.paramvbox.Show(self.parameterPanel.opt_hbox4) #sweep power
+        self.parameterPanel.paramvbox.Show(self.parameterPanel.opt_hbox4_5) #initial range
+        self.parameterPanel.paramvbox.Show(self.parameterPanel.opt_hbox4_6) #range decr
+        self.parameterPanel.paramvbox.Show(self.parameterPanel.opt_hbox5) #sweep speed
+        self.parameterPanel.paramvbox.Show(self.parameterPanel.opt_hbox6) #laser output
+        self.parameterPanel.paramvbox.Show(self.parameterPanel.opt_hbox7) #number of scans
+        self.parameterPanel.paramvbox.Show(self.parameterPanel.hbox7_2) # wavelengths
+        self.parameterPanel.paramvbox.Show(self.parameterPanel.opt_hbox8_2) # voltages
+
 
         if routine == 'Wavelength Sweep':
-            self.parameterPanel.paramvbox.remove(self.parameterPanel.opt_hbox8_2)
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox2)  # max
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox3)  # min
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox4)  # res
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox5)  # graph type
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox6)
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox7_2)  # wavelengths
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox8_2)
 
+        if routine == 'Voltage Sweep':
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox)  # start
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox2)  # stop
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox3)  # step
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox4)  # sweep power
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox4_5)  # initial range
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox4_6)  # range decr
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox5)  # sweep speed
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox6)  # laser output
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox7)  # number of scans
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox7_2)  # wavelengths
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox8_2)  # voltages
+
+        if routine == 'Current Sweep':
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox)  # start
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox2)  # stop
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox3)  # step
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox4)  # sweep power
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox4_5)  # initial range
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox4_6)  # range decr
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox5)  # sweep speed
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox6)  # laser output
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox7)  # number of scans
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox7_2)  # wavelengths
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox8_2)  # voltages
+
+        if routine == 'Set Wavelength Voltage Sweep':
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox)  # start
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox2)  # stop
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox3)  # step
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox4)  # sweep power
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox4_5)  # initial range
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox4_6)  # range decr
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox5)  # sweep speed
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox6)  # laser output
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox7)  # number of scans
+
+        if routine == 'Set Wavelength Current Sweep':
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox)  # start
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox2)  # stop
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox3)  # step
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox4)  # sweep power
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox4_5)  # initial range
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox4_6)  # range decr
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox5)  # sweep speed
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox6)  # laser output
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox7)  # number of scans
+
+        if routine == 'Set Voltage Wavelength Sweep':
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox2)  # max
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox3)  # min
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox4)  # res
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox5)  # graph type
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox7_2)  # wavelengths
 
 class autoMeasure(object):
 
@@ -1754,6 +1833,7 @@ class ParameterPanel(wx.Panel):
 
     def __init__(self, parent):
         super(ParameterPanel, self).__init__(parent)
+        self.infoFrame = infoFrame
         self.elecvolt = []
         self.eleccurrent = []
         self.elecvmax = []
@@ -1812,38 +1892,38 @@ class ParameterPanel(wx.Panel):
 
         self.InitUI()
 
-
     def InitUI(self):
 
         ##CREATE PARAMETERS PANEL#######################################################################################
 
         #create electrical panel sizer and necessary vboxes and hboxes
-        sb = wx.StaticBox(self, label='Parameters')
-        self.paramvbox = wx.StaticBoxSizer(sb, wx.VERTICAL)
+        #sb = wx.StaticBox(self, label='Parameters')
+        #self.paramvbox = wx.StaticBoxSizer(sb, wx.VERTICAL)
+        self.paramvbox = wx.BoxSizer(wx.VERTICAL)
         self.paramvbox.SetMinSize(300, 400)
 
-        hboxname = wx.BoxSizer(wx.HORIZONTAL)
+        self.hboxname = wx.BoxSizer(wx.HORIZONTAL)
         sqname = wx.StaticText(self, label='Routine Name: ')
         self.name = wx.TextCtrl(self, size=(60, -1))
-        hboxname.AddMany([(sqname, 0, wx.EXPAND), (self.name, 1, wx.EXPAND)])
+        self.hboxname.AddMany([(sqname, 0, wx.EXPAND), (self.name, 1, wx.EXPAND)])
 
-        self.paramvbox.Add(hboxname, 1, wx.EXPAND)
+        self.paramvbox.Add(self.hboxname, 1, wx.EXPAND)
 
         #Independent Variable selection
-        hbox1 = wx.BoxSizer(wx.HORIZONTAL)
-        sq1_1 = wx.StaticText(self, label='Select Independent Variable: ')
-        self.voltsel = wx.CheckBox(self, label='Voltage', pos=(20, 20), size=(40, -1))
-        self.voltsel.SetValue(False)
-        self.voltsel.Bind(wx.EVT_CHECKBOX, self.trueorfalse)
-        self.currentsel = wx.CheckBox(self, label='Current', pos=(20, 20))
-        self.currentsel.SetValue(False)
-        self.currentsel.Bind(wx.EVT_CHECKBOX, self.trueorfalse)
-        hbox1.AddMany([(sq1_1, 0, wx.EXPAND), (self.voltsel, 1, wx.EXPAND), (self.currentsel, 0, wx.EXPAND)])
+        #self.hbox1 = wx.BoxSizer(wx.HORIZONTAL)
+        #sq1_1 = wx.StaticText(self, label='Select Independent Variable: ')
+        #self.voltsel = wx.CheckBox(self, label='Voltage', pos=(20, 20), size=(40, -1))
+        #self.voltsel.SetValue(False)
+        #self.voltsel.Bind(wx.EVT_CHECKBOX, self.trueorfalse)
+        #self.currentsel = wx.CheckBox(self, label='Current', pos=(20, 20))
+        #self.currentsel.SetValue(False)
+        #self.currentsel.Bind(wx.EVT_CHECKBOX, self.trueorfalse)
+        #self.hbox1.AddMany([(sq1_1, 0, wx.EXPAND), (self.voltsel, 1, wx.EXPAND), (self.currentsel, 0, wx.EXPAND)])
 
-        self.paramvbox.Add(hbox1, 1, wx.EXPAND)
+        #self.paramvbox.Add(self.hbox1, 1, wx.EXPAND)
 
         #Voltage and Current maximum select
-        hbox2 = wx.BoxSizer(wx.HORIZONTAL)
+        self.hbox2 = wx.BoxSizer(wx.HORIZONTAL)
         sw1 = wx.StaticText(self, label='Set Max (V/mA):')
         self.maxsetvoltage = wx.TextCtrl(self, size=(60, -1))
         #self.maxsetvoltage.SetValue('V')
@@ -1853,12 +1933,12 @@ class ParameterPanel(wx.Panel):
         #self.maxsetcurrent.SetValue('mA')
         #self.maxsetcurrent.Bind(wx.EVT_SET_FOCUS, self.cleartext)
         #self.maxsetcurrent.SetForegroundColour(wx.Colour(211,211,211))
-        hbox2.AddMany([(sw1, 1, wx.EXPAND), (self.maxsetvoltage, 0, wx.EXPAND)])# (self.maxsetcurrent, 0, wx.EXPAND)])
+        self.hbox2.AddMany([(sw1, 1, wx.EXPAND), (self.maxsetvoltage, 0, wx.EXPAND)])# (self.maxsetcurrent, 0, wx.EXPAND)])
 
-        self.paramvbox.Add(hbox2, 1, wx.EXPAND)
+        self.paramvbox.Add(self.hbox2, 1, wx.EXPAND)
 
         #Voltage and current minimum select
-        hbox3 = wx.BoxSizer(wx.HORIZONTAL)
+        self.hbox3 = wx.BoxSizer(wx.HORIZONTAL)
         sw2 = wx.StaticText(self, label='Set Min (V/mA):')
         #self.minsetcurrent = wx.TextCtrl(self, size=(60, -1))
         #self.minsetcurrent.SetValue('mA')
@@ -1868,13 +1948,13 @@ class ParameterPanel(wx.Panel):
         #self.minsetvoltage.SetValue('V')
         #self.minsetvoltage.Bind(wx.EVT_SET_FOCUS, self.cleartext)
         #self.minsetvoltage.SetForegroundColour(wx.Colour(211, 211, 211))
-        hbox3.AddMany([(sw2, 1, wx.EXPAND), (self.minsetvoltage, 0, wx.EXPAND)])# (self.minsetcurrent, 0, wx.EXPAND)])
+        self.hbox3.AddMany([(sw2, 1, wx.EXPAND), (self.minsetvoltage, 0, wx.EXPAND)])# (self.minsetcurrent, 0, wx.EXPAND)])
 
-        self.paramvbox.Add(hbox3, 1, wx.EXPAND)
+        self.paramvbox.Add(self.hbox3, 1, wx.EXPAND)
 
         #Voltage and Current resolution select
-        hbox4 = wx.BoxSizer(wx.HORIZONTAL)
-        sw3 = wx.StaticText(self, label='Set Resolution (V/mA):')
+        self.hbox4 = wx.BoxSizer(wx.HORIZONTAL)
+        sw3 = wx.StaticText(self, label='Set Resolution (mV/mA):')
         self.resovoltage = wx.TextCtrl(self, size=(60, -1))
         #self.resovoltage.SetValue('V')
         #self.resovoltage.Bind(wx.EVT_SET_FOCUS, self.cleartext)
@@ -1883,12 +1963,12 @@ class ParameterPanel(wx.Panel):
         #self.resocurrent.SetValue('mA')
         #self.resocurrent.Bind(wx.EVT_SET_FOCUS, self.cleartext)
         #self.resocurrent.SetForegroundColour(wx.Colour(211, 211, 211))
-        hbox4.AddMany([(sw3, 1, wx.EXPAND), (self.resovoltage, 0, wx.EXPAND)]) #(self.resocurrent, 0, wx.EXPAND)])
+        self.hbox4.AddMany([(sw3, 1, wx.EXPAND), (self.resovoltage, 0, wx.EXPAND)]) #(self.resocurrent, 0, wx.EXPAND)])
 
-        self.paramvbox.Add(hbox4, 1, wx.EXPAND)
+        self.paramvbox.Add(self.hbox4, 1, wx.EXPAND)
 
         #Plot type selection checkboxes
-        hbox5 = wx.BoxSizer(wx.HORIZONTAL)
+        self.hbox5 = wx.BoxSizer(wx.HORIZONTAL)
         sh2 = wx.StaticText(self, label='Plot Type:')
         self.typesel = wx.CheckBox(self, label='IV/VI', pos=(20, 20))
         self.typesel.SetValue(False)
@@ -1896,13 +1976,13 @@ class ParameterPanel(wx.Panel):
         self.type2sel.SetValue(False)
         self.type3sel = wx.CheckBox(self, label='PV/PI', pos=(20, 20))
         self.type3sel.SetValue(False)
-        hbox5.AddMany([(sh2, 1, wx.EXPAND), (self.typesel, 1, wx.EXPAND), (self.type2sel, 1, wx.EXPAND),
+        self.hbox5.AddMany([(sh2, 1, wx.EXPAND), (self.typesel, 1, wx.EXPAND), (self.type2sel, 1, wx.EXPAND),
                        (self.type3sel, 1, wx.EXPAND)])
 
-        self.paramvbox.Add(hbox5, 1, wx.EXPAND)
+        self.paramvbox.Add(self.hbox5, 1, wx.EXPAND)
 
         #electrical SMU channel select checkboxes and elecrical save button
-        hbox6 = wx.BoxSizer(wx.HORIZONTAL)
+        self.hbox6 = wx.BoxSizer(wx.HORIZONTAL)
         sq6_1 = wx.StaticText(self, label='Select SMU Channel: ')
         self.Asel = wx.CheckBox(self, label='A', pos=(20, 20))
         self.Asel.SetValue(False)
@@ -1910,112 +1990,114 @@ class ParameterPanel(wx.Panel):
         self.Bsel.SetValue(False)
         self.Asel.Bind(wx.EVT_CHECKBOX, self.trueorfalse)
         self.Bsel.Bind(wx.EVT_CHECKBOX, self.trueorfalse)
-        hbox6.AddMany([(sq6_1, 1, wx.EXPAND), (self.Asel, 1, wx.EXPAND), (self.Bsel, 0, wx.EXPAND)])
+        self.hbox6.AddMany([(sq6_1, 1, wx.EXPAND), (self.Asel, 1, wx.EXPAND), (self.Bsel, 0, wx.EXPAND)])
 
-        self.paramvbox.Add(hbox6, 1, wx.EXPAND)
+        self.paramvbox.Add(self.hbox6, 1, wx.EXPAND)
 
         #optical start wavelength select
-        opt_hbox = wx.BoxSizer(wx.HORIZONTAL)
+        self.opt_hbox = wx.BoxSizer(wx.HORIZONTAL)
         st4 = wx.StaticText(self, label='Start (nm)')
         self.startWvlTc = wx.TextCtrl(self)
         self.startWvlTc.SetValue('0')
-        opt_hbox.AddMany([(st4, 1, wx.EXPAND), (self.startWvlTc, 1, wx.EXPAND)])
+        self.opt_hbox.AddMany([(st4, 1, wx.EXPAND), (self.startWvlTc, 1, wx.EXPAND)])
 
-        self.paramvbox.Add(opt_hbox, 1, wx.EXPAND)
+        self.paramvbox.Add(self.opt_hbox, 1, wx.EXPAND)
 
         #optical stop wavelength select
-        opt_hbox2 = wx.BoxSizer(wx.HORIZONTAL)
+        self.opt_hbox2 = wx.BoxSizer(wx.HORIZONTAL)
         st5 = wx.StaticText(self, label='Stop (nm)')
         self.stopWvlTc = wx.TextCtrl(self)
         self.stopWvlTc.SetValue('0')
-        opt_hbox2.AddMany([(st5, 1, wx.EXPAND), (self.stopWvlTc, 1, wx.EXPAND)])
+        self.opt_hbox2.AddMany([(st5, 1, wx.EXPAND), (self.stopWvlTc, 1, wx.EXPAND)])
 
-        self.paramvbox.Add(opt_hbox2, 1, wx.EXPAND)
+        self.paramvbox.Add(self.opt_hbox2, 1, wx.EXPAND)
 
         #optical step size select
-        opt_hbox3 = wx.BoxSizer(wx.HORIZONTAL)
+        self.opt_hbox3 = wx.BoxSizer(wx.HORIZONTAL)
         st6 = wx.StaticText(self, label='Step (nm)')
         self.stepWvlTc = wx.TextCtrl(self)
         self.stepWvlTc.SetValue('0')
-        opt_hbox3.AddMany([(st6, 1, wx.EXPAND), (self.stepWvlTc, 1, wx.EXPAND)])
+        self.opt_hbox3.AddMany([(st6, 1, wx.EXPAND), (self.stepWvlTc, 1, wx.EXPAND)])
 
-        self.paramvbox.Add(opt_hbox3, 1, wx.EXPAND)
+        self.paramvbox.Add(self.opt_hbox3, 1, wx.EXPAND)
 
         #optical sweep power tab
-        opt_hbox4 = wx.BoxSizer(wx.HORIZONTAL)
+        self.opt_hbox4 = wx.BoxSizer(wx.HORIZONTAL)
         sweepPowerSt = wx.StaticText(self, label='Sweep power (dBm)')
         self.sweepPowerTc = wx.TextCtrl(self)
         self.sweepPowerTc.SetValue('0')
-        opt_hbox4.AddMany([(sweepPowerSt, 1, wx.EXPAND), (self.sweepPowerTc, 1, wx.EXPAND)])
+        self.opt_hbox4.AddMany([(sweepPowerSt, 1, wx.EXPAND), (self.sweepPowerTc, 1, wx.EXPAND)])
 
-        self.paramvbox.Add(opt_hbox4, 1, wx.EXPAND)
+        self.paramvbox.Add(self.opt_hbox4, 1, wx.EXPAND)
 
         #optical Initial range tab
-        opt_hbox4_5 = wx.BoxSizer(wx.HORIZONTAL)
+        self.opt_hbox4_5 = wx.BoxSizer(wx.HORIZONTAL)
         sweepinitialrangeSt = wx.StaticText(self, label='Initial Range (dBm)')
         self.sweepinitialrangeTc = wx.TextCtrl(self)
         self.sweepinitialrangeTc.SetValue('0')
-        opt_hbox4_5.AddMany([(sweepinitialrangeSt, 1, wx.EXPAND), (self.sweepinitialrangeTc, 1, wx.EXPAND)])
+        self.opt_hbox4_5.AddMany([(sweepinitialrangeSt, 1, wx.EXPAND), (self.sweepinitialrangeTc, 1, wx.EXPAND)])
 
-        self.paramvbox.Add(opt_hbox4_5, 1, wx.EXPAND)
+        self.paramvbox.Add(self.opt_hbox4_5, 1, wx.EXPAND)
 
         #optical range decrement tab
-        opt_hbox4_6 = wx.BoxSizer(wx.HORIZONTAL)
+        self.opt_hbox4_6 = wx.BoxSizer(wx.HORIZONTAL)
         rangedecSt = wx.StaticText(self, label='Range Decrement (dBm)')
         self.rangedecTc = wx.TextCtrl(self)
         self.rangedecTc.SetValue('0')
-        opt_hbox4_6.AddMany([(rangedecSt, 1, wx.EXPAND), (self.rangedecTc, 1, wx.EXPAND)])
+        self.opt_hbox4_6.AddMany([(rangedecSt, 1, wx.EXPAND), (self.rangedecTc, 1, wx.EXPAND)])
 
-        self.paramvbox.Add(opt_hbox4_6, 1, wx.EXPAND)
+        self.paramvbox.Add(self.opt_hbox4_6, 1, wx.EXPAND)
 
         #optical sweep speed tab
-        opt_hbox5 = wx.BoxSizer(wx.HORIZONTAL)
+        self.opt_hbox5 = wx.BoxSizer(wx.HORIZONTAL)
         st7 = wx.StaticText(self, label='Sweep speed')
         sweepSpeedOptions = ['80 nm/s', '40 nm/s', '20 nm/s', '10 nm/s', '5 nm/s', '0.5 nm/s', 'auto']
         self.sweepSpeedCb = wx.ComboBox(self, choices=sweepSpeedOptions, style=wx.CB_READONLY, value='auto')
-        opt_hbox5.AddMany([(st7, 1, wx.EXPAND), (self.sweepSpeedCb, 1, wx.EXPAND)])
+        self.opt_hbox5.AddMany([(st7, 1, wx.EXPAND), (self.sweepSpeedCb, 1, wx.EXPAND)])
 
-        self.paramvbox.Add(opt_hbox5, 1, wx.EXPAND)
+        self.paramvbox.Add(self.opt_hbox5, 1, wx.EXPAND)
 
         #optical laser output tab
-        opt_hbox6 = wx.BoxSizer(wx.HORIZONTAL)
+        self.opt_hbox6 = wx.BoxSizer(wx.HORIZONTAL)
         st8 = wx.StaticText(self, label='Laser output')
         laserOutputOptions = ['High power', 'Low SSE']
         self.laserOutputCb = wx.ComboBox(self, choices=laserOutputOptions, style=wx.CB_READONLY, value='High power')
-        opt_hbox6.AddMany([(st8, 1, wx.EXPAND), (self.laserOutputCb, 1, wx.EXPAND)])
+        self.opt_hbox6.AddMany([(st8, 1, wx.EXPAND), (self.laserOutputCb, 1, wx.EXPAND)])
 
-        self.paramvbox.Add(opt_hbox6, 1, wx.EXPAND)
+        self.paramvbox.Add(self.opt_hbox6, 1, wx.EXPAND)
 
         #optical number of scans tab
-        opt_hbox7 = wx.BoxSizer(wx.HORIZONTAL)
+        self.opt_hbox7 = wx.BoxSizer(wx.HORIZONTAL)
         st9 = wx.StaticText(self, label='Number of scans')
         numSweepOptions = ['1', '2', '3']
         self.numSweepCb = wx.ComboBox(self, choices=numSweepOptions, style=wx.CB_READONLY, value='1')
-        opt_hbox7.AddMany([(st9, 1, wx.EXPAND), (self.numSweepCb, 1, wx.EXPAND)])
+        self.opt_hbox7.AddMany([(st9, 1, wx.EXPAND), (self.numSweepCb, 1, wx.EXPAND)])
 
-        self.paramvbox.Add(opt_hbox7, 1, wx.EXPAND)
+        self.paramvbox.Add(self.opt_hbox7, 1, wx.EXPAND)
 
 
         #set wavelength, wavelength select
-        hbox7_2 = wx.BoxSizer(wx.HORIZONTAL)
+        self.hbox7_2 = wx.BoxSizer(wx.HORIZONTAL)
         wavesetst = wx.StaticText(self, label='Wavelengths (nm)')
         self.wavesetTc2 = wx.TextCtrl(self)
         self.wavesetTc2.SetValue('0')
-        hbox7_2.AddMany([(wavesetst, 1, wx.EXPAND), (self.wavesetTc2, 1, wx.EXPAND)])
+        self.hbox7_2.AddMany([(wavesetst, 1, wx.EXPAND), (self.wavesetTc2, 1, wx.EXPAND)])
 
-        self.paramvbox.Add(hbox7_2, 1, wx.EXPAND)
+        self.paramvbox.Add(self.hbox7_2, 1, wx.EXPAND)
 
         #set voltage, voltage selection
         self.opt_hbox8_2 = wx.BoxSizer(wx.HORIZONTAL)
         voltagesetst = wx.StaticText(self, label='Voltages (V)')
+        self.voltinfoBtn = wx.Button(self,id= 0, label = '?', size=(20, 20))
+        self.voltinfoBtn.Bind(wx.EVT_BUTTON, self.OnButton_createinfoframe)
+
         self.voltagesetTc2 = wx.TextCtrl(self)
         self.voltagesetTc2.SetValue('0')
-        self.opt_hbox8_2.AddMany([(voltagesetst, 1, wx.EXPAND), (self.voltagesetTc2, 1, wx.EXPAND)])
+        self.opt_hbox8_2.AddMany([(voltagesetst, 1, wx.EXPAND), (self.voltinfoBtn, 0, wx.EXPAND), (self.voltagesetTc2, 1, wx.EXPAND)])
 
         self.paramvbox.Add(self.opt_hbox8_2, 1, wx.EXPAND)
 
         self.SetSizer(self.paramvbox)
-
 
     def cleartext(self, event):
         """
@@ -2036,7 +2118,6 @@ class ParameterPanel(wx.Panel):
             e.SetForegroundColour(wx.Colour(0, 0, 0))
         event.Skip()
 
-
     def trueorfalse(self, event):
         """
         For selections that can only be one or the other this function deselects the other option on the selection of one of the parameters
@@ -2056,14 +2137,24 @@ class ParameterPanel(wx.Panel):
         if e == self.Bsel and self.Bsel.GetValue() == True:
             self.Asel.SetValue(False)
 
-        if e == self.voltsel and self.voltsel.GetValue() == True:
-            self.currentsel.SetValue(False)
-
-        if e == self.currentsel and self.currentsel.GetValue() == True:
-            self.voltsel.SetValue(False)
-
         event.Skip()
 
+    def OnButton_createinfoframe(self, event):
+        """Creates filter frame when filter button is pressed"""
+        c = event.GetId()
+        self.infoclicked = c
+        self.createinfoFrame()
+        self.Refresh()
+
+    def createinfoFrame(self):
+        """Opens up a frame to facilitate filtering of devices within the checklist."""
+        try:
+            self.infoFrame(None, self.infoclicked)
+
+        except Exception as e:
+            dial = wx.MessageDialog(None, 'Could not initiate filter. ' + traceback.format_exc(),
+                                    'Error', wx.ICON_ERROR)
+            dial.ShowModal()
 
 if __name__ == '__main__':
     app = wx.App(redirect=False)
