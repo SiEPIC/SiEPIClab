@@ -9,7 +9,7 @@ class dummylaser(object):
     isSMU = False
 
     def __init__(self):
-        self.numPWMSlots = 9
+        self.numPWMSlots = 5
         self.connected = False
 
     def __del__(self):
