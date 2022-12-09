@@ -339,6 +339,8 @@ class autoMeasure(object):
 
     def addSetWavelengthVoltageSweep(self, name, voltmin, voltmax, voltres, iv, rv, pv, a, b, wavelengths):
         """"""
+        print(wavelengths)
+        wavelengths = wavelengths.split(',')
         for wavelength in wavelengths:
             self.setWavelengthVoltageSweeps['VoltMin'].append(voltmin)
             self.setWavelengthVoltageSweeps['VoltMax'].append(voltmax)
@@ -354,6 +356,8 @@ class autoMeasure(object):
 
     def addSetWavelengthCurrentSweep(self, name, currentmin, currentmax, currentres, iv, rv, pv, a, b, wavelengths):
         """"""
+        print(wavelengths)
+        wavelengths = wavelengths.split(',')
         for wavelength in wavelengths:
             self.setWavelengthCurrentSweeps['CurrentMin'].append(currentmin)
             self.setWavelengthCurrentSweeps['CurrentMax'].append(currentmax)
@@ -370,6 +374,8 @@ class autoMeasure(object):
     def addSetVoltageWavelengthSweep(self, name, start, stop, stepsize, sweeppower, sweepspeed, laseroutput,
                                      numscans, initialrange, rangedec, a, b, voltages):
         """"""
+        print(voltages)
+        voltages = voltages.split(',')
         for voltage in voltages:
             self.setVoltageWavelengthSweeps['Start'].append(start)
             self.setVoltageWavelengthSweeps['Stop'].append(stop)
@@ -385,6 +391,7 @@ class autoMeasure(object):
             self.setVoltageWavelengthSweeps['Voltage'].append(voltage)
             self.setVoltageWavelengthSweeps['RoutineName'].append(name)
             self.hasRoutines = True
+
 
     def beginMeasure(self, devices, checkList, activeDetectors, camera, abortFunction=None, updateFunction=None,
                      updateGraph=True):
