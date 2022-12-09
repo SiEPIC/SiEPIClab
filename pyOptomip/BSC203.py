@@ -87,6 +87,7 @@ class BSC203Motor:
                 print('Please Set Minimum Position in X Axis.')
             else:
                 pass
+
         else:
             if self.position[0] - x < self.minXPosition:
                 print("Cannot Move Past Minimum X Position.")
