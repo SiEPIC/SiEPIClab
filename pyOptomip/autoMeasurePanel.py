@@ -773,7 +773,8 @@ class autoMeasurePanel(wx.Panel):
         reader = csv.reader(f)
         textCoordPath = next(reader)
         for path in textCoordPath:
-            self.readYAML(path)
+            if path != "," and path != "":
+                self.readYAML(path)
         next(reader)
         next(reader)
         optDev1 = next(reader)
@@ -849,6 +850,7 @@ class autoMeasurePanel(wx.Panel):
 
         for file in Files:
             self.readYAML(file)
+            self.testParametersPath.append(file)
         self.parametersImported = True
 
     def readYAML(self, originalFile):
@@ -856,7 +858,6 @@ class autoMeasurePanel(wx.Panel):
          objects to be used for automated measurements as well as a dictionary of routines."""
 
         deviceList = []
-
         with open(originalFile, 'r') as file:
             loadedYAML = yaml.safe_load(file)
 
@@ -888,54 +889,48 @@ class autoMeasurePanel(wx.Panel):
                     if type == 'Wavelength Sweep':
                         type = loadedYAML['Routines']['Wavelength Sweep']
                         for routine in type:
-                            routine = type[routine]
-                            self.autoMeasure.addWavelengthSweep(routine, routine['Start'], routine['Stop'],
-                                                                routine['Stepsize'], routine['Sweeppower'],
-                                                                routine['Sweepspeed'], routine['Laseroutput'],
-                                                                routine['Numscans'], routine['Initialrange'],
-                                                                routine['RangeDec'])
+                            self.autoMeasure.addWavelengthSweep(routine, type[routine]['Start'], type[routine]['Stop'],
+                                                                type[routine]['Stepsize'], type[routine]['Sweeppower'],
+                                                                type[routine]['Sweepspeed'], type[routine]['Laseroutput'],
+                                                                type[routine]['Numscans'], type[routine]['Initialrange'],
+                                                                type[routine]['RangeDec'])
                     if type == 'Voltage Sweep':
                         type = loadedYAML['Routines']['Voltage Sweep']
                         for routine in type:
-                            routine = type[routine]
-                            self.autoMeasure.addVoltageSweep(routine, routine['Min'], routine['Max'],
-                                                             routine['Res'], routine['IV'], routine['RV'],
-                                                             routine['PV'], routine['Channel A'],
-                                                             routine['Channel B'])
+                            self.autoMeasure.addVoltageSweep(routine, type[routine]['Min'], type[routine]['Max'],
+                                                             type[routine]['Res'], type[routine]['IV'], type[routine]['RV'],
+                                                             type[routine]['PV'], type[routine]['Channel A'],
+                                                             type[routine]['Channel B'])
                     if type == 'Current Sweep':
                         type = loadedYAML['Routines']['Current Sweep']
                         for routine in type:
-                            routine = type[routine]
-                            self.autoMeasure.addCurrentSweep(routine, routine['Min'], routine['Max'],
-                                                             routine['Res'], routine['IV'], routine['RV'],
-                                                             routine['PV'], routine['Channel A'],
-                                                             routine['Channel B'])
+                            self.autoMeasure.addCurrentSweep(routine, type[routine]['Min'], type[routine]['Max'],
+                                                             type[routine]['Res'], type[routine]['IV'], type[routine]['RV'],
+                                                             type[routine]['PV'], type[routine]['Channel A'],
+                                                             type[routine]['Channel B'])
                     if type == 'Set Wavelength Voltage Sweep':
                         type = loadedYAML['Routines']['Set Wavelength Voltage Sweep']
                         for routine in type:
-                            routine = type[routine]
-                            self.autoMeasure.addSetWavelengthVoltageSweep(routine, routine['Min'], routine['Max'],
-                                                                          routine['Res'], routine['IV'], routine['RV'],
-                                                                          routine['PV'], routine['Channel A'],
-                                                                          routine['Channel B'], routine['Wavelengths'])
+                            self.autoMeasure.addSetWavelengthVoltageSweep(routine, type[routine]['Min'], type[routine]['Max'],
+                                                                          type[routine]['Res'], type[routine]['IV'], type[routine]['RV'],
+                                                                          type[routine]['PV'], type[routine]['Channel A'],
+                                                                          type[routine]['Channel B'], type[routine]['Wavelengths'])
                     if type == 'Set Wavelength Current Sweep':
                         type = loadedYAML['Routines']['Set Wavelength Current Sweep']
                         for routine in type:
-                            routine = type[routine]
-                            self.autoMeasure.addSetWavelengthCurrentSweep(routine, routine['Min'], routine['Max'],
-                                                                          routine['Res'], routine['IV'], routine['RV'],
-                                                                          routine['PV'], routine['Channel A'],
-                                                                          routine['Channel B'], routine['Wavelengths'])
+                            self.autoMeasure.addSetWavelengthCurrentSweep(routine, type[routine]['Min'], type[routine]['Max'],
+                                                                          type[routine]['Res'], type[routine]['IV'], type[routine]['RV'],
+                                                                          type[routine]['PV'], type[routine]['Channel A'],
+                                                                          type[routine]['Channel B'], type[routine]['Wavelengths'])
                     if type == 'Set Voltage Wavelength Sweep':
                         type = loadedYAML['Routines']['Set Voltage Wavelength Sweep']
                         for routine in type:
-                            routine = type[routine]
-                            self.autoMeasure.addSetVoltageWavelengthSweep(routine, routine['Start'], routine['Stop'],
-                                                                          routine['Stepsize'], routine['Sweeppower'],
-                                                                          routine['Sweepspeed'], routine['Laseroutput'],
-                                                                          routine['Numscans'], routine['Initialrange'],
-                                                                          routine['RangeDec'], routine['Channel A'],
-                                                                          routine['Channel B'], routine['Voltages'])
+                            self.autoMeasure.addSetVoltageWavelengthSweep(routine, type[routine]['Start'], type[routine]['Stop'],
+                                                                          type[routine]['Stepsize'], type[routine]['Sweeppower'],
+                                                                          type[routine]['Sweepspeed'], type[routine]['Laseroutput'],
+                                                                          type[routine]['Numscans'], type[routine]['Initialrange'],
+                                                                          type[routine]['RangeDec'], type[routine]['Channel A'],
+                                                                          type[routine]['Channel B'], type[routine]['Voltages'])
 
         self.importObjects(deviceList)
 
@@ -983,7 +978,7 @@ class autoMeasurePanel(wx.Panel):
                     absolutez = motorCoordElec[2]
                     relativex = absolutex[0] - elecPosition[0]
                     relativey = absolutey[0] - elecPosition[1]
-                    relativez = absolutez[0] - elecPosition[2] + 30
+                    relativez = absolutez[0] - elecPosition[2] + 15
                     # Move probe to device
                     self.autoMeasure.motorElec.moveRelativeX(-relativex)
                     time.sleep(2)
@@ -1032,7 +1027,7 @@ class autoMeasurePanel(wx.Panel):
                         absolutez = motorCoord[2]
                         relativex = absolutex[0] - elecPosition[0]
                         relativey = absolutey[0] - elecPosition[1]
-                        relativez = absolutez[0] - elecPosition[2] + 20
+                        relativez = absolutez[0] - elecPosition[2] + 15
                         self.autoMeasure.motorElec.moveRelativeX(-relativex)
                         time.sleep(2)
                         self.autoMeasure.motorElec.moveRelativeY(-relativey)
@@ -1083,8 +1078,7 @@ class autoMeasurePanel(wx.Panel):
 
         # Start measurement using the autoMeasure device
         self.autoMeasure.beginMeasure(devices=checkedDevicesText, checkList=self.checkList,
-                                      activeDetectors=activeDetectors, graph=self.graph,
-                                      camera=self.camera, abortFunction=None, updateFunction=None,
+                                      activeDetectors=activeDetectors, camera=self.camera, abortFunction=None, updateFunction=None,
                                       updateGraph=True)
 
         # Create a measurement progress dialog.
