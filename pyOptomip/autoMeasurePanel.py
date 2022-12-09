@@ -31,6 +31,7 @@ import csv
 import numpy as np
 from ElectroOpticDevice import ElectroOpticDevice
 import yaml
+from informationframes import infoFrame
 
 global deviceList
 global xscalevar
@@ -402,6 +403,7 @@ class autoMeasurePanel(wx.Panel):
         # autoMeasure object used to upload the coordinate file, calculate transform matrices and perform
         # automated measurements
         self.autoMeasure = autoMeasure
+        self.infoFrame = infoFrame
         # List of all the names of devices on the chip
         self.device_list = []
         self.camera = camera
@@ -510,7 +512,10 @@ class autoMeasurePanel(wx.Panel):
         self.yadjust = wx.TextCtrl(self, size=(60, 18))
         self.yadjust.SetValue('')
 
-        scalehbox.AddMany([(sw1, 0, wx.EXPAND), (self.xadjust, 0, wx.EXPAND), (sw2, 0, wx.EXPAND), (self.yadjust, 0, wx.EXPAND), (self.setscaleBtn, 0, wx.EXPAND)])
+        self.scaleinfoBtn = wx.Button(self, id=1, label='?', size=(20, 20))
+        self.scaleinfoBtn.Bind(wx.EVT_BUTTON, self.OnButton_createinfoframe)
+
+        scalehbox.AddMany([(sw1, 0, wx.EXPAND), (self.xadjust, 0, wx.EXPAND), (sw2, 0, wx.EXPAND), (self.yadjust, 0, wx.EXPAND), (self.setscaleBtn, 0, wx.EXPAND), (self.scaleinfoBtn, 0, wx.EXPAND)])
 
         # Add Save folder label
         st2 = wx.StaticText(self, label='Save Folder:')
@@ -1106,3 +1111,20 @@ class autoMeasurePanel(wx.Panel):
 
             # Enable detector auto measurement
             self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.startDetTimer()
+
+    def OnButton_createinfoframe(self, event):
+        """Creates filter frame when filter button is pressed"""
+        c = event.GetId()
+        self.infoclicked = c
+        self.createinfoFrame()
+        self.Refresh()
+
+    def createinfoFrame(self):
+        """Opens up a frame to facilitate filtering of devices within the checklist."""
+        try:
+            self.infoFrame(None, self.infoclicked)
+
+        except Exception as e:
+            dial = wx.MessageDialog(None, 'Could not initiate filter. ' + traceback.format_exc(),
+                                    'Error', wx.ICON_ERROR)
+            dial.ShowModal()

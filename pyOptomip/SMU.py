@@ -123,24 +123,24 @@ class SMUClass:
             self.inst.write("smua.source.func = smua.OUTPUT_DCVOLTS")
             setvoltstring = "smua.source.levelv = " + str(voltage)
             self.inst.write(setvoltstring)
-            print('Set channel A voltage to ' + str(int(voltage)) + 'V')
+            print('Set channel A voltage to ' + str(float(voltage)) + 'V')
 
         if channel == 'B':
             self.inst.write("smub.source.func = smub.OUTPUT_DCVOLTS")
             setvoltstring = "smub.source.levelv = " + str(voltage)
             self.inst.write(setvoltstring)
-            print('Set channel B voltage to ' + str(int(voltage)) + 'V')
+            print('Set channel B voltage to ' + str(float(voltage)) + 'V')
 
         if channel == 'All':
             self.inst.write("smua.source.func = smua.OUTPUT_DCVOLTS")
             setvoltstring = "smua.source.levelv = " + str(voltage)
             self.inst.write(setvoltstring)
-            print('Set channel A voltage to ' + str(int(voltage)) + 'V')
+            print('Set channel A voltage to ' + str(float(voltage)) + 'V')
 
             self.inst.write("smub.source.func = smub.OUTPUT_DCVOLTS")
             setvoltstring = "smub.source.levelv = " + str(voltage)
             self.inst.write(setvoltstring)
-            print('Set channel B voltage to ' + str(int(voltage)) + 'V')
+            print('Set channel B voltage to ' + str(float(voltage)) + 'V')
 
 
     def setCurrent(self, current, channel):
@@ -160,24 +160,24 @@ class SMUClass:
             self.inst.write("smua.source.func = smua.OUTPUT_DCAMPS")
             setcurrentstring = "smua.source.leveli = " + str(current)
             self.inst.write(setcurrentstring)
-            print('Set channel A current to ' + str(int(current * 1e6) / 1000) + 'mA')
+            print('Set channel A current to ' + str(float(current * 1e6) / 1000) + 'mA')
 
         if channel == 'B':
             self.inst.write("smub.source.func = smub.OUTPUT_DCAMPS")
             setcurrentstring = "smub.source.leveli = " + str(current)
             self.inst.write(setcurrentstring)
-            print('Set channel B current to ' + str(int(current * 1e6) / 1000) + 'mA')
+            print('Set channel B current to ' + str(float(current * 1e6) / 1000) + 'mA')
 
         if channel == 'All':
             self.inst.write("smua.source.func = smua.OUTPUT_DCAMPS")
             setcurrentstring = "smua.source.leveli = " + str(current)
             self.inst.write(setcurrentstring)
-            print('Set channel A current to ' + str(int(current * 1e6) / 1000) + 'mA')
+            print('Set channel A current to ' + str(float(current * 1e6) / 1000) + 'mA')
 
             self.inst.write("smub.source.func = smub.OUTPUT_DCAMPS")
             setcurrentstring = "smub.source.leveli = " + str(current)
             self.inst.write(setcurrentstring)
-            print('Set channel B current to ' + str(int(current * 1e6) / 1000) + 'mA')
+            print('Set channel B current to ' + str(float(current * 1e6) / 1000) + 'mA')
 
 
     def setcurrentlimit(self, currentlimit, channel):

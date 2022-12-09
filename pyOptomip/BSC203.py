@@ -38,6 +38,7 @@ class BSC203Motor:
         self.bsc.close()
 
     def moveRelativeXYZ(self, x, y, z):
+
         if self.minPositionSet == False:
             self.bsc.move_relative(distance=int(1000 * x), bay = 0, channel=0)
             self.bsc.move_relative(distance=int(1000 * y), bay = 1, channel=0)

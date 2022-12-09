@@ -53,6 +53,9 @@ class CorvusEcoParameters(wx.Panel):
         self.para1 = wx.BoxSizer(wx.HORIZONTAL)
         self.para1name = wx.StaticText(self, label='Serial Port')
         self.para1tc = wx.ComboBox(self, choices=visa.ResourceManager().list_resources())
+        for x in visa.ResourceManager().list_resources():
+            if x == 'ASRL7::INSTR':
+                self.para1tc.SetValue('ASRL7::INSTR')
         # self.para1tc = wx.TextCtrl(self,value='ASRL5::INSTR')
         self.para1.AddMany([(self.para1name, 1, wx.EXPAND), (self.para1tc, 1, wx.EXPAND)])
 
