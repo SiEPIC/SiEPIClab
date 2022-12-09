@@ -411,6 +411,7 @@ class autoMeasurePanel(wx.Panel):
         global yscalevar
         xscalevar = 0.82
         yscalevar = 0.8
+        self.testParametersPath = []
         # No testing parameters have been uploaded
         self.parametersImported = False
         self.InitUI()
@@ -562,11 +563,13 @@ class autoMeasurePanel(wx.Panel):
         stMinPosition = wx.StaticBox(self, label='Minimum Wedge Probe Position in X:  ')
         hBoxMinElec = wx.StaticBoxSizer(stMinPosition, wx.HORIZONTAL)
         self.tbxMotorCoord = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
-        btnGetMotorCoord = wx.Button(self, label='Set Position', size=(120, 20))
+        btnGetMotorCoord = wx.Button(self, label='Set Position', size=(80, 20))
         btnGetMotorCoord.Bind(wx.EVT_BUTTON,
                               lambda event, xcoord=self.tbxMotorCoord: self.Event_OnCoordButton(
                                   event, xcoord))
-        hBoxMinElec.AddMany([(self.tbxMotorCoord, 1, wx.EXPAND), (btnGetMotorCoord, 1, wx.EXPAND)])
+        btnUndoMotorCoord = wx.Button(self, label='Undo', size=(80, 20))
+        btnUndoMotorCoord.Bind(wx.EVT_BUTTON, self.OnButton_Undo)
+        hBoxMinElec.AddMany([(self.tbxMotorCoord, 1, wx.EXPAND), (btnGetMotorCoord, 1, wx.EXPAND), (btnUndoMotorCoord, 1, wx.EXPAND)])
 
         elecAdjustBox = wx.BoxSizer(wx.HORIZONTAL)
         elecAdjustBox.AddMany([(hBoxMinElec, 0, wx.EXPAND), (scalehbox, 0, wx.EXPAND)])
@@ -659,6 +662,9 @@ class autoMeasurePanel(wx.Panel):
         self.autoMeasure.motorElec.setMinXPosition(elecPosition[0])
         self.autoMeasure.motorElec.minPositionSet = True
 
+    def OnButton_Undo(self):
+        self.autoMeasure.motorElec.minPositionSet = False
+
     def importObjects(self, listOfDevicesAsObjects):
         """Given a list of electro-optic device objects, this method populates all drop-down menus and
         checklists in the automeasure panel."""
@@ -734,38 +740,42 @@ class autoMeasurePanel(wx.Panel):
 
     def OnButton_Save(self, event):
         """Saves the gds devices used for alignment as well as motor positions to a csv file"""
-        A = self.autoMeasure.findCoordinateTransformOpt(self.coordMapPanelOpt.getMotorCoords(),
-                                                        self.coordMapPanelOpt.getGdsCoordsOpt())
 
-        # Make a folder with the current time
-        fileName = self.outputFolderTb.GetValue()
-        timeStr = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
-        csvFileName = os.path.join(self.outputFolderTb.GetValue(), timeStr + '.csv')
+        if self.outputFolderTb.GetValue() == '':
+           print("Please Select Location to Save Alignment File.")
 
-        f = open(csvFileName, 'w', newline='')
-        writer = csv.writer(f)
-        textFilePath = [fileName]
-        writer.writerow(textFilePath)
-        optCoords = self.coordMapPanelOpt.getMotorCoords()
-        Opt = ['Optical Alignment']
-        writer.writerow(Opt)
-        Opt = ['Device', 'Motor x', 'Motor y', 'Motor z']
-        writer.writerow(Opt)
-        if not all(item == 0 for item in optCoords):
-            dev1 = [self.coordMapPanelOpt.tbGdsDevice1.GetString(self.coordMapPanelOpt.tbGdsDevice1.GetSelection()),
-                    optCoords[0][0], optCoords[0][1], optCoords[0][2]]
-            dev2 = [self.coordMapPanelOpt.tbGdsDevice2.GetString(self.coordMapPanelOpt.tbGdsDevice2.GetSelection()),
-                    optCoords[1][0], optCoords[1][1], optCoords[1][2]]
-            dev3 = [self.coordMapPanelOpt.tbGdsDevice3.GetString(self.coordMapPanelOpt.tbGdsDevice3.GetSelection()),
-                    optCoords[2][0], optCoords[2][1], optCoords[2][2]]
         else:
-            dev1 = [self.coordMapPanelOpt.tbGdsDevice1.GetString(self.coordMapPanelOpt.tbGdsDevice1.GetSelection())]
-            dev2 = [self.coordMapPanelOpt.tbGdsDevice2.GetString(self.coordMapPanelOpt.tbGdsDevice2.GetSelection())]
-            dev3 = [self.coordMapPanelOpt.tbGdsDevice3.GetString(self.coordMapPanelOpt.tbGdsDevice3.GetSelection())]
-        writer.writerow(dev1)
-        writer.writerow(dev2)
-        writer.writerow(dev3)
-        f.close()
+            A = self.autoMeasure.findCoordinateTransformOpt(self.coordMapPanelOpt.getMotorCoords(),
+                                                            self.coordMapPanelOpt.getGdsCoordsOpt())
+
+            # Make a folder with the current time
+            timeStr = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
+            csvFileName = os.path.join(self.outputFolderTb.GetValue(), timeStr + '.csv')
+
+            f = open(csvFileName, 'w', newline='')
+            writer = csv.writer(f)
+            textFilePath = self.testParametersPath
+            writer.writerow(textFilePath)
+            optCoords = self.coordMapPanelOpt.getMotorCoords()
+            Opt = ['Optical Alignment']
+            writer.writerow(Opt)
+            Opt = ['Device', 'Motor x', 'Motor y', 'Motor z']
+            writer.writerow(Opt)
+            if not all(item == 0 for item in optCoords):
+                dev1 = [self.coordMapPanelOpt.tbGdsDevice1.GetString(self.coordMapPanelOpt.tbGdsDevice1.GetSelection()),
+                        optCoords[0][0], optCoords[0][1], optCoords[0][2]]
+                dev2 = [self.coordMapPanelOpt.tbGdsDevice2.GetString(self.coordMapPanelOpt.tbGdsDevice2.GetSelection()),
+                        optCoords[1][0], optCoords[1][1], optCoords[1][2]]
+                dev3 = [self.coordMapPanelOpt.tbGdsDevice3.GetString(self.coordMapPanelOpt.tbGdsDevice3.GetSelection()),
+                        optCoords[2][0], optCoords[2][1], optCoords[2][2]]
+            else:
+                dev1 = [self.coordMapPanelOpt.tbGdsDevice1.GetString(self.coordMapPanelOpt.tbGdsDevice1.GetSelection())]
+                dev2 = [self.coordMapPanelOpt.tbGdsDevice2.GetString(self.coordMapPanelOpt.tbGdsDevice2.GetSelection())]
+                dev3 = [self.coordMapPanelOpt.tbGdsDevice3.GetString(self.coordMapPanelOpt.tbGdsDevice3.GetSelection())]
+            writer.writerow(dev1)
+            writer.writerow(dev2)
+            writer.writerow(dev3)
+            f.close()
 
     def OnButton_Import(self, event):
         """ Opens a file dialog to select a csv alignment file and populates all position fields"""
@@ -777,8 +787,8 @@ class autoMeasurePanel(wx.Panel):
         f = open(filePath, 'r', newline='')
         reader = csv.reader(f)
         textCoordPath = next(reader)
-        self.coordFilePath = textCoordPath[0]
-        self.autoMeasure.parseCoordFile(textCoordPath[0])
+        for path in textCoordPath:
+            self.readYAML(path)
         next(reader)
         next(reader)
         optDev1 = next(reader)
@@ -854,6 +864,7 @@ class autoMeasurePanel(wx.Panel):
 
         for file in Files:
             self.readYAML(file)
+            self.testParametersPath.append(file)
         self.parametersImported = True
 
     def readYAML(self, originalFile):
@@ -889,58 +900,58 @@ class autoMeasurePanel(wx.Panel):
                         deviceToTest.addRoutines(device['Routines'])
                         deviceToTest.addElectricalCoordinates(device['Electrical Coordinates'])
                 deviceList.append(deviceToTest)
-                for type in loadedYAML['Routines']:
-                    if type == 'Wavelength Sweep':
-                        type = loadedYAML['Routines']['Wavelength Sweep']
-                        for routine in type:
-                            routine = type[routine]
-                            self.autoMeasure.addWavelengthSweep(routine, routine['Start'], routine['Stop'],
-                                                                routine['Stepsize'], routine['Sweeppower'],
-                                                                routine['Sweepspeed'], routine['Laseroutput'],
-                                                                routine['Numscans'], routine['Initialrange'],
-                                                                routine['RangeDec'])
-                    if type == 'Voltage Sweep':
-                        type = loadedYAML['Routines']['Voltage Sweep']
-                        for routine in type:
-                            routine = type[routine]
-                            self.autoMeasure.addVoltageSweep(routine, routine['Min'], routine['Max'],
-                                                             routine['Res'], routine['IV'], routine['RV'],
-                                                             routine['PV'], routine['Channel A'],
-                                                             routine['Channel B'])
-                    if type == 'Current Sweep':
-                        type = loadedYAML['Routines']['Current Sweep']
-                        for routine in type:
-                            routine = type[routine]
-                            self.autoMeasure.addCurrentSweep(routine, routine['Min'], routine['Max'],
-                                                             routine['Res'], routine['IV'], routine['RV'],
-                                                             routine['PV'], routine['Channel A'],
-                                                             routine['Channel B'])
-                    if type == 'Set Wavelength Voltage Sweep':
-                        type = loadedYAML['Routines']['Set Wavelength Voltage Sweep']
-                        for routine in type:
-                            routine = type[routine]
-                            self.autoMeasure.addSetWavelengthVoltageSweep(routine, routine['Min'], routine['Max'],
-                                                                          routine['Res'], routine['IV'], routine['RV'],
-                                                                          routine['PV'], routine['Channel A'],
-                                                                          routine['Channel B'], routine['Wavelengths'])
-                    if type == 'Set Wavelength Current Sweep':
-                        type = loadedYAML['Routines']['Set Wavelength Current Sweep']
-                        for routine in type:
-                            routine = type[routine]
-                            self.autoMeasure.addSetWavelengthCurrentSweep(routine, routine['Min'], routine['Max'],
-                                                                          routine['Res'], routine['IV'], routine['RV'],
-                                                                          routine['PV'], routine['Channel A'],
-                                                                          routine['Channel B'], routine['Wavelengths'])
-                    if type == 'Set Voltage Wavelength Sweep':
-                        type = loadedYAML['Routines']['Set Voltage Wavelength Sweep']
-                        for routine in type:
-                            routine = type[routine]
-                            self.autoMeasure.addSetVoltageWavelengthSweep(routine, routine['Start'], routine['Stop'],
-                                                                          routine['Stepsize'], routine['Sweeppower'],
-                                                                          routine['Sweepspeed'], routine['Laseroutput'],
-                                                                          routine['Numscans'], routine['Initialrange'],
-                                                                          routine['RangeDec'], routine['Channel A'],
-                                                                          routine['Channel B'], routine['Voltages'])
+            for type in loadedYAML['Routines']:
+                if type == 'Wavelength Sweep':
+                    wavsweep = loadedYAML['Routines']['Wavelength Sweep']
+                    for routine in wavsweep:
+                        dict = wavsweep[routine]
+                        self.autoMeasure.addWavelengthSweep(routine, dict['Start'], dict['Stop'],
+                                                            dict['Stepsize'], dict['Sweeppower'],
+                                                            dict['Sweepspeed'], dict['Laseroutput'],
+                                                            dict['Numscans'], dict['Initialrange'],
+                                                            dict['RangeDec'])
+                elif type == 'Voltage Sweep':
+                    voltsweep = loadedYAML['Routines']['Voltage Sweep']
+                    for routine in voltsweep:
+                        dict = voltsweep[routine]
+                        self.autoMeasure.addVoltageSweep(routine, dict['Min'], dict['Max'],
+                                                            dict['Res'], dict['IV'], dict['RV'],
+                                                            dict['PV'], dict['Channel A'],
+                                                            dict['Channel B'])
+                elif type == 'Current Sweep':
+                    currsweep = loadedYAML['Routines']['Current Sweep']
+                    for routine in currsweep:
+                        dict = currsweep[routine]
+                        self.autoMeasure.addCurrentSweep(routine, dict['Min'], dict['Max'],
+                                                            dict['Res'], dict['IV'], dict['RV'],
+                                                            dict['PV'], dict['Channel A'],
+                                                            dict['Channel B'])
+                elif type == 'Set Wavelength Voltage Sweep':
+                    setwvsweep = loadedYAML['Routines']['Set Wavelength Voltage Sweep']
+                    for routine in setwvsweep:
+                        dict = setwvsweep[routine]
+                        self.autoMeasure.addSetWavelengthVoltageSweep(routine, dict['Min'], dict['Max'],
+                                                                        dict['Res'], dict['IV'], dict['RV'],
+                                                                        dict['PV'], dict['Channel A'],
+                                                                        dict['Channel B'], dict['Wavelengths'])
+                elif type == 'Set Wavelength Current Sweep':
+                    setwcsweep = loadedYAML['Routines']['Set Wavelength Current Sweep']
+                    for routine in setwcsweep:
+                        dict = setwcsweep[routine]
+                        self.autoMeasure.addSetWavelengthCurrentSweep(routine, dict['Min'], dict['Max'],
+                                                                        dict['Res'], dict['IV'], dict['RV'],
+                                                                        dict['PV'], dict['Channel A'],
+                                                                        dict['Channel B'], dict['Wavelengths'])
+                elif type == 'Set Voltage Wavelength Sweep':
+                    setvwavsweep = loadedYAML['Routines']['Set Voltage Wavelength Sweep']
+                    for routine in setvwavsweep:
+                        dict = setvwavsweep[routine]
+                        self.autoMeasure.addSetVoltageWavelengthSweep(routine, dict['Start'], dict['Stop'],
+                                                                        dict['Stepsize'], dict['Sweeppower'],
+                                                                        dict['Sweepspeed'], dict['Laseroutput'],
+                                                                        dict['Numscans'], dict['Initialrange'],
+                                                                        dict['RangeDec'], dict['Channel A'],
+                                                                        dict['Channel B'], dict['Voltages'])
 
         self.importObjects(deviceList)
 
@@ -1052,49 +1063,52 @@ class autoMeasurePanel(wx.Panel):
     def OnButton_Start(self, event):
         """ Starts an automatic measurement routine. """
 
-        self.autoMeasure.findCoordinateTransformOpt(self.coordMapPanelOpt.getMotorCoords(),
-                                                    self.coordMapPanelOpt.getGdsCoordsOpt())
+        if self.outputFolderTb.GetValue() == "":
+            print("Please Choose Location to Save Measurement Results.")
+        else:
+            self.autoMeasure.findCoordinateTransformOpt(self.coordMapPanelOpt.getMotorCoords(),
+                                                        self.coordMapPanelOpt.getGdsCoordsOpt())
 
-        self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
-                                                     self.coordMapPanelElec.getGdsCoordsElec())
+            self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
+                                                        self.coordMapPanelElec.getGdsCoordsElec())
 
-        # Disable detector auto measurement
-        self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.haltDetTimer()
+            # Disable detector auto measurement
+            self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.haltDetTimer()
 
-        # Make a folder with the current time
-        timeStr = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
-        self.autoMeasure.saveFolder = os.path.join(self.outputFolderTb.GetValue(), timeStr)
-        if not os.path.exists(self.autoMeasure.saveFolder):
-            os.makedirs(self.autoMeasure.saveFolder)
+            # Make a folder with the current time
+            timeStr = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
+            self.autoMeasure.saveFolder = os.path.join(self.outputFolderTb.GetValue(), timeStr)
+            if not os.path.exists(self.autoMeasure.saveFolder):
+                os.makedirs(self.autoMeasure.saveFolder)
 
-        # Create list of all devices which are selected for measurement from the checklist
-        checkedDevicesText = []
+            # Create list of all devices which are selected for measurement from the checklist
+            checkedDevicesText = []
 
-        for i in range(self.checkList.GetItemCount()):  # self.device_list:
-            if self.checkList.IsItemChecked(i):
-                for device in self.autoMeasure.devices:
-                    if device.getDeviceID() == self.checkList.GetItemText(i):
-                        if device.hasRoutines():
-                            checkedDevicesText.append(self.checkList.GetItemText(i))
+            for i in range(self.checkList.GetItemCount()):  # self.device_list:
+                if self.checkList.IsItemChecked(i):
+                    for device in self.autoMeasure.devices:
+                        if device.getDeviceID() == self.checkList.GetItemText(i):
+                            if device.hasRoutines():
+                                checkedDevicesText.append(self.checkList.GetItemText(i))
 
-        activeDetectors = self.getActiveDetectors()
+            activeDetectors = self.getActiveDetectors()
 
-        # Set scaling factor within automeasure
-        global xscalevar
-        global yscalevar
-        self.autoMeasure.setScale(xscalevar, yscalevar)
+            # Set scaling factor within automeasure
+            global xscalevar
+            global yscalevar
+            self.autoMeasure.setScale(xscalevar, yscalevar)
 
-        # Start measurement using the autoMeasure device
-        self.autoMeasure.beginMeasure(devices=checkedDevicesText, checkList=self.checkList,
-                                      activeDetectors=activeDetectors, camera=self.camera, abortFunction=None,
-                                      updateFunction=None, updateGraph=True)
+            # Start measurement using the autoMeasure device
+            self.autoMeasure.beginMeasure(devices=checkedDevicesText, checkList=self.checkList,
+                                        activeDetectors=activeDetectors, camera=self.camera, abortFunction=None,
+                                        updateFunction=None, updateGraph=True)
 
-        # Create a measurement progress dialog.
-        autoMeasureDlg = autoMeasureProgressDialog(self, title='Automatic measurement')
-        autoMeasureDlg.runMeasurement(checkedDevicesText, self.autoMeasure)
+            # Create a measurement progress dialog.
+            autoMeasureDlg = autoMeasureProgressDialog(self, title='Automatic measurement')
+            autoMeasureDlg.runMeasurement(checkedDevicesText, self.autoMeasure)
 
-        # Enable detector auto measurement
-        self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.startDetTimer()
+            # Enable detector auto measurement
+            self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.startDetTimer()
 
     def OnButton_createinfoframe(self, event):
         """Creates filter frame when filter button is pressed"""
