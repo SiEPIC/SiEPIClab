@@ -116,3 +116,7 @@ class BSC203Motor:
     def setMinXPosition(self, minPosition):
         self.minXPosition = minPosition
         self.minPositionSet = True
+
+    def setMaxZPosition(self, maxPosition):
+        self.maxZPosition = maxPosition
+        self.maxZPositionSet = True

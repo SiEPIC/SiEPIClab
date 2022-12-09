@@ -402,8 +402,7 @@ class coordinateMapPanel(wx.Panel):
         GDSDevice.AppendItems(self.deviceList)
 
     def setMaxZPositionForMotor(self, maxZ):
-        self.autoMeasure.motorElec.maxZPosition = maxZ
-        self.autoMeasure.motorElec.maxZPositionSet = True
+        self.autoMeasure.motorElec.setMaxZPosition(maxZ)
 
 
 class autoMeasurePanel(wx.Panel):
@@ -1122,17 +1121,22 @@ class autoMeasurePanel(wx.Panel):
             global yscalevar
             self.autoMeasure.setScale(xscalevar, yscalevar)
 
-            # Start measurement using the autoMeasure device
-            self.autoMeasure.beginMeasure(devices=checkedDevicesText, checkList=self.checkList,
-                                        activeDetectors=activeDetectors, camera=self.camera, abortFunction=None,
-                                        updateFunction=None, updateGraph=True)
+            if not activeDetectors:
+                print("Please Select a Detector.")
 
-            # Create a measurement progress dialog.
-            autoMeasureDlg = autoMeasureProgressDialog(self, title='Automatic measurement')
-            autoMeasureDlg.runMeasurement(checkedDevicesText, self.autoMeasure)
+            else:
 
-            # Enable detector auto measurement
-            self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.startDetTimer()
+                # Start measurement using the autoMeasure device
+                self.autoMeasure.beginMeasure(devices=checkedDevicesText, checkList=self.checkList,
+                                            activeDetectors=activeDetectors, camera=self.camera, abortFunction=None,
+                                            updateFunction=None, updateGraph=True)
+
+                # Create a measurement progress dialog.
+                autoMeasureDlg = autoMeasureProgressDialog(self, title='Automatic measurement')
+                autoMeasureDlg.runMeasurement(checkedDevicesText, self.autoMeasure)
+
+                # Enable detector auto measurement
+                self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.startDetTimer()
 
     def OnButton_createinfoframe(self, event):
         """Creates filter frame when filter button is pressed"""
