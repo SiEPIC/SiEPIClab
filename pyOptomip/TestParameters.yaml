@@ -11,7 +11,7 @@ Devices:
     Polarization: TE
     RoutineCheck: true
     Routines:
-    - Voltage Sweep:Default
+    - Voltage Sweep:initialtest
     Type: device
     Wavelength: '1550'
   device2:
@@ -26,7 +26,7 @@ Devices:
     Polarization: TE
     RoutineCheck: true
     Routines:
-    - Voltage Sweep:Default
+    - Set Wavelength Voltage Sweep:initialtest1
     Type: device
     Wavelength: '1550'
   device3:
@@ -39,9 +39,8 @@ Devices:
     - 639.0
     - 119.0
     Polarization: TE
-    RoutineCheck: true
-    Routines:
-    - Voltage Sweep:Default
+    RoutineCheck: false
+    Routines: []
     Type: device
     Wavelength: '1550'
   device4:
@@ -54,9 +53,8 @@ Devices:
     - 830.0
     - 299.0
     Polarization: TE
-    RoutineCheck: true
-    Routines:
-    - Voltage Sweep:Default
+    RoutineCheck: false
+    Routines: []
     Type: device
     Wavelength: '1550'
 Routines:
@@ -168,6 +166,28 @@ Routines:
       Wavelengths: ''
       setvflag: false
       setwflag: false
+    initialtest1:
+      Channel A: true
+      Channel B: false
+      Currentsel: false
+      IV: true
+      Initialrange: ''
+      Laseroutput: High power
+      Max: '0.7'
+      Min: '0'
+      Numscans: '1'
+      PV: true
+      RV: true
+      RangeDec: ''
+      Res: '100'
+      Start: ''
+      Stepsize: ''
+      Stop: ''
+      Sweeppower: ''
+      Sweepspeed: auto
+      Voltages: ''
+      Voltsel: true
+      Wavelengths: 1540, 1550, 1560
   Voltage Sweep:
     Default:
       Channel A: true
@@ -195,6 +215,28 @@ Routines:
       Wavelengths: ''
       setvflag: false
       setwflag: false
+    initialtest:
+      Channel A: true
+      Channel B: false
+      Currentsel: false
+      IV: true
+      Initialrange: ''
+      Laseroutput: High power
+      Max: '0.7'
+      Min: '0'
+      Numscans: '1'
+      PV: true
+      RV: true
+      RangeDec: ''
+      Res: '100'
+      Start: ''
+      Stepsize: ''
+      Stop: ''
+      Sweeppower: ''
+      Sweepspeed: auto
+      Voltages: ''
+      Voltsel: true
+      Wavelengths: ''
   Wavelength Sweep:
     Default:
       Channel A: true

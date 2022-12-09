@@ -31,6 +31,7 @@ import csv
 import numpy as np
 from ElectroOpticDevice import ElectroOpticDevice
 import yaml
+from informationframes import infoFrame
 
 global deviceList
 global xscalevar
@@ -424,6 +425,7 @@ class autoMeasurePanel(wx.Panel):
         # autoMeasure object used to upload the coordinate file, calculate transform matrices and perform
         # automated measurements
         self.autoMeasure = autoMeasure
+        self.infoFrame = infoFrame
         # List of all the names of devices on the chip
         self.device_list = []
         self.camera = camera
@@ -532,7 +534,10 @@ class autoMeasurePanel(wx.Panel):
         self.yadjust = wx.TextCtrl(self, size=(60, 18))
         self.yadjust.SetValue('')
 
-        scalehbox.AddMany([(sw1, 0, wx.EXPAND), (self.xadjust, 0, wx.EXPAND), (sw2, 0, wx.EXPAND), (self.yadjust, 0, wx.EXPAND), (self.setscaleBtn, 0, wx.EXPAND)])
+        self.scaleinfoBtn = wx.Button(self, id=1, label='?', size=(20, 20))
+        self.scaleinfoBtn.Bind(wx.EVT_BUTTON, self.OnButton_createinfoframe)
+
+        scalehbox.AddMany([(sw1, 0, wx.EXPAND), (self.xadjust, 0, wx.EXPAND), (sw2, 0, wx.EXPAND), (self.yadjust, 0, wx.EXPAND), (self.setscaleBtn, 0, wx.EXPAND), (self.scaleinfoBtn, 0, wx.EXPAND)])
 
         # Add Save folder label
         st2 = wx.StaticText(self, label='Save Folder:')
@@ -805,7 +810,8 @@ class autoMeasurePanel(wx.Panel):
         reader = csv.reader(f)
         textCoordPath = next(reader)
         for path in textCoordPath:
-            self.readYAML(path)
+            if path != "," and path != "":
+                self.readYAML(path)
         next(reader)
         next(reader)
         optDev1 = next(reader)
@@ -889,7 +895,6 @@ class autoMeasurePanel(wx.Panel):
          objects to be used for automated measurements as well as a dictionary of routines."""
 
         deviceList = []
-
         with open(originalFile, 'r') as file:
             loadedYAML = yaml.safe_load(file)
 
@@ -1010,12 +1015,13 @@ class autoMeasurePanel(wx.Panel):
                     motorCoordElec = self.autoMeasure.gdsToMotorCoordsElec(gdsCoordElec)
                     optPosition = self.autoMeasure.motorOpt.getPosition()
                     elecPosition = self.autoMeasure.motorElec.getPosition()
+                    adjustment = self.autoMeasure.motorOpt.getPositionforRelativeMovement()
                     absolutex = motorCoordElec[0] + optPosition[0]*xscalevar
                     absolutey = motorCoordElec[1] + optPosition[1]*yscalevar
                     absolutez = motorCoordElec[2]
                     relativex = absolutex[0] - elecPosition[0]
                     relativey = absolutey[0] - elecPosition[1]
-                    relativez = absolutez[0] - elecPosition[2] + 30
+                    relativez = absolutez[0] - elecPosition[2] + 15
                     # Move probe to device
                     self.autoMeasure.motorElec.moveRelativeX(-relativex)
                     time.sleep(2)
@@ -1058,12 +1064,13 @@ class autoMeasurePanel(wx.Panel):
                         print("moving relative")
                         optPosition = self.autoMeasure.motorOpt.getPosition()
                         elecPosition = self.autoMeasure.motorElec.getPosition()
+                        adjustment = self.autoMeasure.motorOpt.getPositionforRelativeMovement()
                         absolutex = motorCoord[0] + optPosition[0]*xscalevar
                         absolutey = motorCoord[1] + optPosition[1]*yscalevar
                         absolutez = motorCoord[2]
                         relativex = absolutex[0] - elecPosition[0]
                         relativey = absolutey[0] - elecPosition[1]
-                        relativez = absolutez[0] - elecPosition[2] + 20
+                        relativez = absolutez[0] - elecPosition[2] + 15
                         self.autoMeasure.motorElec.moveRelativeX(-relativex)
                         time.sleep(2)
                         self.autoMeasure.motorElec.moveRelativeY(-relativey)
@@ -1126,3 +1133,20 @@ class autoMeasurePanel(wx.Panel):
 
             # Enable detector auto measurement
             self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.startDetTimer()
+
+    def OnButton_createinfoframe(self, event):
+        """Creates filter frame when filter button is pressed"""
+        c = event.GetId()
+        self.infoclicked = c
+        self.createinfoFrame()
+        self.Refresh()
+
+    def createinfoFrame(self):
+        """Opens up a frame to facilitate filtering of devices within the checklist."""
+        try:
+            self.infoFrame(None, self.infoclicked)
+
+        except Exception as e:
+            dial = wx.MessageDialog(None, 'Could not initiate filter. ' + traceback.format_exc(),
+                                    'Error', wx.ICON_ERROR)
+            dial.ShowModal()

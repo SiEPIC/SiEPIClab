@@ -435,8 +435,8 @@ class autoMeasure(object):
             self.moveToDevice(device.getDeviceID())
 
             # Check which type of measurement is to be completed
-            if device.getVoltageSweeps():
-                for routine in device.getVoltageSweeps():
+            if device.getVoltageSweepRoutines():
+                for routine in device.getVoltageSweepRoutines():
                     timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
                     print("Performing Voltage Sweep {}".format(routine))
                     ii = self.voltageSweeps['RoutineName'].index(routine)
@@ -511,8 +511,8 @@ class autoMeasure(object):
                             self.saveFiles(device, 'Voltage (V)', 'Power (W)', ii, VoltB, PowB,
                                              'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
 
-            if device.getCurrentSweeps():
-                for routine in device.getCurrentSweeps():
+            if device.getCurrentSweepRoutines():
+                for routine in device.getCurrentSweepRoutines():
                     ii = self.currentSweeps['RoutineName'].index(routine)
                     timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
                     routineName = self.currentSweeps['Routine Name'][ii]
@@ -586,8 +586,8 @@ class autoMeasure(object):
                             self.saveFiles(device, 'Voltage (V)', 'Power (W)', ii, VoltB, PowB,
                                             'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
 
-            if device.getWavelengthSweeps():
-                for routine in device.getWavelengthSweeps():
+            if device.getWavelengthSweepRoutines():
+                for routine in device.getWavelengthSweepRoutines():
                     ii = self.wavelengthSweeps['RoutineName'].index(routine)
                     timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
                     routineName = self.wavelengthSweeps['Routine Name'][ii]
@@ -614,8 +614,8 @@ class autoMeasure(object):
                     self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', ii, wav, pow,
                                     'Wavelength sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart)
 
-            if device.getSetWavelengthVoltageSweeps():
-                for routine in device.getSetWavelengthVoltageSweeps():
+            if device.getSetWavelengthVoltageSweepRoutines():
+                for routine in device.getSetWavelengthVoltageSweepRoutines():
                     ii = self.setWavelengthVoltageSweeps['RoutineName'].index(routine)
                     timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
                     print("Performing Voltage Sweep with set wavelength")
@@ -696,9 +696,9 @@ class autoMeasure(object):
                                             'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
                                             chipTimeStart)
 
-            if device.getSetWavelengthCurrentSweeps():
-                currentSweeps = device.getSetWavelengthCurrentSweeps()
-                for routine in device.getSetWavelengthCurrentSweeps():
+            if device.getSetWavelengthCurrentSweepRoutines():
+                currentSweeps = device.getSetWavelengthCurrentSweepRoutines()
+                for routine in currentSweeps:
                     ii = self.setWavelengthCurrentSweeps['RoutineName'].index(routine)
                     timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
                     print("Performing Current Sweep with set wavelength")
@@ -782,8 +782,8 @@ class autoMeasure(object):
                                             'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
                                             chipTimeStart)
 
-            if device.getSetVoltageWavelengthSweeps():
-                for routine in device.getSetVoltageWavelengthSweeps():
+            if device.getSetVoltageWavelengthSweepRoutines():
+                for routine in device.getSetVoltageWavelengthSweepRoutines():
                     ii = self.setVoltageWavelengthSweeps['RoutineName'].index(routine)
                     timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
                     print("Performing Optical Test with Bias Voltage")
