@@ -52,7 +52,7 @@ class coordinateMapPanel(wx.Panel):
         self.autoMeasure = autoMeasure
         self.type = type  # "opt" or "elec"
         self.deviceList = []
-
+        self.maxZElecPosition = []
         self.InitUI()
 
     def InitUI(self):
@@ -232,6 +232,9 @@ class coordinateMapPanel(wx.Panel):
                 relativePosition.append(elecPosition[0] - optPosition[0]*xscalevar)
                 relativePosition.append(elecPosition[1] - optPosition[1]*yscalevar)
                 relativePosition.append(elecPosition[2])
+                if not self.maxZElecPosition:
+                    self.maxZElecPosition[0] = elecPosition[2]
+                    self.setMaxZPositionForMotor(self.maxZElecPosition[0])
                 xcoord.SetValue(str(relativePosition[0]))
                 ycoord.SetValue(str(relativePosition[1]))
                 zcoord.SetValue(str(relativePosition[2]))
@@ -243,6 +246,9 @@ class coordinateMapPanel(wx.Panel):
                 xcoord.SetValue(str(motorPosition[0]))
                 ycoord.SetValue(str(motorPosition[1]))
                 zcoord.SetValue(str(motorPosition[2]))
+                if not self.maxZElecPosition:
+                    self.maxZElecPosition[0] = motorPosition[2]
+                    self.setMaxZPositionForMotor(self.maxZElecPosition[0])
                 self.stxMotorCoordLst[0] = self.tbxMotorCoord1.GetValue()
                 self.styMotorCoordLst[0] = self.tbyMotorCoord1.GetValue()
                 self.stzMotorCoordLst[0] = self.tbzMotorCoord1.GetValue()
@@ -267,6 +273,9 @@ class coordinateMapPanel(wx.Panel):
                 relativePosition.append(elecPosition[0] - optPosition[0]*xscalevar)
                 relativePosition.append(elecPosition[1] - optPosition[1]*yscalevar)
                 relativePosition.append(elecPosition[2])
+                if not self.maxZElecPosition:
+                    self.maxZElecPosition[0] = elecPosition[2]
+                    self.setMaxZPositionForMotor(self.maxZElecPosition[0])
                 xcoord.SetValue(str(relativePosition[0]))
                 ycoord.SetValue(str(relativePosition[1]))
                 zcoord.SetValue(str(relativePosition[2]))
@@ -278,6 +287,9 @@ class coordinateMapPanel(wx.Panel):
                 xcoord.SetValue(str(motorPosition[0]))
                 ycoord.SetValue(str(motorPosition[1]))
                 zcoord.SetValue(str(motorPosition[2]))
+                if not self.maxZElecPosition:
+                    self.maxZElecPosition[0] = motorPosition[2]
+                    self.setMaxZPositionForMotor(self.maxZElecPosition[0])
                 self.stxMotorCoordLst[1] = self.tbxMotorCoord2.GetValue()
                 self.styMotorCoordLst[1] = self.tbyMotorCoord2.GetValue()
                 self.stzMotorCoordLst[1] = self.tbzMotorCoord2.GetValue()
@@ -302,6 +314,9 @@ class coordinateMapPanel(wx.Panel):
                 relativePosition.append(elecPosition[0] - optPosition[0]*xscalevar)
                 relativePosition.append(elecPosition[1] - optPosition[1]*yscalevar)
                 relativePosition.append(elecPosition[2])
+                if not self.maxZElecPosition:
+                    self.maxZElecPosition[0] = elecPosition[2]
+                    self.setMaxZPositionForMotor(self.maxZElecPosition[0])
                 xcoord.SetValue(str(relativePosition[0]))
                 ycoord.SetValue(str(relativePosition[1]))
                 zcoord.SetValue(str(relativePosition[2]))
@@ -313,6 +328,9 @@ class coordinateMapPanel(wx.Panel):
                 xcoord.SetValue(str(motorPosition[0]))
                 ycoord.SetValue(str(motorPosition[1]))
                 zcoord.SetValue(str(motorPosition[2]))
+                if not self.maxZElecPosition:
+                    self.maxZElecPosition[0] = motorPosition[2]
+                    self.setMaxZPositionForMotor(self.maxZElecPosition[0])
                 self.stxMotorCoordLst[2] = self.tbxMotorCoord3.GetValue()
                 self.styMotorCoordLst[2] = self.tbyMotorCoord3.GetValue()
                 self.stzMotorCoordLst[2] = self.tbzMotorCoord3.GetValue()
@@ -382,6 +400,9 @@ class coordinateMapPanel(wx.Panel):
         self.deviceList.sort(key=lambda x: 1 if GDSDevice.GetValue() not in x else 0)
         GDSDevice.Clear()
         GDSDevice.AppendItems(self.deviceList)
+
+    def setMaxZPositionForMotor(self, maxZ):
+        self.autoMeasure.motorElec.setMaxZPosition(maxZ)
 
 
 class autoMeasurePanel(wx.Panel):
@@ -1102,17 +1123,22 @@ class autoMeasurePanel(wx.Panel):
             global yscalevar
             self.autoMeasure.setScale(xscalevar, yscalevar)
 
-            # Start measurement using the autoMeasure device
-            self.autoMeasure.beginMeasure(devices=checkedDevicesText, checkList=self.checkList,
-                                        activeDetectors=activeDetectors, camera=self.camera, abortFunction=None,
-                                        updateFunction=None, updateGraph=True)
+            if not activeDetectors:
+                print("Please Select a Detector.")
 
-            # Create a measurement progress dialog.
-            autoMeasureDlg = autoMeasureProgressDialog(self, title='Automatic measurement')
-            autoMeasureDlg.runMeasurement(checkedDevicesText, self.autoMeasure)
+            else:
 
-            # Enable detector auto measurement
-            self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.startDetTimer()
+                # Start measurement using the autoMeasure device
+                self.autoMeasure.beginMeasure(devices=checkedDevicesText, checkList=self.checkList,
+                                            activeDetectors=activeDetectors, camera=self.camera, abortFunction=None,
+                                            updateFunction=None, updateGraph=True)
+
+                # Create a measurement progress dialog.
+                autoMeasureDlg = autoMeasureProgressDialog(self, title='Automatic measurement')
+                autoMeasureDlg.runMeasurement(checkedDevicesText, self.autoMeasure)
+
+                # Enable detector auto measurement
+                self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.startDetTimer()
 
     def OnButton_createinfoframe(self, event):
         """Creates filter frame when filter button is pressed"""
