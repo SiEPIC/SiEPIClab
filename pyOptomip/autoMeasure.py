@@ -1032,7 +1032,7 @@ class autoMeasure(object):
         writer.writerow(devID)
         gds = ["#Device coordinates (gds):" + '(' + str(deviceObject.getOpticalCoordinates()[0]) + ', ' + str(deviceObject.getOpticalCoordinates()[1]) + ')']
         writer.writerow(gds)
-        motor = ["#Device coordinates (motor):" + str(motorCoords[0]) + ', ' + str(motorCoords[1]) + ', ' + str(motorCoords[2])]
+        motor = ["#Device coordinates (motor):" + '(' + str(motorCoords[0]) + ', ' + str(motorCoords[1]) + ', ' + str(motorCoords[2]) + ')']
         writer.writerow(motor)
         chipStart = ["#Chip test start:" + str(chipStart)]
         writer.writerow(chipStart)
@@ -1069,8 +1069,10 @@ class autoMeasure(object):
             wavSweep = ["wavelength"]
             wavSweep.extend(xArray)
             writer.writerow(wavSweep)
-            det1 = ["channel_1", yArray]
-            det1.extend(yArray)
+            det1 = ["channel_1"]
+            print(len(yArray))
+            for point in len(yArray):
+                det1.extend(yArray[point])
             writer.writerow(det1)
         if testType == 'Wavelength Sweep w Bias Voltage':
             wavsweep = self.setVoltageWavelengthSweeps
@@ -1102,7 +1104,8 @@ class autoMeasure(object):
             wavSweep.extend(xArray)
             writer.writerow(wavSweep)
             det1 = ["channel_1"]
-            det1.extend(yArray)
+            for point in len(yArray):
+                det1.extend(yArray[point])
             writer.writerow(det1)
         if testType == 'Voltage sweep':
             iv = self.voltageSweeps
@@ -1116,7 +1119,8 @@ class autoMeasure(object):
             wavSweep.extend(xArray)
             writer.writerow(wavSweep)
             det1 = ["current"]
-            det1.extend(yArray)
+            for point in len(yArray):
+                det1.extend(yArray[point])
             writer.writerow(det1)
         if testType == 'Current sweep':
             iv = self.currentSweeps
@@ -1132,7 +1136,8 @@ class autoMeasure(object):
             wavSweep.extend(xArray)
             writer.writerow(wavSweep)
             det1 = ["current"]
-            det1.extend(yArray)
+            for point in len(yArray):
+                det1.extend(yArray[point])
             writer.writerow(det1)
         if testType == 'Voltage Sweep w Set Wavelength':
             iv = self.setWavelengthVoltageSweeps
@@ -1148,7 +1153,8 @@ class autoMeasure(object):
             wavSweep.extend(xArray)
             writer.writerow(wavSweep)
             det1 = ["current"]
-            det1.extend(yArray)
+            for point in len(yArray):
+                det1.extend(yArray[point])
             writer.writerow(det1)
         if testType == 'Current Sweep w Set Wavelength':
             iv = self.setWavelengthCurrentSweeps
@@ -1166,7 +1172,8 @@ class autoMeasure(object):
             wavSweep.extend(xArray)
             writer.writerow(wavSweep)
             det1 = ["current"]
-            det1.extend(yArray)
+            for point in len(yArray):
+                det1.extend(yArray[point])
             writer.writerow(det1)
         f.close()
 
