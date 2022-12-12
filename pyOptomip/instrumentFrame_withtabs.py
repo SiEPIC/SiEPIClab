@@ -324,7 +324,7 @@ class instrumentFrame_withtabs(wx.Frame):
                     dial.ShowModal()
 
                 self.graph = myMatplotlibPanel.myMatplotlibPanel(self)
-                self.autoMeasure = autoMeasure(laser, motorOpt, motorElec, SMU, self.fineAlign)
+                self.autoMeasure = autoMeasure(laser, motorOpt, motorElec, SMU, self.fineAlign, self.graph)
 
                 self.autoMeasurePanel = autoMeasurePanel(self, self.autoMeasure, camera)
 

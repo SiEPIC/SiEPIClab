@@ -47,8 +47,8 @@ class SMUParameters(wx.Panel):
         self.para1name = wx.StaticText(self, label='Serial Port')
         self.para1tc = wx.ComboBox(self, choices=visa.ResourceManager().list_resources())
         for x in visa.ResourceManager().list_resources():
-            if x == 'GPIB0::26::INSTR:':
-                self.para1tc.SetValue('GPIB0::20::INSTR')
+            if x == 'GPIB0::26::INSTR':
+                self.para1tc.SetValue('GPIB0::26::INSTR')
         # self.para1tc = wx.TextCtrl(self,value='ASRL5::INSTR')
         self.para1.AddMany([(self.para1name, 1, wx.EXPAND), (self.para1tc, 1, wx.EXPAND)])
 

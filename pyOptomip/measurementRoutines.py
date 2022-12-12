@@ -17,12 +17,10 @@ class measurementRoutines:
                 self.SMU.turnchannelon('A')
             if B:
                 self.SMU.turnchannelon('B')
-            self.SMU.ivsweep(voltmin, voltmax, voltres, 'Voltage')
+            self.SMU.ivsweep(float(voltmin), float(voltmax), float(voltres), 'Voltage')
             self.SMU.turnchanneloff('A')
             self.SMU.turnchanneloff('B')
-            return self.SMU.voltageresultA, self.SMU.currentresultA, self.SMU.resistanceresultA,\
-                    self.SMU.powerresultA, self.SMU.voltageresultB, self.SMU.currentresultB, \
-                    self.SMU.resistanceresultB,self.SMU.powerresultB
+            return self.SMU.voltageresultA, self.SMU.currentresultA, self.SMU.resistanceresultA, self.SMU.powerresultA, self.SMU.voltageresultB, self.SMU.currentresultB, self.SMU.resistanceresultB,self.SMU.powerresultB
 
         except Exception as e:
             print(e)
@@ -33,7 +31,7 @@ class measurementRoutines:
                 self.SMU.turnchannelon('A')
             if B:
                 self.SMU.turnchannelon('B')
-            self.SMU.ivsweep(imin, imax, ires, 'Current')
+            self.SMU.ivsweep(float(imin), float(imax), float(ires), 'Current')
             self.SMU.turnchanneloff('A')
             self.SMU.turnchanneloff('B')
 
@@ -73,15 +71,15 @@ class measurementRoutines:
 
     def fixedWavelengthVoltageSweep(self, voltmin, voltmax, voltres, A, B, wavelength):
         try:
-            self.laser.setTLSWavelength(wavelength, slot=self.laser.panel.getSelectedLaserSlot())
-            self.voltageSweep(voltmin, voltmax, voltres, A, B)
+            self.laser.setTLSWavelength(float(wavelength)*float(1e-9))
+            return self.voltageSweep(float(voltmin), float(voltmax), float(voltres), A, B)
         except Exception as e:
             print(e)
 
     def fixedWavelengthCurrentSweep(self, imin, imax, ires, A, B, wavelength):
         try:
-            self.laser.setTLSWavelength(wavelength, slot=self.laser.panel.getSelectedLaserSlot())
-            self.currentSweep(imin, imax, ires, A, B)
+            self.laser.setTLSWavelength(float(wavelength)*float(1e-9))
+            return self.currentSweep(float(imin), float(imax), float(ires), A, B)
         except Exception as e:
             print(e)
 
@@ -91,4 +89,4 @@ class measurementRoutines:
             self.SMU.setVoltage(voltage, 'A')
         if B:
             self.SMU.setVoltage(voltage, 'B')
-        self.opticalSweep(start, stop, stepsize, sweepspeed, sweeppower, laseroutput, numscans, initrange, rangedec)
+        return self.opticalSweep(start, stop, stepsize, sweepspeed, sweeppower, laseroutput, numscans, initrange, rangedec)

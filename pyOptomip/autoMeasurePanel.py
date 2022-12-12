@@ -233,7 +233,7 @@ class coordinateMapPanel(wx.Panel):
                 relativePosition.append(elecPosition[1] - optPosition[1]*yscalevar)
                 relativePosition.append(elecPosition[2])
                 if not self.maxZElecPosition:
-                    self.maxZElecPosition[0] = elecPosition[2]
+                    self.maxZElecPosition.append(elecPosition[2])
                     self.setMaxZPositionForMotor(self.maxZElecPosition[0])
                 xcoord.SetValue(str(relativePosition[0]))
                 ycoord.SetValue(str(relativePosition[1]))
@@ -247,7 +247,7 @@ class coordinateMapPanel(wx.Panel):
                 ycoord.SetValue(str(motorPosition[1]))
                 zcoord.SetValue(str(motorPosition[2]))
                 if not self.maxZElecPosition:
-                    self.maxZElecPosition[0] = motorPosition[2]
+                    self.maxZElecPosition[0].append(motorPosition[2])
                     self.setMaxZPositionForMotor(self.maxZElecPosition[0])
                 self.stxMotorCoordLst[0] = self.tbxMotorCoord1.GetValue()
                 self.styMotorCoordLst[0] = self.tbyMotorCoord1.GetValue()
@@ -274,7 +274,7 @@ class coordinateMapPanel(wx.Panel):
                 relativePosition.append(elecPosition[1] - optPosition[1]*yscalevar)
                 relativePosition.append(elecPosition[2])
                 if not self.maxZElecPosition:
-                    self.maxZElecPosition[0] = elecPosition[2]
+                    self.maxZElecPosition.append(elecPosition[2])
                     self.setMaxZPositionForMotor(self.maxZElecPosition[0])
                 xcoord.SetValue(str(relativePosition[0]))
                 ycoord.SetValue(str(relativePosition[1]))
@@ -288,7 +288,7 @@ class coordinateMapPanel(wx.Panel):
                 ycoord.SetValue(str(motorPosition[1]))
                 zcoord.SetValue(str(motorPosition[2]))
                 if not self.maxZElecPosition:
-                    self.maxZElecPosition[0] = motorPosition[2]
+                    self.maxZElecPosition.append(motorPosition[2])
                     self.setMaxZPositionForMotor(self.maxZElecPosition[0])
                 self.stxMotorCoordLst[1] = self.tbxMotorCoord2.GetValue()
                 self.styMotorCoordLst[1] = self.tbyMotorCoord2.GetValue()
@@ -315,7 +315,7 @@ class coordinateMapPanel(wx.Panel):
                 relativePosition.append(elecPosition[1] - optPosition[1]*yscalevar)
                 relativePosition.append(elecPosition[2])
                 if not self.maxZElecPosition:
-                    self.maxZElecPosition[0] = elecPosition[2]
+                    self.maxZElecPosition.append(elecPosition[2])
                     self.setMaxZPositionForMotor(self.maxZElecPosition[0])
                 xcoord.SetValue(str(relativePosition[0]))
                 ycoord.SetValue(str(relativePosition[1]))
@@ -329,7 +329,7 @@ class coordinateMapPanel(wx.Panel):
                 ycoord.SetValue(str(motorPosition[1]))
                 zcoord.SetValue(str(motorPosition[2]))
                 if not self.maxZElecPosition:
-                    self.maxZElecPosition[0] = motorPosition[2]
+                    self.maxZElecPosition.append(motorPosition[2])
                     self.setMaxZPositionForMotor(self.maxZElecPosition[0])
                 self.stxMotorCoordLst[2] = self.tbxMotorCoord3.GetValue()
                 self.styMotorCoordLst[2] = self.tbyMotorCoord3.GetValue()
@@ -683,8 +683,10 @@ class autoMeasurePanel(wx.Panel):
         self.autoMeasure.motorElec.setMinXPosition(elecPosition[0])
         self.autoMeasure.motorElec.minPositionSet = True
 
-    def OnButton_Undo(self):
+    def OnButton_Undo(self, event):
         self.autoMeasure.motorElec.minPositionSet = False
+        self.tbxMotorCoord.SetValue('')
+
 
     def importObjects(self, listOfDevicesAsObjects):
         """Given a list of electro-optic device objects, this method populates all drop-down menus and
