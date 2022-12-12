@@ -56,7 +56,7 @@ is the preferred way of running the program.
 
 [TroubleShooting Guide](https://github.com/SiEPIC/pyOptomip/blob/d737b29963befef6f050b565618b35107469369b/Documentation/Troubleshooting%20Guide.pdf)
 
-[Instrument Information and Manuals](https://github.com/SiEPIC/pyOptomip/blob/d737b29963befef6f050b565618b35107469369b/Documentation/Instruments.pdf)
+[Instrument Information and Manuals](https://github.com/SiEPIC/pyOptomip/blob/63262baa5816f8d54ecf7973b19f55c323bdb13e/Documentation/Instrument%20Information.pdf)
 
 ---
 
