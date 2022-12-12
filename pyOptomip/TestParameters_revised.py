@@ -1424,9 +1424,9 @@ class TopPanel(wx.Panel):
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox3)  # min
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox4)  # res
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox5)  # graph type
-            self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox6)
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox6) #laser output
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox7_2)  # wavelengths
-            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox8_2)
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox8_2) #voltages
 
         if routine == 'Voltage Sweep':
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox)  # start
@@ -1464,6 +1464,7 @@ class TopPanel(wx.Panel):
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox5)  # sweep speed
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox6)  # laser output
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox7)  # number of scans
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox8_2)  # voltages
 
         if routine == 'Set Wavelength Current Sweep':
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox)  # start
@@ -1475,6 +1476,7 @@ class TopPanel(wx.Panel):
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox5)  # sweep speed
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox6)  # laser output
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox7)  # number of scans
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox8_2)  # voltages
 
         if routine == 'Set Voltage Wavelength Sweep':
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox2)  # max
