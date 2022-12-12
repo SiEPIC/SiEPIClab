@@ -1042,7 +1042,7 @@ class autoMeasure(object):
         writer.writerow(laser)
         detector = ["#Detector:" + self.laser.getDetector()]
         writer.writerow(detector)
-        if testType == "Wavelength Sweep":
+        if testType == "Wavelength sweep":
             wavsweep = self.wavelengthSweeps
             speed = ["#Sweep speed:" + wavsweep['Sweepspeed'][devNum]]
             writer.writerow(speed)
@@ -1100,7 +1100,8 @@ class autoMeasure(object):
             writer.writerow(wavSweep)
             det1 = ["channel_1", yArray]
             writer.writerow(det1)
-        if testType == 'Voltage Sweep':
+
+        if testType == 'Voltage sweep':
             iv = self.voltageSweeps
             stepSize = ["Resolution:" + iv['VoltRes'][devNum]]
             writer.writerow(stepSize)
@@ -1112,7 +1113,7 @@ class autoMeasure(object):
             writer.writerow(wavSweep)
             det1 = ["current", yArray]
             writer.writerow(det1)
-        if testType == 'Current Sweep':
+        if testType == 'Current sweep':
             iv = self.currentSweeps
             stepSize = ["Resolution:" + iv['CurrentRes'][devNum]]
             writer.writerow(stepSize)
