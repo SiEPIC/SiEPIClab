@@ -773,7 +773,7 @@ class autoMeasurePanel(wx.Panel):
 
             # Make a folder with the current time
             timeStr = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
-            csvFileName = os.path.join(self.outputFolderTb.GetValue(), timeStr + '.csv')
+            csvFileName = os.path.join(self.outputFolderTb.GetValue(), 'Optical Alignment' + timeStr + '.csv')
 
             f = open(csvFileName, 'w', newline='')
             writer = csv.writer(f)
