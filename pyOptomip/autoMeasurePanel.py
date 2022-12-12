@@ -799,6 +799,7 @@ class autoMeasurePanel(wx.Panel):
             writer.writerow(dev2)
             writer.writerow(dev3)
             f.close()
+            print('Saved Optical Alignment data to ' + csvFileName)
 
     def OnButton_Import(self, event):
         """ Opens a file dialog to select a csv alignment file and populates all position fields"""
