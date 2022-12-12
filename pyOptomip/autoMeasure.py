@@ -294,7 +294,6 @@ class autoMeasure(object):
 
         return newMotorCoords
 
-
     def addWavelengthSweep(self, name, start, stop, stepsize, sweeppower, sweepspeed, laseroutput, numscans,
                            initialrange, rangedec):
         """Associates a wavelength sweep routine with this device"""
@@ -617,16 +616,14 @@ class autoMeasure(object):
                     self.graph.canvas.sweepResultDict['wavelength'] = wav
                     self.graph.canvas.sweepResultDict['power'] = pow
                     if len(self.activeDetectors) > 1:
-                        detstring = str(self.activeDetectors[0])
+                        self.detstringlist = ['Detector Slot ' + str(self.activeDetectors[0] + 1)]
                         for det in self.activeDetectors:
                             if det == self.activeDetectors[0]:
                                 pass
                             else:
-                                detstring  = detstring + ',' + str(det)
-                        ax = self.graph.gca()
-                        ax.legend(detstring)
+                                self.detstringlist.append('Detector Slot ' + str(det + 1))
 
-                    self.drawGraph(wav * 1e9, pow, self.graph, 'Wavelength (nm)', 'Power (dBm)')
+                    self.drawGraph(wav * 1e9, pow, self.graph, 'Wavelength (nm)', 'Power (dBm)', legend=len(self.activeDetectors))
 
                     # save all associated files
                     self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', ii, wav, pow,
@@ -826,6 +823,14 @@ class autoMeasure(object):
                         self.graph.canvas.sweepResultDict = {}
                         self.graph.canvas.sweepResultDict['wavelength'] = wav
                         self.graph.canvas.sweepResultDict['power'] = pow
+                        if len(self.activeDetectors) > 1:
+                            self.detstringlist = ['Detector Slot ' + str(self.activeDetectors[0] + 1)]
+                            for det in self.activeDetectors:
+                                if det == self.activeDetectors[0]:
+                                    pass
+                                else:
+                                    self.detstringlist.append('Detector Slot ' + str(det + 1))
+
                         self.drawGraph(wav * 1e9, pow, self.graph, 'Wavelength (nm)', 'Power (dBm)')
 
                         # save all associated files
@@ -962,9 +967,11 @@ class autoMeasure(object):
                         time.sleep(2)
                         self.motorElec.moveRelativeZ(-relativez)
 
-    def drawGraph(self, x, y, graphPanel, xlabel, ylabel):
+    def drawGraph(self, x, y, graphPanel, xlabel, ylabel, legend=1):
         graphPanel.axes.cla()
         graphPanel.axes.plot(x, y)
+        if legend != 1:
+            graphPanel.axes.legend(self.detstringlist)
         graphPanel.axes.ticklabel_format(useOffset=False)
         self.graph.axes.set_xlabel(xlabel)
         self.graph.axes.set_ylabel(ylabel)
