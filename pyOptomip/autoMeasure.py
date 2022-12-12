@@ -1083,6 +1083,7 @@ class autoMeasure(object):
             writer.writerow(wavSweep)
             det1 = ["channel_1", yArray]
             writer.writerow(det1)
+
         if testType == 'Voltage sweep':
             iv = self.voltageSweeps
             stepSize = ["Resolution:" + iv['VoltRes'][devNum]]
