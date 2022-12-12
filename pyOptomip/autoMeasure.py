@@ -609,6 +609,16 @@ class autoMeasure(object):
                     self.graph.canvas.sweepResultDict = {}
                     self.graph.canvas.sweepResultDict['wavelength'] = wav
                     self.graph.canvas.sweepResultDict['power'] = pow
+                    if len(self.activeDetectors) > 1:
+                        detstring = str(self.activeDetectors[0])
+                        for det in self.activeDetectors:
+                            if det == self.activeDetectors[0]:
+                                pass
+                            else:
+                                detstring  = detstring + ',' + str(det)
+                        ax = self.graph.gca()
+                        ax.legend(detstring)
+
                     self.drawGraph(wav * 1e9, pow, self.graph, 'Wavelength (nm)', 'Power (dBm)')
 
                     # save all associated files
