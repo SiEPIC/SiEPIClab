@@ -395,8 +395,6 @@ class TopPanel(wx.Panel):
                     self.routinedict[routine][x]['OPTICflag'] = False
                     self.routinedict[routine][x]['setwflag'] = False
                     self.routinedict[routine][x]['setvflag'] = False
-                    self.routinedict[routine][x]['Voltsel'] = False
-                    self.routinedict[routine][x]['Currentsel'] = False
                     self.routinedict[routine][x]['Min'] = '0'
                     self.routinedict[routine][x]['Max'] = '5'
                     self.routinedict[routine][x]['Res'] = '0.1'
@@ -423,8 +421,6 @@ class TopPanel(wx.Panel):
                     self.routinedict[routine][x]['OPTICflag'] = False
                     self.routinedict[routine][x]['setwflag'] = False
                     self.routinedict[routine][x]['setvflag'] = False
-                    self.routinedict[routine][x]['Voltsel'] = True
-                    self.routinedict[routine][x]['Currentsel'] = False
                     self.routinedict[routine][x]['Min'] = ''
                     self.routinedict[routine][x]['Max'] = ''
                     self.routinedict[routine][x]['Res'] = ''
@@ -452,8 +448,6 @@ class TopPanel(wx.Panel):
                     self.routinedict[routine][x]['OPTICflag'] = True
                     self.routinedict[routine][x]['setwflag'] = False
                     self.routinedict[routine][x]['setvflag'] = False
-                    self.routinedict[routine][x]['Voltsel'] = False
-                    self.routinedict[routine][x]['Currentsel'] = True
                     self.routinedict[routine][x]['Min'] = '0'
                     self.routinedict[routine][x]['Max'] = '1'
                     self.routinedict[routine][x]['Res'] = '1'
@@ -481,8 +475,6 @@ class TopPanel(wx.Panel):
                     self.routinedict[routine][x]['OPTICflag'] = False
                     self.routinedict[routine][x]['setwflag'] = False
                     self.routinedict[routine][x]['setvflag'] = False
-                    self.routinedict[routine][x]['Voltsel'] = True
-                    self.routinedict[routine][x]['Currentsel'] = False
                     self.routinedict[routine][x]['Min'] = '0'
                     self.routinedict[routine][x]['Max'] = '1'
                     self.routinedict[routine][x]['Res'] = '1'
@@ -509,8 +501,6 @@ class TopPanel(wx.Panel):
                     self.routinedict[routine][x]['OPTICflag'] = False
                     self.routinedict[routine][x]['setwflag'] = True
                     self.routinedict[routine][x]['setvflag'] = False
-                    self.routinedict[routine][x]['Voltsel'] = False
-                    self.routinedict[routine][x]['Currentsel'] = True
                     self.routinedict[routine][x]['Min'] = '0'
                     self.routinedict[routine][x]['Max'] = '5'
                     self.routinedict[routine][x]['Res'] = '0.1'
@@ -537,8 +527,6 @@ class TopPanel(wx.Panel):
                     self.routinedict[routine][x]['OPTICflag'] = 0
                     self.routinedict[routine][x]['setwflag'] = 0
                     self.routinedict[routine][x]['setvflag'] = 0
-                    self.routinedict[routine][x]['Voltsel'] = False
-                    self.routinedict[routine][x]['Currentsel'] = False
                     self.routinedict[routine][x]['Min'] = ''
                     self.routinedict[routine][x]['Max'] = ''
                     self.routinedict[routine][x]['Res'] = ''
@@ -634,8 +622,7 @@ class TopPanel(wx.Panel):
             self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()] = {}
             self.subroutineList[self.routinetype].append(self.parameterPanel.name.GetValue())
 
-        self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Voltsel'] = self.parameterPanel.voltsel.GetValue()
-        self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Currentsel'] = self.parameterPanel.currentsel.GetValue()
+
         self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Min'] = self.parameterPanel.minsetvoltage.GetValue()
         self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Max'] = self.parameterPanel.maxsetvoltage.GetValue()
         self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Res'] = self.parameterPanel.resovoltage.GetValue()
@@ -700,8 +687,6 @@ class TopPanel(wx.Panel):
             self.routineList.append(self.parameterPanel.name.GetValue())
             self.subroutineList[self.parameterPanel.name.GetValue()] = ['Default']
 
-        self.routinedict[self.parameterPanel.name.GetValue()]['Default']['Voltsel'] = self.parameterPanel.voltsel.GetValue()
-        self.routinedict[self.parameterPanel.name.GetValue()]['Default']['Currentsel'] = self.parameterPanel.currentsel.GetValue()
         self.routinedict[self.parameterPanel.name.GetValue()]['Default']['Min'] = self.parameterPanel.minsetvoltage.GetValue()
         self.routinedict[self.parameterPanel.name.GetValue()]['Default']['Max'] = self.parameterPanel.maxsetvoltage.GetValue()
         self.routinedict[self.parameterPanel.name.GetValue()]['Default']['Res'] = self.parameterPanel.resovoltage.GetValue()
@@ -785,8 +770,6 @@ class TopPanel(wx.Panel):
                 subroutinetype = self.subroutinecheckList.GetItemText(group)
 
         self.parameterPanel.name.SetValue(subroutinetype)
-        self.parameterPanel.voltsel.SetValue(self.routinedict[self.routinetype][subroutinetype]['Voltsel'])
-        self.parameterPanel.currentsel.SetValue(self.routinedict[self.routinetype][subroutinetype]['Currentsel'])
         self.parameterPanel.minsetvoltage.SetValue(self.routinedict[self.routinetype][subroutinetype]['Min'])
         self.parameterPanel.maxsetvoltage.SetValue(self.routinedict[self.routinetype][subroutinetype]['Max'])
         self.parameterPanel.resovoltage.SetValue(self.routinedict[self.routinetype][subroutinetype]['Res'])
@@ -1441,9 +1424,9 @@ class TopPanel(wx.Panel):
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox3)  # min
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox4)  # res
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox5)  # graph type
-            self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox6)
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox6) #laser output
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox7_2)  # wavelengths
-            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox8_2)
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox8_2) #voltages
 
         if routine == 'Voltage Sweep':
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox)  # start
@@ -1481,6 +1464,7 @@ class TopPanel(wx.Panel):
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox5)  # sweep speed
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox6)  # laser output
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox7)  # number of scans
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox8_2)  # voltages
 
         if routine == 'Set Wavelength Current Sweep':
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox)  # start
@@ -1492,6 +1476,7 @@ class TopPanel(wx.Panel):
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox5)  # sweep speed
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox6)  # laser output
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox7)  # number of scans
+            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox8_2)  # voltages
 
         if routine == 'Set Voltage Wavelength Sweep':
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox2)  # max
