@@ -1078,6 +1078,7 @@ class autoMeasurePanel(wx.Panel):
                         self.autoMeasure.motorElec.moveRelativeY(-relativey)
                         time.sleep(2)
                         self.autoMeasure.motorElec.moveRelativeZ(-relativez)
+        self.autoMeasure.graphPanel.canvas.draw()
 
     def OnButton_SelectOutputFolder(self, event):
         """ Opens a file dialog to select an output directory for automatic measurement results. """
@@ -1094,12 +1095,13 @@ class autoMeasurePanel(wx.Panel):
         else:
             self.autoMeasure.findCoordinateTransformOpt(self.coordMapPanelOpt.getMotorCoords(),
                                                         self.coordMapPanelOpt.getGdsCoordsOpt())
-
-            self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
+            if self.autoMeasure.motorElec and self.autoMeasure.smu:
+                self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
                                                         self.coordMapPanelElec.getGdsCoordsElec())
 
             # Disable detector auto measurement
-            self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.haltDetTimer()
+            if self.autoMeasure.laser:
+                self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.haltDetTimer()
 
             # Make a folder with the current time
             timeStr = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
@@ -1135,8 +1137,8 @@ class autoMeasurePanel(wx.Panel):
                                             updateFunction=None, updateGraph=True)
 
                 # Create a measurement progress dialog.
-                autoMeasureDlg = autoMeasureProgressDialog(self, title='Automatic measurement')
-                autoMeasureDlg.runMeasurement(checkedDevicesText, self.autoMeasure)
+                #autoMeasureDlg = autoMeasureProgressDialog(self, title='Automatic measurement')
+                #autoMeasureDlg.runMeasurement(checkedDevicesText, self.autoMeasure)
 
                 # Enable detector auto measurement
                 self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.startDetTimer()
