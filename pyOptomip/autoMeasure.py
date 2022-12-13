@@ -876,18 +876,43 @@ class autoMeasure(object):
                                 for b in range(len(wav[0])):
                                     wav3[c].append(wav[b][0])
                                     pow3[c].append(pow[b][0])
-                        else:
-                            wav3 = wav
-                            pow3 = pow
 
-                        for s in range(len(wav3)):
-                            for a in range(len(wav3[s][0])):
+                            for s in range(len(wav3)):
+                                for a in range(len(wav3[s][0])):
+                                    wav2.append([])
+                                    pow2.append([])
+                                for x in range(len(wav3[s])):
+                                    for y in range(len(wav3[s][0])):
+                                        wav2[y].append(wav3[s][x][y] * 1e9)
+                                        pow2[y].append(pow3[s][x][y][0])
+
+                                self.graphPanel.canvas.sweepResultDict = {}
+                                self.graphPanel.canvas.sweepResultDict['wavelength'] = wav2
+                                self.graphPanel.canvas.sweepResultDict['power'] = pow2
+
+                                self.voltstringlist = [str(voltages[0]) + ' V']
+                                for volt in voltages:
+                                    if volt == voltages[0]:
+                                        pass
+                                    else:
+                                        self.voltstringlist.append(str(volt) + ' V')
+
+                                # save all associated files
+                                self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', ii, wav2, pow2,
+                                               'Wavelength sweep w Bias Voltage', motorCoordOpt, timeStart, timeStop,
+                                               chipTimeStart, self.devFolder,
+                                               routine + '_combinedVoltages' + '_Detector' + str(s))
+                                self.drawGraph(wav2, pow2, self.graphPanel, 'Wavelength (nm)', 'Power (dBm)', legend=2)
+
+                        else:
+
+                            for a in range(len(wav[0])):
                                 wav2.append([])
                                 pow2.append([])
-                            for x in range(len(wav3[s])):
-                                for y in range(len(wav3[s][0])):
-                                    wav2[y].append(wav3[s][x][y] * 1e9)
-                                    pow2[y].append(pow3[s][x][y][0])
+                            for x in range(len(wav)):
+                                for y in range(len(wav[0])):
+                                    wav2[y].append(wav[x][y] * 1e9)
+                                    pow2[y].append(pow[x][y][0])
 
                             self.graphPanel.canvas.sweepResultDict = {}
                             self.graphPanel.canvas.sweepResultDict['wavelength'] = wav2
