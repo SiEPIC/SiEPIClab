@@ -846,6 +846,8 @@ class autoMeasure(object):
             if updateFunction is not None:
                 updateFunction(i)
 
+            print('Automeasure completed, results saved to' + str(self.saveFolder))
+
     def setScale(self, x, y):
         self.xscalevar = x
         self.yscalevar = y
