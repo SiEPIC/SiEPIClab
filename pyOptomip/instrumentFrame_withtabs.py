@@ -187,14 +187,16 @@ class instrumentFrame_withtabs(wx.Frame):
         Args:
             event:
         """
-        if self.camera.show is True:
-            print("Close Camera before Exiting.")
-        else:
-            self.camera.cap.release()
-            cv2.destroyAllWindows()
-            for inst in self.instList:
-                inst.disconnect()
-            self.Destroy()
+        #if self.camera.show is True:
+            #print("Close Camera before Exiting.")
+        #else:
+        self.camera.close()
+        time.sleep(2)
+        self.camera.cap.release()
+        cv2.destroyAllWindows()
+        for inst in self.instList:
+            inst.disconnect()
+        self.Destroy()
 
     class HomeTab(wx.Panel):
         def __init__(self, parent, laserWithDetector, opticalStage, electricalStage, camera, instr, SMU):
