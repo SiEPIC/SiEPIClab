@@ -836,7 +836,7 @@ class autoMeasure(object):
                         self.graph.canvas.sweepResultDict = {}
                         self.graph.canvas.sweepResultDict['wavelength'] = wav[ii]
                         self.graph.canvas.sweepResultDict['power'] = pow[ii]
-                        self.drawGraph(wav * 1e9, pow, self.graph, 'Wavelength (nm)', 'Power (dBm)')
+                        self.drawGraph(wav[ii] * 1e9, pow, self.graph, 'Wavelength (nm)', 'Power (dBm)')
 
                         # save all associated files
                         self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', ii, wav * 1e9, pow,
@@ -846,24 +846,44 @@ class autoMeasure(object):
                     if len(voltages) > 1:
                         wav2 = []
                         pow2 = []
-                        for a in range(len(wav[0])):
-                            wav2.append([])
-                            pow2.append([])
-                        for x in range(len(wav)):
-                            for y in range(len(wav[0])):
-                                wav2[y].append(wav[x][y] * 1e9)
-                                pow2[y].append(pow[x][y])
+                        wav3 = [] * self.activeDetectors
+                        pow3 = [] * self.activeDetectors
+                        if len(self.activeDetectors) > 1:
+                            for c in range(len(wav3)):
+                                for b in range(len(wav[0])):
+                                    wav3[c].append(wav[b][0])
+                                    pow3[c].append(pow[b][0])
+                        else:
+                            wav3 = wav
+                            pow3 = pow
 
-                        self.graph.canvas.sweepResultDict = {}
-                        self.graph.canvas.sweepResultDict['wavelength'] = wav2
-                        self.graph.canvas.sweepResultDict['power'] = pow2
+                        for s in range(len(wav3)):
+                            for a in range(len(wav3[s][0])):
+                                wav2.append([])
+                                pow2.append([])
+                            for x in range(len(wav3[s])):
+                                for y in range(len(wav3[s][0])):
+                                    wav2[y].append(wav3[s][x][y] * 1e9)
+                                    pow2[y].append(pow3[s][x][y][0])
 
-                        self.drawGraph(wav2, pow2, self.graph, 'Wavelength (nm)', 'Power (dBm)')
+                            self.graph.canvas.sweepResultDict = {}
+                            self.graph.canvas.sweepResultDict['wavelength'] = wav2
+                            self.graph.canvas.sweepResultDict['power'] = pow2
 
-                        # save all associated files
-                        self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', ii, wav2, pow2,
+
+                            self.voltstringlist = [str(voltages[0]) + ' V']
+                            for volt in voltages:
+                                if volt == voltages[0]:
+                                    pass
+                                else:
+                                    self.voltstringlist.append(str(volt) + ' V')
+
+                            self.drawGraph(wav2, pow2, self.graph, 'Wavelength (nm)', 'Power (dBm)', legend=2)
+
+                            # save all associated files
+                            self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', ii, wav2, pow2,
                                        'Wavelength sweep w Bias Voltage', motorCoordOpt, timeStart, timeStop,
-                                       chipTimeStart, self.devFolder, routine + '_combinedVoltages')
+                                       chipTimeStart, self.devFolder, routine + '_combinedVoltages' + '_Detector' + str(s))
 
             camera.stoprecord()
 
@@ -1002,6 +1022,8 @@ class autoMeasure(object):
         graphPanel.axes.plot(x, y)
         if legend != 1:
             graphPanel.axes.legend(self.detstringlist)
+        if legend == 2:
+            graphPanel.axes.legend(self.voltstringlist)
         graphPanel.axes.ticklabel_format(useOffset=False)
         self.graph.axes.set_xlabel(xlabel)
         self.graph.axes.set_ylabel(ylabel)
