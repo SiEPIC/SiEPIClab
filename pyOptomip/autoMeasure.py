@@ -431,7 +431,7 @@ class autoMeasure(object):
             time.sleep(0.5)
 
             # Check which type of measurement is to be completed
-            if device.getVoltageSweepRoutines() and self.laser and self.motorElec and self.smu:
+            if device.getVoltageSweepRoutines() and self.motorElec and self.smu:
                 for routine in device.getVoltageSweepRoutines():
                     timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
                     print("Performing Voltage Sweep {}".format(routine))
@@ -512,7 +512,7 @@ class autoMeasure(object):
                                              'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
                                            self.devFolder, routine + '_PV')
 
-            if device.getCurrentSweepRoutines() and self.laser and self.motorElec and self.smu:
+            if device.getCurrentSweepRoutines() and self.motorElec and self.smu:
                 for routine in device.getCurrentSweepRoutines():
                     ii = self.currentSweeps['RoutineName'].index(routine)
                     timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
@@ -592,7 +592,7 @@ class autoMeasure(object):
                                             'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
                                            self.devFolder, routine + '_PI')
 
-            if device.getWavelengthSweepRoutines():
+            if device.getWavelengthSweepRoutines() and self.laser:
                 for routine in device.getWavelengthSweepRoutines():
                     ii = self.wavelengthSweeps['RoutineName'].index(routine)
                     timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
@@ -845,7 +845,7 @@ class autoMeasure(object):
             if updateFunction is not None:
                 updateFunction(i)
 
-            print("Automeasure completed, results saved to " + str(self.saveFolder))
+            print("Automeasure Completed, Results Saved to " + str(self.saveFolder))
 
 
     def setScale(self, x, y):
@@ -898,13 +898,15 @@ class autoMeasure(object):
                     absolutez = motorCoordElec[2]
                     relativex = absolutex[0] - elecPosition[0]
                     relativey = absolutey[0] - elecPosition[1]
-                    relativez = absolutez[0] - elecPosition[2] + 30
+                    relativez = absolutez[0] - elecPosition[2] - 20
                     # Move probe to device
                     self.motorElec.moveRelativeX(-relativex)
                     time.sleep(2)
                     self.motorElec.moveRelativeY(-relativey)
                     time.sleep(2)
                     self.motorElec.moveRelativeZ(-relativez)
+                    time.sleep(0.1)
+                    self.motorElec.moveRelativeZ(-20)
                     # Fine align to device again
                     res, completed = self.fineAlign.doFineAlign()
                     # If fine align fails change text colour of device to red in the checklist
@@ -962,12 +964,15 @@ class autoMeasure(object):
                         absolutez = motorCoord[2]
                         relativex = absolutex[0] - elecPosition[0]
                         relativey = absolutey[0] - elecPosition[1]
-                        relativez = absolutez[0] - elecPosition[2] + 20
+                        relativez = absolutez[0] - elecPosition[2] - 20
                         self.motorElec.moveRelativeX(-relativex)
                         time.sleep(2)
                         self.motorElec.moveRelativeY(-relativey)
                         time.sleep(2)
                         self.motorElec.moveRelativeZ(-relativez)
+                        time.sleep(0.1)
+                        self.motorElec.moveRelativeZ(-20)
+
         self.graphPanel.canvas.draw()
 
     def drawGraph(self, x, y, graphPanel, xlabel, ylabel, legend=1):

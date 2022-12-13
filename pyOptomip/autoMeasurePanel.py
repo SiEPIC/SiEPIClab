@@ -1063,7 +1063,6 @@ class autoMeasurePanel(wx.Panel):
                     self.autoMeasure.motorElec.moveRelativeZ(1000)
                     time.sleep(2)
                     if [self.autoMeasure.motorOpt] and [self.autoMeasure.motorElec]:
-                        print("moving relative")
                         optPosition = self.autoMeasure.motorOpt.getPosition()
                         elecPosition = self.autoMeasure.motorElec.getPosition()
                         adjustment = self.autoMeasure.motorOpt.getPositionforRelativeMovement()
