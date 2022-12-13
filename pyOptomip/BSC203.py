@@ -59,9 +59,10 @@ class BSC203Motor:
                 self.position[2] = self.position[2] - z
         elif self.minPositionSet is False and self.maxZPositionSet is True:
             if self.position[2] - z >= (self.maxZPosition - 80):
-                print("Please Lift Wedge Probe.")
                 self.bsc.move_relative(distance=int(1000 * z), bay=2, channel=0)
                 self.position[2] = self.position[2] - z
+                if x != 0 or y !=0:
+                    print("Please Lift Wedge Probe.")
             else:
                 self.bsc.move_relative(distance=int(1000 * x), bay=0, channel=0)
                 self.bsc.move_relative(distance=int(1000 * y), bay=1, channel=0)
@@ -73,9 +74,10 @@ class BSC203Motor:
             if self.position[0] - x < self.minXPosition:
                 print("Cannot Move Past Minimum X Position.")
             elif self.position[2] - z >= (self.maxZPosition - 80):
-                print("Please Lift Wedge Probe.")
                 self.bsc.move_relative(distance=int(1000 * z), bay=2, channel=0)
                 self.position[2] = self.position[2] - z
+                if x != 0 or y !=0:
+                    print("Please Lift Wedge Probe.")
             else:
                 self.bsc.move_relative(distance=int(1000 * x), bay=0, channel=0)
                 self.bsc.move_relative(distance=int(1000 * y), bay=1, channel=0)

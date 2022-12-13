@@ -386,7 +386,6 @@ class SMUClass:
                     r = float(r)
                     p = self.inst.query("print(smua.measure.p())")
                     p = float(p) * 1000
-                    print(p)
                     self.voltageresultA.append(v)
                     self.currentresultA.append(i)
                     self.resistanceresultA.append(r)
@@ -445,7 +444,6 @@ class SMUClass:
                     r = float(r)
                     p = self.inst.query("print(smua.measure.p())")
                     p = float(p) * 1000
-                    print(p)
                     self.voltageresultA.append(v)
                     self.currentresultA.append(i*1000)
                     self.resistanceresultA.append(r)
@@ -470,7 +468,6 @@ class SMUClass:
                     r = float(r)
                     p = self.inst.query("print(smub.measure.p())")
                     p = float(p) * 1000
-                    print(p)
                     self.voltageresultA.append(v)
                     self.currentresultA.append(i)
                     self.resistanceresultA.append(r)
@@ -481,14 +478,6 @@ class SMUClass:
             if self.Bflag == True:
                 setcurrentstring = "smub.source.leveli = " + str(0)
                 self.inst.write(setcurrentstring)
-
-        if self.Aflag == True:
-            print(self.voltageresultA)
-            print(self.currentresultA)
-
-        if self.Bflag == True:
-            print(self.voltageresultB)
-            print(self.currentresultB)
 
         print('Sweep Completed!')
 
