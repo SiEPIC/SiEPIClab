@@ -1055,8 +1055,8 @@ class autoMeasure(object):
         if legend == 2:
             graphPanel.axes.legend(self.voltstringlist)
         graphPanel.axes.ticklabel_format(useOffset=False)
-        self.graph.axes.set_xlabel(xlabel)
-        self.graph.axes.set_ylabel(ylabel)
+        self.graphPanel.axes.set_xlabel(xlabel)
+        self.graphPanel.axes.set_ylabel(ylabel)
         graphPanel.canvas.draw()
 
 
