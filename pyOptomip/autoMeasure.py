@@ -813,29 +813,57 @@ class autoMeasure(object):
                     A = self.setVoltageWavelengthSweeps['ChannelA'][ii]
                     B = self.setVoltageWavelengthSweeps['ChannelB'][ii]
                     voltages = self.setVoltageWavelengthSweeps['Voltage'][ii].split(',')
-                    for voltage in voltages:
-                        wav, pow = measurement.opticalSweepWithBiasVoltage(start, stop, stepsize, sweepspeed,
+
+                    if len(self.activeDetectors) > 1:
+                        self.detstringlist = ['Detector Slot ' + str(self.activeDetectors[0] + 1)]
+                        for det in self.activeDetectors:
+                            if det == self.activeDetectors[0]:
+                                pass
+                            else:
+                                self.detstringlist.append('Detector Slot ' + str(det + 1))
+
+                    wav = [[]] * len(voltages)
+                    pow = [[]] * len(voltages)
+
+                    for ii, voltage in enumerate(voltages):
+                        wav[ii], pow[ii] = measurement.opticalSweepWithBiasVoltage(start, stop, stepsize, sweepspeed,
                                                                             sweeppower, laseroutput, numscans,
                                                                             initrange, rangedec, voltage, A, B)
+
+
                         timeStop = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
 
                         self.graph.canvas.sweepResultDict = {}
-                        self.graph.canvas.sweepResultDict['wavelength'] = wav
-                        self.graph.canvas.sweepResultDict['power'] = pow
-                        if len(self.activeDetectors) > 1:
-                            self.detstringlist = ['Detector Slot ' + str(self.activeDetectors[0] + 1)]
-                            for det in self.activeDetectors:
-                                if det == self.activeDetectors[0]:
-                                    pass
-                                else:
-                                    self.detstringlist.append('Detector Slot ' + str(det + 1))
-
+                        self.graph.canvas.sweepResultDict['wavelength'] = wav[ii]
+                        self.graph.canvas.sweepResultDict['power'] = pow[ii]
                         self.drawGraph(wav * 1e9, pow, self.graph, 'Wavelength (nm)', 'Power (dBm)')
 
                         # save all associated files
                         self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', ii, wav * 1e9, pow,
                                         'Wavelength sweep w Bias Voltage', motorCoordOpt, timeStart, timeStop,
                                         chipTimeStart, self.devFolder, routine+str(voltage))
+
+                    if len(voltages) > 1:
+                        wav2 = []
+                        pow2 = []
+                        for a in range(len(wav[0])):
+                            wav2.append([])
+                            pow2.append([])
+                        for x in range(len(wav)):
+                            for y in range(len(wav[0])):
+                                wav2[y].append(wav[x][y] * 1e9)
+                                pow2[y].append(pow[x][y])
+
+                        self.graph.canvas.sweepResultDict = {}
+                        self.graph.canvas.sweepResultDict['wavelength'] = wav2
+                        self.graph.canvas.sweepResultDict['power'] = pow2
+
+                        self.drawGraph(wav2, pow2, self.graph, 'Wavelength (nm)', 'Power (dBm)')
+
+                        # save all associated files
+                        self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', ii, wav2, pow2,
+                                       'Wavelength sweep w Bias Voltage', motorCoordOpt, timeStart, timeStop,
+                                       chipTimeStart, self.devFolder, routine + '_combinedVoltages')
 
             camera.stoprecord()
 
@@ -846,7 +874,6 @@ class autoMeasure(object):
                 updateFunction(i)
 
             print("Automeasure Completed, Results Saved to " + str(self.saveFolder))
-
 
     def setScale(self, x, y):
         self.xscalevar = x
