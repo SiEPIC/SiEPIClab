@@ -403,6 +403,8 @@ class autoMeasure(object):
         self.checkList = checkList
         self.activeDetectors = activeDetectors
 
+        print("***********************************************")
+
         checkedDevices = []
         for device in self.devices:
             if device.getDeviceID() in devices:

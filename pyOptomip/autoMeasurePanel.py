@@ -1172,6 +1172,13 @@ class autoMeasurePanel(wx.Panel):
                 self.inputcheckflag = False
                 print('Please check scale values')
 
+        if setting == 'sweep':
+
+            if self.xadjust.GetValue().isnumeric() == False or self.yadjust.GetValue().isnumeric() == False:
+                self.inputcheckflag = False
+                print('Please check scale values')
+
+
    # class StopAutomeasure(threading.Thread):
 
         #def __init__(self):

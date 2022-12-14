@@ -453,7 +453,6 @@ class instrumentFrame_withtabs(wx.Frame):
             self.record = self.record + 1
 
             filename = (path + "\Arraycapture_" + str(self.record) + ".avi")
-            print(filename)
 
             size = (self.frame_width, self.frame_height)
 

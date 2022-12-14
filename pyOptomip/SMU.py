@@ -622,23 +622,19 @@ class SMUClass:
             self.inst.write("smua.source.output = smua.OUTPUT_ON")
             self.onflagA = 'ON'
             self.Aflag = True
-            print("Channel A ON")
 
         if channel == 'B':
             self.inst.write("smub.source.output = smub.OUTPUT_ON")
             self.onflagB = 'ON'
             self.Bflag = True
-            print("Channel B ON")
 
         if channel == 'All':
             self.inst.write("smua.source.output = smua.OUTPUT_ON")
             self.onflagA = 'ON'
             self.Aflag = True
-            print("Channel A ON")
             self.inst.write("smub.source.output = smub.OUTPUT_ON")
             self.onflagB = 'ON'
             self.Bflag = True
-            print("Channel B ON")
 
 
     def turnchanneloff(self, channel):
