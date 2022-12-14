@@ -54,6 +54,11 @@ class SMUClass:
     def __init__(self):
         self.Aflag = False
         self.Bflag = False
+        self.voltageresultA = []
+        self.currentresultA = []
+        self.voltageresultB = []
+        self.currentresultB = []
+        self.sweepcompletedflag = False
 
     def connect(self, visaName, rm):
         """
@@ -362,7 +367,10 @@ class SMUClass:
         print(self.Aflag)
         print(self.Bflag)
 
+
         if independantvar == 'Voltage':
+
+            self.k.voltage_sweep_single_smu(self.k.smua, range(0, 61), t_int=0.1, delay=-1, pulsed=False)
 
             sweeplist = [minVar]
             x = minVar
@@ -481,6 +489,122 @@ class SMUClass:
 
         print('Sweep Completed!')
 
+    def ivsweep2(self, minVar:float, maxVar:float, resolution:float, independantvar):
+        """
+                Performs a current sweep or a voltage sweep depending on inputs
+                Parameters
+                ----------
+                min : the minimum value for the independent variable
+                max : the maximum value for the independent variable
+                resolution : the resolution to sweep with
+                independantvar : whether or not the independent variable is current or voltage, string
+
+                Returns
+                -------
+
+                """
+
+        self.voltageresultA = []
+        self.currentresultA = []
+        self.voltageresultB = []
+        self.currentresultB = []
+        self.resistanceresultA = []
+        self.resistanceresultB = []
+        self.powerresultA = []
+        self.powerresultB = []
+
+        sweeplist = [minVar]
+        x = minVar
+
+        while x < maxVar:
+            sweeplist.append(x + resolution / 1000)
+            x = x + resolution / 1000
+
+        if independantvar == 'Voltage':
+            if self.Aflag == True:
+                self.voltageresultA, self.currentresultA = self.k.voltage_sweep_single_smu(self.k.smua, sweeplist, t_int=0.1, delay=-1, pulsed=False)
+                print(self.currentresultA)
+                self.resistanceresultA = [i / j for i, j in zip(self.voltageresultA, self.currentresultA)]
+                print(self.resistanceresultA)
+                #self.resistanceresultA = self.voltageresultA / self.currentresultA
+                self.powerresultA = [i * j for i, j in zip(self.voltageresultA, self.currentresultA)]
+                setvoltstring = "smua.source.levelv = " + str(0)
+                self.inst.write(setvoltstring)
+            if self.Bflag == True:
+                self.voltageresultB, self.currentresultB = self.k.voltage_sweep_single_smu(self.k.smub, range(minVar, maxVar), t_int=0.1, delay=-1, pulsed=False)
+                self.resistanceresultA = self.voltageresultB / self.currentresultB
+                self.powerresultA = self.voltageresultB * self.currentresultB
+                setvoltstring = "smub.source.levelv = " + str(0)
+                self.inst.write(setvoltstring)
+
+        #if independantvar == 'Current':
+           # if self.Aflag == True:
+                #self.voltageresultA, self.currentresultA = self.k.current_sweep_single_smu(self.k.smua, range(minVar, maxVar), t_int=0.1, delay=-1, pulsed=False)
+                #self.resistanceresultA = self.voltageresultA / self.currentresultA
+                #self.powerresultA = self.voltageresultA * self.currentresultA
+            #if self.Bflag == True:
+                #self.voltageresultB, self.currentresultB = self.k.voltage_sweep_single_smu(self.k.smub, range(minVar, maxVar), t_int=0.1, delay=-1, pulsed=False)
+                #self.resistanceresultB = self.voltageresultB / self.currentresultB
+                #self.powerresultB = self.voltageresultB * self.currentresultB
+        if independantvar == 'Current':
+
+            sweeplist = [minVar / 1000]
+            x = minVar / 1000
+
+            while x < maxVar / 1000:
+                sweeplist.append(x + resolution / 1000)
+                x = x + resolution / 1000
+
+
+            if self.Aflag == True:
+                self.inst.write("smua.source.func = smua.OUTPUT_DCAMPS")
+
+                for i in sweeplist:
+                    setcurrentstring = "smua.source.leveli = " + str(i)
+                    self.inst.write(setcurrentstring)
+
+                    v = self.inst.query("print(smua.measure.v())")
+                    v = float(v)
+                    r = self.inst.query("print(smua.measure.r())")
+                    r = float(r)
+                    p = self.inst.query("print(smua.measure.p())")
+                    p = float(p) * 1000
+                    self.voltageresultA.append(v)
+                    self.currentresultA.append(i*1000)
+                    self.resistanceresultA.append(r)
+                    self.powerresultA.append(p)
+                    # rt.append_row([v, i])
+                    time.sleep(1)
+
+            if self.Aflag == True:
+                setcurrentstring = "smua.source.leveli = " + str(0)
+                self.inst.write(setcurrentstring)
+
+            if self.Bflag == True:
+                self.inst.write("smub.source.func = smub.OUTPUT_DCAMPS")
+
+                for i in sweeplist:
+                    setcurrentstring = "smub.source.leveli = " + str(i)
+                    self.inst.write(setcurrentstring)
+
+                    v = self.inst.query("print(smub.measure.v())")
+                    v = float(v)
+                    r = self.inst.query("print(smub.measure.r())")
+                    r = float(r)
+                    p = self.inst.query("print(smub.measure.p())")
+                    p = float(p) * 1000
+                    self.voltageresultA.append(v)
+                    self.currentresultA.append(i)
+                    self.resistanceresultA.append(r)
+                    self.powerresultA.append(p)
+                    # rt.append_row([v, i])
+                    time.sleep(1)
+
+            if self.Bflag == True:
+                setcurrentstring = "smub.source.leveli = " + str(0)
+                self.inst.write(setcurrentstring)
+
+        self.sweepcompletedflag = True
 
     def turnchannelon(self, channel):
         """

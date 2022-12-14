@@ -64,8 +64,6 @@ class topSMUPanel(wx.Panel):
         self.SetSizer(hbox)
 
 
-
-
 class SMUPanel(wx.Panel):
 
     def __init__(self, parent, graph):
@@ -340,9 +338,13 @@ class SMUPanel(wx.Panel):
         self.outputFolderTb.SetValue(dirDlg.GetPath())
         dirDlg.Destroy()
 
-
     def OnButton_Sweep(self, event):
         """ Calls ivsweep function using SMU class, saves and formats data to a csv file in chosen savefile location """
+
+        self.inputcheck('sweep')
+        if self.inputcheckflag == False:
+            print("***********************************************")
+            return
 
         if self.sweeptypeflag == 'Voltage':
             if int(self.reso.GetValue()) / 1000 > (int(self.maxset.GetValue()) - int(self.minset.GetValue())):
@@ -354,10 +356,11 @@ class SMUPanel(wx.Panel):
                 print("Error: Please enter valid resolution")
                 return
 
-        print('Commencing Sweep...')
-        print(self.sweeptypeflag)
 
-        self.smu.ivsweep(float(self.minset.GetValue()), float(self.maxset.GetValue()), float(self.reso.GetValue()), self.sweeptypeflag)
+
+        print('Commencing Sweep...')
+
+        self.smu.ivsweep2(float(self.minset.GetValue()), float(self.maxset.GetValue()), float(self.reso.GetValue()), self.sweeptypeflag)
 
 
         if self.outputFolderTb.GetValue() != '':
@@ -368,18 +371,22 @@ class SMUPanel(wx.Panel):
             headers = ["Voltage (V)", "Current (A)", "Resistance (Ω)", "Power (W)"]
 
             row = []
-            for c in range(int(self.reso.GetValue())):
-                row_2 = []
-                row_2.append(str(self.smu.voltageresultA[c]))
-                row_2.append(str(self.smu.currentresultA[c]))
-                row_2.append(str(self.smu.resistanceresultA[c]))
-                row_2.append(str(self.smu.powerresultA[c]))
-                row_2.append(' ')
-                row_2.append(str(self.smu.voltageresultB[c]))
-                row_2.append(str(self.smu.currentresultB[c]))
-                row_2.append(str(self.smu.resistanceresultB[c]))
-                row_2.append(str(self.smu.powerresultB[c]))
-                row.append(row_2)
+
+            if self.smu.Aflag:
+                for c in range(len(self.smu.voltageresultA)):
+                    row_2 = []
+                    row_2.append(str(self.smu.voltageresultA[c]))
+                    row_2.append(str(self.smu.currentresultA[c]))
+                    row_2.append(str(self.smu.resistanceresultA[c]))
+                    row_2.append(str(self.smu.powerresultA[c]))
+                    row_2.append(' ')
+            if self.smu.Bflag:
+                for c in range(len(self.smu.voltageresultB)):
+                    row_2.append(str(self.smu.voltageresultB[c]))
+                    row_2.append(str(self.smu.currentresultB[c]))
+                    row_2.append(str(self.smu.resistanceresultB[c]))
+                    row_2.append(str(self.smu.powerresultB[c]))
+                    row.append(row_2)
 
             if self.smu.Aflag and self.smu.Bflag:
                 with open(savefile, 'w', newline='') as f:
@@ -442,7 +449,6 @@ class SMUPanel(wx.Panel):
                 self.graphPanel.canvas.sweepResultDict['current'] = self.currentB
                 self.drawGraph(self.currentB, self.voltageB, self.typeflag)
 
-
     def drawGraph(self, voltage, dependant, typeflag):
         self.graphPanel.axes.cla()
         self.graphPanel.axes.plot(voltage, dependant)
@@ -470,7 +476,6 @@ class SMUPanel(wx.Panel):
                 self.graphPanel.axes.set_ylabel('Power (mW)')
         self.graphPanel.canvas.draw()
 
-
     def UpdateAutoMeasurement(self, event):
         va = self.smu.getvoltageA()
         ia = self.smu.getcurrentA()
@@ -495,28 +500,43 @@ class SMUPanel(wx.Panel):
         #self.voltread.SetLabel(str(int(v*1000)/1000))
         #self.currentread.SetLabel(str(int(i*1e6)/1000))
 
-
     def OnButton_currentSet(self, event):
+        self.inputcheck('general')
+        if self.inputcheckflag == False:
+            print('Please check input parameters')
+            return
+
         self.smu.setCurrent((float(self.currentset.GetValue())/1e3), self.smusel.GetValue())#self.smuasel.GetValue(), self.smubsel.GetValue())
         self.voltset.SetValue('')
 
-
     def OnButton_voltageSet(self, event):
+        self.inputcheck('general')
+        if self.inputcheckflag == False:
+            print('Please check input parameters')
+            return
         self.smu.setVoltage((float(self.voltset.GetValue())), self.smusel.GetValue()) # self.smuasel.GetValue(), self.smubsel.GetValue())
         self.currentset.SetValue('')
 
-
     def OnButton_currentlim(self, event):
+        self.inputcheck('general')
+        if self.inputcheckflag == False:
+            print('Please check input parameters')
+            return
         self.smu.setcurrentlimit(float(self.currentlim.GetValue()), self.smusel.GetValue())# self.smuasel.GetValue(), self.smubsel.GetValue())
 
-
     def OnButton_voltagelim(self, event):
+        self.inputcheck('general')
+        if self.inputcheckflag == False:
+            print('Please check input parameters')
+            return
         self.smu.setvoltagelimit(float(self.voltlim.GetValue()), self.smusel.GetValue())# self.smuasel.GetValue(), self.smubsel.GetValue())
 
-
     def OnButton_powerlim(self, event):
+        self.inputcheck('general')
+        if self.inputcheckflag == False:
+            print('Please check input parameters')
+            return
         self.smu.setpowerlimit(float(self.powerlim.GetValue()), self.smusel.GetValue())# self.smuasel.GetValue(), self.smubsel.GetValue())
-
 
     def OnButton_outputToggle(self, event):
 
@@ -535,7 +555,6 @@ class SMUPanel(wx.Panel):
             self.smu.turnchannelon(self.smusel.GetValue())
         if self.smusel.GetValue() == 'All' and flag == 'OFF':
             self.smu.turnchanneloff(self.smusel.GetValue())
-
 
     def OnButton_outputTogglesweep(self, event):
 
@@ -561,7 +580,6 @@ class SMUPanel(wx.Panel):
                 self.smu.setoutputflagon('A')
                 self.smu.setoutputflagon('B')
 
-
     def onChecked(self, e):
         cb = e.GetEventObject()
 
@@ -583,7 +601,6 @@ class SMUPanel(wx.Panel):
         print(cb.GetLabel())
         print(cb.GetValue())
         #if cb.label is A
-
 
     def PlotselectBtn(self, event):
 
@@ -636,20 +653,19 @@ class SMUPanel(wx.Panel):
 
             return
 
-        if label == 'A':
+        if label == 'A' and self.dependantA != []:
             self.plotflag = 'A'
             if self.sweeptypeflag == 'Voltage':
                 self.Plot(self.voltageA, self.dependantA)
             if self.sweeptypeflag == 'Current':
                 self.Plot(self.currentA, self.dependantA)
 
-        if label == 'B':
+        if label == 'B' and self.dependantB != []:
             self.plotflag = 'B'
             if self.sweeptypeflag == 'Voltage':
                 self.Plot(self.voltageB, self.dependantB)
             if self.sweeptypeflag == 'Current':
                 self.Plot(self.currentB, self.dependantB)
-
 
     def Plot(self, independant, dependant):
 
@@ -659,13 +675,14 @@ class SMUPanel(wx.Panel):
 
         self.drawGraph(independant, dependant, self.typeflag)
 
-
     def typeselectBtn(self, event):
 
         cb = event.GetEventObject()
         label = cb.GetLabel()
         value = cb.GetValue()
 
+        if self.smu.sweepcompletedflag == False:
+            return
 
         if value==False:
             self.typeflag = ''
@@ -731,7 +748,6 @@ class SMUPanel(wx.Panel):
                 if self.sweeptypeflag == 'Current':
                     self.Plot(self.currentB, self.dependantB)
 
-
     def sweeptype(self, event):
 
         c = event.GetEventObject()
@@ -768,6 +784,53 @@ class SMUPanel(wx.Panel):
             self.maxunit.SetLabel('mA')
             self.resunit.SetLabel('mA')
             print('Set to Current sweep')
+
+    def inputcheck(self, setting):
+
+
+        self.inputcheckflag = True
+        if setting == 'general':
+
+            if self.voltset.GetValue().isnumeric() == False:
+                self.inputcheckflag = False
+
+            if self.currentset.GetValue().isnumeric() == False:
+                self.inputcheckflag = False
+
+            if self.voltlim.GetValue().isnumeric() == False:
+                self.inputcheckflag = False
+
+            if self.currentlim.GetValue().isnumeric() == False:
+                self.inputcheckflag = False
+
+            if self.powerlim.GetValue().isnumeric() == False:
+                self.inputcheckflag = False
+
+        if setting == 'sweep':
+
+            if self.voltsel.GetValue() == False and self.currentsel.GetValue() == False:
+                self.inputcheckflag = False
+                print('Please select an independant source')
+
+            if self.smu2sel.GetValue() == '':
+                self.inputcheckflag = False
+                print('Please check output select')
+
+            if self.maxset.GetValue().isnumeric() == False:
+                self.inputcheckflag = False
+                print('Please check max value')
+
+            if self.minset.GetValue().isnumeric() == False:
+                self.inputcheckflag = False
+                print('Please check min value')
+
+            if self.reso.GetValue().isnumeric() == False:
+                self.inputcheckflag = False
+                print('Please check resolution value')
+
+            if self.reso.GetValue() == '0':
+                self.inputcheckflag = False
+                print('Please check resolution value')
 
 
 class resistancePanel(wx.Panel):

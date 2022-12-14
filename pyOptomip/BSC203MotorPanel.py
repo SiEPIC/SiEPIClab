@@ -106,3 +106,25 @@ class BSC203Panel(wx.Panel):
         if self.axis == 3:
             self.parent.bsc.moveRelativeXYZ(0,0, int((-1) * self.getMoveValue()))
             print("Axis 3 Moved Positive")
+
+    def movementcheck(self, event):
+
+        self.inputcheck('thorlabs')
+        if self.inputcheckflag == False:
+            print("***********************************************")
+            self.tc.SetValue('')
+            return
+
+    def inputcheck(self, setting):
+
+        self.inputcheckflag = True
+
+        if setting == 'thorlabs':
+
+                if self.tc.GetValue().isNumeric() == False:
+                    self.inputcheckflag = False
+                    print('Please check move value')
+                else:
+                    if float(self.tc.GetValue()) > 10000:
+                        self.inputcheckflag = False
+                        print('Movement value cannot be larger than 10000')

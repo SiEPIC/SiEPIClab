@@ -86,6 +86,7 @@ class CorvusPanel(wx.Panel):
             self.initialvalue = 0
 
         self.tc = wx.TextCtrl(self, value=str(self.initialvalue))  # change str(self.axis) to '0'
+        self.tc.Bind(wx.EVT_TEXT, self.movementcheck)
         hbox.Add(self.tc, proportion=2, flag=wx.EXPAND)
 
         st1 = wx.StaticText(self, label='um')
@@ -126,3 +127,4 @@ class CorvusPanel(wx.Panel):
         if self.axis == 3:
             self.motor.moveRelative(0, 0, self.getMoveValue())
             print("Axis 3 Moved Positive")
+

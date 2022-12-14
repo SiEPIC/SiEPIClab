@@ -869,8 +869,8 @@ class autoMeasure(object):
                     if len(voltages) > 1:
                         wav2 = []
                         pow2 = []
-                        wav3 = [] * self.activeDetectors
-                        pow3 = [] * self.activeDetectors
+                        wav3 = [] * len(self.activeDetectors)
+                        pow3 = [] * len(self.activeDetectors)
                         if len(self.activeDetectors) > 1:
                             for c in range(len(wav3)):
                                 for b in range(len(wav[0])):

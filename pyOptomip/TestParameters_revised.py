@@ -392,38 +392,38 @@ class TopPanel(wx.Panel):
                 if routine == 'Wavelength Sweep':
                     self.routinedict[routine][x] = {}
                     self.routinedict[routine][x]['ELECflag'] = False
-                    self.routinedict[routine][x]['OPTICflag'] = False
-                    self.routinedict[routine][x]['setwflag'] = False
-                    self.routinedict[routine][x]['setvflag'] = False
-                    self.routinedict[routine][x]['Min'] = '0'
-                    self.routinedict[routine][x]['Max'] = '5'
-                    self.routinedict[routine][x]['Res'] = '0.1'
-                    self.routinedict[routine][x]['IV'] = True
-                    self.routinedict[routine][x]['RV'] = True
-                    self.routinedict[routine][x]['PV'] = True
-                    self.routinedict[routine][x]['Channel A'] = True
-                    self.routinedict[routine][x]['Channel B'] = False
-                    self.routinedict[routine][x]['Start'] = ''
-                    self.routinedict[routine][x]['Stop'] = ''
-                    self.routinedict[routine][x]['Stepsize'] = ''
-                    self.routinedict[routine][x]['Sweeppower'] = ''
-                    self.routinedict[routine][x]['Sweepspeed'] = 'auto'
-                    self.routinedict[routine][x]['Laseroutput'] = 'High power'
-                    self.routinedict[routine][x]['Numscans'] = '1'
-                    self.routinedict[routine][x]['Initialrange'] = ''
-                    self.routinedict[routine][x]['RangeDec'] = ''
-                    self.routinedict[routine][x]['Wavelengths'] = ''
-                    self.routinedict[routine][x]['Voltages'] = ''
-
-                if routine == 'Voltage Sweep':
-                    self.routinedict[routine][x] = {}
-                    self.routinedict[routine][x]['ELECflag'] = False
-                    self.routinedict[routine][x]['OPTICflag'] = False
+                    self.routinedict[routine][x]['OPTICflag'] = True
                     self.routinedict[routine][x]['setwflag'] = False
                     self.routinedict[routine][x]['setvflag'] = False
                     self.routinedict[routine][x]['Min'] = ''
                     self.routinedict[routine][x]['Max'] = ''
                     self.routinedict[routine][x]['Res'] = ''
+                    self.routinedict[routine][x]['IV'] = False
+                    self.routinedict[routine][x]['RV'] = False
+                    self.routinedict[routine][x]['PV'] = False
+                    self.routinedict[routine][x]['Channel A'] = False
+                    self.routinedict[routine][x]['Channel B'] = False
+                    self.routinedict[routine][x]['Start'] = '1480'
+                    self.routinedict[routine][x]['Stop'] = '1580'
+                    self.routinedict[routine][x]['Stepsize'] = '1'
+                    self.routinedict[routine][x]['Sweeppower'] = '0'
+                    self.routinedict[routine][x]['Sweepspeed'] = 'auto'
+                    self.routinedict[routine][x]['Laseroutput'] = 'High power'
+                    self.routinedict[routine][x]['Numscans'] = '1'
+                    self.routinedict[routine][x]['Initialrange'] = '-20'
+                    self.routinedict[routine][x]['RangeDec'] = '20'
+                    self.routinedict[routine][x]['Wavelengths'] = ''
+                    self.routinedict[routine][x]['Voltages'] = ''
+
+                if routine == 'Voltage Sweep':
+                    self.routinedict[routine][x] = {}
+                    self.routinedict[routine][x]['ELECflag'] = True
+                    self.routinedict[routine][x]['OPTICflag'] = False
+                    self.routinedict[routine][x]['setwflag'] = False
+                    self.routinedict[routine][x]['setvflag'] = False
+                    self.routinedict[routine][x]['Min'] = '0'
+                    self.routinedict[routine][x]['Max'] = '1'
+                    self.routinedict[routine][x]['Res'] = '100'
                     self.routinedict[routine][x]['IV'] = True
                     self.routinedict[routine][x]['RV'] = True
                     self.routinedict[routine][x]['PV'] = True
@@ -444,8 +444,8 @@ class TopPanel(wx.Panel):
 
                 if routine == 'Current Sweep':
                     self.routinedict[routine][x] = {}
-                    self.routinedict[routine][x]['ELECflag'] = False
-                    self.routinedict[routine][x]['OPTICflag'] = True
+                    self.routinedict[routine][x]['ELECflag'] = True
+                    self.routinedict[routine][x]['OPTICflag'] = False
                     self.routinedict[routine][x]['setwflag'] = False
                     self.routinedict[routine][x]['setvflag'] = False
                     self.routinedict[routine][x]['Min'] = '0'
@@ -471,9 +471,9 @@ class TopPanel(wx.Panel):
 
                 if routine == 'Set Wavelength Voltage Sweep':
                     self.routinedict[routine][x] = {}
-                    self.routinedict[routine][x]['ELECflag'] = True
+                    self.routinedict[routine][x]['ELECflag'] = False
                     self.routinedict[routine][x]['OPTICflag'] = False
-                    self.routinedict[routine][x]['setwflag'] = False
+                    self.routinedict[routine][x]['setwflag'] = True
                     self.routinedict[routine][x]['setvflag'] = False
                     self.routinedict[routine][x]['Min'] = '0'
                     self.routinedict[routine][x]['Max'] = '1'
@@ -504,9 +504,9 @@ class TopPanel(wx.Panel):
                     self.routinedict[routine][x]['Min'] = '0'
                     self.routinedict[routine][x]['Max'] = '5'
                     self.routinedict[routine][x]['Res'] = '0.1'
-                    self.routinedict[routine][x]['IV'] = True
-                    self.routinedict[routine][x]['RV'] = True
-                    self.routinedict[routine][x]['PV'] = True
+                    self.routinedict[routine][x]['IV'] = False
+                    self.routinedict[routine][x]['RV'] = False
+                    self.routinedict[routine][x]['PV'] = False
                     self.routinedict[routine][x]['Channel A'] = True
                     self.routinedict[routine][x]['Channel B'] = False
                     self.routinedict[routine][x]['Start'] = ''
@@ -517,22 +517,22 @@ class TopPanel(wx.Panel):
                     self.routinedict[routine][x]['Laseroutput'] = 'High power'
                     self.routinedict[routine][x]['Numscans'] = '1'
                     self.routinedict[routine][x]['Initialrange'] = '-20'
-                    self.routinedict[routine][x]['RangeDec'] = '-20'
+                    self.routinedict[routine][x]['RangeDec'] = '20'
                     self.routinedict[routine][x]['Wavelengths'] = '1480, 1500, 1550'
                     self.routinedict[routine][x]['Voltages'] = ''
 
                 if routine == 'Set Voltage Wavelength Sweep':
                     self.routinedict[routine][x] = {}
-                    self.routinedict[routine][x]['ELECflag'] = 0
-                    self.routinedict[routine][x]['OPTICflag'] = 0
-                    self.routinedict[routine][x]['setwflag'] = 0
-                    self.routinedict[routine][x]['setvflag'] = 0
+                    self.routinedict[routine][x]['ELECflag'] = False
+                    self.routinedict[routine][x]['OPTICflag'] = False
+                    self.routinedict[routine][x]['setwflag'] = False
+                    self.routinedict[routine][x]['setvflag'] = True
                     self.routinedict[routine][x]['Min'] = ''
                     self.routinedict[routine][x]['Max'] = ''
                     self.routinedict[routine][x]['Res'] = ''
-                    self.routinedict[routine][x]['IV'] = True
-                    self.routinedict[routine][x]['RV'] = True
-                    self.routinedict[routine][x]['PV'] = True
+                    self.routinedict[routine][x]['IV'] = False
+                    self.routinedict[routine][x]['RV'] = False
+                    self.routinedict[routine][x]['PV'] = False
                     self.routinedict[routine][x]['Channel A'] = True
                     self.routinedict[routine][x]['Channel B'] = False
                     self.routinedict[routine][x]['Start'] = '1480'
@@ -543,7 +543,7 @@ class TopPanel(wx.Panel):
                     self.routinedict[routine][x]['Laseroutput'] = 'High power'
                     self.routinedict[routine][x]['Numscans'] = '1'
                     self.routinedict[routine][x]['Initialrange'] = '-20'
-                    self.routinedict[routine][x]['RangeDec'] = '-20'
+                    self.routinedict[routine][x]['RangeDec'] = '20'
                     self.routinedict[routine][x]['Wavelengths'] = ''
                     self.routinedict[routine][x]['Voltages'] = '1, 2, 3'
 
@@ -604,6 +604,11 @@ class TopPanel(wx.Panel):
 
     def subroutinesavebutton(self, event):
 
+        self.inputcheck('subroutinesave')
+        if self.inputcheckflag == False:
+            print('Please check parameter inputs')
+            print("***********************************************")
+            return
 
 
         if self.parameterPanel.name.GetValue() == '':
@@ -1484,6 +1489,227 @@ class TopPanel(wx.Panel):
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox4)  # res
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox5)  # graph type
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox7_2)  # wavelengths
+
+    def inputcheck(self, setting, ):
+
+
+        self.inputcheckflag = True
+
+        if setting == 'subroutinesave':
+
+            if self.routinetype == 'Voltage Sweep':
+
+                if self.parameterPanel.maxsetvoltage.GetValue().isnumeric == False:
+                    self.inputcheckflag = False
+                    print('Please check max input')
+                else:
+                    if float(self.parameterPanel.maxsetvoltage.GetValue()) > 240:
+                        self.inputcheckflag = False
+                        print('Please check max input, cannot be greater than 240V')
+
+                if self.parameterPanel.minsetvoltage.GetValue().isnumeric == False:
+                    self.inputcheckflag = False
+                    print('Please check min input')
+
+                if self.parameterPanel.resovoltage.GetValue().isnumeric == False:
+                    self.inputcheckflag = False
+                    print('Please check resolution input')
+                else:
+                    if self.parameterPanel.resovoltage.GetValue() == '0':
+                        self.inputcheckflag = False
+                        print('Please check resolution value')
+
+                if self.parameterPanel.typesel.GetValue() == False and self.parameterPanel.type2sel.GetValue() == False and self.parameterPanel.type3sel.GetValue() == False:
+                    self.inputcheckflag = False
+                    print('Please select a plot type')
+
+                if self.parameterPanel.Asel.GetValue() == False and self.parameterPanel.Bsel.GetValue() == False:
+                    self.inputcheckflag = False
+                    print('Please select an SMU channel')
+
+
+            if self.routinetype == 'Current Sweep':
+
+                if self.parameterPanel.maxsetvoltage.GetValue().isnumeric == False:
+                    self.inputcheckflag = False
+                    print('Please check max input')
+                else:
+                    if float(self.parameterPanel.maxsetvoltage.GetValue()) > 10000:
+                        self.inputcheckflag = False
+                        print('Please check max input, cannot be greater than 10A')
+
+                if self.parameterPanel.minsetvoltage.GetValue().isnumeric == False:
+                    self.inputcheckflag = False
+                    print('Please check min input')
+
+                if self.parameterPanel.resovoltage.GetValue().isnumeric == False:
+                    self.inputcheckflag = False
+                    print('Please check resolution input')
+                else:
+                    if self.parameterPanel.resovoltage.GetValue() == '0':
+                        self.inputcheckflag = False
+                        print('Please check resolution value')
+
+                if self.parameterPanel.typesel.GetValue() == False and self.parameterPanel.type2sel.GetValue() == False and self.parameterPanel.type3sel.GetValue() == False:
+                    self.inputcheckflag = False
+                    print('Please select a plot type')
+
+                if self.parameterPanel.Asel.GetValue() == False and self.parameterPanel.Bsel.GetValue() == False:
+                    self.inputcheckflag = False
+                    print('Please select an SMU channel')
+
+
+            if self.routinetype == 'Wavelength Sweep':
+
+                if self.parameterPanel.startWvlTc.GetValue().isnumeric() == False:
+                    self.inputcheckflag = False
+                    print('Please check start wavelength')
+
+                if self.parameterPanel.stopWvlTc.GetValue().isnumeric() == False:
+                    self.inputcheckflag = False
+                    print('Please check stop wavelength')
+
+                if self.parameterPanel.stepWvlTc.GetValue().isnumeric() == False:
+                    self.inputcheckflag = False
+                    print('Please check step distance')
+
+                if self.isNumericMinus(self.parameterPanel.sweepPowerTc.GetValue()) == False:
+                    self.inputcheckflag = False
+                    print('Please check sweep power')
+
+                if self.isNumericMinus(self.parameterPanel.sweepinitialrangeTc.GetValue()) == False:
+                    self.inputcheckflag = False
+                    print('Please check initial range')
+
+                if self.parameterPanel.rangedecTc.GetValue().isnumeric() == False:
+                    self.inputcheckflag = False
+                    print('Please check range decrement value')
+
+            if self.routinetype == 'Set Wavelength Voltage Sweep':
+
+                if self.parameterPanel.maxsetvoltage.GetValue().isnumeric == False:
+                    self.inputcheckflag = False
+                    print('Please check max input')
+                else:
+                    if float(self.parameterPanel.maxsetvoltage.GetValue()) > 240:  # wont be able to sweep above 240 mA, fix at some point
+                        self.inputcheckflag = False
+                        print('Please check max input, cannot be greater than 240V')
+
+                if self.parameterPanel.minsetvoltage.GetValue().isnumeric == False:
+                    self.inputcheckflag = False
+                    print('Please check min input')
+
+                if self.parameterPanel.resovoltage.GetValue().isnumeric == False:
+                    self.inputcheckflag = False
+                    print('Please check resolution input')
+                else:
+                    if self.parameterPanel.resovoltage.GetValue() == '0':
+                        self.inputcheckflag = False
+                        print('Please check resolution value')
+
+                if self.parameterPanel.typesel.GetValue() == False and self.parameterPanel.type2sel.GetValue() == False and self.parameterPanel.type3sel.GetValue() == False:
+                    self.inputcheckflag = False
+                    print('Please select a plot type')
+
+                if self.parameterPanel.Asel.GetValue() == False and self.parameterPanel.Bsel.GetValue() == False:
+                    self.inputcheckflag = False
+                    print('Please select an SMU channel')
+
+                # if self.parameterPanel.wavesetTc2.GetValue().isnumeric() == False:
+                #   self.inputcheckflag = False
+                #   print('Please check wavelengths input')
+
+            if self.routinetype == 'Set Wavelength Current Sweep':
+
+                if self.parameterPanel.maxsetvoltage.GetValue().isnumeric == False:
+                    self.inputcheckflag = False
+                    print('Please check max input')
+                else:
+                    if float(self.parameterPanel.maxsetvoltage.GetValue()) > 10000:  # wont be able to sweep above 240 mA, fix at some point
+                        self.inputcheckflag = False
+                        print('Please check max input, cannot be greater than 10A')
+
+                if self.parameterPanel.minsetvoltage.GetValue().isnumeric == False:
+                    self.inputcheckflag = False
+                    print('Please check min input')
+
+                if self.parameterPanel.resovoltage.GetValue().isnumeric == False:
+                    self.inputcheckflag = False
+                    print('Please check resolution input')
+                else:
+                    if self.parameterPanel.resovoltage.GetValue() == '0':
+                        self.inputcheckflag = False
+                        print('Please check resolution value')
+
+                if self.parameterPanel.typesel.GetValue() == False and self.parameterPanel.type2sel.GetValue() == False and self.parameterPanel.type3sel.GetValue() == False:
+                    self.inputcheckflag = False
+                    print('Please select a plot type')
+
+                if self.parameterPanel.Asel.GetValue() == False and self.parameterPanel.Bsel.GetValue() == False:
+                    self.inputcheckflag = False
+                    print('Please select an SMU channel')
+
+                # if self.parameterPanel.wavesetTc2.GetValue().isnumeric() == False:
+                #   self.inputcheckflag = False
+                #   print('Please check wavelengths input')
+
+            if self.routinetype == 'Set Voltage Wavelength Sweep':
+
+                if self.parameterPanel.startWvlTc.GetValue().isnumeric() == False:
+                    self.inputcheckflag = False
+                    print('Please check start wavelength')
+
+                if self.parameterPanel.stopWvlTc.GetValue().isnumeric() == False:
+                    self.inputcheckflag = False
+                    print('Please check stop wavelength')
+
+                if self.parameterPanel.stepWvlTc.GetValue().isnumeric() == False:
+                    self.inputcheckflag = False
+                    print('Please check step distance')
+
+                if self.isNumericMinus(self.parameterPanel.sweepPowerTc.GetValue()) == False:
+                    self.inputcheckflag = False
+                    print('Please check sweep power')
+
+                if self.isNumericMinus(self.parameterPanel.sweepinitialrangeTc.GetValue()) == False:
+                    self.inputcheckflag = False
+                    print('Please check initial range')
+
+                if self.parameterPanel.rangedecTc.GetValue().isnumeric() == False:
+                    self.inputcheckflag = False
+                    print('Please check range decrement value')
+
+                #if self.parameterPanel.voltagesetTc2.GetValue().isnumeric() == False:
+                    #self.inputcheckflag = False
+                    #print('Please check range voltages input')
+
+    def isNumericMinus(self, string):
+        """
+
+        Args:
+            string ():
+
+        Returns: True if the input string contains no letters but it can have a negative sign at the front
+        False if the input string contains any letters other than a negative sign at the beginning
+
+
+        """
+        if string == '':
+            return False
+
+        if string.isnumeric() == False:
+            minuscheck = string[0]
+            if minuscheck == '-':
+                newstring = string[1:]
+                if newstring.isnumeric() == False:
+                    return False
+                else:
+                    return True
+
+            else:
+                return False
+        else:
+            return True
 
 class autoMeasure(object):
 
