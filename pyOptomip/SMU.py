@@ -364,8 +364,6 @@ class SMUClass:
         self.powerresultA = []
         self.powerresultB = []
 
-        print(self.Aflag)
-        print(self.Bflag)
 
 
         if independantvar == 'Voltage':
@@ -652,20 +650,16 @@ class SMUClass:
         if channel == 'A':
             self.inst.write("smua.source.output = smua.OUTPUT_OFF")
             self.Aflag = False
-            print("Channel A OFF")
 
         if channel == 'B':
             self.inst.write("smub.source.output = smub.OUTPUT_OFF")
             self.Bflag = False
-            print("Channel B OFF")
 
         if channel == 'All':
             self.inst.write("smua.source.output = smua.OUTPUT_OFF")
             self.Aflag = False
-            print("Channel A OFF")
             self.inst.write("smub.source.output = smub.OUTPUT_OFF")
             self.Bflag = False
-            print("Channel B OFF")
 
 
     def setoutputflagon(self, channel):
