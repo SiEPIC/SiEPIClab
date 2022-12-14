@@ -126,3 +126,4 @@ class CorvusPanel(wx.Panel):
         if self.axis == 3:
             self.motor.moveRelative(0, 0, self.getMoveValue())
             print("Axis 3 Moved Positive")
+

@@ -237,6 +237,12 @@ class tlsPanel(wx.Panel):
             timer.Start()
 
     def OnButton_Sweep(self, event):
+
+        self.inputcheck('opticalsweep')
+        if self.inputcheckflag == False:
+            return
+
+
         self.haltDetTimer()
         try:
             self.copySweepSettings()
@@ -250,6 +256,56 @@ class tlsPanel(wx.Panel):
             print(e)
         self.laser.setAutorangeAll()
         self.startDetTimer()
+
+    def inputcheck(self, setting):
+
+        self.inputcheckflag = True
+
+        if setting == 'optical sweep':
+
+            if self.startWvlTc.GetValue().isnumeric() == False:
+                self.inputcheckflag = False
+                print('Please check start wavelength')
+
+            if self.stopWvlTc.GetValue().isnumeric() == False:
+                self.inputcheckflag = False
+                print('Please check stop wavelength')
+
+            if self.stepWvlTc.GetValue().isnumeric() == False:
+                self.inputcheckflag = False
+                print('Please check step distance')
+
+            if self.isNumericMinus(self.sweepPowerTc.GetValue()) == False:
+                self.inputcheckflag = False
+                print('Please check sweep power')
+
+    def isNumericMinus(self, string):
+        """
+
+        Args:
+            string ():
+
+        Returns: True if the input string contains no letters but it can have a negative sign at the front
+        False if the input string contains any letters other than a negative sign at the beginning
+
+
+        """
+        if string == '':
+            return False
+
+        if string.isnumeric() == False:
+            minuscheck = string[0]
+            if minuscheck == '-':
+                newstring = string[1:]
+                if newstring.isnumeric() == False:
+                    return False
+                else:
+                    return True
+
+            else:
+                return False
+        else:
+            return True
 
 
 class laserTopPanel(wx.Panel):
@@ -366,6 +422,7 @@ class detectorPanel(wx.Panel):
 
             self.initialRangeTc = wx.TextCtrl(self, size=(40, 20))
             self.initialRangeTc.SetValue('-20')
+            self.initialRangeTc.Bind(wx.EVT_TEXT, self.detectorcheck)
             hbox.Add(self.initialRangeTc, proportion=0, flag=wx.EXPAND | wx.RIGHT, border=15)
 
             self.sweepRangeDecSt = wx.StaticText(self, label='Range dec. (dBm)')
@@ -374,6 +431,7 @@ class detectorPanel(wx.Panel):
 
             self.sweepRangeDecTc = wx.TextCtrl(self, size=(40, 20))
             self.sweepRangeDecTc.SetValue('20')
+            self.sweepRangeDecTc.Bind(wx.EVT_TEXT, self.detectorcheck)
             hbox.Add(self.sweepRangeDecTc, proportion=0, flag=wx.EXPAND)
 
             vbox.Add(hbox, proportion=0, flag=wx.EXPAND, border=0)
@@ -409,7 +467,6 @@ class detectorPanel(wx.Panel):
             self.Bind(wx.EVT_TIMER, self.UpdateAutoMeasurement, self.timer)
             self.timer.Start(1000)
 
-
     def getActiveDetectors(self):
         activeDetectorLst = list()
         for ii, panel in enumerate(self.detectorPanelLst):
@@ -421,6 +478,59 @@ class detectorPanel(wx.Panel):
         for ii, panel in enumerate(self.detectorPanelLst):
             if panel.autoMeasurementEnabled:
                 panel.PowerSt.SetLabel(str(self.laser.readPWM(panel.slot, panel.chan)))
+
+    def detectorcheck(self, event):
+
+        self.inputcheck('detector')
+        if self.inputcheckflag == False:
+            self.sweepRangeDecTc.SetValue('')
+            self.initialRangeTc.SetValue('')
+            return
+
+    def inputcheck(self, setting):
+
+        self.inputcheckflag = True
+
+        if setting == 'detector':
+
+            if self.initialRangeTc.GetValue().isNumericMinusAdj() == False:
+                self.inputcheckflag = False
+                print('Please check initial range value')
+
+            if self.sweepRangeDecTc.GetValue().isNumeric() == False:
+                self.inputcheckflag = False
+                print('Please check range decrement value')
+
+    def isNumericMinusAdj(self, string):
+        """
+
+        Args:
+            string ():
+
+        Returns: True if the input string contains no letters but it can have a negative sign at the front
+        False if the input string contains any letters other than a negative sign at the beginning
+
+
+        """
+        if string == '':
+            return False
+
+        if string == '-':
+            return True
+
+        if string.isnumeric() == False:
+            minuscheck = string[0]
+            if minuscheck == '-':
+                newstring = string[1:]
+                if newstring.isnumeric() == False:
+                    return False
+                else:
+                    return True
+
+            else:
+                return False
+        else:
+            return True
 
     def OnClose(self, event):
         self.timer.Stop()

@@ -430,6 +430,8 @@ class autoMeasurePanel(wx.Panel):
         self.camera = camera
         global xscalevar
         global yscalevar
+        global stopflag
+        stopflag = False
         xscalevar = 0.82
         yscalevar = 0.8
         self.testParametersPath = []
@@ -622,7 +624,8 @@ class autoMeasurePanel(wx.Panel):
         global xscalevar
         global yscalevar
 
-        if self.xadjust.GetValue() == '' or self.yadjust.GetValue() == '':
+        self.inputcheck('automeasure')
+        if self.inputcheckflag == False:
             return
 
         xscalevar = float(self.xadjust.GetValue())
@@ -686,7 +689,6 @@ class autoMeasurePanel(wx.Panel):
     def OnButton_Undo(self, event):
         self.autoMeasure.motorElec.minPositionSet = False
         self.tbxMotorCoord.SetValue('')
-
 
     def importObjects(self, listOfDevicesAsObjects):
         """Given a list of electro-optic device objects, this method populates all drop-down menus and
@@ -1063,7 +1065,6 @@ class autoMeasurePanel(wx.Panel):
                     self.autoMeasure.motorElec.moveRelativeZ(1000)
                     time.sleep(2)
                     if [self.autoMeasure.motorOpt] and [self.autoMeasure.motorElec]:
-                        print("moving relative")
                         optPosition = self.autoMeasure.motorOpt.getPosition()
                         elecPosition = self.autoMeasure.motorElec.getPosition()
                         adjustment = self.autoMeasure.motorOpt.getPositionforRelativeMovement()
@@ -1162,3 +1163,37 @@ class autoMeasurePanel(wx.Panel):
             dial = wx.MessageDialog(None, 'Could not initiate filter. ' + traceback.format_exc(),
                                     'Error', wx.ICON_ERROR)
             dial.ShowModal()
+
+    def inputcheck(self, setting):
+
+
+        self.inputcheckflag = True
+
+        if setting == 'automeasure':
+
+            if self.xadjust.GetValue().isnumeric() == False or self.yadjust.GetValue().isnumeric() == False:
+                self.inputcheckflag = False
+                print('Please check scale values')
+
+        if setting == 'sweep':
+
+            if self.xadjust.GetValue().isnumeric() == False or self.yadjust.GetValue().isnumeric() == False:
+                self.inputcheckflag = False
+                print('Please check scale values')
+
+
+   # class StopAutomeasure(threading.Thread):
+
+        #def __init__(self):
+           # threading.Thread.__init__(self)
+           # self.camID = 1
+          #  global stopflag
+          #  self.run()
+
+       # def run(self):
+           # stopflag = True
+
+            # After the loop release the cap object
+            #self.cap.release()
+            # Destroy all the windows
+            #cv2.destroyAllWindows()

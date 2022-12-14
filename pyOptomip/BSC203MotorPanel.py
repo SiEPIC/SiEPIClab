@@ -62,6 +62,7 @@ class BSC203Panel(wx.Panel):
         hbox.Add(btn1, flag=wx.EXPAND | wx.RIGHT, proportion=0, border=8)
         btn1.Bind(wx.EVT_BUTTON, self.OnButton_MinusButtonHandler)
         self.tc = wx.TextCtrl(self, value=str(self.initialvalue))  # change str(self.axis) to '0'
+        self.tc.Bind(wx.EVT_TEXT, self.movementcheck)
 
         hbox.Add(self.tc, proportion=2, flag=wx.EXPAND)
         st1 = wx.StaticText(self, label='um')
@@ -106,3 +107,28 @@ class BSC203Panel(wx.Panel):
         if self.axis == 3:
             self.parent.bsc.moveRelativeXYZ(0,0, int((-1) * self.getMoveValue()))
             print("Axis 3 Moved Positive")
+
+    def movementcheck(self, event):
+
+        self.inputcheck('thorlabs')
+        if self.inputcheckflag == False:
+            print("***********************************************")
+            self.tc.SetValue('')
+            return
+
+    def inputcheck(self, setting):
+
+        self.inputcheckflag = True
+
+        if setting == 'thorlabs':
+
+            if self.tc.GetValue() == '':
+                return True
+
+            if self.tc.GetValue().isnumeric() == False:
+                self.inputcheckflag = False
+                print('Please check move value')
+            else:
+                if float(self.tc.GetValue()) >= 10000:
+                    self.inputcheckflag = False
+                    print('Movement value cannot be larger than 10000')
