@@ -636,7 +636,6 @@ class SMUClass:
             self.onflagB = 'ON'
             self.Bflag = True
 
-
     def turnchanneloff(self, channel):
         """
         Configures the specified channel to be off
@@ -667,7 +666,6 @@ class SMUClass:
             self.Bflag = False
             print("Channel B OFF")
 
-
     def setoutputflagon(self, channel):
         """
         Sets the channel for use in sweep
@@ -691,7 +689,6 @@ class SMUClass:
             self.Bflag = True
             print("Channel A set for use with sweep")
             print("Channel B set for use with sweep")
-
 
     def setoutputflagoff(self, channel):
         """
