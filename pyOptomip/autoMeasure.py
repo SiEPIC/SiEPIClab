@@ -637,7 +637,7 @@ class autoMeasure(object):
                     # save all associated files
                     self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', ii, wav * 1e9, pow,
                                     'Wavelength sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
-                                   self.devFolder, routine)
+                                   self.devFolder, routine, leg = 1)
 
                     self.drawGraph(wav * 1e9, pow, self.graphPanel, 'Wavelength (nm)', 'Power (dBm)', legend=0)
 
@@ -1437,7 +1437,7 @@ class autoMeasure(object):
                 for point in range(len(yArray)):
                     det1.append(yArray[point][x])
                 writer.writerow(det1)
-        if testType == 'Wavelength Sweep w Bias Voltage':
+        if testType == 'Wavelength sweep w Bias Voltage':
             wavsweep = self.setVoltageWavelengthSweeps
             BiasV = ["#Bias Voltage:" + wavsweep['Voltage'][devNum]]
             writer.writerow(BiasV)

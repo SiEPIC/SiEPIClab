@@ -195,7 +195,7 @@ class hp816x(object):
         numActiveChan = len(self.activeSlotIndex)  # Number of active channels
 
         # Total number of points in sweep
-        numTotalPoints = abs(int(round((self.sweepStopWvl - self.sweepStartWvl) / self.sweepStepWvl + 1)))
+        numTotalPoints = abs(int(round((self.sweepStopWvl - self.sweepStartWvl) / self.sweepStepWvl))) + 1
 
         # The laser reserves 100 pm of spectrum which takes away from the maximum number of datapoints per scan
         # Also, we will reserve another 100 datapoints as an extra buffer.
@@ -204,9 +204,10 @@ class hp816x(object):
         numFullScans = int(numTotalPoints // maxPWMPointsTrunc)
         numRemainingPts = numTotalPoints % maxPWMPointsTrunc
 
-        stitchNumber = abs(numFullScans + 1)
+        stitchNumber = numFullScans + 1
         if stitchNumber <= 0:
             self.sweepStepWvl = self.sweepStepWvl*(-1)
+            stitchNumber = abs(numFullScans) + 1
 
         print('Total number of datapoints: %d' % numTotalPoints)
         print('Stitch number: %d' % stitchNumber)
@@ -256,9 +257,9 @@ class hp816x(object):
 
             c_numPts = c_uint32()
             c_numChanRet = c_uint32()
-            res = self.hp816x_prepareMfLambdaScan(self.hDriver, unitNum, self.sweepPower, outputNum, numScans, numChan, \
+            res = self.hp816x_prepareMfLambdaScan(self.hDriver, unitNum, self.sweepPower, outputNum, numScans, numChan,
                                                   startWvlAdjusted, stopWvlAdjusted, self.sweepStepWvl, byref(c_numPts),
-                                                  byref(c_numChanRet));
+                                                  byref(c_numChanRet))
 
             self.checkError(res)
             numPts = int(c_numPts.value)
@@ -285,13 +286,13 @@ class hp816x(object):
                 # The driver sometimes doesn't return the correct starting wavelength for a sweep
                 # We will search the returned wavelength results to see the index at which
                 # the deired wavelength starts at, and take values starting from there
-                wavelengthStartIdx = self.findClosestValIdx(wavelengthArrTemp, startWvl);
-                wavelengthStopIdx = self.findClosestValIdx(wavelengthArrTemp, stopWvl);
+                wavelengthStartIdx = self.findClosestValIdx(wavelengthArrTemp, startWvl)
+                wavelengthStopIdx = self.findClosestValIdx(wavelengthArrTemp, stopWvl)
                 wavelengthArrTemp = wavelengthArrTemp[wavelengthStartIdx:wavelengthStopIdx + 1]
                 powerArrTemp = powerArrTemp[wavelengthStartIdx:wavelengthStopIdx + 1]
-                powerArrPWM[pointsAccum:pointsAccum + points, zeroIdx] = powerArrTemp;
-            wavelengthArrPWM[pointsAccum:pointsAccum + points] = wavelengthArrTemp;
-            pointsAccum += points;
+                powerArrPWM[pointsAccum:pointsAccum + points, zeroIdx] = powerArrTemp
+            wavelengthArrPWM[pointsAccum:pointsAccum + points] = wavelengthArrTemp
+            pointsAccum += points
 
         return (wavelengthArrPWM, powerArrPWM)
 

@@ -52,7 +52,7 @@ is the preferred way of running the program.
 	
 ---
 	
-[PyOptomip User's Guide](https://github.com/SiEPIC/pyOptomip/blob/d737b29963befef6f050b565618b35107469369b/Documentation/PyOptomip%20User's%20Guide.pdf)
+[PyOptomip User's Guide](https://github.com/SiEPIC/pyOptomip/blob/72af126364ec208976772012d3e816e65cc302cc/Documentation/PyOptomip%20User's%20Guide.pdf)
 
 [TroubleShooting Guide](https://github.com/SiEPIC/pyOptomip/blob/d737b29963befef6f050b565618b35107469369b/Documentation/Troubleshooting%20Guide.pdf)
 
