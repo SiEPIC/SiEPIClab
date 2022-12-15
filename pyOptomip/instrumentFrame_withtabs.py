@@ -28,7 +28,7 @@ from fineAlignPanel import fineAlignPanel
 import traceback
 from logWriter import logWriter, logWriterError
 from autoMeasurePanel import autoMeasurePanel
-from autoMeasure import autoMeasure
+from autoMeasureThread import autoMeasure
 import myMatplotlibPanel
 from TestParameters_revised import TopPanel
 import cv2
