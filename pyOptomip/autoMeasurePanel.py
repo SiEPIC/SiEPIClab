@@ -370,11 +370,14 @@ class coordinateMapPanel(wx.Panel):
                 coordsLst.append((float(xval), float(yval)))
         return coordsLst
 
-    def PopulateDropDowns(self):
+    def PopulateDropDowns(self, testParametersImported):
         """Populates drop down menu for device selection within the coordinate map panel"""
+        if testParametersImported is True:
+            self.deviceList = []
         for device in self.autoMeasure.devices:
             self.deviceList.append(device.getDeviceID())
         for GDSDevice in self.GDSDevList:
+            GDSDevice.Clear()
             GDSDevice.AppendItems(self.deviceList)
 
     def SortDropDowns1(self, event):
@@ -711,8 +714,8 @@ class autoMeasurePanel(wx.Panel):
                     if not dev.hasRoutines():
                         self.checkList.SetItemTextColour(ii, wx.Colour(211, 211, 211))
         self.checkList.EnableCheckBoxes()
-        self.coordMapPanelOpt.PopulateDropDowns()
-        self.coordMapPanelElec.PopulateDropDowns()
+        self.coordMapPanelOpt.PopulateDropDowns(self.parametersImported)
+        self.coordMapPanelElec.PopulateDropDowns(self.parametersImported)
 
     def createFilterFrame(self):
         """Opens up a frame to facilitate filtering of devices within the checklist."""
@@ -908,7 +911,8 @@ class autoMeasurePanel(wx.Panel):
     def readYAML(self, originalFile):
         """Reads a yaml testing parameters file and stores the information as a list of electro-optic device
          objects to be used for automated measurements as well as a dictionary of routines."""
-
+        if self.parametersImported:
+            self.autoMeasure.devices = []
         deviceList = []
         with open(originalFile, 'r') as file:
             loadedYAML = yaml.safe_load(file)
