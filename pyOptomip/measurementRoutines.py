@@ -17,7 +17,7 @@ class measurementRoutines:
                 self.SMU.turnchannelon('A')
             if B:
                 self.SMU.turnchannelon('B')
-            self.SMU.ivsweep(float(voltmin), float(voltmax), float(voltres), 'Voltage')
+            self.SMU.ivsweep2(float(voltmin), float(voltmax), float(voltres), 'Voltage')
             self.SMU.turnchanneloff('A')
             self.SMU.turnchanneloff('B')
             return self.SMU.voltageresultA, self.SMU.currentresultA, self.SMU.resistanceresultA, self.SMU.powerresultA, self.SMU.voltageresultB, self.SMU.currentresultB, self.SMU.resistanceresultB,self.SMU.powerresultB
@@ -31,7 +31,7 @@ class measurementRoutines:
                 self.SMU.turnchannelon('A')
             if B:
                 self.SMU.turnchannelon('B')
-            self.SMU.ivsweep(float(imin), float(imax), float(ires), 'Current')
+            self.SMU.ivsweep2(float(imin), float(imax), float(ires), 'Current')
             self.SMU.turnchanneloff('A')
             self.SMU.turnchanneloff('B')
 

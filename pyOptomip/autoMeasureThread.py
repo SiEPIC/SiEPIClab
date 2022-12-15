@@ -32,9 +32,10 @@ import time
 import matplotlib.pyplot as plt
 from ElectroOpticDevice import ElectroOpticDevice
 from measurementRoutines import measurementRoutines
+from threading import Thread
 
 
-class autoMeasure(object):
+class autoMeasure(Thread):
 
     def __init__(self, laser, motorOpt, motorElec, smu, fineAlign, graph):
         """
@@ -47,6 +48,7 @@ class autoMeasure(object):
             smu: smu object controls SMU
             fineAlign: fineAlign object
         """
+        Thread.__init__(self)
         self.laser = laser
         self.motorOpt = motorOpt
         self.motorElec = motorElec
@@ -76,6 +78,28 @@ class autoMeasure(object):
                                            'Sweepspeed': [], 'Laseroutput': [], 'Numscans': [],
                                            'InitialRange': [], 'RangeDec': [], 'ChannelA': [], 'ChannelB': [],
                                            'Voltage': []}
+        self.panelDevices = []
+        self.panelChecklist = []
+        self.panelDetectors = []
+        self.panelCamera = ''
+        self.panelAbortfunction = ''
+        self.panelUpdateFunction = ''
+        self.panelUpdateGraph = ''
+        self.trueflag = True
+        self.beginmeasureflag = False
+
+    def run(self):
+
+        while self.trueflag == True:
+
+
+            if self.beginmeasureflag == True:
+                self.beginMeasure(devices=self.panelDevices, checkList=self.panelCheckList,
+                                      activeDetectors=self.panelDetectors, camera=self.panelCamera, abortFunction=self.panelAbortfunction,
+                                      updateFunction=self.panelUpdateFunction, updateGraph=self.panelUpdateGraph)
+
+
+
 
 
     def readCoordFile(self, fileName):
@@ -381,7 +405,6 @@ class autoMeasure(object):
         self.setVoltageWavelengthSweeps['RoutineName'].append(name)
         self.hasRoutines = True
 
-
     def beginMeasure(self, devices, checkList, activeDetectors, camera, abortFunction=None, updateFunction=None,
                      updateGraph=True):
         """ Runs an automated measurement. For each device, wedge probe is moved out of the way, chip stage is moved
@@ -637,7 +660,7 @@ class autoMeasure(object):
                     # save all associated files
                     self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', ii, wav * 1e9, pow,
                                     'Wavelength sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
-                                   self.devFolder, routine, leg = 1)
+                                   self.devFolder, routine)
 
                     self.drawGraph(wav * 1e9, pow, self.graphPanel, 'Wavelength (nm)', 'Power (dBm)', legend=0)
 
@@ -701,7 +724,7 @@ class autoMeasure(object):
                             # save all associated files
                             self.saveFiles(device, 'Voltage (V)', 'Current (mA)', ii,vol3, cur3, 'Voltage Sweep w Set Wavelength',
                                                motorCoordOpt, timeStart, timeStop, chipTimeStart, self.devFolder,
-                                               routine + 'combined' + '_VI_A', leg = 3)
+                                               routine + 'combined' + '_VI_A', leg = self.wavstringlist)
                             self.drawGraph(vol3, cur3, self.graphPanel, 'Voltage (V)', 'Current (mA)', legend=3)
 
                         if B:
@@ -734,7 +757,7 @@ class autoMeasure(object):
                             # save all associated files
                             self.saveFiles(device, 'Voltage (V)', 'Current (mA)', ii, vol3, cur3,
                                                     'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                                    chipTimeStart, self.devFolder, routine + 'combined' + '_VI_B', leg = 3)
+                                                    chipTimeStart, self.devFolder, routine + 'combined' + '_VI_B', leg = self.wavstringlist)
                             self.drawGraph(vol3, cur3, self.graphPanel, 'Voltage (V)', 'Current (mA)',
                                                     legend=3)
 
@@ -775,7 +798,7 @@ class autoMeasure(object):
                             # save all associated files
                             self.saveFiles(device, 'Voltage (V)', 'Resistance (Ohms)', ii, vol3, res3,
                                                    'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                                   chipTimeStart, self.devFolder, routine + 'combined' + '_RV', leg = 3)
+                                                   chipTimeStart, self.devFolder, routine + 'combined' + '_RV', leg = self.wavstringlist)
                             self.drawGraph(vol3, res3, self.graphPanel, 'Voltage (V)', 'Resistance (Ohms)',
                                                    legend=3)
 
@@ -809,7 +832,7 @@ class autoMeasure(object):
                             # save all associated files
                             self.saveFiles(device, 'Voltage (V)', 'Resistance (Ohms)', ii, vol3, res3,
                                                    'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                                   chipTimeStart, self.devFolder, routine + 'combined' + '_RV', leg = 3)
+                                                   chipTimeStart, self.devFolder, routine + 'combined' + '_RV', leg = self.wavstringlist)
                             self.drawGraph(vol3, res3, self.graphPanel, 'Voltage (V)', 'Resistance (Ohms)',
                                                    legend=3)
                     if PV:
@@ -843,7 +866,7 @@ class autoMeasure(object):
                             # save all associated files
                             self.saveFiles(device, 'Voltage (V)', 'Power (W)', ii, vol3, pow3,
                                                 'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                                chipTimeStart, self.devFolder, routine + 'combined' + '_PV', leg = 3)
+                                                chipTimeStart, self.devFolder, routine + 'combined' + '_PV', leg = self.wavstringlist)
                             self.drawGraph(vol3, pow3, self.graphPanel, 'Voltage (V)', 'Power (W)',
                                                    legend=3)
 
@@ -876,7 +899,7 @@ class autoMeasure(object):
                             # save all associated files
                             self.saveFiles(device, 'Voltage (V)', 'Power (W)', ii, vol3, pow3,
                                                    'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                                   chipTimeStart, self.devFolder, routine + 'combined' + '_PV', leg = 3)
+                                                   chipTimeStart, self.devFolder, routine + 'combined' + '_PV', leg = self.wavstringlist)
                             self.drawGraph(vol3, pow3, self.graphPanel, 'Voltage (V)', 'Power (W)',
                                                    legend=3)
 
@@ -940,7 +963,7 @@ class autoMeasure(object):
                             # save all associated files
                             self.saveFiles(device,  'Current (mA)','Voltage (V)', ii,  cur3, vol3,
                                             'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                            chipTimeStart, self.devFolder, routine+'combined' + '_IV_A', leg = 3)
+                                            chipTimeStart, self.devFolder, routine+'combined' + '_IV_A', leg = self.wavstringlist)
                             self.drawGraph(cur3,vol3, self.graphPanel,  'Current (mA)', 'Voltage (V)',legend = 3)
 
                         if B:
@@ -973,7 +996,7 @@ class autoMeasure(object):
                             # save all associated files
                             self.saveFiles(device,  'Current (mA)','Voltage (V)', ii,  cur3,vol3,
                                         'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                        chipTimeStart, self.devFolder, routine + 'combined' + '_IV_B', leg = 3)
+                                        chipTimeStart, self.devFolder, routine + 'combined' + '_IV_B', leg = self.wavstringlist)
                             self.drawGraph(cur3, vol3,self.graphPanel,  'Current (mA)','Voltage (V)',
                                         legend=3)
 
@@ -1008,7 +1031,7 @@ class autoMeasure(object):
                             # save all associated files
                             self.saveFiles(device,  'Current (mA)','Resistance (Ohms)', ii,  cur3,res3,
                                             'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                            chipTimeStart, self.devFolder, routine+ 'combined' + '_IR_A', leg = 3)
+                                            chipTimeStart, self.devFolder, routine+ 'combined' + '_IR_A', leg = self.wavstringlist)
                             self.drawGraph(cur3,res3, self.graphPanel,  'Current (mA)', 'Resistance (Ohms)',legend = 3)
 
                         if B:
@@ -1041,7 +1064,7 @@ class autoMeasure(object):
                             # save all associated files
                             self.saveFiles(device,  'Current (mA)','Resistance (Ohms)', ii,  cur3, res3,
                                             'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                            chipTimeStart, self.devFolder, routine + 'combined' + '_IR_B', leg = 3)
+                                            chipTimeStart, self.devFolder, routine + 'combined' + '_IR_B', leg = self.wavstringlist)
                             self.drawGraph( cur3, res3,self.graphPanel,  'Current (mA)','Resistance (Ohms)',
                                             legend=3)
 
@@ -1075,7 +1098,7 @@ class autoMeasure(object):
                             # save all associated files
                             self.saveFiles(device,  'Current (mA)','Power (W)', ii,  cur3, pow3,
                                              'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                             chipTimeStart, self.devFolder, routine+ 'combined' + '_IP_A', leg = 3)
+                                             chipTimeStart, self.devFolder, routine+ 'combined' + '_IP_A', leg = self.wavstringlist)
                             self.drawGraph(cur3,pow3, self.graphPanel,  'Current (mA)', 'Power (W)',legend = 3)
 
                         if B:
@@ -1107,7 +1130,7 @@ class autoMeasure(object):
                             # save all associated files
                             self.saveFiles(device,  'Current (mA)','Power (W)', ii,  cur3, pow3,
                                         'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                        chipTimeStart, self.devFolder, routine + 'combined' + '_IP_B', leg = 3)
+                                        chipTimeStart, self.devFolder, routine + 'combined' + '_IP_B', leg = self.wavstringlist)
                             self.drawGraph( cur3, pow3,self.graphPanel,  'Current (mA)','Power (W)',
                                         legend=3)
 
@@ -1157,7 +1180,7 @@ class autoMeasure(object):
                                         'Wavelength sweep w Bias Voltage', motorCoordOpt, timeStart, timeStop,
                                         chipTimeStart, self.devFolder, routine+str(voltage))
 
-                        self.drawGraph(wav[l] * 1e9, pow[l], self.graphPanel, 'Wavelength (nm)', 'Power (dBm)')
+                        self.drawGraph(wav[l] * 1e9, pow[i], self.graphPanel, 'Wavelength (nm)', 'Power (dBm)')
 
 
                     for det in range(len(self.activeDetectors)):
@@ -1185,7 +1208,7 @@ class autoMeasure(object):
                         # save all associated files
                         self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', ii, wav3, pow3,
                                         'Wavelength sweep w Bias Voltage', motorCoordOpt, timeStart, timeStop,
-                                        chipTimeStart, self.devFolder, routine + '_combinedVoltages' + '_Detector' + str(det), 2)
+                                        chipTimeStart, self.devFolder, routine + '_combinedVoltages' + '_Detector' + str(det), leg = self.voltstringlist)
                         self.drawGraph(wav3, pow3, self.graphPanel, 'Wavelength (nm)', 'Power (dBm)', legend=2)
             camera.stoprecord()
 
@@ -1335,7 +1358,7 @@ class autoMeasure(object):
         graphPanel.canvas.draw()
 
 
-    def save_pdf(self, deviceObject, x, y, xarr, yarr, saveFolder, routineName, legend):
+    def save_pdf(self, deviceObject, x, y, xarr, yarr, saveFolder, routineName, leg):
         # Create pdf file
         path = saveFolder
         d1 = deviceObject.getDeviceID().replace(":", "")
@@ -1344,12 +1367,7 @@ class autoMeasure(object):
         plt.plot(xarr, yarr)
         plt.xlabel(x)
         plt.ylabel(y)
-        if legend == 1:
-            plt.legend(self.detstringlist)
-        if legend == 2:
-            plt.legend(self.voltstringlist)
-        if legend == 3:
-            plt.legend(self.wavstringlist)
+        plt.legend(leg)
         plt.savefig(pdfFileName)
         plt.close()
 
@@ -1437,7 +1455,7 @@ class autoMeasure(object):
                 for point in range(len(yArray)):
                     det1.append(yArray[point][x])
                 writer.writerow(det1)
-        if testType == 'Wavelength sweep w Bias Voltage':
+        if testType == 'Wavelength Sweep w Bias Voltage':
             wavsweep = self.setVoltageWavelengthSweeps
             BiasV = ["#Bias Voltage:" + wavsweep['Voltage'][devNum]]
             writer.writerow(BiasV)
@@ -1541,8 +1559,8 @@ class autoMeasure(object):
             writer.writerow(det1)
         f.close()
 
-    def saveFiles(self, deviceObject, x, y, devNum, xArray, yArray, testType, motorCoord, start, stop, chipStart, saveFolder, routineName, leg = 0):
-        self.save_pdf(deviceObject, x, y, xArray, yArray, saveFolder, routineName, legend = leg)
+    def saveFiles(self, deviceObject, x, y, devNum, xArray, yArray, testType, motorCoord, start, stop, chipStart, saveFolder, routineName, leg= []):
+        self.save_pdf(deviceObject, x, y, xArray, yArray, saveFolder, routineName, leg= [])
         self.save_mat(deviceObject, devNum, motorCoord, xArray, yArray, x, y, saveFolder, routineName)
         self.save_csv(deviceObject, testType, xArray, yArray, start, stop, chipStart, motorCoord, devNum, saveFolder, routineName, x, y)
 

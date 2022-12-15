@@ -32,9 +32,10 @@ import time
 import matplotlib.pyplot as plt
 from ElectroOpticDevice import ElectroOpticDevice
 from measurementRoutines import measurementRoutines
+from threading import Thread
 
 
-class autoMeasure(object):
+class autoMeasure(Thread):
 
     def __init__(self, laser, motorOpt, motorElec, smu, fineAlign, graph):
         """
@@ -47,6 +48,7 @@ class autoMeasure(object):
             smu: smu object controls SMU
             fineAlign: fineAlign object
         """
+        Thread.__init__(self)
         self.laser = laser
         self.motorOpt = motorOpt
         self.motorElec = motorElec
@@ -76,6 +78,26 @@ class autoMeasure(object):
                                            'Sweepspeed': [], 'Laseroutput': [], 'Numscans': [],
                                            'InitialRange': [], 'RangeDec': [], 'ChannelA': [], 'ChannelB': [],
                                            'Voltage': []}
+
+        self.panelDevices = []
+        self.panelChecklist = []
+        self.panelDetectors = []
+        self.panelCamera = ''
+        self.panelAbortfunction = ''
+        self.panelUpdateFunction = ''
+        self.panelUpdateGraph = ''
+        self.trueflag = True
+        self.beginmeasureflag = False
+
+    def run(self):
+
+        while self.trueflag == True:
+
+            if self.beginmeasureflag == True:
+                self.beginMeasure(devices=self.panelDevices, checkList=self.panelCheckList,
+                                  activeDetectors=self.panelDetectors, camera=self.panelCamera,
+                                  abortFunction=self.panelAbortfunction,
+                                  updateFunction=self.panelUpdateFunction, updateGraph=self.panelUpdateGraph)
 
 
     def readCoordFile(self, fileName):

@@ -78,7 +78,6 @@ class BSC203Panel(wx.Panel):
             self.tc.SetValue('0')
             print("Value Error")
             return 0.0
-        print(val)
         return val
 
     def OnButton_MinusButtonHandler(self, event):

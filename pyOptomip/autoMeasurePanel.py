@@ -431,6 +431,7 @@ class autoMeasurePanel(wx.Panel):
         # List of all the names of devices on the chip
         self.device_list = []
         self.camera = camera
+        self.calibrationflag = False
         global xscalevar
         global yscalevar
         global stopflag
@@ -481,6 +482,8 @@ class autoMeasurePanel(wx.Panel):
         self.uncheckAllBtn.Bind(wx.EVT_BUTTON, self.OnButton_UncheckAll)
         self.filterBtn = wx.Button(self, label='Filter', size=(100, 20))
         self.filterBtn.Bind(wx.EVT_BUTTON, self.OnButton_Filter)
+        self.calibrateBtn = wx.Button(self, label='Calibration Mode', size=(100, 20))
+        self.calibrateBtn.Bind(wx.EVT_BUTTON, self.OnButton_Calibrate)
 
         # Add devices checklist
         self.checkList = wx.ListCtrl(self, size = (500, 100),  style=wx.LC_REPORT)
@@ -516,7 +519,7 @@ class autoMeasurePanel(wx.Panel):
 
         selectBox = wx.BoxSizer(wx.HORIZONTAL)
         selectBox.AddMany([(self.importBtnCSV, 0, wx.EXPAND), (self.checkAllBtn, 0, wx.EXPAND), (self.uncheckAllBtn, 0, wx.EXPAND),
-                           (self.filterBtn, 0, wx.EXPAND)])
+                           (self.filterBtn, 0, wx.EXPAND), (self.calibrateBtn, 0, wx.EXPAND)])
 
         alignmentBox = wx.BoxSizer(wx.HORIZONTAL)
         alignmentBox.AddMany([(self.saveBtn, 0, wx.EXPAND), (self.importBtn, 0, wx.EXPAND)])
@@ -728,6 +731,14 @@ class autoMeasurePanel(wx.Panel):
         """Creates filter frame when filter button is pressed"""
         self.createFilterFrame()
         self.Refresh()
+
+    def OnButton_Calibrate(self, event):
+        if self.calibrationflag == True:
+            self.calibrationflag = False
+            print('Exiting Calibration Mode')
+        elif self.calibrationflag == False:
+            self.calibrationflag = True
+            print("Entered Calibration Mode")
 
     def OnButton_SearchChecklist(self, event):
         """Moves devices with searched term present in ID to the top of the checklist. Have to double click
@@ -993,7 +1004,7 @@ class autoMeasurePanel(wx.Panel):
         global xscalevar
         global yscalevar
         print('Moving to device')
-        if self.autoMeasure.laser and self.autoMeasure.motorElec:
+        if self.autoMeasure.laser and self.autoMeasure.motorElec and self.calibrationflag == False:
             # Calculate transform matrices
             self.autoMeasure.findCoordinateTransformOpt(self.coordMapPanelOpt.getMotorCoords(),
                                                         self.coordMapPanelOpt.getGdsCoordsOpt())
@@ -1057,7 +1068,7 @@ class autoMeasurePanel(wx.Panel):
                     self.autoMeasure.fineAlign.doFineAlign()
 
         # if probe is connected but laser isn't
-        elif not self.autoMeasure.laser and self.autoMeasure.motorElec:
+        elif (not self.autoMeasure.laser and self.autoMeasure.motorElec) or self.calibrationflag:
             self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
                                                          self.coordMapPanelElec.getGdsCoordsElec())
             selectedDevice = self.devSelectCb.GetString(self.devSelectCb.GetSelection())
@@ -1091,6 +1102,9 @@ class autoMeasurePanel(wx.Panel):
         dirDlg.ShowModal()
         self.outputFolderTb.SetValue(dirDlg.GetPath())
         dirDlg.Destroy()
+
+    def OnButton_Start(self, ):
+        child.Thread(target=OnButton_Start2, )
 
     def OnButton_Start(self, event):
         """ Starts an automatic measurement routine. """
@@ -1138,18 +1152,33 @@ class autoMeasurePanel(wx.Panel):
                 print("Please Select Devices to Measure.")
 
             else:
+                #for threading version
 
-                # Start measurement using the autoMeasure device
-                self.autoMeasure.beginMeasure(devices=checkedDevicesText, checkList=self.checkList,
+                self.autoMeasure.panelDevices = checkedDevicesText
+                self.autoMeasure.self.panelChecklist = self.checkList
+                self.autoMeasure.self.panelDetectors = activeDetectors
+                self.autoMeasure. self.panelCamera = self.camera
+                self.autoMeasure.self.panelAbortfunction = None
+                self.autoMeasure.self.panelUpdateFunction = None
+                self.autoMeasure.self.panelUpdateGraph = True
+                self.autoMeasure.start()
+
+                pid = os.fork()
+
+                if pid == 0:
+                    # Start measurement using the autoMeasure device
+                    self.autoMeasure.beginMeasure(devices=checkedDevicesText, checkList=self.checkList,
                                             activeDetectors=activeDetectors, camera=self.camera, abortFunction=None,
                                             updateFunction=None, updateGraph=True)
 
-                # Create a measurement progress dialog.
-                #autoMeasureDlg = autoMeasureProgressDialog(self, title='Automatic measurement')
-                #autoMeasureDlg.runMeasurement(checkedDevicesText, self.autoMeasure)
 
-                # Enable detector auto measurement
-                self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.startDetTimer()
+                    # Create a measurement progress dialog.
+                    #autoMeasureDlg = autoMeasureProgressDialog(self, title='Automatic measurement')
+                    #autoMeasureDlg.runMeasurement(checkedDevicesText, self.autoMeasure)
+
+                    # Enable detector auto measurement
+                    self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.startDetTimer()
+                    os._exit(0)
 
     def OnButton_createinfoframe(self, event):
         """Creates filter frame when filter button is pressed"""

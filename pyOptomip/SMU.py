@@ -521,9 +521,7 @@ class SMUClass:
         if independantvar == 'Voltage':
             if self.Aflag == True:
                 self.voltageresultA, self.currentresultA = self.k.voltage_sweep_single_smu(self.k.smua, sweeplist, t_int=0.1, delay=-1, pulsed=False)
-                print(self.currentresultA)
                 self.resistanceresultA = [i / j for i, j in zip(self.voltageresultA, self.currentresultA)]
-                print(self.resistanceresultA)
                 #self.resistanceresultA = self.voltageresultA / self.currentresultA
                 self.powerresultA = [i * j for i, j in zip(self.voltageresultA, self.currentresultA)]
                 setvoltstring = "smua.source.levelv = " + str(0)
@@ -634,7 +632,6 @@ class SMUClass:
             self.onflagB = 'ON'
             self.Bflag = True
 
-
     def turnchanneloff(self, channel):
         """
         Configures the specified channel to be off
@@ -661,7 +658,6 @@ class SMUClass:
             self.inst.write("smub.source.output = smub.OUTPUT_OFF")
             self.Bflag = False
 
-
     def setoutputflagon(self, channel):
         """
         Sets the channel for use in sweep
@@ -685,7 +681,6 @@ class SMUClass:
             self.Bflag = True
             print("Channel A set for use with sweep")
             print("Channel B set for use with sweep")
-
 
     def setoutputflagoff(self, channel):
         """
