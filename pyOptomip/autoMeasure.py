@@ -47,6 +47,7 @@ class autoMeasure(object):
             smu: smu object controls SMU
             fineAlign: fineAlign object
         """
+        global beginMeasure
         self.laser = laser
         self.motorOpt = motorOpt
         self.motorElec = motorElec
@@ -1196,10 +1197,15 @@ class autoMeasure(object):
                 updateFunction(i)
 
             print("Automeasure Completed, Results Saved to " + str(self.saveFolder))
+            # Enable detector auto measurement
+            self.laser.ctrlPanel.laserPanel.laserPanel.startDetTimer()
 
     def setScale(self, x, y):
         self.xscalevar = x
         self.yscalevar = y
+
+    def test(self):
+        print("hi there")
 
     def moveToDevice(self, deviceName):
         """
