@@ -155,7 +155,7 @@ class hp816x_N77Det(hp816x_instr.hp816x):
         numActiveChan = len(self.activeSlotIndex)  # Number of active channels
 
         # Total number of points in sweep
-        numTotalPoints = abs(int(round((self.sweepStopWvl - self.sweepStartWvl) / self.sweepStepWvl + 1)))
+        numTotalPoints = abs(int(round((self.sweepStopWvl - self.sweepStartWvl) / self.sweepStepWvl ))) +1
 
         # The laser reserves 100 pm of spectrum which takes away from the maximum number of datapoints per scan
         # Also, we will reserve another 100 datapoints as an extra buffer.
@@ -164,64 +164,123 @@ class hp816x_N77Det(hp816x_instr.hp816x):
         numFullScans = int(numTotalPoints // maxPWMPointsTrunc)
         numRemainingPts = numTotalPoints % maxPWMPointsTrunc
 
-        stitchNumber = abs(numFullScans + 1)
-        if stitchNumber <= 0:
-            self.sweepStepWvl = self.sweepStepWvl*(-1)
+        stitchNumber = numFullScans + 1
+        if self.sweepStopWvl - self.sweepStartWvl <= 0:
+            self.sweepStepWvl = self.sweepStepWvl
+            stitchNumber = abs(numFullScans) + 1
+            print('Total number of datapoints: %d' % numTotalPoints)
+            print('Stitch number: %d' % stitchNumber)
 
-        print('Total number of datapoints: %d' % numTotalPoints)
-        print('Stitch number: %d' % stitchNumber)
+            # Create a list of the number of points per stitch
+            numPointsLst = list()
 
-        # Create a list of the number of points per stitch
-        numPointsLst = list()
+            for x in repeat(maxPWMPointsTrunc, numFullScans):
+                numPointsLst.append(int(x))
 
-        for x in repeat(maxPWMPointsTrunc, numFullScans):
-            numPointsLst.append(int(x))
+            numPointsLst.append(int(round(numRemainingPts)))
 
-        numPointsLst.append(int(round(numRemainingPts)))
+            startWvlLst = list()
+            stopWvlLst = list()
 
-        startWvlLst = list()
-        stopWvlLst = list()
+            # Create a list of the start and stop wavelengths per stitch
+            pointsAccum = 0
+            for points in numPointsLst:
+                startWvlLst.append(self.sweepStartWvl + pointsAccum * self.sweepStepWvl)
+                stopWvlLst.append(self.sweepStartWvl - (pointsAccum + points - 1) * self.sweepStepWvl)
+                pointsAccum += points
 
-        # Create a list of the start and stop wavelengths per stitch
-        pointsAccum = 0
-        for points in numPointsLst:
-            startWvlLst.append(self.sweepStartWvl + pointsAccum * self.sweepStepWvl)
-            stopWvlLst.append(self.sweepStartWvl + (pointsAccum + points - 1) * self.sweepStepWvl)
-            pointsAccum += points
+            # Set sweep speed
+            self.setSweepSpeed(self.sweepSpeed)
 
-        # Set sweep speed
-        self.setSweepSpeed(self.sweepSpeed)
+            wavelengthArrPWM = np.zeros(int(numTotalPoints))
+            powerArrPWM = np.zeros((int(numTotalPoints), numActiveChan))
 
-        wavelengthArrPWM = np.zeros(int(numTotalPoints))
-        powerArrPWM = np.zeros((int(numTotalPoints), numActiveChan))
+            pointsAccum = 0
+            # Loop over all the stitches
+            for points, startWvl, stopWvl in zip(numPointsLst, startWvlLst, stopWvlLst):
+                print('Sweeping from %g nm to %g nm' % (startWvl * 1e9, stopWvl * 1e9))
+                # If the start or end wavelength is not a multiple of 1 pm, the laser will sometimes choose the wrong start
+                # or end wavelength for doing the sweep. To fix this, we will set the sweep start wavelength to the
+                # nearest multiple of 1 pm below the start wavelength and the nearest multiple above the end wavelength.
+                # After the sweep is completed, the desired wavelength range is extracted from the results.
+                startWvlAdjusted = startWvl
+                stopWvlAdjusted = stopWvl
+                if startWvl * 1e12 - int(startWvl * 1e12) > 0:
+                    startWvlAdjusted = math.floor(startWvl * 1e12) / 1e12
+                if stopWvl * 1e12 - int(stopWvl * 1e12) > 0:
+                    stopWvlAdjusted = math.ceil(stopWvl * 1e12) / 1e12
 
-        pointsAccum = 0
-        # Loop over all the stitches
-        for points, startWvl, stopWvl in zip(numPointsLst, startWvlLst, stopWvlLst):
-            print('Sweeping from %g nm to %g nm' % (startWvl * 1e9, stopWvl * 1e9))
-            # If the start or end wavelength is not a multiple of 1 pm, the laser will sometimes choose the wrong start
-            # or end wavelength for doing the sweep. To fix this, we will set the sweep start wavelength to the 
-            # nearest multiple of 1 pm below the start wavelength and the nearest multiple above the end wavelength.
-            # After the sweep is completed, the desired wavelength range is extracted from the results.
-            startWvlAdjusted = startWvl
-            stopWvlAdjusted = stopWvl
-            if startWvl * 1e12 - int(startWvl * 1e12) > 0:
-                startWvlAdjusted = math.floor(startWvl * 1e12) / 1e12
-            if stopWvl * 1e12 - int(stopWvl * 1e12) > 0:
-                stopWvlAdjusted = math.ceil(stopWvl * 1e12) / 1e12
+                # Format the start and dtop wvl to 13 digits of accuracy (otherwise the driver will sweep the wrong range)
+                startWvlAdjusted = float('%.13f' % (startWvlAdjusted))
+                stopWvlAdjusted = float('%.13f' % (stopWvlAdjusted))
 
-            # Format the start and dtop wvl to 13 digits of accuracy (otherwise the driver will sweep the wrong range)
-            startWvlAdjusted = float('%.13f' % (startWvlAdjusted))
-            stopWvlAdjusted = float('%.13f' % (stopWvlAdjusted))
+                c_numPts = c_uint32()
+                c_numChanRet = c_uint32()
+                res = self.hp816x_prepareMfLambdaScan(self.hDriver, unitNum, self.sweepPower, outputNum, numScans,
+                                                      numChan,
+                                                      startWvlAdjusted, stopWvlAdjusted, self.sweepStepWvl,
+                                                      byref(c_numPts),
+                                                      byref(c_numChanRet))
 
-            c_numPts = c_uint32()
-            c_numChanRet = c_uint32()
-            res = self.hp816x_prepareMfLambdaScan(self.hDriver, unitNum, self.sweepPower, outputNum, numScans, numChan,
+                self.checkError(res)
+                numPts = int(c_numPts.value)
+
+        else:
+
+            print('Total number of datapoints: %d' % numTotalPoints)
+            print('Stitch number: %d' % stitchNumber)
+
+            # Create a list of the number of points per stitch
+            numPointsLst = list()
+
+            for x in repeat(maxPWMPointsTrunc, numFullScans):
+                numPointsLst.append(int(x))
+
+            numPointsLst.append(int(round(numRemainingPts)))
+
+            startWvlLst = list()
+            stopWvlLst = list()
+
+            # Create a list of the start and stop wavelengths per stitch
+            pointsAccum = 0
+            for points in numPointsLst:
+                startWvlLst.append(self.sweepStartWvl + pointsAccum * self.sweepStepWvl)
+                stopWvlLst.append(self.sweepStartWvl + (pointsAccum + points - 1) * self.sweepStepWvl)
+                pointsAccum += points
+
+            # Set sweep speed
+            self.setSweepSpeed(self.sweepSpeed)
+
+            wavelengthArrPWM = np.zeros(int(numTotalPoints))
+            powerArrPWM = np.zeros((int(numTotalPoints), numActiveChan))
+
+            pointsAccum = 0
+            # Loop over all the stitches
+            for points, startWvl, stopWvl in zip(numPointsLst, startWvlLst, stopWvlLst):
+                print('Sweeping from %g nm to %g nm' % (startWvl * 1e9, stopWvl * 1e9))
+                # If the start or end wavelength is not a multiple of 1 pm, the laser will sometimes choose the wrong start
+                # or end wavelength for doing the sweep. To fix this, we will set the sweep start wavelength to the
+                # nearest multiple of 1 pm below the start wavelength and the nearest multiple above the end wavelength.
+                # After the sweep is completed, the desired wavelength range is extracted from the results.
+                startWvlAdjusted = startWvl
+                stopWvlAdjusted = stopWvl
+                if startWvl * 1e12 - int(startWvl * 1e12) > 0:
+                    startWvlAdjusted = math.floor(startWvl * 1e12) / 1e12
+                if stopWvl * 1e12 - int(stopWvl * 1e12) > 0:
+                    stopWvlAdjusted = math.ceil(stopWvl * 1e12) / 1e12
+
+                # Format the start and dtop wvl to 13 digits of accuracy (otherwise the driver will sweep the wrong range)
+                startWvlAdjusted = float('%.13f' % (startWvlAdjusted))
+                stopWvlAdjusted = float('%.13f' % (stopWvlAdjusted))
+
+                c_numPts = c_uint32()
+                c_numChanRet = c_uint32()
+                res = self.hp816x_prepareMfLambdaScan(self.hDriver, unitNum, self.sweepPower, outputNum, numScans, numChan,
                                                   startWvlAdjusted, stopWvlAdjusted, self.sweepStepWvl, byref(c_numPts),
                                                   byref(c_numChanRet))
 
-            self.checkError(res)
-            numPts = int(c_numPts.value)
+                self.checkError(res)
+                numPts = int(c_numPts.value)
 
             # Set range params
             for ii in self.activeSlotIndex:
