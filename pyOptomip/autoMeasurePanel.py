@@ -1099,6 +1099,9 @@ class autoMeasurePanel(wx.Panel):
         self.outputFolderTb.SetValue(dirDlg.GetPath())
         dirDlg.Destroy()
 
+    def OnButton_Start(self, ):
+        child.Thread(target=OnButton_Start2, )
+
     def OnButton_Start(self, event):
         """ Starts an automatic measurement routine. """
 
@@ -1156,18 +1159,22 @@ class autoMeasurePanel(wx.Panel):
                 self.autoMeasure.self.panelUpdateGraph = True
                 self.autoMeasure.start()
 
+                pid = os.fork()
 
-                # Start measurement using the autoMeasure device
-                self.autoMeasure.beginMeasure(devices=checkedDevicesText, checkList=self.checkList,
+                if pid == 0:
+                    # Start measurement using the autoMeasure device
+                    self.autoMeasure.beginMeasure(devices=checkedDevicesText, checkList=self.checkList,
                                             activeDetectors=activeDetectors, camera=self.camera, abortFunction=None,
                                             updateFunction=None, updateGraph=True)
 
-                # Create a measurement progress dialog.
-                #autoMeasureDlg = autoMeasureProgressDialog(self, title='Automatic measurement')
-                #autoMeasureDlg.runMeasurement(checkedDevicesText, self.autoMeasure)
 
-                # Enable detector auto measurement
-                self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.startDetTimer()
+                    # Create a measurement progress dialog.
+                    #autoMeasureDlg = autoMeasureProgressDialog(self, title='Automatic measurement')
+                    #autoMeasureDlg.runMeasurement(checkedDevicesText, self.autoMeasure)
+
+                    # Enable detector auto measurement
+                    self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.startDetTimer()
+                    os._exit(0)
 
     def OnButton_createinfoframe(self, event):
         """Creates filter frame when filter button is pressed"""
