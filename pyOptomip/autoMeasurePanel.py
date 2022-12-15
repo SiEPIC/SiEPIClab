@@ -737,7 +737,6 @@ class autoMeasurePanel(wx.Panel):
             self.calibrationflag = True
             print("Entered Calibration Mode")
 
-
     def OnButton_SearchChecklist(self, event):
         """Moves devices with searched term present in ID to the top of the checklist. Have to double click
         magnifying glass for search to proceed."""
@@ -1146,6 +1145,17 @@ class autoMeasurePanel(wx.Panel):
                 print("Please Select Devices to Measure.")
 
             else:
+                #for threading version
+
+                self.autoMeasure.panelDevices = checkedDevicesText
+                self.autoMeasure.self.panelChecklist = self.checkList
+                self.autoMeasure.self.panelDetectors = activeDetectors
+                self.autoMeasure. self.panelCamera = self.camera
+                self.autoMeasure.self.panelAbortfunction = None
+                self.autoMeasure.self.panelUpdateFunction = None
+                self.autoMeasure.self.panelUpdateGraph = True
+                self.autoMeasure.start()
+
 
                 # Start measurement using the autoMeasure device
                 self.autoMeasure.beginMeasure(devices=checkedDevicesText, checkList=self.checkList,

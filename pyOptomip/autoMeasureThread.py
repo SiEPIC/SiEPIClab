@@ -78,6 +78,28 @@ class autoMeasure(Thread):
                                            'Sweepspeed': [], 'Laseroutput': [], 'Numscans': [],
                                            'InitialRange': [], 'RangeDec': [], 'ChannelA': [], 'ChannelB': [],
                                            'Voltage': []}
+        self.panelDevices = []
+        self.panelChecklist = []
+        self.panelDetectors = []
+        self.panelCamera = ''
+        self.panelAbortfunction = ''
+        self.panelUpdateFunction = ''
+        self.panelUpdateGraph = ''
+        self.trueflag = True
+        self.beginmeasureflag = False
+
+    def run(self):
+
+        while self.trueflag == True:
+
+
+            if self.beginmeasureflag == True:
+                self.beginMeasure(devices=self.panelDevices, checkList=self.panelCheckList,
+                                      activeDetectors=self.panelDetectors, camera=self.panelCamera, abortFunction=self.panelAbortfunction,
+                                      updateFunction=self.panelUpdateFunction, updateGraph=self.panelUpdateGraph)
+
+
+
 
 
     def readCoordFile(self, fileName):
@@ -382,7 +404,6 @@ class autoMeasure(Thread):
         self.setVoltageWavelengthSweeps['Voltage'].append(voltages)
         self.setVoltageWavelengthSweeps['RoutineName'].append(name)
         self.hasRoutines = True
-
 
     def beginMeasure(self, devices, checkList, activeDetectors, camera, abortFunction=None, updateFunction=None,
                      updateGraph=True):
