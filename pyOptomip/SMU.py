@@ -364,8 +364,6 @@ class SMUClass:
         self.powerresultA = []
         self.powerresultB = []
 
-        print(self.Aflag)
-        print(self.Bflag)
 
 
         if independantvar == 'Voltage':
