@@ -1141,6 +1141,9 @@ class autoMeasurePanel(wx.Panel):
             if not activeDetectors:
                 print("Please Select a Detector.")
 
+            elif not checkedDevicesText:
+                print("Please Select Devices to Measure.")
+
             else:
 
                 # Start measurement using the autoMeasure device

@@ -122,10 +122,13 @@ class BSC203Panel(wx.Panel):
 
         if setting == 'thorlabs':
 
-                if self.tc.GetValue().isNumeric() == False:
+            if self.tc.GetValue() == '':
+                return True
+
+            if self.tc.GetValue().isnumeric() == False:
+                self.inputcheckflag = False
+                print('Please check move value')
+            else:
+                if float(self.tc.GetValue()) >= 10000:
                     self.inputcheckflag = False
-                    print('Please check move value')
-                else:
-                    if float(self.tc.GetValue()) > 10000:
-                        self.inputcheckflag = False
-                        print('Movement value cannot be larger than 10000')
+                    print('Movement value cannot be larger than 10000')

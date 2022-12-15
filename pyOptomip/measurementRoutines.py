@@ -31,7 +31,7 @@ class measurementRoutines:
                 self.SMU.turnchannelon('A')
             if B:
                 self.SMU.turnchannelon('B')
-            self.SMU.ivsweep(float(imin), float(imax), float(ires), 'Current')
+            self.SMU.ivsweep2(float(imin), float(imax), float(ires), 'Current')
             self.SMU.turnchanneloff('A')
             self.SMU.turnchanneloff('B')
 

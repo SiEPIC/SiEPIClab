@@ -364,8 +364,6 @@ class SMUClass:
         self.powerresultA = []
         self.powerresultB = []
 
-        print(self.Aflag)
-        print(self.Bflag)
 
 
         if independantvar == 'Voltage':
@@ -523,9 +521,7 @@ class SMUClass:
         if independantvar == 'Voltage':
             if self.Aflag == True:
                 self.voltageresultA, self.currentresultA = self.k.voltage_sweep_single_smu(self.k.smua, sweeplist, t_int=0.1, delay=-1, pulsed=False)
-                print(self.currentresultA)
                 self.resistanceresultA = [i / j for i, j in zip(self.voltageresultA, self.currentresultA)]
-                print(self.resistanceresultA)
                 #self.resistanceresultA = self.voltageresultA / self.currentresultA
                 self.powerresultA = [i * j for i, j in zip(self.voltageresultA, self.currentresultA)]
                 setvoltstring = "smua.source.levelv = " + str(0)
@@ -651,20 +647,16 @@ class SMUClass:
         if channel == 'A':
             self.inst.write("smua.source.output = smua.OUTPUT_OFF")
             self.Aflag = False
-            print("Channel A OFF")
 
         if channel == 'B':
             self.inst.write("smub.source.output = smub.OUTPUT_OFF")
             self.Bflag = False
-            print("Channel B OFF")
 
         if channel == 'All':
             self.inst.write("smua.source.output = smua.OUTPUT_OFF")
             self.Aflag = False
-            print("Channel A OFF")
             self.inst.write("smub.source.output = smub.OUTPUT_OFF")
             self.Bflag = False
-            print("Channel B OFF")
 
     def setoutputflagon(self, channel):
         """
