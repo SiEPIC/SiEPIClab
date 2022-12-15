@@ -435,7 +435,7 @@ class autoMeasure(object):
             if device.getVoltageSweepRoutines() and self.motorElec and self.smu:
                 for routine in device.getVoltageSweepRoutines():
                     timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
-                    print("Performing Voltage Sweep {}".format(routine))
+                    print("Performing Voltage Sweep: {}".format(routine))
                     ii = self.voltageSweeps['RoutineName'].index(routine)
                     voltmin = self.voltageSweeps['VoltMin'][ii]
                     voltmax = self.voltageSweeps['VoltMax'][ii]
@@ -522,7 +522,7 @@ class autoMeasure(object):
                     ii = self.currentSweeps['RoutineName'].index(routine)
                     timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
                     routineName = self.currentSweeps['RoutineName'][ii]
-                    print("Performing Current Sweep {}".format(routineName))
+                    print("Performing Current Sweep: {}".format(routineName))
                     imin = self.currentSweeps['CurrentMin'][ii]
                     imax = self.currentSweeps['CurrentMax'][ii]
                     ires = self.currentSweeps['CurrentRes'][ii]
@@ -620,7 +620,6 @@ class autoMeasure(object):
                     rangedec = self.wavelengthSweeps['RangeDec'][ii]
                     wav, pow = measurement.opticalSweep(start, stop, stepsize, sweepspeed, sweeppower,
                                                         laseroutput, numscans, initrange, rangedec)
-                    self.laser.setTLSWavelength(float(1550) * float(1e-9))
                     timeStop = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
 
                     self.graphPanel.canvas.sweepResultDict = {}
@@ -671,7 +670,6 @@ class autoMeasure(object):
                             measurement.fixedWavelengthVoltageSweep(voltmin, voltmax, voltres, A, B, wavelength)
                         timeStop = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
 
-                    self.laser.setTLSWavelength(float(1550) * float(1e-9))
                     if IV:
                         self.graphPanel.canvas.sweepResultDict = {}
                         if A:
@@ -911,8 +909,6 @@ class autoMeasure(object):
                         VoltA[l], CurA[l], ResA[l], PowA[l], VoltB[l], CurB[l], ResB[l], PowB[l] = \
                             measurement.fixedWavelengthCurrentSweep(imin, imax, ires, A, B, wavelength)
                         timeStop = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
-
-                    self.laser.setTLSWavelength(float(1550) * float(1e-9))
                     if IV:
                         self.graphPanel.canvas.sweepResultDict = {}
                         if A:
@@ -1162,7 +1158,7 @@ class autoMeasure(object):
                                         chipTimeStart, self.devFolder, routine+str(voltage))
 
                         self.drawGraph(wav[l] * 1e9, pow[i], self.graphPanel, 'Wavelength (nm)', 'Power (dBm)')
-                    self.laser.setTLSWavelength(float(1550) * float(1e-9))
+
 
                     for det in range(len(self.activeDetectors)):
                         wav3 = [[]]
