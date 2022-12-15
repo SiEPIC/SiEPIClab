@@ -479,7 +479,7 @@ class autoMeasurePanel(wx.Panel):
         self.uncheckAllBtn.Bind(wx.EVT_BUTTON, self.OnButton_UncheckAll)
         self.filterBtn = wx.Button(self, label='Filter', size=(100, 20))
         self.filterBtn.Bind(wx.EVT_BUTTON, self.OnButton_Filter)
-        self.calibrateBtn = wx.Button(self, label='Cal', size=(100, 20))
+        self.calibrateBtn = wx.Button(self, label='Calibration Mode', size=(100, 20))
         self.calibrateBtn.Bind(wx.EVT_BUTTON, self.OnButton_Calibrate)
 
         # Add devices checklist
@@ -729,13 +729,14 @@ class autoMeasurePanel(wx.Panel):
         self.createFilterFrame()
         self.Refresh()
 
-    def Onbutton_Calibrate(self, event):
+    def OnButton_Calibrate(self, event):
         if self.calibrationflag == True:
             self.calibrationflag = False
+            print('Exiting Calibration Mode')
         elif self.calibrationflag == False:
             self.calibrationflag = True
-        print("Entered Calibration Mode")
-        print(self.calibrationflag)
+            print("Entered Calibration Mode")
+
 
     def OnButton_SearchChecklist(self, event):
         """Moves devices with searched term present in ID to the top of the checklist. Have to double click
