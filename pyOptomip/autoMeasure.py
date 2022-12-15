@@ -1345,11 +1345,11 @@ class autoMeasure(object):
         plt.xlabel(x)
         plt.ylabel(y)
         if legend == 1:
-            plt.axes.legend(self.detstringlist)
+            plt.legend(self.detstringlist)
         if legend == 2:
-            plt.axes.legend(self.voltstringlist)
+            plt.legend(self.voltstringlist)
         if legend == 3:
-            plt.axes.legend(self.wavstringlist)
+            plt.legend(self.wavstringlist)
         plt.savefig(pdfFileName)
         plt.close()
 
@@ -1542,7 +1542,7 @@ class autoMeasure(object):
         f.close()
 
     def saveFiles(self, deviceObject, x, y, devNum, xArray, yArray, testType, motorCoord, start, stop, chipStart, saveFolder, routineName, leg = 0):
-        self.save_pdf(deviceObject, x, y, xArray, yArray, saveFolder, routineName, leg = 0)
+        self.save_pdf(deviceObject, x, y, xArray, yArray, saveFolder, routineName, legend = leg)
         self.save_mat(deviceObject, devNum, motorCoord, xArray, yArray, x, y, saveFolder, routineName)
         self.save_csv(deviceObject, testType, xArray, yArray, start, stop, chipStart, motorCoord, devNum, saveFolder, routineName, x, y)
 
