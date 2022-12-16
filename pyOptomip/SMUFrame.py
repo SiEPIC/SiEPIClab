@@ -477,28 +477,29 @@ class SMUPanel(wx.Panel):
         self.graphPanel.canvas.draw()
 
     def UpdateAutoMeasurement(self, event):
-        va = self.smu.getvoltageA()
-        ia = self.smu.getcurrentA()
-        ra = self.smu.getresistanceA()
-        va = float(va)
-        ia = float(ia)*1000
-        ra = float(ra)
-        self.voltreadA.SetLabel(str(va))
-        self.currentreadA.SetLabel(str(ia))
-        self.rreadA.SetLabel(str(ra))
+        if self.smu.automeasureflag:
+            va = self.smu.getvoltageA()
+            ia = self.smu.getcurrentA()
+            ra = self.smu.getresistanceA()
+            va = float(va)
+            ia = float(ia) * 1000
+            ra = float(ra)
+            self.voltreadA.SetLabel(str(va))
+            self.currentreadA.SetLabel(str(ia))
+            self.rreadA.SetLabel(str(ra))
 
-        vb = self.smu.getvoltageB()
-        ib = self.smu.getcurrentB()
-        rb = self.smu.getresistanceB()
-        vb = float(vb)
-        ib = float(ib)*1000
-        rb = float(rb)
-        self.voltreadB.SetLabel(str(vb))
-        self.currentreadB.SetLabel(str(ib))
-        self.rreadB.SetLabel(str(rb))
+            vb = self.smu.getvoltageB()
+            ib = self.smu.getcurrentB()
+            rb = self.smu.getresistanceB()
+            vb = float(vb)
+            ib = float(ib) * 1000
+            rb = float(rb)
+            self.voltreadB.SetLabel(str(vb))
+            self.currentreadB.SetLabel(str(ib))
+            self.rreadB.SetLabel(str(rb))
 
-        #self.voltread.SetLabel(str(int(v*1000)/1000))
-        #self.currentread.SetLabel(str(int(i*1e6)/1000))
+            # self.voltread.SetLabel(str(int(v*1000)/1000))
+            # self.currentread.SetLabel(str(int(i*1e6)/1000))
 
     def OnButton_currentSet(self, event):
         self.inputcheck('general')
@@ -860,12 +861,13 @@ class resistancePanel(wx.Panel):
         self.SetSizer(vboxOuter)
 
     def UpdateResMeasurement(self, event):
-        ra = self.smu.getresistanceA()
-        ra = float(ra)
-        self.rdetA.SetLabel(str(ra))
+        if self.smu.automeasureflag:
+            ra = self.smu.getresistanceA()
+            ra = float(ra)
+            self.rdetA.SetLabel(str(ra))
 
-        rb = self.smu.getresistanceB()
-        rb = float(rb)
-        self.rdetB.SetLabel(str(rb))
+            rb = self.smu.getresistanceB()
+            rb = float(rb)
+            self.rdetB.SetLabel(str(rb))
 
 

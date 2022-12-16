@@ -383,7 +383,7 @@ class autoMeasure(object):
         self.hasRoutines = True
 
 
-    def beginMeasure(self, devices, checkList, activeDetectors, camera, abortFunction=None, updateFunction=None,
+    def beginMeasure(self, devices, checkList, activeDetectors, camera, data, abortFunction=None, updateFunction=None,
                      updateGraph=True):
         """ Runs an automated measurement. For each device, wedge probe is moved out of the way, chip stage is moved
         so laser in aligned, wedge probe is moved to position. Various tests are performed depending on the contents
@@ -461,6 +461,8 @@ class autoMeasure(object):
                                             'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
                                            self.devFolder, routine + '_IV')
                             self.drawGraph(VoltA, CurA, self.graphPanel, 'Voltage (V)', 'Current (mA)')
+                            data.extend([VoltA, CurA, self.graphPanel, 'Voltage (V)', 'Current (mA)'])
+
                         if B:
                             self.graphPanel.canvas.sweepResultDict['voltage'] = VoltB
                             self.graphPanel.canvas.sweepResultDict['current'] = CurB
@@ -471,6 +473,7 @@ class autoMeasure(object):
                                             'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
                                            self.devFolder, routine + '_IV')
                             self.drawGraph(VoltB, CurB, self.graphPanel, 'Voltage (V)', 'Current (mA)')
+                            #data.extend([VoltA, CurA, self.graphPanel, 'Voltage (V)', 'Current (mA)'])
 
                     if RV:
                         self.graphPanel.canvas.sweepResultDict = {}
@@ -553,7 +556,7 @@ class autoMeasure(object):
 
                             # save all associated files
                             self.saveFiles(device, 'Current (mA)', 'Voltage (V)', ii, CurB, VoltB,
-                                           'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
+                                          'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
                                            self.devFolder, routine + '_VI')
                             self.drawGraph(CurB, VoltB, self.graphPanel, 'Current (mA)', 'Voltage (V)')
 
@@ -641,6 +644,7 @@ class autoMeasure(object):
                                    self.devFolder, routine, leg = 1)
 
                     self.drawGraph(wav * 1e9, pow, self.graphPanel, 'Wavelength (nm)', 'Power (dBm)', legend=0)
+                    #data.extend([wav * 1e9, pow, self.graphPanel, 'Wavelength (nm)', 'Power (dBm)', legend=0])
 
             if device.getSetWavelengthVoltageSweepRoutines() and self.laser and self.motorElec and self.smu:
                 for routine in device.getSetWavelengthVoltageSweepRoutines():
@@ -712,8 +716,8 @@ class autoMeasure(object):
 
                                 # save all associated files
                                 self.saveFiles(device, 'Voltage (V)', 'Current (mA)', ii, VoltA[wav], CurA[wav],
-                                               'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                               chipTimeStart, self.devFolder, routine + str(wavelengths[wav]) + '_VI_B')
+                                              'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                              chipTimeStart, self.devFolder, routine + str(wavelengths[wav]) + '_VI_B')
                                 self.drawGraph(VoltA[wav], CurA[wav], self.graphPanel, 'Voltage (V)', 'Current (mA)',
                                                legend=0)
 
@@ -1156,7 +1160,7 @@ class autoMeasure(object):
                         # save all associated files
                         self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', ii, wav[l] * 1e9, pow[l],
                                         'Wavelength sweep w Bias Voltage', motorCoordOpt, timeStart, timeStop,
-                                        chipTimeStart, self.devFolder, routine+str(voltage))
+                                       chipTimeStart, self.devFolder, routine+str(voltage))
 
                         self.drawGraph(wav[l] * 1e9, pow[l], self.graphPanel, 'Wavelength (nm)', 'Power (dBm)')
 
@@ -1198,7 +1202,8 @@ class autoMeasure(object):
 
             print("Automeasure Completed, Results Saved to " + str(self.saveFolder))
             # Enable detector auto measurement
-            self.laser.ctrlPanel.laserPanel.laserPanel.startDetTimer()
+            #self.laser.ctrlPanel.laserPanel.laserPanel.startDetTimer()
+            self.smu.automeasureflag = True
 
     def setScale(self, x, y):
         self.xscalevar = x
@@ -1548,7 +1553,7 @@ class autoMeasure(object):
         f.close()
 
     def saveFiles(self, deviceObject, x, y, devNum, xArray, yArray, testType, motorCoord, start, stop, chipStart, saveFolder, routineName, leg = 0):
-        self.save_pdf(deviceObject, x, y, xArray, yArray, saveFolder, routineName, legend = leg)
+        #self.save_pdf(deviceObject, x, y, xArray, yArray, saveFolder, routineName, legend = leg)
         self.save_mat(deviceObject, devNum, motorCoord, xArray, yArray, x, y, saveFolder, routineName)
         self.save_csv(deviceObject, testType, xArray, yArray, start, stop, chipStart, motorCoord, devNum, saveFolder, routineName, x, y)
 

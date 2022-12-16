@@ -59,6 +59,7 @@ class SMUClass:
         self.voltageresultB = []
         self.currentresultB = []
         self.sweepcompletedflag = False
+        self.automeasureflag = True
 
     def connect(self, visaName, rm):
         """

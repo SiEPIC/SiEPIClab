@@ -33,6 +33,10 @@ from ElectroOpticDevice import ElectroOpticDevice
 import yaml
 from informationframes import infoFrame
 from multiprocessing import Process
+from threading import Thread
+from queue import Queue
+import matplotlib.pyplot as plt
+from scipy.io import savemat
 global deviceList
 global xscalevar
 global yscalevar
@@ -1165,11 +1169,20 @@ class autoMeasurePanel(wx.Panel):
 
                 #pid = os.fork()
 
-                p = Process(target=self.autoMeasure.beginMeasure, args=(checkedDevicesText, self.checkList,
-                                            activeDetectors, self.camera, None, None, True))
+                #p = Process(target=self.autoMeasure.beginMeasure, args=(checkedDevicesText, self.checkList,
+                                            #activeDetectors, self.camera, None, None, True))
+                q = Queue()
+                data = []
+                self.autoMeasure.smu.automeasureflag = False
+                p = Thread(target=self.autoMeasure.beginMeasure, args=(checkedDevicesText, self.checkList, activeDetectors, self.camera, data, None, None, True))
                 #p = Process(target=self.autoMeasure.test)
                 p.daemon = True
                 p.start()
+
+                #while True:
+                    #print(data)
+                    #drawGraph()
+                    #data.clear()
 
 
 
@@ -1221,18 +1234,220 @@ class autoMeasurePanel(wx.Panel):
                 print('Please check scale values')
 
 
-   # class StopAutomeasure(threading.Thread):
+    def drawGraph(self, x, y, graphPanel, xlabel, ylabel, legendstring, legend=0):
+        self.autoMeasure.graphPanel.axes.cla()
+        self.autoMeasure.graphPanel.axes.plot(x, y)
+        if legend != 0:
+            self.autoMeasure.graphPanel.axes.legend(legendstring)
+        self.autoMeasure.graphPanel.axes.ticklabel_format(useOffset=False)
+        self.autoMeasure.graphPanel.axes.set_xlabel(xlabel)
+        self.autoMeasure.graphPanel.axes.set_ylabel(ylabel)
+        self.autoMeasure.graphPanel.canvas.draw()
 
-        #def __init__(self):
-           # threading.Thread.__init__(self)
-           # self.camID = 1
-          #  global stopflag
-          #  self.run()
 
-       # def run(self):
-           # stopflag = True
+    def save_pdf(self, deviceObject, x, y, xarr, yarr, saveFolder, routineName, legend, legendstring):
+        # Create pdf file
+        path = saveFolder
+        d1 = deviceObject.getDeviceID().replace(":", "")
+        pdfFileName = os.path.join(path, saveFolder + "\\" + routineName + ".pdf")
+        plt.figure()
+        plt.plot(xarr, yarr)
+        plt.xlabel(x)
+        plt.ylabel(y)
+        if legend != 0:
+            plt.legend(legendstring)
+        plt.savefig(pdfFileName)
+        plt.close()
 
-            # After the loop release the cap object
-            #self.cap.release()
-            # Destroy all the windows
-            #cv2.destroyAllWindows()
+    def save_mat(self, deviceObject, devNum, motorCoordOpt, xArray, yArray, x, y, saveFolder, routineName):
+        path = saveFolder
+        d1 = deviceObject.getDeviceID().replace(":", "")
+        matFileName = os.path.join(path, saveFolder + "\\" + routineName + ".mat")
+
+        # Save sweep data and metadata to the mat file
+        matDict = dict()
+        matDict['scandata'] = dict()
+        matDict['metadata'] = dict()
+        matDict['scandata'][x] = xArray
+        matDict['scandata'][y] = yArray
+        matDict['metadata']['device'] = deviceObject.getDeviceID()
+        matDict['metadata']['gds_x_coord'] = deviceObject.getOpticalCoordinates()[0]
+        matDict['metadata']['gds_y_coord'] = deviceObject.getOpticalCoordinates()[1]
+        matDict['metadata']['motor_x_coord'] = motorCoordOpt[0]
+        matDict['metadata']['motor_y_coord'] = motorCoordOpt[1]
+        matDict['metadata']['motor_z_coord'] = motorCoordOpt[2]
+        matDict['metadata']['measured_device_number'] = devNum
+        timeSeconds = time.time()
+        matDict['metadata']['time_seconds'] = timeSeconds
+        matDict['metadata']['time_str'] = time.ctime(timeSeconds)
+        savemat(matFileName, matDict)
+
+    def save_csv(self, deviceObject, testType, xArray, yArray, start, stop, chipStart, motorCoords, devNum, saveFolder, routineName, xlabel, ylabel):
+
+        path = saveFolder
+        d1 = deviceObject.getDeviceID().replace(":", "")
+        csvFileName = os.path.join(path, saveFolder + "\\" + routineName + ".csv")
+        f = open(csvFileName, 'w', newline='')
+        writer = csv.writer(f)
+        textType = ["#Test:" + testType]
+        writer.writerow(textType)
+        user = ["#User:"]
+        writer.writerow(user)
+        start = ["#Start:" + start]
+        writer.writerow(start)
+        stop = ["#Stop:" + stop]
+        writer.writerow(stop)
+        devID = ["#Device ID:" + deviceObject.getDeviceID()]
+        writer.writerow(devID)
+        gds = ["#Device coordinates (gds):" + '(' + str(deviceObject.getOpticalCoordinates()[0]) + ', ' + str(deviceObject.getOpticalCoordinates()[1]) + ')']
+        writer.writerow(gds)
+        motor = ["#Device coordinates (motor):" + '(' + str(motorCoords[0]) + ', ' + str(motorCoords[1]) + ', ' + str(motorCoords[2]) + ')']
+        writer.writerow(motor)
+        chipStart = ["#Chip test start:" + str(chipStart)]
+        writer.writerow(chipStart)
+        settings = ["#Settings:"]
+        writer.writerow(settings)
+        laser = ["#Laser:" + self.autoMeasure.laser.getName()]
+        writer.writerow(laser)
+        detector = ["#Detector:" + self.autoMeasure.laser.getDetector()]
+        writer.writerow(detector)
+        if testType == 'Wavelength sweep':
+            wavsweep = self.autoMeasure.wavelengthSweeps
+            speed = ["#Sweep speed:" + wavsweep['Sweepspeed'][devNum]]
+            writer.writerow(speed)
+            numData = ["#Number of datasets: 1"]
+            writer.writerow(numData)
+            laserPow = ["#Laser power:" + wavsweep['Sweeppower'][devNum]]
+            writer.writerow(laserPow)
+            stepSize = ["#Wavelength step-size:" + wavsweep['Stepsize'][devNum]]
+            writer.writerow(stepSize)
+            startWav = ["#Start wavelength:" + wavsweep['Start'][devNum]]
+            writer.writerow(startWav)
+            stopWav = ["#Stop wavelength:" + wavsweep['Stop'][devNum]]
+            writer.writerow(stopWav)
+            stitCount = ["#Stitch count: 0"]
+            writer.writerow(stitCount)
+            initRange = ["#Init Range:" + wavsweep['InitialRange'][devNum]]
+            writer.writerow(initRange)
+            newSweep = ["#New sweep plot behaviour: replace"]
+            writer.writerow(newSweep)
+            laseOff = ["#Turn off laser when done: no"]
+            writer.writerow(laseOff)
+            metric = ["#Metric Tag"]
+            writer.writerow(metric)
+            wavSweep = [xlabel]
+            wavSweep.extend(xArray)
+            writer.writerow(wavSweep)
+            for x in range(len(self.autoMeasure.activeDetectors)):
+                det1 = ["channel_{}".format(self.autoMeasure.activeDetectors[x] + 1)]
+                for point in range(len(yArray)):
+                    det1.append(yArray[point][x])
+                writer.writerow(det1)
+        if testType == 'Wavelength sweep w Bias Voltage':
+            wavsweep = self.autoMeasure.setVoltageWavelengthSweeps
+            BiasV = ["#Bias Voltage:" + wavsweep['Voltage'][devNum]]
+            writer.writerow(BiasV)
+            speed = ["#Sweep speed:" + wavsweep['Sweepspeed'][devNum]]
+            writer.writerow(speed)
+            numData = ["#Number of datasets: 1"]
+            writer.writerow(numData)
+            laserPow = ["#Laser power:" + wavsweep['Sweeppower'][devNum]]
+            writer.writerow(laserPow)
+            stepSize = ["#Wavelength step-size:" + wavsweep['Stepsize'][devNum]]
+            writer.writerow(stepSize)
+            startWav = ["#Start wavelength:" + wavsweep['Start'][devNum]]
+            writer.writerow(startWav)
+            stopWav = ["#Stop wavelength:" + wavsweep['Stop'][devNum]]
+            writer.writerow(stopWav)
+            stitCount = ["#Stitch count: 0"]
+            writer.writerow(stitCount)
+            initRange = ["#Init Range:" + wavsweep['InitialRange'][devNum]]
+            writer.writerow(initRange)
+            newSweep = ["#New sweep plot behaviour: replace"]
+            writer.writerow(newSweep)
+            laseOff = ["#Turn off laser when done: no"]
+            writer.writerow(laseOff)
+            metric = ["#Metric Tag"]
+            writer.writerow(metric)
+            wavSweep = [xlabel]
+            wavSweep.extend(xArray)
+            writer.writerow(wavSweep)
+            for x in range(len(self.autoMeasure.activeDetectors)):
+                det1 = ["channel_{}".format(self.autoMeasure.activeDetectors[x] + 1)]
+                for point in range(len(yArray)):
+                    det1.append(yArray[point][x])
+                writer.writerow(det1)
+        if testType == 'Voltage sweep':
+            iv = self.autoMeasure.voltageSweeps
+            stepSize = ["Resolution:" + iv['VoltRes'][devNum]]
+            writer.writerow(stepSize)
+            startWav = ["#Start Voltage:" + iv['VoltMin'][devNum]]
+            writer.writerow(startWav)
+            stopWav = ["#Stop Voltage:" + iv['VoltMax'][devNum]]
+            writer.writerow(stopWav)
+            wavSweep = [xlabel]
+            wavSweep.extend(xArray)
+            writer.writerow(wavSweep)
+            det1 = [ylabel]
+            for point in range(len(yArray)):
+                det1.append(yArray[point])
+            writer.writerow(det1)
+        if testType == 'Current sweep':
+            iv = self.autoMeasure.currentSweeps
+            stepSize = ["Resolution:" + iv['CurrentRes'][devNum]]
+            writer.writerow(stepSize)
+            startWav = ["#Start Current:" + iv['CurrentMin'][devNum]]
+            writer.writerow(startWav)
+            stopWav = ["#Stop Current:" + iv['CurrentMax'][devNum]]
+            writer.writerow(stopWav)
+            stitCount = ["#Stitch count: 0"]
+            writer.writerow(stitCount)
+            wavSweep = [xlabel]
+            wavSweep.extend(xArray)
+            writer.writerow(wavSweep)
+            det1 = [ylabel]
+            for point in range(len(yArray)):
+                det1.append(yArray[point])
+            writer.writerow(det1)
+        if testType == 'Voltage Sweep w Set Wavelength':
+            iv = self.autoMeasure.setWavelengthVoltageSweeps
+            wav = ["Wavelength:" + iv['Wavelength'][devNum]]
+            writer.writerow(wav)
+            stepSize = ["Resolution:" + iv['VoltRes'][devNum]]
+            writer.writerow(stepSize)
+            startWav = ["#Start Voltage:" + iv['VoltMin'][devNum]]
+            writer.writerow(startWav)
+            stopWav = ["#Stop Voltage:" + iv['VoltMax'][devNum]]
+            writer.writerow(stopWav)
+            wavSweep = [xlabel]
+            wavSweep.extend(xArray)
+            writer.writerow(wavSweep)
+            det1 = [ylabel]
+            for point in range(len(yArray)):
+                det1.append(yArray[point])
+            writer.writerow(det1)
+        if testType == 'Current Sweep w Set Wavelength':
+            iv = self.autoMeasure.setWavelengthCurrentSweeps
+            wav = ["Wavelength:" + iv['Wavelength'][devNum]]
+            writer.writerow(wav)
+            stepSize = ["Resolution:" + iv['CurrentRes'][devNum]]
+            writer.writerow(stepSize)
+            startWav = ["#Start Current:" + iv['CurrentMin'][devNum]]
+            writer.writerow(startWav)
+            stopWav = ["#Stop Current:" + iv['CurrentMax'][devNum]]
+            writer.writerow(stopWav)
+            stitCount = ["#Stitch count: 0"]
+            writer.writerow(stitCount)
+            wavSweep = [xlabel]
+            wavSweep.extend(xArray)
+            writer.writerow(wavSweep)
+            det1 = [ylabel]
+            for point in range(len(yArray)):
+                det1.append(yArray[point])
+            writer.writerow(det1)
+        f.close()
+
+    def saveFiles(self, deviceObject, x, y, devNum, xArray, yArray, testType, motorCoord, start, stop, chipStart, saveFolder, routineName, leg = 0):
+        self.save_pdf(deviceObject, x, y, xArray, yArray, saveFolder, routineName, legend = leg, )
+        self.save_mat(deviceObject, devNum, motorCoord, xArray, yArray, x, y, saveFolder, routineName)
+        self.save_csv(deviceObject, testType, xArray, yArray, start, stop, chipStart, motorCoord, devNum, saveFolder, routineName, x, y)
