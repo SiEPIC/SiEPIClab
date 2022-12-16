@@ -84,11 +84,17 @@ class BSC203Panel(wx.Panel):
 
         if self.axis == 1:
             self.parent.bsc.moveRelativeXYZ(int(self.getMoveValue()), 0, 0)
-            print("Axis 1 Moved Negative")
+            if self.parent.bsc.atZPosition is True:
+                pass
+            else:
+                print("Axis 1 Moved Negative")
 
         if self.axis == 2:
             self.parent.bsc.moveRelativeXYZ(0, int(self.getMoveValue()), 0)
-            print("Axis 2 Moved Negative")
+            if self.parent.bsc.atZPosition is True:
+                pass
+            else:
+                print("Axis 2 Moved Negative")
 
         if self.axis == 3:
             self.parent.bsc.moveRelativeXYZ(0,0, int(self.getMoveValue()))
@@ -97,11 +103,17 @@ class BSC203Panel(wx.Panel):
     def OnButton_PlusButtonHandler(self, event):
         if self.axis == 1:
             self.parent.bsc.moveRelativeXYZ(int((-1)*self.getMoveValue()), 0, 0)
-            print("Axis 1 Moved Positive")
+            if self.parent.bsc.atZPosition is True:
+                pass
+            else:
+                print("Axis 1 Moved Positive")
 
         if self.axis == 2:
             self.parent.bsc.moveRelativeXYZ(0, int((-1) * self.getMoveValue()), 0)
-            print("Axis 2 Moved Positive")
+            if self.parent.bsc.atZPosition is True:
+                pass
+            else:
+                print("Axis 2 Moved Positive")
 
         if self.axis == 3:
             self.parent.bsc.moveRelativeXYZ(0,0, int((-1) * self.getMoveValue()))
