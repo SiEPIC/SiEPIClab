@@ -793,19 +793,19 @@ class SMUPanel(wx.Panel):
         self.inputcheckflag = True
         if setting == 'general':
 
-            if self.voltset.GetValue().isnumeric() == False:
+            if self.voltset.GetValue().replace('.', '').isnumeric() == False:
                 self.inputcheckflag = False
 
-            if self.currentset.GetValue().isnumeric() == False:
+            if self.currentset.GetValue().replace('.', '').isnumeric() == False:
                 self.inputcheckflag = False
 
-            if self.voltlim.GetValue().isnumeric() == False:
+            if self.voltlim.GetValue().replace('.', '').isnumeric() == False:
                 self.inputcheckflag = False
 
-            if self.currentlim.GetValue().isnumeric() == False:
+            if self.currentlim.GetValue().replace('.', '').isnumeric() == False:
                 self.inputcheckflag = False
 
-            if self.powerlim.GetValue().isnumeric() == False:
+            if self.powerlim.GetValue().replace('.', '').isnumeric() == False:
                 self.inputcheckflag = False
 
         if setting == 'sweep':
@@ -818,15 +818,15 @@ class SMUPanel(wx.Panel):
                 self.inputcheckflag = False
                 print('Please check output select')
 
-            if self.maxset.GetValue().isnumeric() == False:
+            if self.maxset.GetValue().replace('.', '').isnumeric() == False:
                 self.inputcheckflag = False
                 print('Please check max value')
 
-            if self.minset.GetValue().isnumeric() == False:
+            if self.minset.GetValue().replace('.', '').isnumeric() == False:
                 self.inputcheckflag = False
                 print('Please check min value')
 
-            if self.reso.GetValue().isnumeric() == False:
+            if self.reso.GetValue().replace('.', '').isnumeric() == False:
                 self.inputcheckflag = False
                 print('Please check resolution value')
 

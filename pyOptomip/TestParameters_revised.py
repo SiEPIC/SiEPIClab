@@ -1499,7 +1499,7 @@ class TopPanel(wx.Panel):
 
             if self.routinetype == 'Voltage Sweep':
 
-                if self.parameterPanel.maxsetvoltage.GetValue().isnumeric == False:
+                if self.parameterPanel.maxsetvoltage.GetValue().replace('.', '').isnumeric == False:
                     self.inputcheckflag = False
                     print('Please check max input')
                 else:
@@ -1507,11 +1507,11 @@ class TopPanel(wx.Panel):
                         self.inputcheckflag = False
                         print('Please check max input, cannot be greater than 240V')
 
-                if self.parameterPanel.minsetvoltage.GetValue().isnumeric == False:
+                if self.parameterPanel.minsetvoltage.GetValue().replace('.', '').isnumeric == False:
                     self.inputcheckflag = False
                     print('Please check min input')
 
-                if self.parameterPanel.resovoltage.GetValue().isnumeric == False:
+                if self.parameterPanel.resovoltage.GetValue().replace('.', '').isnumeric == False:
                     self.inputcheckflag = False
                     print('Please check resolution input')
                 else:
@@ -1530,7 +1530,7 @@ class TopPanel(wx.Panel):
 
             if self.routinetype == 'Current Sweep':
 
-                if self.parameterPanel.maxsetvoltage.GetValue().isnumeric == False:
+                if self.parameterPanel.maxsetvoltage.GetValue().replace('.', '').isnumeric == False:
                     self.inputcheckflag = False
                     print('Please check max input')
                 else:
@@ -1538,11 +1538,11 @@ class TopPanel(wx.Panel):
                         self.inputcheckflag = False
                         print('Please check max input, cannot be greater than 10A')
 
-                if self.parameterPanel.minsetvoltage.GetValue().isnumeric == False:
+                if self.parameterPanel.minsetvoltage.GetValue().replace('.', '').isnumeric == False:
                     self.inputcheckflag = False
                     print('Please check min input')
 
-                if self.parameterPanel.resovoltage.GetValue().isnumeric == False:
+                if self.parameterPanel.resovoltage.GetValue().replace('.', '').isnumeric == False:
                     self.inputcheckflag = False
                     print('Please check resolution input')
                 else:
@@ -1561,15 +1561,15 @@ class TopPanel(wx.Panel):
 
             if self.routinetype == 'Wavelength Sweep':
 
-                if self.parameterPanel.startWvlTc.GetValue().isnumeric() == False:
+                if self.parameterPanel.startWvlTc.GetValue().replace('.', '').isnumeric() == False:
                     self.inputcheckflag = False
                     print('Please check start wavelength')
 
-                if self.parameterPanel.stopWvlTc.GetValue().isnumeric() == False:
+                if self.parameterPanel.stopWvlTc.GetValue().replace('.', '').isnumeric() == False:
                     self.inputcheckflag = False
                     print('Please check stop wavelength')
 
-                if self.parameterPanel.stepWvlTc.GetValue().isnumeric() == False:
+                if self.parameterPanel.stepWvlTc.GetValue().replace('.', '').isnumeric() == False:
                     self.inputcheckflag = False
                     print('Please check step distance')
 
@@ -1581,13 +1581,13 @@ class TopPanel(wx.Panel):
                     self.inputcheckflag = False
                     print('Please check initial range')
 
-                if self.parameterPanel.rangedecTc.GetValue().isnumeric() == False:
+                if self.parameterPanel.rangedecTc.GetValue().replace('.', '').isnumeric() == False:
                     self.inputcheckflag = False
                     print('Please check range decrement value')
 
             if self.routinetype == 'Set Wavelength Voltage Sweep':
 
-                if self.parameterPanel.maxsetvoltage.GetValue().isnumeric == False:
+                if self.parameterPanel.maxsetvoltage.GetValue().replace('.', '').isnumeric == False:
                     self.inputcheckflag = False
                     print('Please check max input')
                 else:
@@ -1595,11 +1595,11 @@ class TopPanel(wx.Panel):
                         self.inputcheckflag = False
                         print('Please check max input, cannot be greater than 240V')
 
-                if self.parameterPanel.minsetvoltage.GetValue().isnumeric == False:
+                if self.parameterPanel.minsetvoltage.GetValue().replace('.', '').isnumeric == False:
                     self.inputcheckflag = False
                     print('Please check min input')
 
-                if self.parameterPanel.resovoltage.GetValue().isnumeric == False:
+                if self.parameterPanel.resovoltage.GetValue().replace('.', '').isnumeric == False:
                     self.inputcheckflag = False
                     print('Please check resolution input')
                 else:
@@ -1621,7 +1621,7 @@ class TopPanel(wx.Panel):
 
             if self.routinetype == 'Set Wavelength Current Sweep':
 
-                if self.parameterPanel.maxsetvoltage.GetValue().isnumeric == False:
+                if self.parameterPanel.maxsetvoltage.GetValue().replace('.', '').isnumeric == False:
                     self.inputcheckflag = False
                     print('Please check max input')
                 else:
@@ -1629,11 +1629,11 @@ class TopPanel(wx.Panel):
                         self.inputcheckflag = False
                         print('Please check max input, cannot be greater than 10A')
 
-                if self.parameterPanel.minsetvoltage.GetValue().isnumeric == False:
+                if self.parameterPanel.minsetvoltage.GetValue().replace('.', '').isnumeric == False:
                     self.inputcheckflag = False
                     print('Please check min input')
 
-                if self.parameterPanel.resovoltage.GetValue().isnumeric == False:
+                if self.parameterPanel.resovoltage.GetValue().replace('.', '').isnumeric == False:
                     self.inputcheckflag = False
                     print('Please check resolution input')
                 else:
@@ -1655,15 +1655,15 @@ class TopPanel(wx.Panel):
 
             if self.routinetype == 'Set Voltage Wavelength Sweep':
 
-                if self.parameterPanel.startWvlTc.GetValue().isnumeric() == False:
+                if self.parameterPanel.startWvlTc.GetValue().replace('.', '').isnumeric() == False:
                     self.inputcheckflag = False
                     print('Please check start wavelength')
 
-                if self.parameterPanel.stopWvlTc.GetValue().isnumeric() == False:
+                if self.parameterPanel.stopWvlTc.GetValue().replace('.', '').isnumeric() == False:
                     self.inputcheckflag = False
                     print('Please check stop wavelength')
 
-                if self.parameterPanel.stepWvlTc.GetValue().isnumeric() == False:
+                if self.parameterPanel.stepWvlTc.GetValue().replace('.', '').isnumeric() == False:
                     self.inputcheckflag = False
                     print('Please check step distance')
 
@@ -1675,7 +1675,7 @@ class TopPanel(wx.Panel):
                     self.inputcheckflag = False
                     print('Please check initial range')
 
-                if self.parameterPanel.rangedecTc.GetValue().isnumeric() == False:
+                if self.parameterPanel.rangedecTc.GetValue().replace('.', '').isnumeric() == False:
                     self.inputcheckflag = False
                     print('Please check range decrement value')
 
@@ -1697,7 +1697,7 @@ class TopPanel(wx.Panel):
         if string == '':
             return False
 
-        if string.isnumeric() == False:
+        if string.replace('.', '').isnumeric() == False:
             minuscheck = string[0]
             if minuscheck == '-':
                 newstring = string[1:]

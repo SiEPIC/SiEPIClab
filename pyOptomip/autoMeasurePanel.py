@@ -644,10 +644,10 @@ class autoMeasurePanel(wx.Panel):
         xscalevar = float(self.xadjust.GetValue())
         yscalevar = float(self.yadjust.GetValue())
 
-        if xscalevar >= 1.5 or yscalevar >= 1.5 or xscalevar <= 0.7 or yscalevar <= 0.7:
+        if xscalevar >= 1.5 or yscalevar >= 1.5 or xscalevar <= 0.6 or yscalevar <= 0.6:
             xscalevar = 0.82
             yscalevar = 0.8
-            print("Cannot scale by that amount, please choose scaling factors between 0.7 and 1.5")
+            print("Cannot scale by that amount, please choose scaling factors between 0.6 and 1.5")
             return
 
         print('Set X scaling factor to ' + str(xscalevar))
@@ -1110,9 +1110,6 @@ class autoMeasurePanel(wx.Panel):
         self.outputFolderTb.SetValue(dirDlg.GetPath())
         dirDlg.Destroy()
 
-    #def OnButton_Start(self, ):
-        #child.Thread(target=OnButton_Start2, )
-
     def OnButton_Start(self, event):
         """ Starts an automatic measurement routine. """
         global xscalevar
@@ -1211,13 +1208,13 @@ class autoMeasurePanel(wx.Panel):
 
         if setting == 'automeasure':
 
-            if self.xadjust.GetValue().isnumeric() == False or self.yadjust.GetValue().isnumeric() == False:
+            if self.xadjust.GetValue().replace('.', '').isnumeric() == False or self.yadjust.GetValue().replace('.', '').isnumeric() == False:
                 self.inputcheckflag = False
                 print('Please check scale values')
 
         if setting == 'sweep':
 
-            if self.xadjust.GetValue().isnumeric() == False or self.yadjust.GetValue().isnumeric() == False:
+            if self.xadjust.GetValue().replace('.', '').isnumeric() == False or self.yadjust.GetValue().replace('.', '').isnumeric() == False:
                 self.inputcheckflag = False
                 print('Please check scale values')
 

@@ -263,15 +263,15 @@ class tlsPanel(wx.Panel):
 
         if setting == 'optical sweep':
 
-            if self.startWvlTc.GetValue().isnumeric() == False:
+            if self.startWvlTc.GetValue().replace('.', '').isnumeric() == False:
                 self.inputcheckflag = False
                 print('Please check start wavelength')
 
-            if self.stopWvlTc.GetValue().isnumeric() == False:
+            if self.stopWvlTc.GetValue().replace('.', '').isnumeric() == False:
                 self.inputcheckflag = False
                 print('Please check stop wavelength')
 
-            if self.stepWvlTc.GetValue().isnumeric() == False:
+            if self.stepWvlTc.GetValue().replace('.', '').isnumeric() == False:
                 self.inputcheckflag = False
                 print('Please check step distance')
 
@@ -293,7 +293,7 @@ class tlsPanel(wx.Panel):
         if string == '':
             return False
 
-        if string.isnumeric() == False:
+        if string.replace('.', '').isnumeric() == False:
             minuscheck = string[0]
             if minuscheck == '-':
                 newstring = string[1:]
@@ -493,11 +493,11 @@ class detectorPanel(wx.Panel):
 
         if setting == 'detector':
 
-            if self.initialRangeTc.GetValue().isNumericMinusAdj() == False:
+            if self.initialRangeTc.GetValue().replace('.', '').isNumericMinusAdj() == False:
                 self.inputcheckflag = False
                 print('Please check initial range value')
 
-            if self.sweepRangeDecTc.GetValue().isNumeric() == False:
+            if self.sweepRangeDecTc.GetValue().replace('.', '').isNumeric() == False:
                 self.inputcheckflag = False
                 print('Please check range decrement value')
 

@@ -468,9 +468,15 @@ class instrumentFrame_withtabs(wx.Frame):
             print("Recording Stopped")
 
         def close(self):
-            print('Closing camera')
-            self.show = False
+            if self.show == False:
+                pass
+            else:
+                print('Closing camera')
+                self.show = False
 
         def open(self):
-            print('Opening camera')
-            self.show = True
+            if self.show == True:
+                pass
+            else:
+                print('Opening camera')
+                self.show = True
