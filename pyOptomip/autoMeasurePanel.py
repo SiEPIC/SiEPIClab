@@ -1116,10 +1116,22 @@ class autoMeasurePanel(wx.Panel):
         if self.outputFolderTb.GetValue() == "":
             print("Please Choose Location to Save Measurement Results.")
         else:
-            self.autoMeasure.findCoordinateTransformOpt(self.coordMapPanelOpt.getMotorCoords(),
+            optDevSet = set()
+            for devName in self.coordMapPanelOpt.GDSDevList:
+                optDevSet.add(devName)
+            if len(optDevSet) < len(self.coordMapPanelOpt.GDSDevList):
+                print("Please Use Three Different Devices for the Optical Matrix.")
+            else:
+                self.autoMeasure.findCoordinateTransformOpt(self.coordMapPanelOpt.getMotorCoords(),
                                                         self.coordMapPanelOpt.getGdsCoordsOpt())
             if self.autoMeasure.motorElec and self.autoMeasure.smu:
-                self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
+                elecDevSet = set()
+                for devName in self.coordMapPanelElec.GDSDevList:
+                    elecDevSet.add(devName)
+                if len(elecDevSet) < len(self.coordMapPanelElec.GDSDevList):
+                    print("Please Use Three Different Devices for the Electrical Matrix.")
+                else:
+                    self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
                                                         self.coordMapPanelElec.getGdsCoordsElec())
 
             # Disable detector auto measurement
@@ -1157,15 +1169,6 @@ class autoMeasurePanel(wx.Panel):
 
             else:
                 #for threading version
-
-                #self.autoMeasure.panelDevices = checkedDevicesText
-                #self.autoMeasure.self.panelChecklist = self.checkList
-                #self.autoMeasure.self.panelDetectors = activeDetectors
-                #self.autoMeasure. self.panelCamera = self.camera
-                #self.autoMeasure.self.panelAbortfunction = None
-                #self.autoMeasure.self.panelUpdateFunction = None
-                #self.autoMeasure.self.panelUpdateGraph = True
-                #self.autoMeasure.start()
 
                 #pid = os.fork()
 

@@ -473,7 +473,6 @@ class autoMeasure(object):
                                             'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
                                            self.devFolder, routine + '_IV')
                             self.drawGraph(VoltB, CurB, self.graphPanel, 'Voltage (V)', 'Current (mA)')
-                            #data.extend([VoltA, CurA, self.graphPanel, 'Voltage (V)', 'Current (mA)'])
 
                     if RV:
                         self.graphPanel.canvas.sweepResultDict = {}
