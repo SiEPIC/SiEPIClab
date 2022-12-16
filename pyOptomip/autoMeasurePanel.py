@@ -1112,95 +1112,77 @@ class autoMeasurePanel(wx.Panel):
 
     def OnButton_Start(self, event):
         """ Starts an automatic measurement routine. """
+        global xscalevar
+        global yscalevar
 
         if self.outputFolderTb.GetValue() == "":
             print("Please Choose Location to Save Measurement Results.")
         else:
             optDevSet = set()
+            self.noOptMatrix = False
             for devName in self.coordMapPanelOpt.GDSDevList:
                 optDevSet.add(devName)
             if len(optDevSet) < len(self.coordMapPanelOpt.GDSDevList):
                 print("Please Use Three Different Devices for the Optical Matrix.")
+                self.noOptMatrix = True
             else:
                 self.autoMeasure.findCoordinateTransformOpt(self.coordMapPanelOpt.getMotorCoords(),
                                                         self.coordMapPanelOpt.getGdsCoordsOpt())
+            self.noElecMatrix = False
             if self.autoMeasure.motorElec and self.autoMeasure.smu:
                 elecDevSet = set()
                 for devName in self.coordMapPanelElec.GDSDevList:
                     elecDevSet.add(devName)
                 if len(elecDevSet) < len(self.coordMapPanelElec.GDSDevList):
                     print("Please Use Three Different Devices for the Electrical Matrix.")
+                    self.noElecMatrix = True
                 else:
                     self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
                                                         self.coordMapPanelElec.getGdsCoordsElec())
 
-            # Disable detector auto measurement
-            if self.autoMeasure.laser:
-                self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.haltDetTimer()
+                if self.noElecMatrix is True or self.noOptMatrix is True:
+                    pass
+                else:
+                    # Disable detector auto measurement
+                    if self.autoMeasure.laser:
+                        self.autoMeasure.laser.ctrlPanel.laserPanel.laserPanel.haltDetTimer()
 
-            # Make a folder with the current time
-            timeStr = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
-            self.autoMeasure.saveFolder = os.path.join(self.outputFolderTb.GetValue(), timeStr)
-            if not os.path.exists(self.autoMeasure.saveFolder):
-                os.makedirs(self.autoMeasure.saveFolder)
+                    # Make a folder with the current time
+                    timeStr = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
+                    self.autoMeasure.saveFolder = os.path.join(self.outputFolderTb.GetValue(), timeStr)
+                    if not os.path.exists(self.autoMeasure.saveFolder):
+                        os.makedirs(self.autoMeasure.saveFolder)
 
-            # Create list of all devices which are selected for measurement from the checklist
-            checkedDevicesText = []
+                    # Create list of all devices which are selected for measurement from the checklist
+                    checkedDevicesText = []
 
-            for i in range(self.checkList.GetItemCount()):  # self.device_list:
-                if self.checkList.IsItemChecked(i):
-                    for device in self.autoMeasure.devices:
-                        if device.getDeviceID() == self.checkList.GetItemText(i):
-                            if device.hasRoutines():
-                                checkedDevicesText.append(self.checkList.GetItemText(i))
+                    for i in range(self.checkList.GetItemCount()):  # self.device_list:
+                        if self.checkList.IsItemChecked(i):
+                            for device in self.autoMeasure.devices:
+                                if device.getDeviceID() == self.checkList.GetItemText(i):
+                                    if device.hasRoutines():
+                                        checkedDevicesText.append(self.checkList.GetItemText(i))
 
-            activeDetectors = self.getActiveDetectors()
+                    activeDetectors = self.getActiveDetectors()
 
-            # Set scaling factor within automeasure
-            global xscalevar
-            global yscalevar
-            self.autoMeasure.setScale(xscalevar, yscalevar)
+                    # Set scaling factor within automeasure
 
-            if not activeDetectors:
-                print("Please Select a Detector.")
+                    self.autoMeasure.setScale(xscalevar, yscalevar)
 
-            elif not checkedDevicesText:
-                print("Please Select Devices to Measure.")
+                    if not activeDetectors:
+                        print("Please Select a Detector.")
 
-            else:
-                #for threading version
+                    elif not checkedDevicesText:
+                        print("Please Select Devices to Measure.")
 
-                #pid = os.fork()
-
-                #p = Process(target=self.autoMeasure.beginMeasure, args=(checkedDevicesText, self.checkList,
-                                            #activeDetectors, self.camera, None, None, True))
-                q = Queue()
-                data = []
-                self.autoMeasure.smu.automeasureflag = False
-                p = Thread(target=self.autoMeasure.beginMeasure, args=(checkedDevicesText, self.checkList, activeDetectors, self.camera, data, None, None, True))
-                #p = Process(target=self.autoMeasure.test)
-                p.daemon = True
-                p.start()
-
-                #while True:
-                    #print(data)
-                    #drawGraph()
-                    #data.clear()
-
-
-
-                #if pid == 0:
-                    # Start measurement using the autoMeasure device
-                    #self.autoMeasure.beginMeasure(devices=checkedDevicesText, checkList=self.checkList,
-                                            #activeDetectors=activeDetectors, camera=self.camera, abortFunction=None,
-                                            #updateFunction=None, updateGraph=True)
-
-
-                    # Create a measurement progress dialog.
-                    #autoMeasureDlg = autoMeasureProgressDialog(self, title='Automatic measurement')
-                    #autoMeasureDlg.runMeasurement(checkedDevicesText, self.autoMeasure)
-
-                    # Enable detector auto measurement
+                    else:
+                        q = Queue()
+                        data = []
+                        self.autoMeasure.smu.automeasureflag = False
+                        p = Thread(target=self.autoMeasure.beginMeasure, args=(
+                        checkedDevicesText, self.checkList, activeDetectors, self.camera, data, None, None, True))
+                        p.daemon = True
+                        p.start()
 
     def OnButton_createinfoframe(self, event):
         """Creates filter frame when filter button is pressed"""

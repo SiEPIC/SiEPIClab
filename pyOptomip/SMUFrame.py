@@ -51,7 +51,7 @@ class topSMUPanel(wx.Panel):
         self.graph = myMatplotlibPanel.myMatplotlibPanel(self) #use for regular mymatplotlib file
         hbox.Add(self.graph, flag=wx.EXPAND, border=0, proportion=1)
 
-        SMUpanel = SMUPanel(self, self.graph)
+        SMUpanel = SMUPanel(self, self.graph, self.smu)
         SMUpanel.smu = self.smu
         vbox.Add(SMUpanel, flag=wx.LEFT | wx.TOP | wx.ALIGN_LEFT, border=0, proportion=0)
         vbox.Add((-1, 2))
@@ -66,8 +66,9 @@ class topSMUPanel(wx.Panel):
 
 class SMUPanel(wx.Panel):
 
-    def __init__(self, parent, graph):
+    def __init__(self, parent, graph, smu):
         super(SMUPanel, self).__init__(parent)
+        self.smu = smu
         self.graphPanel = graph
         self.InitUI()
         self.plotflag = ''
