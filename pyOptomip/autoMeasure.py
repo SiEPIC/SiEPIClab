@@ -47,6 +47,7 @@ class autoMeasure(object):
             smu: smu object controls SMU
             fineAlign: fineAlign object
         """
+        global beginMeasure
         self.laser = laser
         self.motorOpt = motorOpt
         self.motorElec = motorElec
@@ -1195,7 +1196,7 @@ class autoMeasure(object):
             if updateFunction is not None:
                 updateFunction(i)
 
-            print("{} Completed, Results Saved to ".format(device.getDeviceID()) + str(self.saveFolder))
+            print("Automeasure Completed, Results Saved to " + str(self.saveFolder))
 
     def setScale(self, x, y):
         self.xscalevar = x
