@@ -37,6 +37,8 @@ from threading import Thread
 from queue import Queue
 import matplotlib.pyplot as plt
 from scipy.io import savemat
+import os.path
+from os import path
 global deviceList
 global xscalevar
 global yscalevar
@@ -446,13 +448,15 @@ class autoMeasurePanel(wx.Panel):
         ROOT_DIR = format(os.getcwd())
         scalefactorcsv = ROOT_DIR + '\ScaleFactor.csv'
 
-        f = open(scalefactorcsv, 'r', newline='')
-        reader = csv.reader(f)
-        xscalevar = float(next(reader)[0])
-        yscalevar = float(next(reader)[0])
+        if path.exists(scalefactorcsv):
 
-        #xscalevar = 0.82
-        #yscalevar = 0.8
+            f = open(scalefactorcsv, 'r', newline='')
+            reader = csv.reader(f)
+            xscalevar = float(next(reader)[0])
+            yscalevar = float(next(reader)[0])
+        else:
+            xscalevar = 1
+            yscalevar = 1
         self.testParametersPath = []
         # No testing parameters have been uploaded
         self.parametersImported = False
