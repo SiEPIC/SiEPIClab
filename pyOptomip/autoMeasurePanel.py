@@ -443,8 +443,16 @@ class autoMeasurePanel(wx.Panel):
         global yscalevar
         global stopflag
         stopflag = False
-        xscalevar = 0.82
-        yscalevar = 0.8
+        ROOT_DIR = format(os.getcwd())
+        scalefactorcsv = ROOT_DIR + '\ScaleFactor.csv'
+
+        f = open(scalefactorcsv, 'r', newline='')
+        reader = csv.reader(f)
+        xscalevar = float(next(reader)[0])
+        yscalevar = float(next(reader)[0])
+
+        #xscalevar = 0.82
+        #yscalevar = 0.8
         self.testParametersPath = []
         # No testing parameters have been uploaded
         self.parametersImported = False
@@ -691,6 +699,18 @@ class autoMeasurePanel(wx.Panel):
             self.coordMapPanelElec.stxMotorCoordLst[2] = self.coordMapPanelElec.tbxMotorCoord3.GetValue()
             self.coordMapPanelElec.styMotorCoordLst[2] = self.coordMapPanelElec.tbyMotorCoord3.GetValue()
             self.coordMapPanelElec.stzMotorCoordLst[2] = self.coordMapPanelElec.tbzMotorCoord3.GetValue()
+
+        ROOT_DIR = format(os.getcwd())
+        scalefactorcsv = ROOT_DIR + '\ScaleFactor.csv'
+
+
+        f = open(scalefactorcsv, 'w', newline='')
+        writer = csv.writer(f)
+        textType = [str(xscalevar)]
+        writer.writerow(textType)
+        writer = csv.writer(f)
+        textType = [str(yscalevar)]
+        writer.writerow(textType)
 
     def Event_OnCoordButton(self, event, xcoord):
         """ Called when the button is pressed to get the current motor coordinates, and put it into the text box. """
