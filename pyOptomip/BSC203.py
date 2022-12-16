@@ -20,6 +20,7 @@ class BSC203Motor:
         self.minXPosition = 0
         self.maxZPositionSet = False
         self.maxZPosition = 0
+        self.atZPosition = False
 
     def connect(self, SerialPortName, NumberOfAxis):
         self.visaName = SerialPortName
@@ -63,6 +64,7 @@ class BSC203Motor:
                 self.position[2] = self.position[2] - z
                 if x != 0 or y !=0:
                     print("Please Lift Wedge Probe.")
+                    self.atZPosition = True
             else:
                 self.bsc.move_relative(distance=int(1000 * x), bay=0, channel=0)
                 self.bsc.move_relative(distance=int(1000 * y), bay=1, channel=0)
@@ -78,6 +80,7 @@ class BSC203Motor:
                 self.position[2] = self.position[2] - z
                 if x != 0 or y !=0:
                     print("Please Lift Wedge Probe.")
+                    self.atZPosition = True
             else:
                 self.bsc.move_relative(distance=int(1000 * x), bay=0, channel=0)
                 self.bsc.move_relative(distance=int(1000 * y), bay=1, channel=0)
