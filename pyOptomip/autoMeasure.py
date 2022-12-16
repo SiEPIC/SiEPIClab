@@ -1164,9 +1164,9 @@ class autoMeasure(object):
                         # save all associated files
                         self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', ii, wav[l] * 1e9, pow[l],
                                         'Wavelength sweep w Bias Voltage', motorCoordOpt, timeStart, timeStop,
-                                       chipTimeStart, self.devFolder, routine+str(voltage), leg=2)
+                                       chipTimeStart, self.devFolder, routine+str(voltage), leg=0)
 
-                        self.drawGraph(wav[l] * 1e9, pow[l], self.graphPanel, 'Wavelength (nm)', 'Power (dBm)', legend=2)
+                        self.drawGraph(wav[l] * 1e9, pow[l], self.graphPanel, 'Wavelength (nm)', 'Power (dBm)', legend=0)
 
 
                     for det in range(len(self.activeDetectors)):
