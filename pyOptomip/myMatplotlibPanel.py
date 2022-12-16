@@ -1,3 +1,4 @@
+
 # This module modifies some of the routines in the matplotlib module. The code
 # for the modified routines are copied here and modified.
 # Copyright (c) 2012-2013 Matplotlib Development Team; All Rights Reserved

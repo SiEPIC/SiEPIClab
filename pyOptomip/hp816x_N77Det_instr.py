@@ -281,7 +281,6 @@ class hp816x_N77Det(hp816x_instr.hp816x):
 
                 self.checkError(res)
                 numPts = int(c_numPts.value)
-
             # Set range params
             for ii in self.activeSlotIndex:
                 self.setRangeParams(ii, float(self.sweepInitialRange), float(self.sweepRangeDecrement))

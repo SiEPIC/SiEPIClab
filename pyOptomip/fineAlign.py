@@ -20,7 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+
 # Version 1.1
+
 import math
 import numpy as np
 import hp816x_instr
@@ -51,7 +53,6 @@ class fineAlign(object):
     NO_ERROR = 0
     DEVICE_NOT_FOUND = 1
     FINE_ALIGN_ABORTED = 2
-
     def __init__(self, laser, stage):
         self.laser = laser
         self.stage = stage
@@ -70,7 +71,6 @@ class fineAlign(object):
             self.laser.setPWMPowerRange(detSlot, detChan, 'auto', 0)
             # Try to set laser output. If the laser only has one output, an error is thrown
             # which will be ignored here
-
             try:
                 self.laser.setTLSOutput(self.laserOutput, slot=self.laserSlot)
             except hp816x_instr.InstrumentError:
@@ -141,7 +141,7 @@ class fineAlign(object):
                     return self.FINE_ALIGN_ABORTED
                 elif power > self.threshold:
                     return self.NO_ERROR
-
+                    
             numSteps += 1
 
             # Swap sweep direction
@@ -170,24 +170,20 @@ class fineAlign(object):
 
             self.stage.moveRelative(-2 * self.stepSize, 0)
             power_negx = self.laser.readPWM(detSlot, detChan)
-
             if power_negx > power:
                 peakFoundCount = 0
                 continue
 
             self.stage.moveRelative(self.stepSize, self.stepSize)
             power_posy = self.laser.readPWM(detSlot, detChan)
-
             if power_posy > power:
                 peakFoundCount = 0
                 continue
 
             self.stage.moveRelative(0, -2 * self.stepSize)
             power_negy = self.laser.readPWM(detSlot, detChan)
-
             if power_negy > power:
                 peakFoundCount = 0
-
                 continue
 
             self.stage.moveRelative(0, self.stepSize)
