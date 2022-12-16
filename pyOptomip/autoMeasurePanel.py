@@ -239,6 +239,9 @@ class coordinateMapPanel(wx.Panel):
                 if not self.maxZElecPosition:
                     self.maxZElecPosition.append(elecPosition[2])
                     self.setMaxZPositionForMotor(self.maxZElecPosition[0])
+                else:
+                    self.maxZElecPosition[0] = elecPosition[2]
+                    self.setMaxZPositionForMotor(self.maxZElecPosition[0])
                 xcoord.SetValue(str(relativePosition[0]))
                 ycoord.SetValue(str(relativePosition[1]))
                 zcoord.SetValue(str(relativePosition[2]))

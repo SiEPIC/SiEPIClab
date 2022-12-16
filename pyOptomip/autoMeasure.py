@@ -32,6 +32,8 @@ import time
 import matplotlib.pyplot as plt
 from ElectroOpticDevice import ElectroOpticDevice
 from measurementRoutines import measurementRoutines
+import warnings
+warnings.filterwarnings("ignore")
 
 
 class autoMeasure(object):
@@ -1203,7 +1205,8 @@ class autoMeasure(object):
             if updateFunction is not None:
                 updateFunction(i)
 
-            print("Automeasure Completed, Results Saved to " + str(self.saveFolder))
+        print("Automeasure Completed, Results Saved to " + str(self.saveFolder))
+        print("***********************************************")
             # Enable detector auto measurement
             #self.laser.ctrlPanel.laserPanel.laserPanel.startDetTimer()
         self.smu.automeasureflag = True
@@ -1211,9 +1214,6 @@ class autoMeasure(object):
     def setScale(self, x, y):
         self.xscalevar = x
         self.yscalevar = y
-
-    def test(self):
-        print("hi there")
 
     def moveToDevice(self, deviceName):
         """
@@ -1354,7 +1354,7 @@ class autoMeasure(object):
         path = saveFolder
         d1 = deviceObject.getDeviceID().replace(":", "")
         pdfFileName = os.path.join(path, saveFolder + "\\" + routineName + ".pdf")
-        plt.ion()
+        #plt.ion()
         plt.figure()
         plt.plot(xarr, yarr)
         plt.xlabel(x)
@@ -1367,7 +1367,7 @@ class autoMeasure(object):
             plt.legend(self.wavstringlist)
         plt.savefig(pdfFileName)
         plt.close('all')
-        plt.ioff()
+        #plt.ioff()
 
     def save_mat(self, deviceObject, devNum, motorCoordOpt, xArray, yArray, x, y, saveFolder, routineName):
         path = saveFolder
