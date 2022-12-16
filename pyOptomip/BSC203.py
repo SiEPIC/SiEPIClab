@@ -72,6 +72,8 @@ class BSC203Motor:
                 self.position[0] = self.position[0] - x
                 self.position[1] = self.position[1] - y
                 self.position[2] = self.position[2] - z
+                if self.position[2] <= self.maxZPosition:
+                    self.atZPosition = False
         elif self.minPositionSet is True and self.maxZPositionSet is True:
             if self.position[0] - x < self.minXPosition:
                 print("Cannot Move Past Minimum X Position.")
@@ -88,6 +90,8 @@ class BSC203Motor:
                 self.position[0] = self.position[0] - x
                 self.position[1] = self.position[1] - y
                 self.position[2] = self.position[2] - z
+                if self.position[2] <= self.maxZPosition:
+                    self.atZPosition = False
 
 
     def moveRelativeX(self, x):
