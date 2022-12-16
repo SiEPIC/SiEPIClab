@@ -308,6 +308,8 @@ class TopPanel(wx.Panel):
             self.devicedict[device.device_id]['Routines'] = device.routines
             if len(device.electricalCoordinates) != 0:
                 self.devicedict[device.device_id]['Electrical Coordinates'] = [device.electricalCoordinates[0][1], device.electricalCoordinates[0][2], device.electricalCoordinates[0][0]]
+            else:
+                self.devicedict[device.device_id]['Electrical Coordinates'] = []
 
         global deviceList
         global groupList
