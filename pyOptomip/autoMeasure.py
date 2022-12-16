@@ -245,24 +245,26 @@ class autoMeasure(object):
         Returns:
             M: a matrix used to map gds coordinates to motor coordinates.
         """
+        try:
+            if all(item == 0 for item in motorCoords) and all(item == 0 for item in gdsCoords):
+                motorMatrix = np.array([[motorCoords[0][0], motorCoords[1][0], motorCoords[2][0]],
+                                        [motorCoords[0][1], motorCoords[1][1], motorCoords[2][1]],
+                                        [motorCoords[0][2], motorCoords[1][2], motorCoords[2][2]]])
 
-        if all(item == 0 for item in motorCoords) and all(item == 0 for item in gdsCoords):
-            motorMatrix = np.array([[motorCoords[0][0], motorCoords[1][0], motorCoords[2][0]],
-                                    [motorCoords[0][1], motorCoords[1][1], motorCoords[2][1]],
-                                    [motorCoords[0][2], motorCoords[1][2], motorCoords[2][2]]])
+                gdsMatrix = np.array([[gdsCoords[0][0], gdsCoords[1][0], gdsCoords[2][0]],
+                                    [gdsCoords[0][1], gdsCoords[1][1], gdsCoords[2][1]],
+                                    [1, 1, 1]])
 
-            gdsMatrix = np.array([[gdsCoords[0][0], gdsCoords[1][0], gdsCoords[2][0]],
-                                  [gdsCoords[0][1], gdsCoords[1][1], gdsCoords[2][1]],
-                                  [1, 1, 1]])
+                transpose = gdsMatrix.T
 
-            transpose = gdsMatrix.T
+                row1 = np.linalg.solve(transpose, motorMatrix[0])
+                row2 = np.linalg.solve(transpose, motorMatrix[1])
+                row3 = np.linalg.solve(transpose, motorMatrix[2])
 
-            row1 = np.linalg.solve(transpose, motorMatrix[0])
-            row2 = np.linalg.solve(transpose, motorMatrix[1])
-            row3 = np.linalg.solve(transpose, motorMatrix[2])
-
-            self.TMelec = vstack((row1, row2, row3))
-            return self.TMelec
+                self.TMelec = vstack((row1, row2, row3))
+                return self.TMelec
+        except:
+            print('Please adjust electrical coords by a few um\'s to avoid matrix having determinant of 0')
 
     def gdsToMotorCoordsOpt(self, gdsCoords):
         """ Uses the calculated affine transform to map a GDS coordinate to a motor coordinate.
