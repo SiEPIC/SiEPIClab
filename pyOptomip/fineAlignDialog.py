@@ -23,58 +23,54 @@
 import wx
 from wx.lib.delayedresult import startWorker
 
+
 # Dialog box that appears while running a fine align.
 class fineAlignDialog(wx.Dialog):
 
     def __init__(self, *args, **kw):
-        super(fineAlignDialog, self).__init__(*args, **kw) 
+        super(fineAlignDialog, self).__init__(*args, **kw)
         self.InitUI()
-        
+
     def InitUI(self):
         vbox = wx.BoxSizer(wx.VERTICAL)
-        
+
         st1 = wx.StaticText(self, label='Performing fine align...')
-        
+
         vbox.Add(st1, proportion=0, flag=wx.ALIGN_CENTRE)
 
-        
         self.stopBtn = wx.Button(self, wx.ID_STOP)
-        self.stopBtn.Bind( wx.EVT_BUTTON, self.OnButton_Stop)
+        self.stopBtn.Bind(wx.EVT_BUTTON, self.OnButton_Stop)
         vbox.Add(self.stopBtn, proportion=0, flag=wx.ALIGN_CENTRE)
-        
-        
+
         self.Bind(wx.EVT_CLOSE, self.OnClose)
-        
+
         self.SetSizerAndFit(vbox)
-        
+
     def OnClose(self, event):
         self.fineAlign.abort = True
-        
 
     def runFineAlign(self, fineAlign):
         self.fineAlign = fineAlign
         self.exception = None
         startWorker(self.fineAlignDoneCb, self.doFineAlign, wargs=[fineAlign])
         self.ShowModal()
-        
-        
-    def doFineAlign(self,fineAlign):
+
+    def doFineAlign(self, fineAlign):
         try:
             fineAlign.abort = False
             fineAlign.doFineAlign()
         except Exception as e:
             self.exception = e
-            
-    def fineAlignDoneCb(self,result):
+
+    def fineAlignDoneCb(self, result):
         result.get()
         if self.exception:
-            print(self.exception)
+            print
+            self.exception
         self.fineAlign.abort = False
         self.Destroy()
-            
-        
-    def OnButton_Stop(self,event):
+
+    def OnButton_Stop(self, event):
         self.fineAlign.abort = True
-        
-        
-        
+
+

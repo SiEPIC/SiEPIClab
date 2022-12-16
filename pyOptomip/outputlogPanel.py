@@ -22,23 +22,21 @@
 
 import wx
 
+
 class outputlogPanel(wx.Panel):
     def __init__(self, parent):
         super(outputlogPanel, self).__init__(parent)
         self.InitUI()
-        
-        
+
     def InitUI(self):
         sb = wx.StaticBox(self, label='Output Log');
         vbox = wx.StaticBoxSizer(sb, wx.VERTICAL)
-        
-        self.outputlog = wx.TextCtrl(self, value='',style=wx.TE_MULTILINE|wx.TE_READONLY|wx.EXPAND)
-        
-        vbox.AddMany([(self.outputlog,1,wx.EXPAND)])
-        
+
+        self.outputlog = wx.TextCtrl(self, value='', style=wx.TE_MULTILINE | wx.TE_READONLY | wx.EXPAND)
+
+        vbox.AddMany([(self.outputlog, 1, wx.EXPAND)])
+
         self.SetSizer(vbox)
-    
-        
-        
-        
-         
+
+
+
