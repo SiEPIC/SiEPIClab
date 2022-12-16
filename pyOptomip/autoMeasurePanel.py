@@ -1166,15 +1166,6 @@ class autoMeasurePanel(wx.Panel):
             else:
                 #for threading version
 
-                #self.autoMeasure.panelDevices = checkedDevicesText
-                #self.autoMeasure.self.panelChecklist = self.checkList
-                #self.autoMeasure.self.panelDetectors = activeDetectors
-                #self.autoMeasure. self.panelCamera = self.camera
-                #self.autoMeasure.self.panelAbortfunction = None
-                #self.autoMeasure.self.panelUpdateFunction = None
-                #self.autoMeasure.self.panelUpdateGraph = True
-                #self.autoMeasure.start()
-
                 #pid = os.fork()
 
                 p = Process(target=self.autoMeasure.beginMeasure, args=(checkedDevicesText, self.checkList,
