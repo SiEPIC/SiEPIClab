@@ -689,6 +689,17 @@ class autoMeasurePanel(wx.Panel):
             self.coordMapPanelElec.styMotorCoordLst[2] = self.coordMapPanelElec.tbyMotorCoord3.GetValue()
             self.coordMapPanelElec.stzMotorCoordLst[2] = self.coordMapPanelElec.tbzMotorCoord3.GetValue()
 
+        ROOT_DIR = format(os.getcwd())
+        scalefactorcsv = ROOT_DIR + '\ScaleFactor.csv'
+
+        f = open(scalefactorcsv, 'w', newline='')
+        writer = csv.writer(f)
+        textType = ["X:" + str(xscalevar)]
+        writer.writerow(textType)
+        textType = ["Y:" + str(yscalevar)]
+        writer.writerow(textType)
+
+
     def Event_OnCoordButton(self, event, xcoord):
         """ Called when the button is pressed to get the current motor coordinates, and put it into the text box. """
         elecPosition = self.autoMeasure.motorElec.getPosition()
