@@ -32,6 +32,8 @@ import time
 import matplotlib.pyplot as plt
 from ElectroOpticDevice import ElectroOpticDevice
 from measurementRoutines import measurementRoutines
+import warnings
+warnings.filterwarnings("ignore")
 
 
 class autoMeasure(object):
@@ -635,13 +637,17 @@ class autoMeasure(object):
                             else:
                                 self.detstringlist.append('Detector Slot ' + str(det + 1))
 
+                    if len(self.activeDetectors) == 1:
+                        legend = 0
+                    else:
+                        legend = 1
 
                     # save all associated files
                     self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', ii, wav * 1e9, pow,
                                     'Wavelength sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
-                                   self.devFolder, routine, leg = 1)
+                                   self.devFolder, routine, leg=legend)
 
-                    self.drawGraph(wav * 1e9, pow, self.graphPanel, 'Wavelength (nm)', 'Power (dBm)', legend=0)
+                    self.drawGraph(wav * 1e9, pow, self.graphPanel, 'Wavelength (nm)', 'Power (dBm)', legend=legend)
                     #data.extend([wav * 1e9, pow, self.graphPanel, 'Wavelength (nm)', 'Power (dBm)', legend=0])
 
             if device.getSetWavelengthVoltageSweepRoutines() and self.laser and self.motorElec and self.smu:
@@ -1158,9 +1164,9 @@ class autoMeasure(object):
                         # save all associated files
                         self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', ii, wav[l] * 1e9, pow[l],
                                         'Wavelength sweep w Bias Voltage', motorCoordOpt, timeStart, timeStop,
-                                       chipTimeStart, self.devFolder, routine+str(voltage))
+                                       chipTimeStart, self.devFolder, routine+str(voltage), leg=2)
 
-                        self.drawGraph(wav[l] * 1e9, pow[l], self.graphPanel, 'Wavelength (nm)', 'Power (dBm)')
+                        self.drawGraph(wav[l] * 1e9, pow[l], self.graphPanel, 'Wavelength (nm)', 'Power (dBm)', legend=2)
 
 
                     for det in range(len(self.activeDetectors)):
@@ -1190,6 +1196,7 @@ class autoMeasure(object):
                                         'Wavelength sweep w Bias Voltage', motorCoordOpt, timeStart, timeStop,
                                         chipTimeStart, self.devFolder, routine + '_combinedVoltages' + '_Detector' + str(det), 2)
                         self.drawGraph(wav3, pow3, self.graphPanel, 'Wavelength (nm)', 'Power (dBm)', legend=2)
+
             camera.stoprecord()
 
             if abortFunction is not None and abortFunction():
@@ -1198,17 +1205,15 @@ class autoMeasure(object):
             if updateFunction is not None:
                 updateFunction(i)
 
-            print("Automeasure Completed, Results Saved to " + str(self.saveFolder))
+        print("Automeasure Completed, Results Saved to " + str(self.saveFolder))
+        print("***********************************************")
             # Enable detector auto measurement
             #self.laser.ctrlPanel.laserPanel.laserPanel.startDetTimer()
-            self.smu.automeasureflag = True
+        self.smu.automeasureflag = True
 
     def setScale(self, x, y):
         self.xscalevar = x
         self.yscalevar = y
-
-    def test(self):
-        print("hi there")
 
     def moveToDevice(self, deviceName):
         """
@@ -1349,6 +1354,7 @@ class autoMeasure(object):
         path = saveFolder
         d1 = deviceObject.getDeviceID().replace(":", "")
         pdfFileName = os.path.join(path, saveFolder + "\\" + routineName + ".pdf")
+        #plt.ion()
         plt.figure()
         plt.plot(xarr, yarr)
         plt.xlabel(x)
@@ -1360,7 +1366,8 @@ class autoMeasure(object):
         if legend == 3:
             plt.legend(self.wavstringlist)
         plt.savefig(pdfFileName)
-        plt.close()
+        plt.close('all')
+        #plt.ioff()
 
     def save_mat(self, deviceObject, devNum, motorCoordOpt, xArray, yArray, x, y, saveFolder, routineName):
         path = saveFolder
@@ -1551,7 +1558,7 @@ class autoMeasure(object):
         f.close()
 
     def saveFiles(self, deviceObject, x, y, devNum, xArray, yArray, testType, motorCoord, start, stop, chipStart, saveFolder, routineName, leg = 0):
-        #self.save_pdf(deviceObject, x, y, xArray, yArray, saveFolder, routineName, legend = leg)
+        self.save_pdf(deviceObject, x, y, xArray, yArray, saveFolder, routineName, legend = leg)
         self.save_mat(deviceObject, devNum, motorCoord, xArray, yArray, x, y, saveFolder, routineName)
         self.save_csv(deviceObject, testType, xArray, yArray, start, stop, chipStart, motorCoord, devNum, saveFolder, routineName, x, y)
 
