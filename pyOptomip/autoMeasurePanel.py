@@ -666,9 +666,12 @@ class autoMeasurePanel(wx.Panel):
             self.autoMeasure.motorOpt.moveRelative(-1000, 0, 0)
             self.OnButton_GotoDevice(0)
         if self.part == 1:
+            self.autoMeasure.motorElec.moveRelativeZ(300)
             self.autoMeasure.motorOpt.moveRelative(1000, 0, 0)
             xside = self.autoMeasure.motorElec.xbank
             yside = self.autoMeasure.motorElec.ybank
+            if yside == 0:
+                yside = 0.00000001
             self.theta = math.atan(xside/yside)
             self.theta = (math.pi/2) - self.theta
             print('The misalignment angle is ' + str(self.theta))
@@ -905,12 +908,15 @@ class autoMeasurePanel(wx.Panel):
 
     def OnButton_Import(self, event):
         """ Opens a file dialog to select a csv alignment file and populates all position fields"""
-        fileDlg = wx.FileDialog(self, "Open", "", "",
+        try:
+            fileDlg = wx.FileDialog(self, "Open", "", "",
                                 "Text Files (*.csv)|*.csv",
                                 wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
-        fileDlg.ShowModal()
-        filePath = fileDlg.GetPath()
-        f = open(filePath, 'r', newline='')
+            fileDlg.ShowModal()
+            filePath = fileDlg.GetPath()
+            f = open(filePath, 'r', newline='')
+        except:
+            return
         reader = csv.reader(f)
         textCoordPath = next(reader)
         for path in textCoordPath:
@@ -978,12 +984,14 @@ class autoMeasurePanel(wx.Panel):
 
     def OnButton_ImportTestingParameters(self, event):
         """Imports a testing parameters file and stores data as a dictionary"""
-
-        fileDlg = wx.FileDialog(self, "Open", "", "",
+        try:
+            fileDlg = wx.FileDialog(self, "Open", "", "",
                                 "YAML Files (*.yaml)|*.yaml",
                                 wx.FD_OPEN | wx.FD_MULTIPLE | wx.FD_FILE_MUST_EXIST)
-        fileDlg.ShowModal()
-        Files = fileDlg.GetPaths()
+            fileDlg.ShowModal()
+            Files = fileDlg.GetPaths()
+        except:
+            return
 
         if not Files:
             print('Please select a file to import')

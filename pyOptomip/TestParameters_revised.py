@@ -270,16 +270,19 @@ class TopPanel(wx.Panel):
         -------
 
         """
-
         """ Opens a file dialog to select a coordinate file. """
-        fileDlg = wx.FileDialog(self, "Open", "", "",
+        try:
+            fileDlg = wx.FileDialog(self, "Open", "", "",
                                 "Text Files (*.txt)|*.txt",
                                 wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
-        fileDlg.ShowModal()
-        self.filter = []
-        self.coordFileTb.SetValue(fileDlg.GetFilenames()[0])
+            fileDlg.ShowModal()
+            self.filter = []
+            self.coordFileTb.SetValue(fileDlg.GetFilenames()[0])
         # fileDlg.Destroy()
-        self.autoMeasure.readCoordFile(fileDlg.GetPath())
+            self.autoMeasure.readCoordFile(fileDlg.GetPath())
+        except:
+            return
+
         self.devicesselected = []
 
         self.devicedict = {}
