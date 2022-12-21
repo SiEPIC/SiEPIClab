@@ -35,6 +35,7 @@ Last updated: July 15, 2014
 
 import time
 import pyvisa as visa
+import math
 
 
 class CorvusEcoClass:
@@ -62,6 +63,10 @@ class CorvusEcoClass:
         self.ser.baud_rate = 57600  # Sets baudrate
         self.ser.write('identify')  # Asks for identification
         self.position = [0,0,0]
+        self.calflag = False
+        self.xbank = 0
+        self.ybank = 0
+        self.theta = 0
         print((self.ser.read() + ' [Model Name][Hardware Ver][Software Ver][Internal Use][Dip-Switch]'))
         print('Connected\n')
 
@@ -227,6 +232,7 @@ class CorvusEcoClass:
         if self.NumberOfAxis == 2:
             try:
                 self.ser.write(str(distance) + ' 0 r')
+                self.position[0] = self.position[0] + distance
                 # print ('Move Complete')
             except:
                 print('An Error has occured')
@@ -235,6 +241,7 @@ class CorvusEcoClass:
         if self.NumberOfAxis == 3:
             try:
                 self.ser.write(str(distance) + ' 0 0 r')
+                self.position[0] = self.position[0] + distance
                 # print ('Move Complete')
             except:
                 print('An Error has occured')

@@ -24,6 +24,7 @@ import myMatplotlibPanel
 import myMatplotlibPanel_pyplot
 import wx
 import csv
+import time
 import numpy as np
 from keithley2600 import Keithley2600
 from SMU import SMUClass

@@ -63,6 +63,7 @@ class autoMeasure(object):
         self.saveoptposition3 = []
         self.xscalevar = 0
         self.yscalevar = 0
+        self.matrixissueflag = False
 
         self.wavelengthSweeps = {'RoutineName': [], 'Start': [], 'Stop': [], 'Stepsize': [], 'Sweeppower': [], 'Sweepspeed': [],
                                  'Laseroutput': [], 'Numscans': [], 'InitialRange': [], 'RangeDec': []}
@@ -265,6 +266,7 @@ class autoMeasure(object):
                 return self.TMelec
         except:
             print('Please adjust electrical coords by a few um\'s to avoid matrix having determinant of 0')
+            self.matrixissueflag = True
 
     def gdsToMotorCoordsOpt(self, gdsCoords):
         """ Uses the calculated affine transform to map a GDS coordinate to a motor coordinate.
@@ -293,6 +295,7 @@ class autoMeasure(object):
             coordinates.
         """
         gdsVector = np.array([[gdsCoords[0]], [gdsCoords[1]], [1]])
+
 
         newMotorCoords = self.TMelec @ gdsVector
 

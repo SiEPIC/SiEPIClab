@@ -23,6 +23,7 @@
 import traceback
 import wx
 import wx.lib.mixins.listctrl
+import math
 from autoMeasureProgressDialog import autoMeasureProgressDialog
 import os
 import time
@@ -220,6 +221,7 @@ class coordinateMapPanel(wx.Panel):
         """ Called when the button is pressed to get the current motor coordinates, and put it into the text box. """
         global xscalevar
         global yscalevar
+        self.startingstageposition = self.autoMeasure.motorOpt.position
         if self.type == "opt":
             motorPosition = self.autoMeasure.motorOpt.getPosition()
             xcoord.SetValue(str(motorPosition[0]))
@@ -441,8 +443,11 @@ class autoMeasurePanel(wx.Panel):
         self.device_list = []
         self.camera = camera
         self.calibrationflag = False
+        self.part = 0
         global xscalevar
         global yscalevar
+        xscalevar = 0.8
+        yscalevar = 0.8
         global stopflag
         stopflag = False
         ROOT_DIR = format(os.getcwd())
@@ -454,9 +459,14 @@ class autoMeasurePanel(wx.Panel):
             reader = csv.reader(f)
             xscalevar = float(next(reader)[0])
             yscalevar = float(next(reader)[0])
+            self.theta = float(next(reader)[0])
+            print('X axis scale adjustment is: ' + str(xscalevar))
+            print('Y axis scale adjustment is: ' + str(yscalevar))
+            print('Angle of misalignment is: ' + str(self.theta * (180 / math.pi)) + ' degrees')
+            self.caldone = True
         else:
-            xscalevar = 1
-            yscalevar = 1
+            self.theta = 0
+            self.caldone = False
         self.testParametersPath = []
         # No testing parameters have been uploaded
         self.parametersImported = False
@@ -549,21 +559,24 @@ class autoMeasurePanel(wx.Panel):
         scaletext = wx.StaticBox(self, label='Scale Adjust')
         scalehbox = wx.StaticBoxSizer(scaletext, wx.HORIZONTAL)
 
-        self.setscaleBtn = wx.Button(self, label='Set Scale Adjustment', size=(150, 20))
-        self.setscaleBtn.Bind(wx.EVT_BUTTON, self.changescale)
+        #self.setscaleBtn = wx.Button(self, label='Set Scale Adjustment', size=(150, 20))
+        #self.setscaleBtn.Bind(wx.EVT_BUTTON, self.changescale)
 
-        sw1 = wx.StaticText(self, label='X: ')
-        self.xadjust = wx.TextCtrl(self, size=(60, 18))
-        self.xadjust.SetValue('')
+        self.setscaleBtn = wx.Button(self, label='Calibration Location Set', size=(150, 20))
+        self.setscaleBtn.Bind(wx.EVT_BUTTON, self.calibrationroutine)
 
-        sw2 = wx.StaticText(self, label='Y: ')
-        self.yadjust = wx.TextCtrl(self, size=(60, 18))
-        self.yadjust.SetValue('')
+        #sw1 = wx.StaticText(self, label='X: ')
+        #self.xadjust = wx.TextCtrl(self, size=(60, 18))
+        #self.xadjust.SetValue('')
 
-        self.scaleinfoBtn = wx.Button(self, id=1, label='?', size=(20, 20))
-        self.scaleinfoBtn.Bind(wx.EVT_BUTTON, self.OnButton_createinfoframe)
+        #sw2 = wx.StaticText(self, label='Y: ')
+        #self.yadjust = wx.TextCtrl(self, size=(60, 18))
+        #self.yadjust.SetValue('')
 
-        scalehbox.AddMany([(sw1, 0, wx.EXPAND), (self.xadjust, 0, wx.EXPAND), (sw2, 0, wx.EXPAND), (self.yadjust, 0, wx.EXPAND), (self.setscaleBtn, 0, wx.EXPAND), (self.scaleinfoBtn, 0, wx.EXPAND)])
+        #self.scaleinfoBtn = wx.Button(self, id=1, label='?', size=(20, 20))
+        #self.scaleinfoBtn.Bind(wx.EVT_BUTTON, self.OnButton_createinfoframe)
+
+        scalehbox.AddMany([(self.setscaleBtn, 0, wx.EXPAND)])
 
         # Add Save folder label
         st2 = wx.StaticText(self, label='Save Folder:')
@@ -644,6 +657,41 @@ class autoMeasurePanel(wx.Panel):
         matPlotBox.Add(vboxOuter, flag=wx.LEFT | wx.TOP | wx.ALIGN_LEFT, border=0, proportion=0)
 
         self.SetSizer(matPlotBox)
+
+    def calibrationroutine(self, event):
+
+        if self.part == 0:
+            self.OnButton_GotoDevice(0)
+            #self.autoMeasure.motorElec.moveRelativeZ(300)
+            self.autoMeasure.motorOpt.moveRelative(-1000, 0, 0)
+            self.OnButton_GotoDevice(0)
+        if self.part == 1:
+            self.autoMeasure.motorOpt.moveRelative(1000, 0, 0)
+            xside = self.autoMeasure.motorElec.xbank
+            yside = self.autoMeasure.motorElec.ybank
+            self.theta = math.atan(xside/yside)
+            self.theta = (math.pi/2) - self.theta
+            print('The misalignment angle is ' + str(self.theta))
+            self.caldone = True
+
+            ROOT_DIR = format(os.getcwd())
+            scalefactorcsv = ROOT_DIR + '\ScaleFactor.csv'
+
+            f = open(scalefactorcsv, 'w', newline='')
+            writer = csv.writer(f)
+            textType = [str(xscalevar)]
+            writer.writerow(textType)
+            writer = csv.writer(f)
+            textType = [str(yscalevar)]
+            writer.writerow(textType)
+            textType = [str(self.theta)]
+            writer.writerow(textType)
+
+        if self.part == 2:
+            print('Calibration Complete, click the calibration button to exit calibration mode')
+            return
+
+        self.part = self.part + 1
 
     def changescale(self, event):
         global xscalevar
@@ -767,9 +815,16 @@ class autoMeasurePanel(wx.Panel):
         if self.calibrationflag == True:
             self.calibrationflag = False
             print('Exiting Calibration Mode')
+            self.autoMeasure.motorElec.calflag = False
         elif self.calibrationflag == False:
+            self.caldone = False
             self.calibrationflag = True
+            self.autoMeasure.motorElec.calflag = True
             print("Entered Calibration Mode")
+            self.autoMeasure.motorElec.ybank = 0
+            self.autoMeasure.motorElec.xbank = 0
+            self.part = 0
+            self.calibrationroutine(0)
 
     def OnButton_SearchChecklist(self, event):
         """Moves devices with searched term present in ID to the top of the checklist. Have to double click
@@ -1027,6 +1082,31 @@ class autoMeasurePanel(wx.Panel):
 
         self.importObjects(deviceList)
 
+    def adjustalignment(self):
+
+        if self.caldone == True:
+            xdistance = self.autoMeasure.motorOpt.position[0] - self.coordMapPanelElec.startingstageposition[0]
+            ydistance = self.autoMeasure.motorOpt.position[1] - self.coordMapPanelElec.startingstageposition[1]
+
+            xadjustmentx = xdistance * math.cos(self.theta)
+            yadjustmentx = xdistance * math.sin(self.theta)
+
+            yadjustmenty = ydistance * math.cos(self.theta)
+            xadjustmenty = ydistance * math.sin(self.theta)
+
+
+            if xadjustmentx == 0:
+                self.autoMeasure.motorElec.moveRelativeX(xadjustmentx)
+                time.sleep(2)
+            if yadjustmentx == 0:
+                self.autoMeasure.motorElec.moveRelativeY(yadjustmentx)
+                time.sleep(2)
+            if xadjustmenty == 0:
+                self.autoMeasure.motorElec.moveRelativeX(xadjustmenty)
+                time.sleep(2)
+            if yadjustmenty == 0:
+                self.autoMeasure.motorElec.moveRelativeY(yadjustmenty)
+
     def OnButton_GotoDevice(self, event):
         """
         Move laser and or probe to selected device
@@ -1034,6 +1114,10 @@ class autoMeasurePanel(wx.Panel):
         # If laser and probe are connected
         global xscalevar
         global yscalevar
+        if self.calibrationflag == False:
+            if self.devSelectCb.GetString(self.devSelectCb.GetSelection()) == '':
+                print("Please select a device to move to")
+                return
         print('Moving to device')
         if self.autoMeasure.laser and self.autoMeasure.motorElec and self.calibrationflag == False:
             # Calculate transform matrices
@@ -1077,6 +1161,8 @@ class autoMeasurePanel(wx.Panel):
                     time.sleep(2)
                     self.autoMeasure.motorElec.moveRelativeY(-relativey)
                     time.sleep(2)
+                    self.adjustalignment()
+                    time.sleep(2)
                     self.autoMeasure.motorElec.moveRelativeZ(-relativez)
                     # Fine align to device again
                     self.autoMeasure.fineAlign.doFineAlign()
@@ -1099,10 +1185,13 @@ class autoMeasurePanel(wx.Panel):
                     self.autoMeasure.fineAlign.doFineAlign()
 
         # if probe is connected but laser isn't
-        elif (not self.autoMeasure.laser and self.autoMeasure.motorElec) or self.calibrationflag:
+        elif (not self.autoMeasure.laser and self.autoMeasure.motorElec) or (self.autoMeasure.motorElec and self.calibrationflag):
             self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
                                                          self.coordMapPanelElec.getGdsCoordsElec())
-            selectedDevice = self.devSelectCb.GetString(self.devSelectCb.GetSelection())
+            if self.calibrationflag:
+                selectedDevice = self.coordMapPanelElec.GDSDevList[0].GetString(self.coordMapPanelElec.GDSDevList[0].GetSelection())
+            else:
+                selectedDevice = self.devSelectCb.GetString(self.devSelectCb.GetSelection())
             for device in self.autoMeasure.devices:
                 if device.getDeviceID() == selectedDevice:
                     gdsCoord = (
@@ -1124,7 +1213,12 @@ class autoMeasurePanel(wx.Panel):
                         time.sleep(2)
                         self.autoMeasure.motorElec.moveRelativeY(-relativey)
                         time.sleep(2)
-                        self.autoMeasure.motorElec.moveRelativeZ(-relativez)
+                        self.adjustalignment()
+                        time.sleep(2)
+                        if self.calibrationflag:
+                            self.autoMeasure.motorElec.moveRelativeZ(-relativez + 300)
+                        else:
+                            self.autoMeasure.motorElec.moveRelativeZ(-relativez)
         self.autoMeasure.graphPanel.canvas.draw()
 
     def OnButton_SelectOutputFolder(self, event):
@@ -1163,6 +1257,9 @@ class autoMeasurePanel(wx.Panel):
                 else:
                     self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
                                                         self.coordMapPanelElec.getGdsCoordsElec())
+                    if self.autoMeasure.matrixissueflag == True:
+                        return
+
 
                 if self.noElecMatrix is True or self.noOptMatrix is True:
                     pass
@@ -1242,7 +1339,6 @@ class autoMeasurePanel(wx.Panel):
                 self.inputcheckflag = False
                 print('Please check scale values')
 
-
     def drawGraph(self, x, y, graphPanel, xlabel, ylabel, legendstring, legend=0):
         self.autoMeasure.graphPanel.axes.cla()
         self.autoMeasure.graphPanel.axes.plot(x, y)
@@ -1252,7 +1348,6 @@ class autoMeasurePanel(wx.Panel):
         self.autoMeasure.graphPanel.axes.set_xlabel(xlabel)
         self.autoMeasure.graphPanel.axes.set_ylabel(ylabel)
         self.autoMeasure.graphPanel.canvas.draw()
-
 
     def save_pdf(self, deviceObject, x, y, xarr, yarr, saveFolder, routineName, legend, legendstring):
         # Create pdf file

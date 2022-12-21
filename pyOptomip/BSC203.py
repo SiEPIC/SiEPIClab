@@ -1,6 +1,7 @@
 
 from thorlabs_apt_device import BSC
 import re
+import math
 
 
 class BSC203Motor:
@@ -21,6 +22,10 @@ class BSC203Motor:
         self.maxZPositionSet = False
         self.maxZPosition = 0
         self.atZPosition = False
+        self.calflag = False
+        self.xbank = 0
+        self.ybank = 0
+        self.theta = 0
 
     def connect(self, SerialPortName, NumberOfAxis):
         self.visaName = SerialPortName
@@ -48,6 +53,9 @@ class BSC203Motor:
             self.position[0] = self.position[0] - x
             self.position[1] = self.position[1] - y
             self.position[2] = self.position[2] - z
+            if self.calflag:
+                self.ybank = self.ybank + y
+                self.xbank = self.xbank + x
         elif self.minPositionSet is True and self.maxZPositionSet is False:
             if self.position[0] - x < self.minXPosition:
                 print("Cannot Move Past Minimum X Position.")
@@ -58,6 +66,9 @@ class BSC203Motor:
                 self.position[0] = self.position[0] - x
                 self.position[1] = self.position[1] - y
                 self.position[2] = self.position[2] - z
+                if self.calflag:
+                    self.ybank = self.ybank + y
+                    self.xbank = self.xbank + x
         elif self.minPositionSet is False and self.maxZPositionSet is True:
             if self.position[2] - z >= (self.maxZPosition - 80):
                 self.bsc.move_relative(distance=int(1000 * z), bay=2, channel=0)
@@ -72,6 +83,9 @@ class BSC203Motor:
                 self.position[0] = self.position[0] - x
                 self.position[1] = self.position[1] - y
                 self.position[2] = self.position[2] - z
+                if self.calflag:
+                    self.ybank = self.ybank + y
+                    self.xbank = self.xbank + x
                 if self.position[2] <= self.maxZPosition:
                     self.atZPosition = False
         elif self.minPositionSet is True and self.maxZPositionSet is True:
@@ -90,6 +104,9 @@ class BSC203Motor:
                 self.position[0] = self.position[0] - x
                 self.position[1] = self.position[1] - y
                 self.position[2] = self.position[2] - z
+                if self.calflag:
+                    self.ybank = self.ybank + y
+                    self.xbank = self.xbank + x
                 if self.position[2] <= self.maxZPosition:
                     self.atZPosition = False
 
@@ -107,6 +124,7 @@ class BSC203Motor:
             else:
                 self.bsc.move_relative(distance=int(1000 * x), bay=0, channel=0)
                 self.position[0] = self.position[0] - x
+
 
     def moveRelativeY(self, y):
         self.bsc.move_relative(distance=int(1000 * y), bay=1, channel=0)
