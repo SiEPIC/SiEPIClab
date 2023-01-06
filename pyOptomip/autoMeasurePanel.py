@@ -453,10 +453,10 @@ class autoMeasurePanel(wx.Panel):
         global stopflag
         stopflag = False
         if ida == True:
-            ROOT_DIR = os.path.dirname(os.path.realpath(pyoptomipfolder))
+            ROOT_DIR = 'C:/Users/SiEPIC_Kaiser/Desktop/Repos/pyOptomip/pyOptomip'
         else:
             ROOT_DIR = format(os.getcwd())
-        scalefactorcsv = ROOT_DIR + '\ScaleFactor.csv'
+        scalefactorcsv = ROOT_DIR + '/ScaleFactor.csv'
         print(scalefactorcsv)
 
 
