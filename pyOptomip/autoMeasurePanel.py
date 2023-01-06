@@ -439,6 +439,8 @@ class autoMeasurePanel(wx.Panel):
         # automated measurements
         self.autoMeasure = autoMeasure
         self.infoFrame = infoFrame
+        ida = True
+        pyoptomipfolder = 'C:/Users/SiEPIC_Kaiser/Desktop/Repos/pyOptomip'
         # List of all the names of devices on the chip
         self.device_list = []
         self.camera = camera
@@ -450,9 +452,13 @@ class autoMeasurePanel(wx.Panel):
         yscalevar = 0.8
         global stopflag
         stopflag = False
-        ROOT_DIR = format(os.getcwd())
+        if ida == True:
+            ROOT_DIR = os.path.dirname(os.path.realpath(pyoptomipfolder))
+        else:
+            ROOT_DIR = format(os.getcwd())
         scalefactorcsv = ROOT_DIR + '\ScaleFactor.csv'
         print(scalefactorcsv)
+
 
         if path.exists(scalefactorcsv):
 
