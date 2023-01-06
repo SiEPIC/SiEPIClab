@@ -457,8 +457,6 @@ class autoMeasurePanel(wx.Panel):
         else:
             ROOT_DIR = format(os.getcwd())
         scalefactorcsv = ROOT_DIR + '/ScaleFactor.csv'
-        print(scalefactorcsv)
-
 
         if path.exists(scalefactorcsv):
 
@@ -573,6 +571,9 @@ class autoMeasurePanel(wx.Panel):
         self.setscaleBtn = wx.Button(self, label='Calibration Location Set', size=(150, 20))
         self.setscaleBtn.Bind(wx.EVT_BUTTON, self.calibrationroutine)
 
+        self.checkcalBtn = wx.Button(self, label='Check Calibration Status', size=(150, 20))
+        self.checkcalBtn.Bind(wx.EVT_BUTTON, self.calibrationcheck)
+
         #sw1 = wx.StaticText(self, label='X: ')
         #self.xadjust = wx.TextCtrl(self, size=(60, 18))
         #self.xadjust.SetValue('')
@@ -584,7 +585,7 @@ class autoMeasurePanel(wx.Panel):
         #self.scaleinfoBtn = wx.Button(self, id=1, label='?', size=(20, 20))
         #self.scaleinfoBtn.Bind(wx.EVT_BUTTON, self.OnButton_createinfoframe)
 
-        scalehbox.AddMany([(self.setscaleBtn, 0, wx.EXPAND)])
+        scalehbox.AddMany([(self.setscaleBtn, 0, wx.EXPAND), (self.checkcalBtn, 0, wx.EXPAND)])
 
         # Add Save folder label
         st2 = wx.StaticText(self, label='Save Folder:')
@@ -665,6 +666,16 @@ class autoMeasurePanel(wx.Panel):
         matPlotBox.Add(vboxOuter, flag=wx.LEFT | wx.TOP | wx.ALIGN_LEFT, border=0, proportion=0)
 
         self.SetSizer(matPlotBox)
+
+    def calibrationcheck(self, event):
+        if self.caldone == True:
+            print('Calibration settings are as follows:')
+            print('X axis scale adjustment is: ' + str(xscalevar))
+            print('Y axis scale adjustment is: ' + str(yscalevar))
+            print('Theta is ' + str(self.theta))
+            print('Angle of misalignment is: ' + str(self.theta * (180 / math.pi)) + ' degrees')
+        else:
+            print('Calibration has not been performed,\n please complete calibration routine before commencing automated measurements')
 
     def calibrationroutine(self, event):
 
