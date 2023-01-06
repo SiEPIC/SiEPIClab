@@ -452,6 +452,7 @@ class autoMeasurePanel(wx.Panel):
         stopflag = False
         ROOT_DIR = format(os.getcwd())
         scalefactorcsv = ROOT_DIR + '\ScaleFactor.csv'
+        print(scalefactorcsv)
 
         if path.exists(scalefactorcsv):
 
@@ -462,6 +463,7 @@ class autoMeasurePanel(wx.Panel):
             self.theta = float(next(reader)[0])
             print('X axis scale adjustment is: ' + str(xscalevar))
             print('Y axis scale adjustment is: ' + str(yscalevar))
+            print('Theta is ' + str(self.theta))
             print('Angle of misalignment is: ' + str(self.theta * (180 / math.pi)) + ' degrees')
             self.caldone = True
         else:
