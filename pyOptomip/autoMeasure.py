@@ -50,33 +50,34 @@ class autoMeasure(object):
             fineAlign: fineAlign object
         """
         global beginMeasure
-        self.laser = laser
-        self.motorOpt = motorOpt
-        self.motorElec = motorElec
-        self.smu = smu
-        self.fineAlign = fineAlign
-        self.saveFolder = os.getcwd()
-        self.graphPanel = graph
-        self.devices = []
-        self.saveoptposition1 = []
-        self.saveoptposition2 = []
-        self.saveoptposition3 = []
-        self.xscalevar = 0
-        self.yscalevar = 0
-        self.matrixissueflag = False
+        if laser != 0:
+            self.laser = laser
+            self.motorOpt = motorOpt
+            self.motorElec = motorElec
+            self.smu = smu
+            self.fineAlign = fineAlign
+            self.saveFolder = os.getcwd()
+            self.graphPanel = graph
+            self.devices = []
+            self.saveoptposition1 = []
+            self.saveoptposition2 = []
+            self.saveoptposition3 = []
+            self.xscalevar = 0
+            self.yscalevar = 0
+            self.matrixissueflag = False
 
-        self.wavelengthSweeps = {'RoutineName': [], 'Start': [], 'Stop': [], 'Stepsize': [], 'Sweeppower': [], 'Sweepspeed': [],
+            self.wavelengthSweeps = {'RoutineName': [], 'Start': [], 'Stop': [], 'Stepsize': [], 'Sweeppower': [], 'Sweepspeed': [],
                                  'Laseroutput': [], 'Numscans': [], 'InitialRange': [], 'RangeDec': []}
-        self.voltageSweeps = {'RoutineName': [], 'VoltMin': [], 'VoltMax': [], 'VoltRes': [], 'IV': [], 'RV': [], 'PV': [],
+            self.voltageSweeps = {'RoutineName': [], 'VoltMin': [], 'VoltMax': [], 'VoltRes': [], 'IV': [], 'RV': [], 'PV': [],
                               'ChannelA': [], 'ChannelB': []}
-        self.currentSweeps = {'RoutineName': [], 'CurrentMin': [], 'CurrentMax': [], 'CurrentRes': [], 'IV': [], 'RV': [],
+            self.currentSweeps = {'RoutineName': [], 'CurrentMin': [], 'CurrentMax': [], 'CurrentRes': [], 'IV': [], 'RV': [],
                               'PV': [], 'ChannelA': [], 'ChannelB': []}
-        self.setWavelengthVoltageSweeps = {'RoutineName': [], 'VoltMin': [], 'VoltMax': [], 'VoltRes': [], 'IV': [], 'RV': [],
+            self.setWavelengthVoltageSweeps = {'RoutineName': [], 'VoltMin': [], 'VoltMax': [], 'VoltRes': [], 'IV': [], 'RV': [],
                                            'PV': [], 'ChannelA': [], 'ChannelB': [], 'Wavelength': []}
-        self.setWavelengthCurrentSweeps = {'RoutineName': [], 'CurrentMin': [], 'CurrentMax': [], 'CurrentRes': [], 'IV': [],
+            self.setWavelengthCurrentSweeps = {'RoutineName': [], 'CurrentMin': [], 'CurrentMax': [], 'CurrentRes': [], 'IV': [],
                                            'RV': [], 'PV': [], 'ChannelA': [], 'ChannelB': [],
                                            'Wavelength': []}
-        self.setVoltageWavelengthSweeps = {'RoutineName': [], 'Start': [], 'Stop': [], 'Stepsize': [], 'Sweeppower': [],
+            self.setVoltageWavelengthSweeps = {'RoutineName': [], 'Start': [], 'Stop': [], 'Stepsize': [], 'Sweeppower': [],
                                            'Sweepspeed': [], 'Laseroutput': [], 'Numscans': [],
                                            'InitialRange': [], 'RangeDec': [], 'ChannelA': [], 'ChannelB': [],
                                            'Voltage': []}

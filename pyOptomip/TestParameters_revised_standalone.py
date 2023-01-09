@@ -30,8 +30,6 @@ import sys
 from ElectroOpticDevice import ElectroOpticDevice
 from informationframes import infoFrame
 import traceback
-from autoMeasurePanel import autoMeasurePanel
-from autoMeasure import autoMeasure
 
 
 class testParameters(wx.Frame):
@@ -58,9 +56,7 @@ class testParameters(wx.Frame):
         """
         self.Bind(wx.EVT_CLOSE, self.OnExitApp)
         vbox = wx.BoxSizer(wx.VERTICAL)
-        autoMsre = autoMeasure(0,0,0,0,0,0)
-        auto = autoMeasurePanel(self, autoMsre, cam=0)
-        panel = TopPanel(self, auto)
+        panel = TopPanel(self)
         vbox.Add(panel, proportion=1, border=0, flag=wx.EXPAND)
         self.log = outputlogPanel(self)
         vbox.Add(self.log, 1, wx.EXPAND)
@@ -87,12 +83,10 @@ class testParameters(wx.Frame):
 # contains the graph.
 class TopPanel(wx.Panel):
 
-    def __init__(self, parent, automeasurePanel):
+    def __init__(self, parent):
         super(TopPanel, self).__init__(parent)
         self.routineflag = ""
         self.parameterPanel = ParameterPanel(self)
-        self.autoMeasurePanel = automeasurePanel
-        self.autoMeasure = automeasurePanel.autoMeasure
         self.selected = []
         self.groupselected = []
         self.devicesselected = []
@@ -251,13 +245,11 @@ class TopPanel(wx.Panel):
         vboxOuter.Add(hboxsave2, 0, wx.EXPAND)
 
         hboxexport = wx.BoxSizer(wx.HORIZONTAL)
-        self.setBtn = wx.Button(self, label='Send to Automeasure', size=(150, 20))
-        self.setBtn.Bind(wx.EVT_BUTTON, self.SetButton)
         self.importBtn = wx.Button(self, label='Import', size=(50, 20))
         self.importBtn.Bind(wx.EVT_BUTTON, self.ImportButton)
         self.exportBtn = wx.Button(self, label='Export', size=(50, 20))
         self.exportBtn.Bind(wx.EVT_BUTTON, self.ExportButton)
-        hboxexport.AddMany([((1,1),1), (self.setBtn, 0, wx.EXPAND), (self.importBtn, 0, wx.EXPAND), (self.exportBtn, 0, wx.EXPAND)])
+        hboxexport.AddMany([((1,1),1), (self.importBtn, 0, wx.EXPAND), (self.exportBtn, 0, wx.EXPAND)])
 
         vboxOuter.AddMany([(hboxexport, 0, wx.EXPAND)])
 
@@ -1235,48 +1227,6 @@ class TopPanel(wx.Panel):
         self.importFolderTb = dirDlg.GetPath()
         dirDlg.Destroy()
 
-    def SetButton(self, event):
-        """
-        This function converts the data input by the user into the various parameter locations and loads it into a
-        dictionary that can then be used to either export the data or directly control the equipment
-        Parameters
-        ----------
-        event : the event triggered by pressing the set button
-
-        Returns
-        -------
-
-        """
-
-        ROOT_DIR = format(os.getcwd())
-        primarysavefilecsv = ROOT_DIR + '\TestParameters.csv'
-        primarysavefileymlcwd = ROOT_DIR + '\TestParameters.yaml'
-
-        # dump deviceListAsObjects which contains all the electroopticdevice objects to a file in selected output folder
-        # with open(primarysavefileyml, 'w') as f:
-        # documents = yaml.dump(deviceListAsObjects, f)
-
-        outputyaml = self.Merge(self.routinedict, self.devicedict)
-
-        # dump deviceListAsObjects which contains all the electroopticdevice objects to a file in current working directory
-        with open(primarysavefileymlcwd, 'w') as f:
-            documents = yaml.dump(outputyaml, f)
-
-        self.autoMeasurePanel.readYAML(primarysavefileymlcwd)
-
-        #deviceListAsObjects = []
-
-        #for device in self.devicedict.keys():
-          #  deviceObject = ElectroOpticDevice(self.devicedict[device]['DeviceID'], self.devicedict[device]['Wavelength'],
-                                  #           self.devicedict[device]['Polarization'],
-                                  #          self.devicedict[device]['Optical Coordinates'], self.devicedict[device]['Type'])
-          #  deviceObject.hasroutines = self.devicedict[device]['RoutineCheck']
-           # deviceObject.routines = self.devicedict[device]['Routines']
-           # deviceListAsObjects.append(deviceObject)
-
-
-        #self.autoMeasurePanel.importObjects(self.routinedict, deviceListAsObjects)
-
     def ExportButton(self, event):
         """
         This function takes the data contained in the data dictionary and formats it into a csv file
@@ -1719,6 +1669,120 @@ class TopPanel(wx.Panel):
                 return False
         else:
             return True
+
+class autoMeasure(object):
+
+    def __init__(self):
+        self.saveFolder = os.getcwd()
+
+    def readCoordFile(self, fileName):
+
+        with open(fileName, 'r') as f:
+            data = f.readlines()
+
+        # Remove the first line since it is the header and remove newline char
+        dataStrip = [line.strip() for line in data[1:]]
+        dataStrip2 = []
+        for x in dataStrip:
+            j = x.replace(" ", "")
+            dataStrip2.append(j)
+        # x,y,polarization,wavelength,type,deviceid,params
+        reg = re.compile(r'(.-?[0-9]*),(.-?[0-9]*),(T(E|M)),([0-9]+),(.+?),(.+),(.*)')
+        # x, y, deviceid, padname, params
+        regElec = re.compile(r'(.-?[0-9]+),(.-?[0-9]+),(.+),(.+),(.*)')
+
+        self.devices = []
+        self.devSet = set()
+
+        for ii, line in enumerate(dataStrip2):
+            if reg.match(line):
+                matchRes = reg.findall(line)[0]
+                devName = matchRes[6]
+                self.devSet.add(devName)
+
+        # Parse the data in each line and put it into a list of devices
+        for ii, line in enumerate(dataStrip2):
+            if reg.match(line):
+                matchRes = reg.findall(line)[0]
+                devName = matchRes[6]
+                if devName in self.devSet:
+                    devName = "X:"+matchRes[0]+"Y:"+matchRes[1]+devName
+                self.devSet.add(devName)
+                device = ElectroOpticDevice(devName, matchRes[3], matchRes[2], float(matchRes[0]), float(matchRes[1]),
+                                            matchRes[5])
+                self.devices.append(device)
+            else:
+                if regElec.match(line):
+                    print(line)
+                    matchRes = reg.findall(line)[0]
+                    devName = matchRes[2]
+                    for device in self.devices:
+                        if device.getDeviceID() == devName:
+                            device.addElectricalCoordinates(matchRes[3], float(matchRes[0]), float(matchRes[1]))
+                else:
+                    if line == "" or line == "%X-coord,Y-coord,deviceID,padName,params":
+                        pass
+                    else:
+                        print('Warning: The entry\n%s\nis not formatted correctly.' % line)
+
+    def readCSV(self, originalFile):
+        """Reads a csv testing parameters file and stores the information as a list of electro-optic device
+         objects to be used for automated measurements."""
+
+        global deviceListAsObjects
+        deviceListAsObjects = []
+
+        with open(originalFile, 'r') as file:
+            rows = []
+            for row in file:
+                rows.append(row)
+
+            rows.pop(2)
+            rows.pop(1)
+            rows.pop(0)
+
+            for c in range(len(rows)):
+                x = rows[c].split(',')
+
+                deviceToTest = False
+                deviceToTestFlag = True
+
+                if len(deviceListAsObjects) == 0:
+                    deviceToTest = ElectroOpticDevice(x[1], x[54], x[55], x[56], x[57], x[58])
+                else:
+                    for device in deviceListAsObjects:
+                        if device.getDeviceID() == x[1]:
+                            deviceToTest = device
+                            deviceToTestFlag = False
+                    if deviceToTest == False:
+                        print("got here")
+                        deviceToTest = ElectroOpticDevice(x[1], x[54], x[55], x[56], x[57], x[58])
+
+                if x[2] == "True":
+                    """electrical routine"""
+                    if x[6] == "True":
+                        """voltage sweep"""
+                        deviceToTest.addVoltageSweep(x[8], x[9], x[12], x[14], x[15], x[16], x[17], x[18])
+                    if x[7] == "True":
+                        """Current sweep"""
+                        deviceToTest.addCurrentSweep(x[10], x[11], x[13], x[14], x[15], x[16], x[17], x[18])
+                if x[3] == "True":
+                    """optical routine"""
+                    deviceToTest.addWavelengthSweep(x[19], x[20], x[21], x[22], x[23], x[24], x[25], x[26], x[27])
+                if x[4] == "True":
+                    """set wavelength iv"""
+                    if x[28] == "True":
+                        """voltage sweep"""
+                        deviceToTest.addSetWavelengthVoltageSweep(x[30], x[31], x[34], x[36], x[37], x[38], x[39], x[40], x[41])
+                    if x[29] == "True":
+                        """current sweep"""
+                        deviceToTest.addSetWavelengthCurrentSweep(x[32], x[33], x[35], x[36], x[37], x[38], x[39], x[40], x[41])
+                if x[5] == "True":
+                    """set voltage optical sweep"""
+                    deviceToTest.addSetVoltageWavelengthSweep(x[42], x[43], x[44], x[45], x[46], x[47], x[48],
+                                                              x[49], x[50], x[51], x[52], x[53])
+                if deviceToTestFlag:
+                    deviceListAsObjects.append(deviceToTest)
 
 
 #This panel class contains the instructions for going about inputting the routine data for the devices as well as the

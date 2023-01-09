@@ -421,7 +421,7 @@ class coordinateMapPanel(wx.Panel):
 
 class autoMeasurePanel(wx.Panel):
 
-    def __init__(self, parent, autoMeasure, camera):
+    def __init__(self, parent, autoMeasure, cam=0):
         """
         Creates the panel used to automate measurement of chips. Users must upload a text file created
         using the automated coordinate extraction from the Si-EPIC tools k-layout package. Then, three devices
@@ -443,7 +443,10 @@ class autoMeasurePanel(wx.Panel):
         pyoptomipfolder = 'C:/Users/SiEPIC_Kaiser/Desktop/Repos/pyOptomip'
         # List of all the names of devices on the chip
         self.device_list = []
-        self.camera = camera
+        if cam != 0:
+            self.camera = cam
+        else:
+            self.camera = 0
         self.calibrationflag = False
         self.part = 0
         global xscalevar
@@ -476,7 +479,8 @@ class autoMeasurePanel(wx.Panel):
         self.testParametersPath = []
         # No testing parameters have been uploaded
         self.parametersImported = False
-        self.InitUI()
+        if cam != 0:
+            self.InitUI()
 
     def InitUI(self):
         """Sets up the layout for the autoMeasurePanel"""

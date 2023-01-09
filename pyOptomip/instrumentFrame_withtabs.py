@@ -328,7 +328,7 @@ class instrumentFrame_withtabs(wx.Frame):
                 self.graph = myMatplotlibPanel.myMatplotlibPanel(self)
                 self.autoMeasure = autoMeasure(laser, motorOpt, motorElec, SMU, self.fineAlign, self.graph)
 
-                self.autoMeasurePanel = autoMeasurePanel(self, self.autoMeasure, camera)
+                self.autoMeasurePanel = autoMeasurePanel(self, self.autoMeasure, cam=camera)
 
                 vbox.Add(self.autoMeasurePanel, proportion=0, flag=wx.EXPAND)
 
