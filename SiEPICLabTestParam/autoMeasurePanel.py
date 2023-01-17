@@ -24,15 +24,15 @@ import traceback
 import wx
 import wx.lib.mixins.listctrl
 import math
-from autoMeasureProgressDialog import autoMeasureProgressDialog
+from .autoMeasureProgressDialog import autoMeasureProgressDialog
 import os
 import time
-from filterFrame import filterFrame
+from .filterFrame import filterFrame
 import csv
 import numpy as np
-from ElectroOpticDevice import ElectroOpticDevice
+from .ElectroOpticDevice import ElectroOpticDevice
 import yaml
-from informationframes import infoFrame
+from .informationframes import infoFrame
 from multiprocessing import Process
 from threading import Thread
 from queue import Queue

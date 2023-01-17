@@ -30,8 +30,8 @@ import numpy as np
 from scipy.io import savemat
 import time
 import matplotlib.pyplot as plt
-from ElectroOpticDevice import ElectroOpticDevice
-from measurementRoutines import measurementRoutines
+from .ElectroOpticDevice import ElectroOpticDevice
+from .measurementRoutines import measurementRoutines
 import warnings
 warnings.filterwarnings("ignore")
 

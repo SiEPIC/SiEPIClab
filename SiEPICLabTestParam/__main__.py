@@ -24,14 +24,14 @@ import os
 import wx
 import re
 import yaml
-from outputlogPanel import outputlogPanel
-from logWriter import logWriter, logWriterError
+from .logWriter import logWriter, logWriterError
+from .outputlogPanel import outputlogPanel
 import sys
-from ElectroOpticDevice import ElectroOpticDevice
-from informationframes import infoFrame
+from .ElectroOpticDevice import ElectroOpticDevice
+from .informationframes import infoFrame
 import traceback
-from autoMeasurePanel import autoMeasurePanel
-from autoMeasure import autoMeasure
+from .autoMeasurePanel import autoMeasurePanel
+from .autoMeasure import autoMeasure
 
 
 class testParameters(wx.Frame):
