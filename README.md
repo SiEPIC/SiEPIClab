@@ -1,5 +1,6 @@
-# pyOptomip
-Copyright (c) 2015 Michael Caverley, at The University of British Columbia
+<img src="https://github.com/SiEPIC/SiEPIClab/blob/master/SiEPIClab_Color.png" width="300">
+# SiEPIClab, formerly pyOptomip
+Copyright (c) 2015 originally started by Michael Caverley, at The University of British Columbia.
 
 Python code for <a href="https://siepic.ubc.ca/silicon-photonics-design-book/automated-probe-station/">Silicon Photonics Automated Probe stations
 	
@@ -68,3 +69,6 @@ all detectors from the mainframe when using the N77xx detectors.
 
 When not using the N77xx detector, if there is a detector plugged into the mainframe which stores less than 20001 datapoints (e.g. 81634A),
 then stitching will not work.
+=======
+
+
