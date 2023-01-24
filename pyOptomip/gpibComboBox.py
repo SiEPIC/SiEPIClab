@@ -21,7 +21,7 @@
 # THE SOFTWARE.
 
 import wx
-import visa
+import pyvisa as visa
 
 class gpibComboBox(wx.ComboBox):
 
