@@ -24,14 +24,14 @@ import os
 import wx
 import re
 import yaml
-from .logWriter import logWriter, logWriterError
-from .outputlogPanel import outputlogPanel
+from logWriter import logWriter, logWriterError
+from outputlogPanel import outputlogPanel
 import sys
-from .ElectroOpticDevice import ElectroOpticDevice
-from .informationframes import infoFrame
+from ElectroOpticDevice import ElectroOpticDevice
+from informationframes import infoFrame
 import traceback
-from .autoMeasurePanel import autoMeasurePanel
-from .autoMeasure import autoMeasure
+from autoMeasurePanel import autoMeasurePanel
+from autoMeasure import autoMeasure
 
 
 class testParameters(wx.Frame):
@@ -251,13 +251,13 @@ class TopPanel(wx.Panel):
         vboxOuter.Add(hboxsave2, 0, wx.EXPAND)
 
         hboxexport = wx.BoxSizer(wx.HORIZONTAL)
-        self.setBtn = wx.Button(self, label='Send to Automeasure', size=(150, 20))
-        self.setBtn.Bind(wx.EVT_BUTTON, self.SetButton)
+        #self.setBtn = wx.Button(self, label='Send to Automeasure', size=(150, 20))
+        #self.setBtn.Bind(wx.EVT_BUTTON, self.SetButton)
         self.importBtn = wx.Button(self, label='Import', size=(50, 20))
         self.importBtn.Bind(wx.EVT_BUTTON, self.ImportButton)
         self.exportBtn = wx.Button(self, label='Export', size=(50, 20))
         self.exportBtn.Bind(wx.EVT_BUTTON, self.ExportButton)
-        hboxexport.AddMany([((1,1),1), (self.setBtn, 0, wx.EXPAND), (self.importBtn, 0, wx.EXPAND), (self.exportBtn, 0, wx.EXPAND)])
+        hboxexport.AddMany([((1,1),1), (self.importBtn, 0, wx.EXPAND), (self.exportBtn, 0, wx.EXPAND)])
 
         vboxOuter.AddMany([(hboxexport, 0, wx.EXPAND)])
 
@@ -404,9 +404,12 @@ class TopPanel(wx.Panel):
                     self.routinedict[routine][x]['OPTICflag'] = True
                     self.routinedict[routine][x]['setwflag'] = False
                     self.routinedict[routine][x]['setvflag'] = False
-                    self.routinedict[routine][x]['Min'] = ''
-                    self.routinedict[routine][x]['Max'] = ''
-                    self.routinedict[routine][x]['Res'] = ''
+                    self.routinedict[routine][x]['MinA'] = ''
+                    self.routinedict[routine][x]['MinB'] = ''
+                    self.routinedict[routine][x]['MaxA'] = ''
+                    self.routinedict[routine][x]['MaxB'] = ''
+                    self.routinedict[routine][x]['ResA'] = ''
+                    self.routinedict[routine][x]['ResB'] = ''
                     self.routinedict[routine][x]['IV'] = False
                     self.routinedict[routine][x]['RV'] = False
                     self.routinedict[routine][x]['PV'] = False
@@ -430,14 +433,17 @@ class TopPanel(wx.Panel):
                     self.routinedict[routine][x]['OPTICflag'] = False
                     self.routinedict[routine][x]['setwflag'] = False
                     self.routinedict[routine][x]['setvflag'] = False
-                    self.routinedict[routine][x]['Min'] = '0'
-                    self.routinedict[routine][x]['Max'] = '1'
-                    self.routinedict[routine][x]['Res'] = '100'
+                    self.routinedict[routine][x]['MinA'] = ''
+                    self.routinedict[routine][x]['MinB'] = ''
+                    self.routinedict[routine][x]['MaxA'] = ''
+                    self.routinedict[routine][x]['MaxB'] = ''
+                    self.routinedict[routine][x]['ResA'] = ''
+                    self.routinedict[routine][x]['ResB'] = ''
                     self.routinedict[routine][x]['IV'] = True
                     self.routinedict[routine][x]['RV'] = True
                     self.routinedict[routine][x]['PV'] = True
                     self.routinedict[routine][x]['Channel A'] = True
-                    self.routinedict[routine][x]['Channel B'] = False
+                    self.routinedict[routine][x]['Channel B'] = True
                     self.routinedict[routine][x]['Start'] = ''
                     self.routinedict[routine][x]['Stop'] = ''
                     self.routinedict[routine][x]['Stepsize'] = ''
@@ -457,14 +463,17 @@ class TopPanel(wx.Panel):
                     self.routinedict[routine][x]['OPTICflag'] = False
                     self.routinedict[routine][x]['setwflag'] = False
                     self.routinedict[routine][x]['setvflag'] = False
-                    self.routinedict[routine][x]['Min'] = '0'
-                    self.routinedict[routine][x]['Max'] = '1'
-                    self.routinedict[routine][x]['Res'] = '1'
+                    self.routinedict[routine][x]['MinA'] = ''
+                    self.routinedict[routine][x]['MinB'] = ''
+                    self.routinedict[routine][x]['MaxA'] = ''
+                    self.routinedict[routine][x]['MaxB'] = ''
+                    self.routinedict[routine][x]['ResA'] = ''
+                    self.routinedict[routine][x]['ResB'] = ''
                     self.routinedict[routine][x]['IV'] = True
                     self.routinedict[routine][x]['RV'] = True
                     self.routinedict[routine][x]['PV'] = True
                     self.routinedict[routine][x]['Channel A'] = True
-                    self.routinedict[routine][x]['Channel B'] = False
+                    self.routinedict[routine][x]['Channel B'] = True
                     self.routinedict[routine][x]['Start'] = ''
                     self.routinedict[routine][x]['Stop'] = ''
                     self.routinedict[routine][x]['Stepsize'] = ''
@@ -484,14 +493,17 @@ class TopPanel(wx.Panel):
                     self.routinedict[routine][x]['OPTICflag'] = False
                     self.routinedict[routine][x]['setwflag'] = True
                     self.routinedict[routine][x]['setvflag'] = False
-                    self.routinedict[routine][x]['Min'] = '0'
-                    self.routinedict[routine][x]['Max'] = '1'
-                    self.routinedict[routine][x]['Res'] = '1'
+                    self.routinedict[routine][x]['MinA'] = ''
+                    self.routinedict[routine][x]['MinB'] = ''
+                    self.routinedict[routine][x]['MaxA'] = ''
+                    self.routinedict[routine][x]['MaxB'] = ''
+                    self.routinedict[routine][x]['ResA'] = ''
+                    self.routinedict[routine][x]['ResB'] = ''
                     self.routinedict[routine][x]['IV'] = True
                     self.routinedict[routine][x]['RV'] = True
                     self.routinedict[routine][x]['PV'] = True
                     self.routinedict[routine][x]['Channel A'] = True
-                    self.routinedict[routine][x]['Channel B'] = False
+                    self.routinedict[routine][x]['Channel B'] = True
                     self.routinedict[routine][x]['Start'] = ''
                     self.routinedict[routine][x]['Stop'] = ''
                     self.routinedict[routine][x]['Stepsize'] = ''
@@ -510,14 +522,17 @@ class TopPanel(wx.Panel):
                     self.routinedict[routine][x]['OPTICflag'] = False
                     self.routinedict[routine][x]['setwflag'] = True
                     self.routinedict[routine][x]['setvflag'] = False
-                    self.routinedict[routine][x]['Min'] = '0'
-                    self.routinedict[routine][x]['Max'] = '5'
-                    self.routinedict[routine][x]['Res'] = '0.1'
+                    self.routinedict[routine][x]['MinA'] = ''
+                    self.routinedict[routine][x]['MinB'] = ''
+                    self.routinedict[routine][x]['MaxA'] = ''
+                    self.routinedict[routine][x]['MaxB'] = ''
+                    self.routinedict[routine][x]['ResA'] = ''
+                    self.routinedict[routine][x]['ResB'] = ''
                     self.routinedict[routine][x]['IV'] = False
                     self.routinedict[routine][x]['RV'] = False
                     self.routinedict[routine][x]['PV'] = False
                     self.routinedict[routine][x]['Channel A'] = True
-                    self.routinedict[routine][x]['Channel B'] = False
+                    self.routinedict[routine][x]['Channel B'] = True
                     self.routinedict[routine][x]['Start'] = ''
                     self.routinedict[routine][x]['Stop'] = ''
                     self.routinedict[routine][x]['Stepsize'] = ''
@@ -536,14 +551,17 @@ class TopPanel(wx.Panel):
                     self.routinedict[routine][x]['OPTICflag'] = False
                     self.routinedict[routine][x]['setwflag'] = False
                     self.routinedict[routine][x]['setvflag'] = True
-                    self.routinedict[routine][x]['Min'] = ''
-                    self.routinedict[routine][x]['Max'] = ''
-                    self.routinedict[routine][x]['Res'] = ''
+                    self.routinedict[routine][x]['MinA'] = ''
+                    self.routinedict[routine][x]['MinB'] = ''
+                    self.routinedict[routine][x]['MaxA'] = ''
+                    self.routinedict[routine][x]['MaxB'] = ''
+                    self.routinedict[routine][x]['ResA'] = ''
+                    self.routinedict[routine][x]['ResB'] = ''
                     self.routinedict[routine][x]['IV'] = False
                     self.routinedict[routine][x]['RV'] = False
                     self.routinedict[routine][x]['PV'] = False
                     self.routinedict[routine][x]['Channel A'] = True
-                    self.routinedict[routine][x]['Channel B'] = False
+                    self.routinedict[routine][x]['Channel B'] = True
                     self.routinedict[routine][x]['Start'] = '1480'
                     self.routinedict[routine][x]['Stop'] = '1580'
                     self.routinedict[routine][x]['Stepsize'] = '1'
@@ -637,25 +655,54 @@ class TopPanel(wx.Panel):
             self.subroutineList[self.routinetype].append(self.parameterPanel.name.GetValue())
 
 
-        self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Min'] = self.parameterPanel.minsetvoltage.GetValue()
-        self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Max'] = self.parameterPanel.maxsetvoltage.GetValue()
-        self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Res'] = self.parameterPanel.resovoltage.GetValue()
-        self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['IV'] = self.parameterPanel.typesel.GetValue()
-        self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['RV'] = self.parameterPanel.type2sel.GetValue()
-        self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['PV'] = self.parameterPanel.type3sel.GetValue()
-        self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Channel A'] = self.parameterPanel.Asel.GetValue()
-        self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Channel B'] = self.parameterPanel.Bsel.GetValue()
-        self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Start'] = self.parameterPanel.startWvlTc.GetValue()
-        self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Stop'] = self.parameterPanel.stopWvlTc.GetValue()
-        self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Stepsize'] = self.parameterPanel.stepWvlTc.GetValue()
-        self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Sweeppower'] = self.parameterPanel.sweepPowerTc.GetValue()
-        self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Sweepspeed'] = self.parameterPanel.sweepSpeedCb.GetValue()
-        self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Laseroutput'] = self.parameterPanel.laserOutputCb.GetValue()
-        self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Numscans'] = self.parameterPanel.numSweepCb.GetValue()
-        self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Initialrange'] = self.parameterPanel.sweepinitialrangeTc.GetValue()
-        self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['RangeDec'] = self.parameterPanel.rangedecTc.GetValue()
-        self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Wavelengths'] = self.parameterPanel.wavesetTc2.GetValue()
-        self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Voltages'] = self.parameterPanel.voltagesetTc2.GetValue()
+        if self.routinetype == 'Set Voltage Wavelength Sweep':
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['VoltagesA'] = self.parameterPanel.maxsetvoltageA.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['VoltagesB'] = self.parameterPanel.maxsetvoltageB.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['MinA'] = self.parameterPanel.minsetvoltageA.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['MaxA'] = self.parameterPanel.maxsetvoltageA.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['ResA'] = self.parameterPanel.resovoltageA.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['MinB'] = self.parameterPanel.minsetvoltageB.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['MaxB'] = self.parameterPanel.maxsetvoltageB.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['ResB'] = self.parameterPanel.resovoltageB.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['IV'] = self.parameterPanel.typesel.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['RV'] = self.parameterPanel.type2sel.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['PV'] = self.parameterPanel.type3sel.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Channel A'] = self.parameterPanel.Asel.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Channel B'] = self.parameterPanel.Bsel.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Start'] = self.parameterPanel.startWvlTc.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Stop'] = self.parameterPanel.stopWvlTc.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Stepsize'] = self.parameterPanel.stepWvlTc.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Sweeppower'] = self.parameterPanel.sweepPowerTc.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Sweepspeed'] = self.parameterPanel.sweepSpeedCb.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Laseroutput'] = self.parameterPanel.laserOutputCb.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Numscans'] = self.parameterPanel.numSweepCb.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Initialrange'] = self.parameterPanel.sweepinitialrangeTc.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['RangeDec'] = self.parameterPanel.rangedecTc.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Wavelengths'] = self.parameterPanel.wavesetTc2.GetValue()
+
+        else:
+
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['MinA'] = self.parameterPanel.minsetvoltageA.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['MaxA'] = self.parameterPanel.maxsetvoltageA.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['ResA'] = self.parameterPanel.resovoltageA.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['MinB'] = self.parameterPanel.minsetvoltageB.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['MaxB'] = self.parameterPanel.maxsetvoltageB.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['ResB'] = self.parameterPanel.resovoltageB.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['IV'] = self.parameterPanel.typesel.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['RV'] = self.parameterPanel.type2sel.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['PV'] = self.parameterPanel.type3sel.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Channel A'] = self.parameterPanel.Asel.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Channel B'] = self.parameterPanel.Bsel.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Start'] = self.parameterPanel.startWvlTc.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Stop'] = self.parameterPanel.stopWvlTc.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Stepsize'] = self.parameterPanel.stepWvlTc.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Sweeppower'] = self.parameterPanel.sweepPowerTc.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Sweepspeed'] = self.parameterPanel.sweepSpeedCb.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Laseroutput'] = self.parameterPanel.laserOutputCb.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Numscans'] = self.parameterPanel.numSweepCb.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Initialrange'] = self.parameterPanel.sweepinitialrangeTc.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['RangeDec'] = self.parameterPanel.rangedecTc.GetValue()
+            self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['Wavelengths'] = self.parameterPanel.wavesetTc2.GetValue()
 
         self.subroutinecheckList.DeleteAllItems()
 
@@ -701,9 +748,12 @@ class TopPanel(wx.Panel):
             self.routineList.append(self.parameterPanel.name.GetValue())
             self.subroutineList[self.parameterPanel.name.GetValue()] = ['Default']
 
-        self.routinedict[self.parameterPanel.name.GetValue()]['Default']['Min'] = self.parameterPanel.minsetvoltage.GetValue()
-        self.routinedict[self.parameterPanel.name.GetValue()]['Default']['Max'] = self.parameterPanel.maxsetvoltage.GetValue()
-        self.routinedict[self.parameterPanel.name.GetValue()]['Default']['Res'] = self.parameterPanel.resovoltage.GetValue()
+        self.routinedict[self.parameterPanel.name.GetValue()]['Default']['MinA'] = self.parameterPanel.minsetvoltageA.GetValue()
+        self.routinedict[self.parameterPanel.name.GetValue()]['Default']['MaxA'] = self.parameterPanel.maxsetvoltageA.GetValue()
+        self.routinedict[self.parameterPanel.name.GetValue()]['Default']['ResA'] = self.parameterPanel.resovoltageA.GetValue()
+        self.routinedict[self.parameterPanel.name.GetValue()]['Default']['MinB'] = self.parameterPanel.minsetvoltageB.GetValue()
+        self.routinedict[self.parameterPanel.name.GetValue()]['Default']['MaxB'] = self.parameterPanel.maxsetvoltageB.GetValue()
+        self.routinedict[self.parameterPanel.name.GetValue()]['Default']['ResB'] = self.parameterPanel.resovoltageB.GetValue()
         self.routinedict[self.parameterPanel.name.GetValue()]['Default']['IV'] = self.parameterPanel.typesel.GetValue()
         self.routinedict[self.parameterPanel.name.GetValue()]['Default']['RV'] = self.parameterPanel.type2sel.GetValue()
         self.routinedict[self.parameterPanel.name.GetValue()]['Default']['PV'] = self.parameterPanel.type3sel.GetValue()
@@ -739,9 +789,12 @@ class TopPanel(wx.Panel):
     def clearparameters(self):
 
         self.parameterPanel.name.SetValue('')
-        self.parameterPanel.minsetvoltage.SetValue('')
-        self.parameterPanel.maxsetvoltage.SetValue('')
-        self.parameterPanel.resovoltage.SetValue('')
+        self.parameterPanel.minsetvoltageA.SetValue('')
+        self.parameterPanel.minsetvoltageB.SetValue('')
+        self.parameterPanel.maxsetvoltageA.SetValue('')
+        self.parameterPanel.maxsetvoltageB.SetValue('')
+        self.parameterPanel.resovoltageA.SetValue('')
+        self.parameterPanel.resovoltageB.SetValue('')
         self.parameterPanel.typesel.SetValue(False)
         self.parameterPanel.type2sel.SetValue(False)
         self.parameterPanel.type3sel.SetValue(False)
@@ -757,7 +810,6 @@ class TopPanel(wx.Panel):
         self.parameterPanel.sweepinitialrangeTc.SetValue('')
         self.parameterPanel.rangedecTc.SetValue('')
         self.parameterPanel.wavesetTc2.SetValue('')
-        self.parameterPanel.voltagesetTc2.SetValue('')
 
     def subroutineunchecked(self, event):
 
@@ -784,9 +836,12 @@ class TopPanel(wx.Panel):
                 subroutinetype = self.subroutinecheckList.GetItemText(group)
 
         self.parameterPanel.name.SetValue(subroutinetype)
-        self.parameterPanel.minsetvoltage.SetValue(self.routinedict[self.routinetype][subroutinetype]['Min'])
-        self.parameterPanel.maxsetvoltage.SetValue(self.routinedict[self.routinetype][subroutinetype]['Max'])
-        self.parameterPanel.resovoltage.SetValue(self.routinedict[self.routinetype][subroutinetype]['Res'])
+        self.parameterPanel.minsetvoltageA.SetValue(self.routinedict[self.routinetype][subroutinetype]['MinA'])
+        self.parameterPanel.maxsetvoltageA.SetValue(self.routinedict[self.routinetype][subroutinetype]['MaxA'])
+        self.parameterPanel.resovoltageA.SetValue(self.routinedict[self.routinetype][subroutinetype]['ResA'])
+        self.parameterPanel.minsetvoltageB.SetValue(self.routinedict[self.routinetype][subroutinetype]['MinB'])
+        self.parameterPanel.maxsetvoltageB.SetValue(self.routinedict[self.routinetype][subroutinetype]['MaxB'])
+        self.parameterPanel.resovoltageB.SetValue(self.routinedict[self.routinetype][subroutinetype]['ResB'])
         self.parameterPanel.typesel.SetValue(self.routinedict[self.routinetype][subroutinetype]['IV'])
         self.parameterPanel.type2sel.SetValue(self.routinedict[self.routinetype][subroutinetype]['RV'])
         self.parameterPanel.type3sel.SetValue(self.routinedict[self.routinetype][subroutinetype]['PV'])
@@ -802,7 +857,6 @@ class TopPanel(wx.Panel):
         self.parameterPanel.sweepinitialrangeTc.SetValue(self.routinedict[self.routinetype][subroutinetype]['Initialrange'])
         self.parameterPanel.rangedecTc.SetValue(self.routinedict[self.routinetype][subroutinetype]['RangeDec'])
         self.parameterPanel.wavesetTc2.SetValue(self.routinedict[self.routinetype][subroutinetype]['Wavelengths'])
-        self.parameterPanel.voltagesetTc2.SetValue(self.routinedict[self.routinetype][subroutinetype]['Voltages'])
 
     def routinechecklistchecked(self, event):
 
@@ -817,6 +871,13 @@ class TopPanel(wx.Panel):
         if self.routineselected == True:
             self.routinecheckList.CheckItem(self.currentlycheckedroutine, False)
 
+        if self.newlyselectedroutine == 5:
+            self.parameterPanel.setvflag = True
+        else:
+            self.parameterPanel.setvflag = False
+
+
+
         self.currentlycheckedroutine = c
 
         for group in range(self.routinecheckList.GetItemCount()):
@@ -825,9 +886,15 @@ class TopPanel(wx.Panel):
 
         self.routineselected = True
 
-        self.parameterPanel.minsetvoltage.SetValue(self.routinedict[self.routinetype]['Default']['Min'])
-        self.parameterPanel.maxsetvoltage.SetValue(self.routinedict[self.routinetype]['Default']['Max'])
-        self.parameterPanel.resovoltage.SetValue(self.routinedict[self.routinetype]['Default']['Res'])
+        self.parameterPanel.minsetvoltageA.SetValue(self.routinedict[self.routinetype]['Default']['MinA'])
+        self.parameterPanel.minsetvoltageB.SetValue(self.routinedict[self.routinetype]['Default']['MinB'])
+
+        self.parameterPanel.maxsetvoltageA.SetValue(self.routinedict[self.routinetype]['Default']['MaxA'])
+        self.parameterPanel.maxsetvoltageB.SetValue(self.routinedict[self.routinetype]['Default']['MaxB'])
+
+        self.parameterPanel.resovoltageA.SetValue(self.routinedict[self.routinetype]['Default']['ResA'])
+        self.parameterPanel.resovoltageB.SetValue(self.routinedict[self.routinetype]['Default']['ResB'])
+
         self.parameterPanel.typesel.SetValue(self.routinedict[self.routinetype]['Default']['IV'])
         self.parameterPanel.type2sel.SetValue(self.routinedict[self.routinetype]['Default']['RV'])
         self.parameterPanel.type3sel.SetValue(self.routinedict[self.routinetype]['Default']['PV'])
@@ -843,7 +910,6 @@ class TopPanel(wx.Panel):
         self.parameterPanel.sweepinitialrangeTc.SetValue(self.routinedict[self.routinetype]['Default']['Initialrange'])
         self.parameterPanel.rangedecTc.SetValue(self.routinedict[self.routinetype]['Default']['RangeDec'])
         self.parameterPanel.wavesetTc2.SetValue(self.routinedict[self.routinetype]['Default']['Wavelengths'])
-        self.parameterPanel.voltagesetTc2.SetValue(self.routinedict[self.routinetype]['Default']['Voltages'])
 
         subroutList = []
 
@@ -1291,12 +1357,14 @@ class TopPanel(wx.Panel):
 
         # set paths for saving file to current working directory
         ROOT_DIR = format(os.getcwd())
-        primarysavefilecsv = ROOT_DIR + '\TestParameters.csv'
-        primarysavefileymlcwd = ROOT_DIR + '\TestParameters.yaml'
+        primarysavefileymlcwd = os.path.join(ROOT_DIR, "TestParameters.yaml")
+        #primarysavefilecsv = ROOT_DIR + '\TestParameters.csv'
+        #primarysavefileymlcwd = ROOT_DIR + '\TestParameters.yaml'
 
         # set path for saving yaml file to selected output folder
         savelocation = self.outputFolderTb.GetValue()
-        primarysavefileyml = savelocation + '\TestParameters.yaml'
+        primarysavefileyml = os.path.join(savelocation, "TestParameters.yaml")
+        #primarysavefileyml = savelocation + '\TestParameters.yaml'
 
 
         # dump deviceListAsObjects which contains all the electroopticdevice objects to a file in selected output folder
@@ -1415,6 +1483,7 @@ class TopPanel(wx.Panel):
 
 
         routine = self.routinecheckList.GetItemText(c)
+        self.parameterPanel.hbox2.Hide(self.parameterPanel.hbox2_4)
         self.parameterPanel.paramvbox.Show(self.parameterPanel.hbox2) #max
         self.parameterPanel.paramvbox.Show(self.parameterPanel.hbox3) #min
         self.parameterPanel.paramvbox.Show(self.parameterPanel.hbox4) #res
@@ -1430,19 +1499,23 @@ class TopPanel(wx.Panel):
         self.parameterPanel.paramvbox.Show(self.parameterPanel.opt_hbox6) #laser output
         self.parameterPanel.paramvbox.Show(self.parameterPanel.opt_hbox7) #number of scans
         self.parameterPanel.paramvbox.Show(self.parameterPanel.hbox7_2) # wavelengths
-        self.parameterPanel.paramvbox.Show(self.parameterPanel.opt_hbox8_2) # voltages
+
 
 
         if routine == 'Wavelength Sweep':
+            self.parameterPanel.hbox2.Hide(self.parameterPanel.hbox2_4)
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox2)  # max
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox3)  # min
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox4)  # res
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox5)  # graph type
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox6) #laser output
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox7_2)  # wavelengths
-            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox8_2) #voltages
 
         if routine == 'Voltage Sweep':
+            self.parameterPanel.sw1.SetLabel('Set Max (V):')
+            self.parameterPanel.sw2.SetLabel('Set Min (V):')
+            self.parameterPanel.sw3.SetLabel('Set Resolution (mV):')
+            self.parameterPanel.hbox2.Hide(self.parameterPanel.hbox2_4)
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox)  # start
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox2)  # stop
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox3)  # step
@@ -1453,9 +1526,12 @@ class TopPanel(wx.Panel):
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox6)  # laser output
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox7)  # number of scans
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox7_2)  # wavelengths
-            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox8_2)  # voltages
 
         if routine == 'Current Sweep':
+            self.parameterPanel.sw1.SetLabel('Set Max (mA):')
+            self.parameterPanel.sw2.SetLabel('Set Min (mA):')
+            self.parameterPanel.sw3.SetLabel('Set Resolution (mA):')
+            self.parameterPanel.hbox2.Hide(self.parameterPanel.hbox2_4)
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox)  # start
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox2)  # stop
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox3)  # step
@@ -1466,9 +1542,9 @@ class TopPanel(wx.Panel):
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox6)  # laser output
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox7)  # number of scans
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox7_2)  # wavelengths
-            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox8_2)  # voltages
 
         if routine == 'Set Wavelength Voltage Sweep':
+            self.parameterPanel.hbox2.Hide(self.parameterPanel.hbox2_4)
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox)  # start
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox2)  # stop
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox3)  # step
@@ -1478,9 +1554,9 @@ class TopPanel(wx.Panel):
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox5)  # sweep speed
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox6)  # laser output
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox7)  # number of scans
-            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox8_2)  # voltages
 
         if routine == 'Set Wavelength Current Sweep':
+            self.parameterPanel.hbox2.Hide(self.parameterPanel.hbox2_4)
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox)  # start
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox2)  # stop
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox3)  # step
@@ -1490,10 +1566,11 @@ class TopPanel(wx.Panel):
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox5)  # sweep speed
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox6)  # laser output
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox7)  # number of scans
-            self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox8_2)  # voltages
 
         if routine == 'Set Voltage Wavelength Sweep':
-            self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox2)  # max
+            #self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox2)  # max
+            self.parameterPanel.sw1.SetLabel('Voltages (V):')
+            self.parameterPanel.hbox2.Show(self.parameterPanel.hbox2_4)
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox3)  # min
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox4)  # res
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox5)  # graph type
@@ -1508,29 +1585,64 @@ class TopPanel(wx.Panel):
 
             if self.routinetype == 'Voltage Sweep':
 
-                if self.parameterPanel.maxsetvoltage.GetValue().replace('.', '').isnumeric == False:
+                if self.parameterPanel.maxsetvoltageA.GetValue().replace('.', '').isnumeric == False and self.parameterPanel.Asel.GetValue() == True:
                     self.inputcheckflag = False
                     print('Please check max input')
                 else:
-                    if float(self.parameterPanel.maxsetvoltage.GetValue()) > 240:
+                    if float(self.parameterPanel.maxsetvoltageA.GetValue()) > 240 and self.parameterPanel.Asel.GetValue() == True:
                         self.inputcheckflag = False
                         print('Please check max input, cannot be greater than 240V')
 
-                if self.parameterPanel.minsetvoltage.GetValue().replace('.', '').isnumeric == False:
+
+                if self.parameterPanel.maxsetvoltageB.GetValue().replace('.', '').isnumeric == False and self.parameterPanel.Bsel.GetValue() == True:
+                    self.inputcheckflag = False
+                    print('Please check max input')
+                else:
+                    if float(self.parameterPanel.maxsetvoltageB.GetValue()) > 240 and self.parameterPanel.Bsel.GetValue() == True:
+                        self.inputcheckflag = False
+                        print('Please check max input, cannot be greater than 240V')
+
+
+                if self.parameterPanel.minsetvoltageA.GetValue().replace('.', '').isnumeric == False and self.parameterPanel.Asel.GetValue() == True:
                     self.inputcheckflag = False
                     print('Please check min input')
+                else:
+                    if float(self.parameterPanel.minsetvoltageA.GetValue()) < -240 and self.parameterPanel.Asel.GetValue() == True:
+                        self.inputcheckflag = False
+                        print('Please check min input, cannot be less than -240V')
 
-                if self.parameterPanel.resovoltage.GetValue().replace('.', '').isnumeric == False:
+
+                if self.parameterPanel.minsetvoltageB.GetValue().replace('.', '').isnumeric == False and self.parameterPanel.Bsel.GetValue() == True:
+                    self.inputcheckflag = False
+                    print('Please check min input')
+                else:
+                    if float(self.parameterPanel.minsetvoltageB.GetValue()) < -240 and self.parameterPanel.Bsel.GetValue() == True:
+                        self.inputcheckflag = False
+                        print('Please check min input, cannot be less than -240V')
+
+
+                if self.parameterPanel.resovoltageA.GetValue().replace('.', '').isnumeric == False and self.parameterPanel.Asel.GetValue() == True:
                     self.inputcheckflag = False
                     print('Please check resolution input')
                 else:
-                    if self.parameterPanel.resovoltage.GetValue() == '0':
+                    if self.parameterPanel.resovoltageA.GetValue() == '0' and self.parameterPanel.Asel.GetValue() == True:
                         self.inputcheckflag = False
                         print('Please check resolution value')
+
+
+                if self.parameterPanel.resovoltageB.GetValue().replace('.', '').isnumeric == False and self.parameterPanel.Bsel.GetValue() == True:
+                    self.inputcheckflag = False
+                    print('Please check resolution input')
+                else:
+                    if self.parameterPanel.resovoltageB.GetValue() == '0' and self.parameterPanel.Bsel.GetValue() == True:
+                        self.inputcheckflag = False
+                        print('Please check resolution value')
+
 
                 if self.parameterPanel.typesel.GetValue() == False and self.parameterPanel.type2sel.GetValue() == False and self.parameterPanel.type3sel.GetValue() == False:
                     self.inputcheckflag = False
                     print('Please select a plot type')
+
 
                 if self.parameterPanel.Asel.GetValue() == False and self.parameterPanel.Bsel.GetValue() == False:
                     self.inputcheckflag = False
@@ -1539,23 +1651,46 @@ class TopPanel(wx.Panel):
 
             if self.routinetype == 'Current Sweep':
 
-                if self.parameterPanel.maxsetvoltage.GetValue().replace('.', '').isnumeric == False:
+                if self.parameterPanel.maxsetvoltageA.GetValue().replace('.', '').isnumeric == False and self.parameterPanel.Asel.GetValue() == True:
                     self.inputcheckflag = False
                     print('Please check max input')
                 else:
-                    if float(self.parameterPanel.maxsetvoltage.GetValue()) > 10000:
+                    if float(self.parameterPanel.maxsetvoltageA.GetValue()) > 10000 and self.parameterPanel.Asel.GetValue() == True:
                         self.inputcheckflag = False
                         print('Please check max input, cannot be greater than 10A')
 
-                if self.parameterPanel.minsetvoltage.GetValue().replace('.', '').isnumeric == False:
+
+                if self.parameterPanel.maxsetvoltageB.GetValue().replace('.', '').isnumeric == False and self.parameterPanel.Bsel.GetValue() == True:
+                    self.inputcheckflag = False
+                    print('Please check max input')
+                else:
+                    if float(self.parameterPanel.maxsetvoltageB.GetValue()) > 10000 and self.parameterPanel.Bsel.GetValue() == True:
+                        self.inputcheckflag = False
+                        print('Please check max input, cannot be greater than 10A')
+
+                if self.parameterPanel.minsetvoltageA.GetValue().replace('.', '').isnumeric == False and self.parameterPanel.Asel.GetValue() == True:
                     self.inputcheckflag = False
                     print('Please check min input')
 
-                if self.parameterPanel.resovoltage.GetValue().replace('.', '').isnumeric == False:
+                if self.parameterPanel.minsetvoltageB.GetValue().replace('.', '').isnumeric == False and self.parameterPanel.Bsel.GetValue() == True:
+                    self.inputcheckflag = False
+                    print('Please check min input')
+
+
+                if self.parameterPanel.resovoltageA.GetValue().replace('.', '').isnumeric == False and self.parameterPanel.Asel.GetValue() == True:
                     self.inputcheckflag = False
                     print('Please check resolution input')
                 else:
-                    if self.parameterPanel.resovoltage.GetValue() == '0':
+                    if self.parameterPanel.resovoltageA.GetValue() == '0' and self.parameterPanel.Asel.GetValue() == True:
+                        self.inputcheckflag = False
+                        print('Please check resolution value')
+
+
+                if self.parameterPanel.resovoltageB.GetValue().replace('.', '').isnumeric == False and self.parameterPanel.Bsel.GetValue() == True:
+                    self.inputcheckflag = False
+                    print('Please check resolution input')
+                else:
+                    if self.parameterPanel.resovoltageB.GetValue() == '0' and self.parameterPanel.Bsel.GetValue() == True:
                         self.inputcheckflag = False
                         print('Please check resolution value')
 
@@ -1596,23 +1731,45 @@ class TopPanel(wx.Panel):
 
             if self.routinetype == 'Set Wavelength Voltage Sweep':
 
-                if self.parameterPanel.maxsetvoltage.GetValue().replace('.', '').isnumeric == False:
+                if self.parameterPanel.maxsetvoltageA.GetValue().replace('.', '').isnumeric == False and self.parameterPanel.Asel.GetValue() == True:
                     self.inputcheckflag = False
                     print('Please check max input')
                 else:
-                    if float(self.parameterPanel.maxsetvoltage.GetValue()) > 240:  # wont be able to sweep above 240 mA, fix at some point
+                    if float(self.parameterPanel.maxsetvoltageA.GetValue()) > 240 and self.parameterPanel.Asel.GetValue() == True:  # wont be able to sweep above 240 mA, fix at some point
                         self.inputcheckflag = False
                         print('Please check max input, cannot be greater than 240V')
 
-                if self.parameterPanel.minsetvoltage.GetValue().replace('.', '').isnumeric == False:
+
+                if self.parameterPanel.maxsetvoltageB.GetValue().replace('.', '').isnumeric == False and self.parameterPanel.Bsel.GetValue() == True:
+                    self.inputcheckflag = False
+                    print('Please check max input')
+                else:
+                    if float(self.parameterPanel.maxsetvoltageB.GetValue()) > 240 and self.parameterPanel.Bsel.GetValue() == True:  # wont be able to sweep above 240 mA, fix at some point
+                        self.inputcheckflag = False
+                        print('Please check max input, cannot be greater than 240V')
+
+
+                if self.parameterPanel.minsetvoltageA.GetValue().replace('.', '').isnumeric == False and self.parameterPanel.Asel.GetValue() == True:
                     self.inputcheckflag = False
                     print('Please check min input')
 
-                if self.parameterPanel.resovoltage.GetValue().replace('.', '').isnumeric == False:
+                if self.parameterPanel.minsetvoltageB.GetValue().replace('.', '').isnumeric == False and self.parameterPanel.Bsel.GetValue() == True:
+                    self.inputcheckflag = False
+                    print('Please check min input')
+
+                if self.parameterPanel.resovoltageA.GetValue().replace('.', '').isnumeric == False and self.parameterPanel.Asel.GetValue() == True:
                     self.inputcheckflag = False
                     print('Please check resolution input')
                 else:
-                    if self.parameterPanel.resovoltage.GetValue() == '0':
+                    if self.parameterPanel.resovoltageA.GetValue() == '0' and self.parameterPanel.Asel.GetValue() == True:
+                        self.inputcheckflag = False
+                        print('Please check resolution value')
+
+                if self.parameterPanel.resovoltageB.GetValue().replace('.', '').isnumeric == False and self.parameterPanel.Bsel.GetValue() == True:
+                    self.inputcheckflag = False
+                    print('Please check resolution input')
+                else:
+                    if self.parameterPanel.resovoltageB.GetValue() == '0' and self.parameterPanel.Bsel.GetValue() == True:
                         self.inputcheckflag = False
                         print('Please check resolution value')
 
@@ -1630,23 +1787,43 @@ class TopPanel(wx.Panel):
 
             if self.routinetype == 'Set Wavelength Current Sweep':
 
-                if self.parameterPanel.maxsetvoltage.GetValue().replace('.', '').isnumeric == False:
+                if self.parameterPanel.maxsetvoltageA.GetValue().replace('.', '').isnumeric == False and self.parameterPanel.Asel.GetValue() == True:
                     self.inputcheckflag = False
                     print('Please check max input')
                 else:
-                    if float(self.parameterPanel.maxsetvoltage.GetValue()) > 10000:  # wont be able to sweep above 240 mA, fix at some point
+                    if float(self.parameterPanel.maxsetvoltageA.GetValue()) > 10000 and self.parameterPanel.Asel.GetValue() == True:  # wont be able to sweep above 240 mA, fix at some point
                         self.inputcheckflag = False
                         print('Please check max input, cannot be greater than 10A')
 
-                if self.parameterPanel.minsetvoltage.GetValue().replace('.', '').isnumeric == False:
+                if self.parameterPanel.maxsetvoltageB.GetValue().replace('.', '').isnumeric == False and self.parameterPanel.Bsel.GetValue() == True:
+                    self.inputcheckflag = False
+                    print('Please check max input')
+                else:
+                    if float(self.parameterPanel.maxsetvoltageB.GetValue()) > 10000 and self.parameterPanel.Bsel.GetValue() == True:  # wont be able to sweep above 240 mA, fix at some point
+                        self.inputcheckflag = False
+                        print('Please check max input, cannot be greater than 10A')
+
+                if self.parameterPanel.minsetvoltageA.GetValue().replace('.', '').isnumeric == False and self.parameterPanel.Asel.GetValue() == True:
                     self.inputcheckflag = False
                     print('Please check min input')
 
-                if self.parameterPanel.resovoltage.GetValue().replace('.', '').isnumeric == False:
+                if self.parameterPanel.minsetvoltageB.GetValue().replace('.', '').isnumeric == False and self.parameterPanel.Bsel.GetValue() == True:
+                    self.inputcheckflag = False
+                    print('Please check min input')
+
+                if self.parameterPanel.resovoltageA.GetValue().replace('.', '').isnumeric == False and self.parameterPanel.Asel.GetValue() == True:
                     self.inputcheckflag = False
                     print('Please check resolution input')
                 else:
-                    if self.parameterPanel.resovoltage.GetValue() == '0':
+                    if self.parameterPanel.resovoltageA.GetValue() == '0' and self.parameterPanel.Asel.GetValue() == True:
+                        self.inputcheckflag = False
+                        print('Please check resolution value')
+
+                if self.parameterPanel.resovoltageB.GetValue().replace('.', '').isnumeric == False and self.parameterPanel.Bsel.GetValue() == True:
+                    self.inputcheckflag = False
+                    print('Please check resolution input')
+                else:
+                    if self.parameterPanel.resovoltageB.GetValue() == '0' and self.parameterPanel.Bsel.GetValue() == True:
                         self.inputcheckflag = False
                         print('Please check resolution value')
 
@@ -1940,6 +2117,7 @@ class ParameterPanel(wx.Panel):
     def __init__(self, parent):
         super(ParameterPanel, self).__init__(parent)
         self.infoFrame = infoFrame
+        self.setvflag = False
         self.elecvolt = []
         self.eleccurrent = []
         self.elecvmax = []
@@ -2028,10 +2206,30 @@ class ParameterPanel(wx.Panel):
 
         #self.paramvbox.Add(self.hbox1, 1, wx.EXPAND)
 
+        # electrical SMU channel select checkboxes and elecrical save button
+        self.hbox6 = wx.BoxSizer(wx.HORIZONTAL)
+        sq6_1 = wx.StaticText(self, label='Select SMU Channel: ')
+        self.Asel = wx.CheckBox(self, label='A', pos=(20, 20))
+        self.Asel.Bind(wx.EVT_CHECKBOX, self.reorganizeSMUchannels)
+        self.Asel.SetValue(True)
+        self.Bsel = wx.CheckBox(self, label='B', pos=(20, 20))
+        self.Bsel.Bind(wx.EVT_CHECKBOX, self.reorganizeSMUchannels)
+        self.Bsel.SetValue(True)
+        self.hbox6.AddMany([(sq6_1, 1, wx.EXPAND), (self.Asel, 1, wx.EXPAND), (self.Bsel, 0, wx.EXPAND)])
+
+        self.paramvbox.Add(self.hbox6, 1, wx.EXPAND)
+
         #Voltage and Current maximum select
         self.hbox2 = wx.BoxSizer(wx.HORIZONTAL)
-        sw1 = wx.StaticText(self, label='Set Max (V/mA):')
-        self.maxsetvoltage = wx.TextCtrl(self, size=(60, -1))
+        self.hbox2_1 = wx.BoxSizer(wx.HORIZONTAL)
+        self.hbox2_2 = wx.BoxSizer(wx.HORIZONTAL)
+        self.hbox2_3 = wx.BoxSizer(wx.HORIZONTAL)
+        self.hbox2_4 = wx.BoxSizer(wx.HORIZONTAL)
+        self.sw1 = wx.StaticText(self, label='Set Max (V/mA):')
+        self.maxsetvoltageA = wx.TextCtrl(self, size=(60, -1))
+        self.maxsetvoltageB = wx.TextCtrl(self, size=(60, -1))
+        self.voltinfoBtn = wx.Button(self, id=0, label='?', size=(20, 20))
+        self.voltinfoBtn.Bind(wx.EVT_BUTTON, self.OnButton_createinfoframe)
         #self.maxsetvoltage.SetValue('V')
         #self.maxsetvoltage.Bind(wx.EVT_SET_FOCUS, self.cleartext)
         #self.maxsetvoltage.SetForegroundColour(wx.Colour(211, 211, 211))
@@ -2039,29 +2237,46 @@ class ParameterPanel(wx.Panel):
         #self.maxsetcurrent.SetValue('mA')
         #self.maxsetcurrent.Bind(wx.EVT_SET_FOCUS, self.cleartext)
         #self.maxsetcurrent.SetForegroundColour(wx.Colour(211,211,211))
-        self.hbox2.AddMany([(sw1, 1, wx.EXPAND), (self.maxsetvoltage, 0, wx.EXPAND)])# (self.maxsetcurrent, 0, wx.EXPAND)])
+        self.hbox2_1.AddMany([(self.sw1, 1, wx.EXPAND)])# (self.maxsetcurrent, 0, wx.EXPAND)])
+        self.hbox2_2.AddMany([(self.maxsetvoltageA, 0, wx.EXPAND)])  # (self.maxsetcurrent, 0, wx.EXPAND)])
+        self.hbox2_3.AddMany([(self.maxsetvoltageB, 0, wx.EXPAND)])  # (self.maxsetcurrent, 0, wx.EXPAND)])
+        self.hbox2_4.AddMany([(self.voltinfoBtn, 0, wx.EXPAND)])
+        self.hbox2.AddMany([(self.hbox2_1, 1, wx.EXPAND), (self.hbox2_4, 1, wx.EXPAND), (self.hbox2_2, 0, wx.EXPAND),
+                            (self.hbox2_3, 0, wx.EXPAND)])  # (self.maxsetcurrent, 0, wx.EXPAND)])
 
         self.paramvbox.Add(self.hbox2, 1, wx.EXPAND)
 
         #Voltage and current minimum select
         self.hbox3 = wx.BoxSizer(wx.HORIZONTAL)
-        sw2 = wx.StaticText(self, label='Set Min (V/mA):')
+        self.hbox3_1 = wx.BoxSizer(wx.HORIZONTAL)
+        self.hbox3_2 = wx.BoxSizer(wx.HORIZONTAL)
+        self.hbox3_3 = wx.BoxSizer(wx.HORIZONTAL)
+        self.sw2 = wx.StaticText(self, label='Set Min (V/mA):')
         #self.minsetcurrent = wx.TextCtrl(self, size=(60, -1))
         #self.minsetcurrent.SetValue('mA')
         #self.minsetcurrent.Bind(wx.EVT_SET_FOCUS, self.cleartext)
         #self.minsetcurrent.SetForegroundColour(wx.Colour(211, 211, 211))
-        self.minsetvoltage = wx.TextCtrl(self, size=(60, -1))
+        self.minsetvoltageA = wx.TextCtrl(self, size=(60, -1))
+        self.minsetvoltageB = wx.TextCtrl(self, size=(60, -1))
         #self.minsetvoltage.SetValue('V')
         #self.minsetvoltage.Bind(wx.EVT_SET_FOCUS, self.cleartext)
         #self.minsetvoltage.SetForegroundColour(wx.Colour(211, 211, 211))
-        self.hbox3.AddMany([(sw2, 1, wx.EXPAND), (self.minsetvoltage, 0, wx.EXPAND)])# (self.minsetcurrent, 0, wx.EXPAND)])
+        self.hbox3_1.AddMany([(self.sw2, 1, wx.EXPAND)])# (self.minsetcurrent, 0, wx.EXPAND)])
+        self.hbox3_2.AddMany([(self.minsetvoltageA, 0, wx.EXPAND)])  # (self.minsetcurrent, 0, wx.EXPAND)])
+        self.hbox3_3.AddMany([(self.minsetvoltageB, 0, wx.EXPAND)])  # (self.minsetcurrent, 0, wx.EXPAND)])
+        self.hbox3.AddMany([(self.hbox3_1, 1, wx.EXPAND), (self.hbox3_2, 0, wx.EXPAND),
+                            (self.hbox3_3, 0, wx.EXPAND)])  # (self.minsetcurrent, 0, wx.EXPAND)])
 
         self.paramvbox.Add(self.hbox3, 1, wx.EXPAND)
 
         #Voltage and Current resolution select
         self.hbox4 = wx.BoxSizer(wx.HORIZONTAL)
-        sw3 = wx.StaticText(self, label='Set Resolution (mV/mA):')
-        self.resovoltage = wx.TextCtrl(self, size=(60, -1))
+        self.hbox4_1 = wx.BoxSizer(wx.HORIZONTAL)
+        self.hbox4_2 = wx.BoxSizer(wx.HORIZONTAL)
+        self.hbox4_3 = wx.BoxSizer(wx.HORIZONTAL)
+        self.sw3 = wx.StaticText(self, label='Set Resolution (mV/mA):')
+        self.resovoltageA = wx.TextCtrl(self, size=(60, -1))
+        self.resovoltageB = wx.TextCtrl(self, size=(60, -1))
         #self.resovoltage.SetValue('V')
         #self.resovoltage.Bind(wx.EVT_SET_FOCUS, self.cleartext)
         #self.resovoltage.SetForegroundColour(wx.Colour(211, 211, 211))
@@ -2069,9 +2284,14 @@ class ParameterPanel(wx.Panel):
         #self.resocurrent.SetValue('mA')
         #self.resocurrent.Bind(wx.EVT_SET_FOCUS, self.cleartext)
         #self.resocurrent.SetForegroundColour(wx.Colour(211, 211, 211))
-        self.hbox4.AddMany([(sw3, 1, wx.EXPAND), (self.resovoltage, 0, wx.EXPAND)]) #(self.resocurrent, 0, wx.EXPAND)])
+        self.hbox4_1.AddMany([(self.sw3, 1, wx.EXPAND)]) #(self.resocurrent, 0, wx.EXPAND)])
+        self.hbox4_2.AddMany([(self.resovoltageA, 0, wx.EXPAND)])
+        self.hbox4_3.AddMany([(self.resovoltageB, 0, wx.EXPAND)])
+        self.hbox4.AddMany([(self.hbox4_1, 1, wx.EXPAND), (self.hbox4_2, 0, wx.EXPAND), (self.hbox4_3, 0, wx.EXPAND)])
 
         self.paramvbox.Add(self.hbox4, 1, wx.EXPAND)
+
+
 
         #Plot type selection checkboxes
         self.hbox5 = wx.BoxSizer(wx.HORIZONTAL)
@@ -2087,22 +2307,11 @@ class ParameterPanel(wx.Panel):
 
         self.paramvbox.Add(self.hbox5, 1, wx.EXPAND)
 
-        #electrical SMU channel select checkboxes and elecrical save button
-        self.hbox6 = wx.BoxSizer(wx.HORIZONTAL)
-        sq6_1 = wx.StaticText(self, label='Select SMU Channel: ')
-        self.Asel = wx.CheckBox(self, label='A', pos=(20, 20))
-        self.Asel.SetValue(False)
-        self.Bsel = wx.CheckBox(self, label='B', pos=(20, 20))
-        self.Bsel.SetValue(False)
-        self.Asel.Bind(wx.EVT_CHECKBOX, self.trueorfalse)
-        self.Bsel.Bind(wx.EVT_CHECKBOX, self.trueorfalse)
-        self.hbox6.AddMany([(sq6_1, 1, wx.EXPAND), (self.Asel, 1, wx.EXPAND), (self.Bsel, 0, wx.EXPAND)])
 
-        self.paramvbox.Add(self.hbox6, 1, wx.EXPAND)
 
         #optical start wavelength select
         self.opt_hbox = wx.BoxSizer(wx.HORIZONTAL)
-        st4 = wx.StaticText(self, label='Start (nm)')
+        st4 = wx.StaticText(self, label='Start (nm):')
         self.startWvlTc = wx.TextCtrl(self)
         self.startWvlTc.SetValue('0')
         self.opt_hbox.AddMany([(st4, 1, wx.EXPAND), (self.startWvlTc, 1, wx.EXPAND)])
@@ -2111,7 +2320,7 @@ class ParameterPanel(wx.Panel):
 
         #optical stop wavelength select
         self.opt_hbox2 = wx.BoxSizer(wx.HORIZONTAL)
-        st5 = wx.StaticText(self, label='Stop (nm)')
+        st5 = wx.StaticText(self, label='Stop (nm):')
         self.stopWvlTc = wx.TextCtrl(self)
         self.stopWvlTc.SetValue('0')
         self.opt_hbox2.AddMany([(st5, 1, wx.EXPAND), (self.stopWvlTc, 1, wx.EXPAND)])
@@ -2120,7 +2329,7 @@ class ParameterPanel(wx.Panel):
 
         #optical step size select
         self.opt_hbox3 = wx.BoxSizer(wx.HORIZONTAL)
-        st6 = wx.StaticText(self, label='Step (nm)')
+        st6 = wx.StaticText(self, label='Step (nm):')
         self.stepWvlTc = wx.TextCtrl(self)
         self.stepWvlTc.SetValue('0')
         self.opt_hbox3.AddMany([(st6, 1, wx.EXPAND), (self.stepWvlTc, 1, wx.EXPAND)])
@@ -2129,7 +2338,7 @@ class ParameterPanel(wx.Panel):
 
         #optical sweep power tab
         self.opt_hbox4 = wx.BoxSizer(wx.HORIZONTAL)
-        sweepPowerSt = wx.StaticText(self, label='Sweep power (dBm)')
+        sweepPowerSt = wx.StaticText(self, label='Sweep power (dBm):')
         self.sweepPowerTc = wx.TextCtrl(self)
         self.sweepPowerTc.SetValue('0')
         self.opt_hbox4.AddMany([(sweepPowerSt, 1, wx.EXPAND), (self.sweepPowerTc, 1, wx.EXPAND)])
@@ -2138,7 +2347,7 @@ class ParameterPanel(wx.Panel):
 
         #optical Initial range tab
         self.opt_hbox4_5 = wx.BoxSizer(wx.HORIZONTAL)
-        sweepinitialrangeSt = wx.StaticText(self, label='Initial Range (dBm)')
+        sweepinitialrangeSt = wx.StaticText(self, label='Initial Range (dBm):')
         self.sweepinitialrangeTc = wx.TextCtrl(self)
         self.sweepinitialrangeTc.SetValue('0')
         self.opt_hbox4_5.AddMany([(sweepinitialrangeSt, 1, wx.EXPAND), (self.sweepinitialrangeTc, 1, wx.EXPAND)])
@@ -2147,7 +2356,7 @@ class ParameterPanel(wx.Panel):
 
         #optical range decrement tab
         self.opt_hbox4_6 = wx.BoxSizer(wx.HORIZONTAL)
-        rangedecSt = wx.StaticText(self, label='Range Decrement (dBm)')
+        rangedecSt = wx.StaticText(self, label='Range Decrement (dBm):')
         self.rangedecTc = wx.TextCtrl(self)
         self.rangedecTc.SetValue('0')
         self.opt_hbox4_6.AddMany([(rangedecSt, 1, wx.EXPAND), (self.rangedecTc, 1, wx.EXPAND)])
@@ -2156,7 +2365,7 @@ class ParameterPanel(wx.Panel):
 
         #optical sweep speed tab
         self.opt_hbox5 = wx.BoxSizer(wx.HORIZONTAL)
-        st7 = wx.StaticText(self, label='Sweep speed')
+        st7 = wx.StaticText(self, label='Sweep speed:')
         sweepSpeedOptions = ['80 nm/s', '40 nm/s', '20 nm/s', '10 nm/s', '5 nm/s', '0.5 nm/s', 'auto']
         self.sweepSpeedCb = wx.ComboBox(self, choices=sweepSpeedOptions, style=wx.CB_READONLY, value='auto')
         self.opt_hbox5.AddMany([(st7, 1, wx.EXPAND), (self.sweepSpeedCb, 1, wx.EXPAND)])
@@ -2165,7 +2374,7 @@ class ParameterPanel(wx.Panel):
 
         #optical laser output tab
         self.opt_hbox6 = wx.BoxSizer(wx.HORIZONTAL)
-        st8 = wx.StaticText(self, label='Laser output')
+        st8 = wx.StaticText(self, label='Laser output:')
         laserOutputOptions = ['High power', 'Low SSE']
         self.laserOutputCb = wx.ComboBox(self, choices=laserOutputOptions, style=wx.CB_READONLY, value='High power')
         self.opt_hbox6.AddMany([(st8, 1, wx.EXPAND), (self.laserOutputCb, 1, wx.EXPAND)])
@@ -2174,7 +2383,7 @@ class ParameterPanel(wx.Panel):
 
         #optical number of scans tab
         self.opt_hbox7 = wx.BoxSizer(wx.HORIZONTAL)
-        st9 = wx.StaticText(self, label='Number of scans')
+        st9 = wx.StaticText(self, label='Number of scans:')
         numSweepOptions = ['1', '2', '3']
         self.numSweepCb = wx.ComboBox(self, choices=numSweepOptions, style=wx.CB_READONLY, value='1')
         self.opt_hbox7.AddMany([(st9, 1, wx.EXPAND), (self.numSweepCb, 1, wx.EXPAND)])
@@ -2184,26 +2393,63 @@ class ParameterPanel(wx.Panel):
 
         #set wavelength, wavelength select
         self.hbox7_2 = wx.BoxSizer(wx.HORIZONTAL)
-        wavesetst = wx.StaticText(self, label='Wavelengths (nm)')
+        wavesetst = wx.StaticText(self, label='Wavelengths (nm):')
         self.wavesetTc2 = wx.TextCtrl(self)
         self.wavesetTc2.SetValue('0')
         self.hbox7_2.AddMany([(wavesetst, 1, wx.EXPAND), (self.wavesetTc2, 1, wx.EXPAND)])
 
         self.paramvbox.Add(self.hbox7_2, 1, wx.EXPAND)
 
-        #set voltage, voltage selection
-        self.opt_hbox8_2 = wx.BoxSizer(wx.HORIZONTAL)
-        voltagesetst = wx.StaticText(self, label='Voltages (V)')
-        self.voltinfoBtn = wx.Button(self,id= 0, label = '?', size=(20, 20))
-        self.voltinfoBtn.Bind(wx.EVT_BUTTON, self.OnButton_createinfoframe)
-
-        self.voltagesetTc2 = wx.TextCtrl(self)
-        self.voltagesetTc2.SetValue('0')
-        self.opt_hbox8_2.AddMany([(voltagesetst, 1, wx.EXPAND), (self.voltinfoBtn, 0, wx.EXPAND), (self.voltagesetTc2, 1, wx.EXPAND)])
-
-        self.paramvbox.Add(self.opt_hbox8_2, 1, wx.EXPAND)
-
         self.SetSizer(self.paramvbox)
+
+    def reorganizeSMUchannels(self, event):
+
+        if self.Asel.GetValue() == True and self.Bsel.GetValue() == False:
+            self.hbox2.Show(self.hbox2_2)  # Show Channel A
+            self.hbox2.Hide(self.hbox2_3)  # Hide Channel B
+            self.hbox3.Show(self.hbox3_2)  # Show Channel A
+            self.hbox3.Hide(self.hbox3_3)  # Hide Channel B
+            self.hbox4.Show(self.hbox4_2)  # Show Channel A
+            self.hbox4.Hide(self.hbox4_3)  # Hide Channel B
+            self.maxsetvoltageB.SetValue('')
+            self.minsetvoltageB.SetValue('')
+            self.resovoltageB.SetValue('')
+        if self.Asel.GetValue() == False and self.Bsel.GetValue() == True:
+            self.hbox2.Show(self.hbox2_3)  # Show Channel B
+            self.hbox2.Hide(self.hbox2_2)  # Hide Channel A
+            self.hbox3.Show(self.hbox3_3)  # Show Channel B
+            self.hbox3.Hide(self.hbox3_2)  # Hide Channel A
+            self.hbox4.Show(self.hbox4_3)  # Show Channel B
+            self.hbox4.Hide(self.hbox4_2)  # Hide Channel A
+            self.maxsetvoltageA.SetValue('')
+            self.minsetvoltageA.SetValue('')
+            self.resovoltageA.SetValue('')
+        if self.Asel.GetValue() == True and self.Bsel.GetValue() == True:
+            self.hbox2.Show(self.hbox2_3)  # Show Channel B
+            self.hbox2.Show(self.hbox2_2)  # Show Channel A
+            self.hbox3.Show(self.hbox3_3)  # Show Channel B
+            self.hbox3.Show(self.hbox3_2)  # Show Channel A
+            self.hbox4.Show(self.hbox4_3)  # Show Channel B
+            self.hbox4.Show(self.hbox4_2)  # Show Channel A
+        if self.Asel.GetValue() == False and self.Bsel.GetValue() == False:
+            self.hbox2.Hide(self.hbox2_3)  # Hide Channel B
+            self.hbox2.Hide(self.hbox2_2)  # Hide Channel A
+            self.hbox3.Hide(self.hbox3_3)  # Hide Channel B
+            self.hbox3.Hide(self.hbox3_2)  # Hide Channel A
+            self.hbox4.Hide(self.hbox4_3)  # Hide Channel B
+            self.hbox4.Hide(self.hbox4_2)  # Hide Channel A
+            self.maxsetvoltageA.SetValue('')
+            self.minsetvoltageA.SetValue('')
+            self.resovoltageA.SetValue('')
+            self.maxsetvoltageB.SetValue('')
+            self.minsetvoltageB.SetValue('')
+            self.resovoltageB.SetValue('')
+        if self.setvflag == True:
+            self.hbox2.Show(self.hbox2_4)
+            self.hbox3.Hide(self.hbox3_2)
+            self.hbox3.Hide(self.hbox3_3)
+            self.hbox4.Hide(self.hbox4_2)
+            self.hbox4.Hide(self.hbox4_3)
 
     def cleartext(self, event):
         """
