@@ -1,0 +1,13 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# OSX folder files:
+.DS_Store
+*Thumbs.db
+
+#Builds
+build/
+dist/
+*.spec
+
