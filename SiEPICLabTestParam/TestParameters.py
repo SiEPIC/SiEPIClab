@@ -169,7 +169,7 @@ class TopPanel(wx.Panel):
         self.checkAllBtn.Bind(wx.EVT_BUTTON, self.OnButton_CheckAll)
         self.uncheckAllBtn = wx.Button(self, label='Unselect All', size=(80, 20))
         self.uncheckAllBtn.Bind(wx.EVT_BUTTON, self.OnButton_UncheckAll)
-        self.searchFile = wx.TextCtrl(self)
+        self.searchFile = wx.TextCtrl(self, size=(100, -1))
         self.searchFile.SetValue('')
         self.searchFile.Bind(wx.EVT_TEXT, self.highlight)
         self.searchBtn = wx.Button(self, label='Select keyword', size=(100, 20))
@@ -240,7 +240,7 @@ class TopPanel(wx.Panel):
         hboxsave2 = wx.BoxSizer(wx.HORIZONTAL)
         vboxsave = wx.BoxSizer(wx.HORIZONTAL)
         st2 = wx.StaticText(self, label='Save folder:')
-        self.outputFolderTb = wx.TextCtrl(self, style=wx.TE_READONLY)
+        self.outputFolderTb = wx.TextCtrl(self, style=wx.TE_READONLY, size=(300, -1))
         self.outputFolderBtn = wx.Button(self, wx.ID_OPEN, size=(50, 20))
         self.outputFolderBtn.Bind(wx.EVT_BUTTON, self.OnButton_SelectOutputFolder)
         hboxsave.AddMany([(st2, 0, wx.EXPAND), (self.outputFolderTb, 0, wx.EXPAND), (self.outputFolderBtn, 0, wx.EXPAND)])
@@ -383,8 +383,8 @@ class TopPanel(wx.Panel):
 
         self.set = [False] * self.devicecheckList.GetItemCount()
 
-        self.routineList = ['Wavelength Sweep', 'Voltage Sweep', 'Current Sweep', 'Set Wavelength Voltage Sweep',
-                            'Set Wavelength Current Sweep', 'Set Voltage Wavelength Sweep']
+        self.routineList = ['Wavelength Sweep', 'Voltage Sweep', 'Current Sweep', 'Fixed Wavelength Voltage Sweep',
+                            'Fixed Wavelength Current Sweep', 'Fixed Voltage Wavelength Sweep']
 
         self.subroutineList = {}
 
@@ -487,7 +487,7 @@ class TopPanel(wx.Panel):
                     self.routinedict[routine][x]['Voltages'] = ''
 
 
-                if routine == 'Set Wavelength Voltage Sweep':
+                if routine == 'Fixed Wavelength Voltage Sweep':
                     self.routinedict[routine][x] = {}
                     self.routinedict[routine][x]['ELECflag'] = False
                     self.routinedict[routine][x]['OPTICflag'] = False
@@ -516,7 +516,7 @@ class TopPanel(wx.Panel):
                     self.routinedict[routine][x]['Wavelengths'] = ''
                     self.routinedict[routine][x]['Voltages'] = ''
 
-                if routine == 'Set Wavelength Current Sweep':
+                if routine == 'Fixed Wavelength Current Sweep':
                     self.routinedict[routine][x] = {}
                     self.routinedict[routine][x]['ELECflag'] = False
                     self.routinedict[routine][x]['OPTICflag'] = False
@@ -545,7 +545,7 @@ class TopPanel(wx.Panel):
                     self.routinedict[routine][x]['Wavelengths'] = '1480, 1500, 1550'
                     self.routinedict[routine][x]['Voltages'] = ''
 
-                if routine == 'Set Voltage Wavelength Sweep':
+                if routine == 'Fixed Voltage Wavelength Sweep':
                     self.routinedict[routine][x] = {}
                     self.routinedict[routine][x]['ELECflag'] = False
                     self.routinedict[routine][x]['OPTICflag'] = False
@@ -655,7 +655,7 @@ class TopPanel(wx.Panel):
             self.subroutineList[self.routinetype].append(self.parameterPanel.name.GetValue())
 
 
-        if self.routinetype == 'Set Voltage Wavelength Sweep':
+        if self.routinetype == 'Fixed Voltage Wavelength Sweep':
             self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['VoltagesA'] = self.parameterPanel.maxsetvoltageA.GetValue()
             self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['VoltagesB'] = self.parameterPanel.maxsetvoltageB.GetValue()
             self.routinedict[self.routinetype][self.parameterPanel.name.GetValue()]['MinA'] = self.parameterPanel.minsetvoltageA.GetValue()
@@ -722,9 +722,10 @@ class TopPanel(wx.Panel):
 
         for num in range(self.deviceroutinecheckList.GetItemCount()):
             if self.deviceroutinecheckList.IsItemChecked(num):
-                self.devicedict[self.devicesselected[0]]['Routines'].remove(self.deviceroutinecheckList.GetItemText(num))
-                if len(self.devicedict[self.devicesselected[0]]['Routines']) == 0:
-                    self.devicedict[self.devicesselected[0]]['RoutineCheck'] = False
+                for i in range(len(self.devicesselected)):
+                    self.devicedict[self.devicesselected[i]]['Routines'].remove(self.deviceroutinecheckList.GetItemText(num))
+                    if len(self.devicedict[self.devicesselected[i]]['Routines']) == 0:
+                        self.devicedict[self.devicesselected[i]]['RoutineCheck'] = False
 
         self.showdeviceinfo()
 
@@ -1200,6 +1201,27 @@ class TopPanel(wx.Panel):
                 self.deviceroutinecheckList.InsertItem(l, self.devicedict[self.devicesselected[0]]['Routines'][l])
 
             self.deviceroutinecheckList.EnableCheckBoxes(True)
+        elif len(self.devicesselected) == 0:
+            pass
+        else:
+            self.showdeviceinforoutine()
+
+    def showdeviceinforoutine(self):
+
+        self.deviceroutinecheckList.DeleteAllItems()
+
+        self.sameroutines = []
+        lists = []
+
+        for i in range(len(self.devicesselected)):
+            lists.append(self.devicedict[self.devicesselected[i]]['Routines'])
+
+        print(lists)
+        print(list(set.intersection(*map(set, lists))))
+        self.sameroutines = list(set.intersection(*map(set, lists)))
+
+        for l in range(len(self.sameroutines)):
+            self.deviceroutinecheckList.InsertItem(l, self.sameroutines[l])
 
     def deviceset(self, event):
 
@@ -1211,6 +1233,8 @@ class TopPanel(wx.Panel):
                     self.devicedict[device]['Routines'].append(routinecode)
                     self.devicedict[device]['RoutineCheck'] = True
                     print("Set routine: " + routinecode + " for " + self.devicedict[device]['DeviceID'])
+
+        self.showdeviceinforoutine()
 
     def groupchecklistcheckuncheck(self, event):
 
@@ -1543,7 +1567,7 @@ class TopPanel(wx.Panel):
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox7)  # number of scans
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox7_2)  # wavelengths
 
-        if routine == 'Set Wavelength Voltage Sweep':
+        if routine == 'Fixed Wavelength Voltage Sweep':
             self.parameterPanel.hbox2.Hide(self.parameterPanel.hbox2_4)
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox)  # start
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox2)  # stop
@@ -1555,7 +1579,7 @@ class TopPanel(wx.Panel):
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox6)  # laser output
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox7)  # number of scans
 
-        if routine == 'Set Wavelength Current Sweep':
+        if routine == 'Fixed Wavelength Current Sweep':
             self.parameterPanel.hbox2.Hide(self.parameterPanel.hbox2_4)
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox)  # start
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox2)  # stop
@@ -1567,7 +1591,7 @@ class TopPanel(wx.Panel):
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox6)  # laser output
             self.parameterPanel.paramvbox.Hide(self.parameterPanel.opt_hbox7)  # number of scans
 
-        if routine == 'Set Voltage Wavelength Sweep':
+        if routine == 'Fixed Voltage Wavelength Sweep':
             #self.parameterPanel.paramvbox.Hide(self.parameterPanel.hbox2)  # max
             self.parameterPanel.sw1.SetLabel('Voltages (V):')
             self.parameterPanel.hbox2.Show(self.parameterPanel.hbox2_4)
@@ -1648,7 +1672,6 @@ class TopPanel(wx.Panel):
                     self.inputcheckflag = False
                     print('Please select an SMU channel')
 
-
             if self.routinetype == 'Current Sweep':
 
                 if self.parameterPanel.maxsetvoltageA.GetValue().replace('.', '').isnumeric == False and self.parameterPanel.Asel.GetValue() == True:
@@ -1702,7 +1725,6 @@ class TopPanel(wx.Panel):
                     self.inputcheckflag = False
                     print('Please select an SMU channel')
 
-
             if self.routinetype == 'Wavelength Sweep':
 
                 if self.parameterPanel.startWvlTc.GetValue().replace('.', '').isnumeric() == False:
@@ -1729,7 +1751,7 @@ class TopPanel(wx.Panel):
                     self.inputcheckflag = False
                     print('Please check range decrement value')
 
-            if self.routinetype == 'Set Wavelength Voltage Sweep':
+            if self.routinetype == 'Fixed Wavelength Voltage Sweep':
 
                 if self.parameterPanel.maxsetvoltageA.GetValue().replace('.', '').isnumeric == False and self.parameterPanel.Asel.GetValue() == True:
                     self.inputcheckflag = False
@@ -1785,7 +1807,7 @@ class TopPanel(wx.Panel):
                 #   self.inputcheckflag = False
                 #   print('Please check wavelengths input')
 
-            if self.routinetype == 'Set Wavelength Current Sweep':
+            if self.routinetype == 'Fixed Wavelength Current Sweep':
 
                 if self.parameterPanel.maxsetvoltageA.GetValue().replace('.', '').isnumeric == False and self.parameterPanel.Asel.GetValue() == True:
                     self.inputcheckflag = False
@@ -1839,7 +1861,12 @@ class TopPanel(wx.Panel):
                 #   self.inputcheckflag = False
                 #   print('Please check wavelengths input')
 
-            if self.routinetype == 'Set Voltage Wavelength Sweep':
+            if self.routinetype == 'Fixed Voltage Wavelength Sweep':
+
+
+                if len(self.parameterPanel.maxsetvoltageA.GetValue()) != len(self.parameterPanel.maxsetvoltageB.GetValue()):
+                    self.inputcheckflag = False
+                    print('Voltages must be of same vector length')
 
                 if self.parameterPanel.startWvlTc.GetValue().replace('.', '').isnumeric() == False:
                     self.inputcheckflag = False
