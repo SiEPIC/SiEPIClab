@@ -1,0 +1,2 @@
+pip install wxpython scipy attrdict
+pyinstaller -F --windowed --onefile --noconfirm --hidden-import wxpython --paths=../SiEPICLabTestParam ../SiEPICLabTestParam/TestParameters.py
