@@ -1,0 +1,2 @@
+pyinstaller -F --windowed --onefile --noconfirm --paths=../SiEPICLabTestParam ../SiEPICLabTestParam/TestParameters.py
+
