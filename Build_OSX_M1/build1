@@ -1,3 +1,20 @@
 pip install wxpython scipy attrdict
-pyinstaller -F --windowed --onefile --noconfirm --hidden-import wxpython --paths=../SiEPICLabTestParam ../SiEPICLabTestParam/TestParameters.py
+pyinstaller --windowed --onefile --noconfirm --hidden-import wxpython --icon=../EXE_image.ico --paths=../SiEPICLabTestParam ../SiEPICLabTestParam/TestParameters.py
+
+rm dist/TestParameters
+
+create-dmg \
+  --volname "SiEPIClab" \
+  --volicon "../EXE_image.ico" \
+  --window-pos 200 120 \
+  --window-size 600 300 \
+  --icon-size 100 \
+  --hide-extension "SiEPIClab.app" \
+  --app-drop-link 425 120 \
+  "dist/SiEPIClab.dmg" \
+  "dist"
+
+#  --icon "SiEPIClab.app" 175 120 \
+
+mv dist/rw.SiEPIClab.dmg dist/SiEPIClab.dmg
 
