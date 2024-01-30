@@ -1058,60 +1058,143 @@ class autoMeasurePanel(wx.Panel):
                         deviceToTest.addRoutines(device['Routines'])
                         deviceToTest.addElectricalCoordinates(device['Electrical Coordinates'])
                 deviceList.append(deviceToTest)
-            for type in loadedYAML['Routines']:
-                if type == 'Wavelength Sweep':
-                    wavsweep = loadedYAML['Routines']['Wavelength Sweep']
-                    for routine in wavsweep:
-                        dict = wavsweep[routine]
-                        self.autoMeasure.addWavelengthSweep(routine, dict['Start'], dict['Stop'],
+
+            for sequencename in loadedYAML['Sequences']:
+
+                type = self.extract_between_brackets(sequencename)
+
+                if type == 'wavelength_sweep':
+                    wavsweep = loadedYAML['Sequences'][sequencename]
+                    dict = wavsweep['variables']
+                    self.autoMeasure.addWavelengthSweep(sequencename, dict['Start'], dict['Stop'],
                                                             dict['Stepsize'], dict['Sweeppower'],
                                                             dict['Sweepspeed'], dict['Laseroutput'],
                                                             dict['Numscans'], dict['Initialrange'],
                                                             dict['RangeDec'])
-                elif type == 'Voltage Sweep':
-                    voltsweep = loadedYAML['Routines']['Voltage Sweep']
-                    for routine in voltsweep:
-                        dict = voltsweep[routine]
-                        self.autoMeasure.addVoltageSweep(routine, dict['Min'], dict['Max'],
+                elif type == 'voltage_sweep':
+                    voltsweep = loadedYAML['Sequences'][sequencename]
+                    dict = voltsweep['variables']
+                    self.autoMeasure.addVoltageSweep(sequencename, dict['Min'], dict['Max'],
                                                             dict['Res'], dict['IV'], dict['RV'],
                                                             dict['PV'], dict['Channel A'],
                                                             dict['Channel B'])
-                elif type == 'Current Sweep':
-                    currsweep = loadedYAML['Routines']['Current Sweep']
-                    for routine in currsweep:
-                        dict = currsweep[routine]
-                        self.autoMeasure.addCurrentSweep(routine, dict['Min'], dict['Max'],
+                elif type == 'current_sweep':
+                    currsweep = loadedYAML['Sequences'][sequencename]
+                    dict = currsweep['variables']
+                    self.autoMeasure.addCurrentSweep(sequencename, dict['Min'], dict['Max'],
                                                             dict['Res'], dict['IV'], dict['RV'],
                                                             dict['PV'], dict['Channel A'],
                                                             dict['Channel B'])
-                elif type == 'Set Wavelength Voltage Sweep':
-                    setwvsweep = loadedYAML['Routines']['Set Wavelength Voltage Sweep']
-                    for routine in setwvsweep:
-                        dict = setwvsweep[routine]
-                        self.autoMeasure.addSetWavelengthVoltageSweep(routine, dict['Min'], dict['Max'],
+
+                elif type == 'set_wavelength_voltage_sweep':
+                    setwvsweep = loadedYAML['Routines'][sequencename]
+                    dict = setwvsweep['variables']
+                    self.autoMeasure.addSetWavelengthVoltageSweep(sequencename, dict['Min'], dict['Max'],
                                                                         dict['Res'], dict['IV'], dict['RV'],
                                                                         dict['PV'], dict['Channel A'],
                                                                         dict['Channel B'], dict['Wavelengths'])
-                elif type == 'Set Wavelength Current Sweep':
-                    setwcsweep = loadedYAML['Routines']['Set Wavelength Current Sweep']
-                    for routine in setwcsweep:
-                        dict = setwcsweep[routine]
-                        self.autoMeasure.addSetWavelengthCurrentSweep(routine, dict['Min'], dict['Max'],
+                    
+                elif type == 'set_wavelength_current_sweep':
+                    setwcsweep = loadedYAML['Routines'][sequencename]
+                    dict = setwcsweep['variables']
+                    self.autoMeasure.addSetWavelengthCurrentSweep(sequencename, dict['Min'], dict['Max'],
                                                                         dict['Res'], dict['IV'], dict['RV'],
                                                                         dict['PV'], dict['Channel A'],
                                                                         dict['Channel B'], dict['Wavelengths'])
-                elif type == 'Set Voltage Wavelength Sweep':
-                    setvwavsweep = loadedYAML['Routines']['Set Voltage Wavelength Sweep']
-                    for routine in setvwavsweep:
-                        dict = setvwavsweep[routine]
-                        self.autoMeasure.addSetVoltageWavelengthSweep(routine, dict['Start'], dict['Stop'],
+                
+                elif type == 'set_voltage_wavelength_sweep':
+                    setvwavsweep = loadedYAML['Routines'][sequencename]
+                    dict = setvwavsweep['variables']
+                    self.autoMeasure.addSetVoltageWavelengthSweep(sequencename, dict['Start'], dict['Stop'],
+                                                                        dict['Stepsize'], dict['Sweeppower'],
+                                                                        dict['Sweepspeed'], dict['Laseroutput'],
+                                                                        dict['Numscans'], dict['Initialrange'],
+                                                                        dict['RangeDec'], dict['Channel A'],
+                                                                        dict['Channel B'], dict['Voltages'])
+                
+                elif type == 'set_current_wavelength_sweep':
+                    setcwavsweep = loadedYAML['Routines'][sequencename]
+                    dict = setcwavsweep['variables']
+                    self.autoMeasure.addSetVoltageWavelengthSweep(sequencename, dict['Start'], dict['Stop'],
                                                                         dict['Stepsize'], dict['Sweeppower'],
                                                                         dict['Sweepspeed'], dict['Laseroutput'],
                                                                         dict['Numscans'], dict['Initialrange'],
                                                                         dict['RangeDec'], dict['Channel A'],
                                                                         dict['Channel B'], dict['Voltages'])
 
+            
+            # for type in loadedYAML['Routines']:
+            #     if type == 'Wavelength Sweep':
+            #         wavsweep = loadedYAML['Routines']['Wavelength Sweep']
+            #         for routine in wavsweep:
+            #             dict = wavsweep[routine]
+            #             self.autoMeasure.addWavelengthSweep(routine, dict['Start'], dict['Stop'],
+            #                                                 dict['Stepsize'], dict['Sweeppower'],
+            #                                                 dict['Sweepspeed'], dict['Laseroutput'],
+            #                                                 dict['Numscans'], dict['Initialrange'],
+            #                                                 dict['RangeDec'])
+            #     elif type == 'Voltage Sweep':
+            #         voltsweep = loadedYAML['Routines']['Voltage Sweep']
+            #         for routine in voltsweep:
+            #             dict = voltsweep[routine]
+            #             self.autoMeasure.addVoltageSweep(routine, dict['Min'], dict['Max'],
+            #                                                 dict['Res'], dict['IV'], dict['RV'],
+            #                                                 dict['PV'], dict['Channel A'],
+            #                                                 dict['Channel B'])
+                # elif type == 'Current Sweep':
+                #     currsweep = loadedYAML['Routines']['Current Sweep']
+                #     for routine in currsweep:
+                #         dict = currsweep[routine]
+                #         self.autoMeasure.addCurrentSweep(routine, dict['Min'], dict['Max'],
+                #                                             dict['Res'], dict['IV'], dict['RV'],
+                #                                             dict['PV'], dict['Channel A'],
+                #                                             dict['Channel B'])
+                # elif type == 'Set Wavelength Voltage Sweep':
+                #     setwvsweep = loadedYAML['Routines']['Set Wavelength Voltage Sweep']
+                #     for routine in setwvsweep:
+                #         dict = setwvsweep[routine]
+                #         self.autoMeasure.addSetWavelengthVoltageSweep(routine, dict['Min'], dict['Max'],
+                #                                                         dict['Res'], dict['IV'], dict['RV'],
+                #                                                         dict['PV'], dict['Channel A'],
+                #                                                         dict['Channel B'], dict['Wavelengths'])
+                # elif type == 'Set Wavelength Current Sweep':
+                #     setwcsweep = loadedYAML['Routines']['Set Wavelength Current Sweep']
+                #     for routine in setwcsweep:
+                #         dict = setwcsweep[routine]
+                #         self.autoMeasure.addSetWavelengthCurrentSweep(routine, dict['Min'], dict['Max'],
+                #                                                         dict['Res'], dict['IV'], dict['RV'],
+                #                                                         dict['PV'], dict['Channel A'],
+                #                                                         dict['Channel B'], dict['Wavelengths'])
+                # elif type == 'Set Voltage Wavelength Sweep':
+                #     setvwavsweep = loadedYAML['Routines']['Set Voltage Wavelength Sweep']
+                #     for routine in setvwavsweep:
+                #         dict = setvwavsweep[routine]
+                #         self.autoMeasure.addSetVoltageWavelengthSweep(routine, dict['Start'], dict['Stop'],
+                #                                                         dict['Stepsize'], dict['Sweeppower'],
+                #                                                         dict['Sweepspeed'], dict['Laseroutput'],
+                #                                                         dict['Numscans'], dict['Initialrange'],
+                #                                                         dict['RangeDec'], dict['Channel A'],
+                #                                                         dict['Channel B'], dict['Voltages'])
+
         self.importObjects(deviceList)
+
+    def extract_between_brackets(self, text):
+        # Find the position of the first opening bracket
+        start = text.find('(')
+
+        # If there is no opening bracket, return an empty string
+        if start == -1:
+            return ''
+
+        # Find the position of the closing bracket after the opening bracket
+        end = text.find(')', start)
+
+        # If there is no closing bracket after the opening bracket, return an empty string
+        if end == -1:
+            return ''
+
+        # Extract and return the substring between the brackets
+        return text[start+1:end]
 
     def adjustalignment(self):
 
