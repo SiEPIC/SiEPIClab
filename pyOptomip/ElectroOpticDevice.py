@@ -58,54 +58,79 @@ class ElectroOpticDevice:
     def getWavelengthSweepRoutines(self):
         wavelengthSweepRoutines = []
         for routine in self.routines:
-            routineType = routine.split(':')[0]
-            if routineType == 'Wavelength Sweep':
-                wavelengthSweepRoutines.append(routine.split(':')[1])
+            routineType = self.find_string_in_brackets(routine)
+            routineType = routineType.replace('_ida','')
+            if routineType == 'wavelength_sweep':
+                wavelengthSweepRoutines.append(routine)
         return wavelengthSweepRoutines
 
     def getVoltageSweepRoutines(self):
         voltageSweepRoutines = []
         for routine in self.routines:
-            routineType = routine.split(':')[0]
-            if routineType == 'Voltage Sweep':
-                voltageSweepRoutines.append(routine.split(':')[1])
+            routineType = self.find_string_in_brackets(routine)
+            routineType = routineType.replace('_ida','')
+            if routineType == 'voltage_sweep':
+                voltageSweepRoutines.append(routine)
         return voltageSweepRoutines
 
     def getCurrentSweepRoutines(self):
         currentSweepRoutines = []
         for routine in self.routines:
-            routineType = routine.split(':')[0]
-            if routineType == 'Current Sweep':
-                currentSweepRoutines.append(routine.split(':')[1])
+            routineType = self.find_string_in_brackets(routine)
+            routineType = routineType.replace('_ida','')
+            if routineType == 'current_sweep':
+                currentSweepRoutines.append(routine)
         return currentSweepRoutines
 
     def getSetWavelengthVoltageSweepRoutines(self):
         setWavelengthVoltageSweepRoutines = []
         for routine in self.routines:
-            routineType = routine.split(':')[0]
-            if routineType == 'Set Wavelength Voltage Sweep':
-                setWavelengthVoltageSweepRoutines.append(routine.split(':')[1])
+            routineType = self.find_string_in_brackets(routine)
+            routineType = routineType.replace('_ida','')
+            if routineType == 'set_Wavelength_Voltage_Sweep':
+                setWavelengthVoltageSweepRoutines.append(routine)
         return setWavelengthVoltageSweepRoutines
 
     def getSetWavelengthCurrentSweepRoutines(self):
         setWavelengthCurrentSweepRoutines = []
         for routine in self.routines:
             routineType = routine.split(':')[0]
-            if routineType == 'Set Wavelength Current Sweep':
-                setWavelengthCurrentSweepRoutines.append(routine.split(':')[1])
+            if routineType == 'set_Wavelength_Current_Sweep':
+                setWavelengthCurrentSweepRoutines.append(routine)
         return setWavelengthCurrentSweepRoutines
 
     def getSetVoltageWavelengthSweepRoutines(self):
         setVoltageWavelengthSweepRoutines = []
         for routine in self.routines:
-            routineType = routine.split(':')[0]
-            if routineType == 'Set Voltage Wavelength Sweep':
-                setVoltageWavelengthSweepRoutines.append(routine.split(':')[1])
+            routineType = self.find_string_in_brackets(routine)
+            routineType = routineType.replace('_ida','')
+            if routineType == 'set_Voltage_Wavelength_Sweep':
+                setVoltageWavelengthSweepRoutines.append(routine)
         return setVoltageWavelengthSweepRoutines
 
     def addRoutines(self, routines):
         """Adds the names of routines to be performed on this device to a list."""
         self.routines.extend(routines)
+
+    def find_string_in_brackets(self, text):
+        start_index = None
+        end_index = None
+        bracket_count = 0
+
+        for i, char, in enumerate(text):
+            if char == '(':
+                start_index = i + 1
+                bracket_count += 1
+            elif char == ')':
+                bracket_count -= 1
+                if bracket_count == 0:
+                    end_index = i
+                    break
+        if start_index is not None and end_index is not None:
+            return text[start_index:end_index]
+        else:
+            return None
+
 
 
 

@@ -8,7 +8,7 @@ class measurementRoutines:
         self.SMU = smu
         self.laser = laser
         self.activeDetectors = activeDetectors
-        self.laserOutputMap = dict([('High power', 'highpower'), ('Low SSE', 'lowsse')])
+        self.laserOutputMap = dict([('High Power', 'highpower'), ('Low SSE', 'lowsse')])
         self.laserNumSweepMap = dict([('1', 1), ('2', 2), ('3', 3)])
 
     def voltageSweep(self, voltmin, voltmax, voltres, A, B):
@@ -52,8 +52,8 @@ class measurementRoutines:
         self.laser.sweepPower = float(sweeppower)
         self.laser.sweepLaserOutput = self.laserOutputMap[laseroutput]
         self.laser.sweepNumScans = self.laserNumSweepMap[numscans]
-        self.laser.sweepInitialRange = initrange
-        self.laser.sweepRangeDecrement = rangedec
+        self.laser.sweepInitialRange = float(initrange)
+        self.laser.sweepRangeDecrement = int(rangedec)
         activeDetectors = self.activeDetectors
         if len(activeDetectors) == 0:
             raise Exception('Cannot perform sweep. No active detectors selected.')

@@ -38,8 +38,9 @@ from outputlogPanel import outputlogPanel
 from logWriter import logWriter, logWriterError
 import sys
 import pyvisa as visa
-from instrumentFrame_withtabs import instrumentFrame_withtabs
+from instrumentFrame_withtabs import instrumentFrame_withtabs 
 from pylablib.devices import Thorlabs
+
 
 
 softwareVersion = "1.1"

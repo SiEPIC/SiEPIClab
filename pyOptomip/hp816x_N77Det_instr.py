@@ -151,6 +151,7 @@ class hp816x_N77Det(hp816x_instr.hp816x):
         unitNum = self.sweepUnitDict[self.sweepUnit]
         outputNum = self.laserOutputDict[self.sweepLaserOutput]
         numScans = self.sweepNumScansDict[self.sweepNumScans]
+        #sweepSpeed = self.sweepSpeedDict[self.sweepSpeed]
         numChan = len(self.pwmSlotIndex)
         numActiveChan = len(self.activeSlotIndex)  # Number of active channels
 

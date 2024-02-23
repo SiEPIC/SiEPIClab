@@ -29,6 +29,9 @@ import os
 import numpy as np
 from scipy.io import savemat
 import time
+import myMatplotlibPanel
+import matplotlib
+matplotlib.use('WXAgg')
 import matplotlib.pyplot as plt
 from ElectroOpticDevice import ElectroOpticDevice
 from measurementRoutines import measurementRoutines
@@ -52,11 +55,14 @@ class autoMeasure(object):
         global beginMeasure
         if laser != 0:
             self.laser = laser
+            self.probeCheckFlag = False
             self.motorOpt = motorOpt
             self.motorElec = motorElec
             self.smu = smu
+            self.sequencerunning = 'All'
             self.fineAlign = fineAlign
             self.saveFolder = os.getcwd()
+            #self.graphPanel = myMatplotlibPanel.myMatplotlibPanel(graph)
             self.graphPanel = graph
             self.devices = []
             self.saveoptposition1 = []
@@ -441,767 +447,780 @@ class autoMeasure(object):
             time.sleep(0.5)
 
             # Check which type of measurement is to be completed
-            if device.getVoltageSweepRoutines() and self.motorElec and self.smu:
-                for routine in device.getVoltageSweepRoutines():
-                    timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
-                    print("Performing Voltage Sweep: {}".format(routine))
-                    ii = self.voltageSweeps['RoutineName'].index(routine)
-                    voltmin = self.voltageSweeps['VoltMin'][ii]
-                    voltmax = self.voltageSweeps['VoltMax'][ii]
-                    voltres = self.voltageSweeps['VoltRes'][ii]
-                    A = self.voltageSweeps['ChannelA'][ii]
-                    B = self.voltageSweeps['ChannelB'][ii]
-                    IV = self.voltageSweeps['IV'][ii]
-                    RV = self.voltageSweeps['RV'][ii]
-                    PV = self.voltageSweeps['PV'][ii]
-                    VoltA, CurA, ResA, PowA, VoltB, CurB, ResB, PowB = measurement.voltageSweep(voltmin, voltmax, voltres, A, B)
-                    timeStop = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
-                    if IV:
-                        self.graphPanel.axes.set_xlabel('Voltage (V)')
-                        self.graphPanel.axes.set_ylabel('Current (mA)')
-                        self.graphPanel.canvas.sweepResultDict = {}
-                        if A:
-                            self.graphPanel.canvas.sweepResultDict['voltage'] = VoltA
-                            self.graphPanel.canvas.sweepResultDict['current'] = CurA
+            if self.sequencerunning == 'All' or self.sequencerunning == 'Voltage Sweep':
+                if self.probeCheckFlag:
+                    if device.getVoltageSweepRoutines() and self.motorElec and self.smu:
+                        for routine in device.getVoltageSweepRoutines():
+                            timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
+                            print("Performing Voltage Sweep: {}".format(routine))
+                            ii = self.voltageSweeps['RoutineName'].index(routine)
+                            voltmin = self.voltageSweeps['VoltMin'][ii]
+                            voltmax = self.voltageSweeps['VoltMax'][ii]
+                            voltres = self.voltageSweeps['VoltRes'][ii]
+                            A = self.voltageSweeps['ChannelA'][ii]
+                            B = self.voltageSweeps['ChannelB'][ii]
+                            IV = self.voltageSweeps['IV'][ii]
+                            RV = self.voltageSweeps['RV'][ii]
+                            PV = self.voltageSweeps['PV'][ii]
+                            VoltA, CurA, ResA, PowA, VoltB, CurB, ResB, PowB = measurement.voltageSweep(voltmin, voltmax, voltres, A, B)
+                            timeStop = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
+                            if IV:
+                                self.graphPanel.axes.set_xlabel('Voltage (V)')
+                                self.graphPanel.axes.set_ylabel('Current (mA)')
+                                self.graphPanel.canvas.sweepResultDict = {}
+                                if A:
+                                    self.graphPanel.canvas.sweepResultDict['voltage'] = VoltA
+                                    self.graphPanel.canvas.sweepResultDict['current'] = CurA
 
-                            # save all associated files
-                            self.saveFiles(device, 'Voltage (V)', 'Current (mA)', ii, VoltA, CurA,
-                                            'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
-                                           self.devFolder, routine + '_IV')
-                            self.drawGraph(VoltA, CurA, self.graphPanel, 'Voltage (V)', 'Current (mA)')
+                                    # save all associated files
+                                    self.saveFiles(device, 'Voltage (V)', 'Current (mA)', ii, VoltA, CurA,
+                                                    'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
+                                                self.devFolder, routine + '_IV')
+                                    self.drawGraph(VoltA, CurA, self.graphPanel, 'Voltage (V)', 'Current (mA)')
 
-                        if B:
-                            self.graphPanel.canvas.sweepResultDict['voltage'] = VoltB
-                            self.graphPanel.canvas.sweepResultDict['current'] = CurB
-
-
-                            # save all associated files
-                            self.saveFiles(device, 'Voltage (V)', 'Current (mA)', ii, VoltB, CurB,
-                                            'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
-                                           self.devFolder, routine + '_IV')
-                            self.drawGraph(VoltB, CurB, self.graphPanel, 'Voltage (V)', 'Current (mA)')
-
-                    if RV:
-                        self.graphPanel.canvas.sweepResultDict = {}
-                        if A:
-                            self.graphPanel.canvas.sweepResultDict['voltage'] = VoltA
-                            self.graphPanel.canvas.sweepResultDict['resistance'] = ResA
-                            self.drawGraph(VoltA, ResA, self.graphPanel, 'Voltage (V)', 'Resistance (Ohms)')
-
-                            # save all associated files
-                            self.saveFiles(device, 'Voltage (V)', 'Resistance (Ohms)', ii, VoltA, ResA,
-                                            'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
-                                           self.devFolder, routine + '_RV')
-
-                        if B:
-                            self.graphPanel.canvas.sweepResultDict['voltage'] = VoltB
-                            self.graphPanel.canvas.sweepResultDict['resistance'] = ResB
+                                if B:
+                                    self.graphPanel.canvas.sweepResultDict['voltage'] = VoltB
+                                    self.graphPanel.canvas.sweepResultDict['current'] = CurB
 
 
-                            # save all associated files
-                            self.saveFiles(device, 'Voltage (V)', 'Resistance (Ohms)', ii, VoltB, ResB,
-                                            'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
-                                           self.devFolder, routine + '_RV')
-                            self.drawGraph(VoltB, ResB, self.graphPanel, 'Voltage (V)', 'Resistance (Ohms)')
-                    if PV:
-                        self.graphPanel.canvas.sweepResultDict = {}
-                        if A:
-                            self.graphPanel.canvas.sweepResultDict['voltage'] = VoltA
-                            self.graphPanel.canvas.sweepResultDict['power'] = PowA
+                                    # save all associated files
+                                    self.saveFiles(device, 'Voltage (V)', 'Current (mA)', ii, VoltB, CurB,
+                                                    'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
+                                                self.devFolder, routine + '_IV')
+                                    self.drawGraph(VoltB, CurB, self.graphPanel, 'Voltage (V)', 'Current (mA)')
+
+                            if RV:
+                                self.graphPanel.canvas.sweepResultDict = {}
+                                if A:
+                                    self.graphPanel.canvas.sweepResultDict['voltage'] = VoltA
+                                    self.graphPanel.canvas.sweepResultDict['resistance'] = ResA
+                                    self.drawGraph(VoltA, ResA, self.graphPanel, 'Voltage (V)', 'Resistance (Ohms)')
+
+                                    # save all associated files
+                                    self.saveFiles(device, 'Voltage (V)', 'Resistance (Ohms)', ii, VoltA, ResA,
+                                                    'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
+                                                self.devFolder, routine + '_RV')
+
+                                if B:
+                                    self.graphPanel.canvas.sweepResultDict['voltage'] = VoltB
+                                    self.graphPanel.canvas.sweepResultDict['resistance'] = ResB
 
 
-                            # save all associated files
-                            self.saveFiles(device, 'Voltage (V)', 'Power (W)', ii, VoltA, PowA,
-                                            'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
-                                           self.devFolder, routine + '_PV')
-                            self.drawGraph(VoltA, PowA, self.graphPanel, 'Voltage (V)', 'Power (W)')
-
-                        if B:
-                            self.graphPanel.canvas.sweepResultDict['voltage'] = VoltB
-                            self.graphPanel.canvas.sweepResultDict['power'] = PowB
-
-
-                            # save all associated files
-                            self.saveFiles(device, 'Voltage (V)', 'Power (W)', ii, VoltB, PowB,
-                                             'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
-                                           self.devFolder, routine + '_PV')
-                            self.drawGraph(VoltB, PowB, self.graphPanel, 'Voltage (V)', 'Power (W)')
-
-            if device.getCurrentSweepRoutines() and self.motorElec and self.smu:
-                for routine in device.getCurrentSweepRoutines():
-                    ii = self.currentSweeps['RoutineName'].index(routine)
-                    timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
-                    routineName = self.currentSweeps['RoutineName'][ii]
-                    print("Performing Current Sweep: {}".format(routineName))
-                    imin = self.currentSweeps['CurrentMin'][ii]
-                    imax = self.currentSweeps['CurrentMax'][ii]
-                    ires = self.currentSweeps['CurrentRes'][ii]
-                    A = self.currentSweeps['ChannelA'][ii]
-                    B = self.currentSweeps['ChannelB'][ii]
-                    IV = self.currentSweeps['IV'][ii]
-                    RV = self.currentSweeps['RV'][ii]
-                    PV = self.currentSweeps['PV'][ii]
-                    VoltA, CurA, ResA, PowA, VoltB, CurB, ResB, PowB = measurement.currentSweep(imin, imax, ires, A, B)
-                    timeStop = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
-                    if IV:
-                        self.graphPanel.canvas.sweepResultDict = {}
-                        if A:
-                            self.graphPanel.canvas.sweepResultDict['voltage'] = VoltA
-                            self.graphPanel.canvas.sweepResultDict['current'] = CurA
+                                    # save all associated files
+                                    self.saveFiles(device, 'Voltage (V)', 'Resistance (Ohms)', ii, VoltB, ResB,
+                                                    'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
+                                                self.devFolder, routine + '_RV')
+                                    self.drawGraph(VoltB, ResB, self.graphPanel, 'Voltage (V)', 'Resistance (Ohms)')
+                            if PV:
+                                self.graphPanel.canvas.sweepResultDict = {}
+                                if A:
+                                    self.graphPanel.canvas.sweepResultDict['voltage'] = VoltA
+                                    self.graphPanel.canvas.sweepResultDict['power'] = PowA
 
 
-                            # save all associated files
-                            self.saveFiles(device,'Current (mA)','Voltage (V)', ii, CurA, VoltA,
-                                            'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
-                                           self.devFolder, routine + '_VI')
-                            self.drawGraph(CurA, VoltA, self.graphPanel, 'Current (mA)', 'Voltage (V)')
-                        if B:
-                            self.graphPanel.canvas.sweepResultDict['voltage'] = VoltB
-                            self.graphPanel.canvas.sweepResultDict['current'] = CurB
+                                    # save all associated files
+                                    self.saveFiles(device, 'Voltage (V)', 'Power (W)', ii, VoltA, PowA,
+                                                    'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
+                                                self.devFolder, routine + '_PV')
+                                    self.drawGraph(VoltA, PowA, self.graphPanel, 'Voltage (V)', 'Power (W)')
+
+                                if B:
+                                    self.graphPanel.canvas.sweepResultDict['voltage'] = VoltB
+                                    self.graphPanel.canvas.sweepResultDict['power'] = PowB
 
 
-                            # save all associated files
-                            self.saveFiles(device, 'Current (mA)', 'Voltage (V)', ii, CurB, VoltB,
-                                          'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
-                                           self.devFolder, routine + '_VI')
-                            self.drawGraph(CurB, VoltB, self.graphPanel, 'Current (mA)', 'Voltage (V)')
+                                    # save all associated files
+                                    self.saveFiles(device, 'Voltage (V)', 'Power (W)', ii, VoltB, PowB,
+                                                    'Voltage sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
+                                                self.devFolder, routine + '_PV')
+                                    self.drawGraph(VoltB, PowB, self.graphPanel, 'Voltage (V)', 'Power (W)')
 
-                    if RV:
-                        self.graphPanel.canvas.sweepResultDict = {}
-                        if A:
-                            self.graphPanel.canvas.sweepResultDict['current'] = CurA
-                            self.graphPanel.canvas.sweepResultDict['resistance'] = ResA
-
-
-                            # save all associated files
-                            self.saveFiles(device, 'Current (mA)', 'Resistance (Ohms)', ii, CurA, ResA,
-                                            'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
-                                           self.devFolder, routine + '_RI')
-                            self.drawGraph(CurA, ResA, self.graphPanel, 'Current (mA)', 'Resistance (Ohms)')
-
-                        if B:
-                            self.graphPanel.canvas.sweepResultDict['current'] = CurB
-                            self.graphPanel.canvas.sweepResultDict['resistance'] = ResB
-
-
-                            # save all associated files
-                            self.saveFiles(device, 'Current (mA)', 'Resistance (Ohms)', ii, CurB, ResB,
-                                            'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
-                                           self.devFolder, routine + '_RI')
-                            self.drawGraph(CurB, ResB, self.graphPanel, 'Current (mA)', 'Resistance (Ohms)')
-                    if PV:
-                        self.graphPanel.canvas.sweepResultDict = {}
-                        if A:
-                            self.graphPanel.canvas.sweepResultDict['current'] = CurA
-                            self.graphPanel.canvas.sweepResultDict['power'] = PowA
+            if self.sequencerunning == 'All' or self.sequencerunning == 'Current Sweep':
+                if self.probeCheckFlag:
+                    if device.getCurrentSweepRoutines() and self.motorElec and self.smu:
+                        for routine in device.getCurrentSweepRoutines():
+                            ii = self.currentSweeps['RoutineName'].index(routine)
+                            timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
+                            routineName = self.currentSweeps['RoutineName'][ii]
+                            print("Performing Current Sweep: {}".format(routineName))
+                            imin = self.currentSweeps['CurrentMin'][ii]
+                            imax = self.currentSweeps['CurrentMax'][ii]
+                            ires = self.currentSweeps['CurrentRes'][ii]
+                            A = self.currentSweeps['ChannelA'][ii]
+                            B = self.currentSweeps['ChannelB'][ii]
+                            IV = self.currentSweeps['IV'][ii]
+                            RV = self.currentSweeps['RV'][ii]
+                            PV = self.currentSweeps['PV'][ii]
+                            VoltA, CurA, ResA, PowA, VoltB, CurB, ResB, PowB = measurement.currentSweep(imin, imax, ires, A, B)
+                            timeStop = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
+                            if IV:
+                                self.graphPanel.canvas.sweepResultDict = {}
+                                if A:
+                                    self.graphPanel.canvas.sweepResultDict['voltage'] = VoltA
+                                    self.graphPanel.canvas.sweepResultDict['current'] = CurA
 
 
-                            # save all associated files
-                            self.saveFiles(device, 'Current (mA)', 'Power (W)', ii, CurA, PowA,
-                                            'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
-                                           self.devFolder, routine + '_PI')
-                            self.drawGraph(CurA, PowA, self.graphPanel, 'Current (mA)', 'Power (W)')
+                                    # save all associated files
+                                    self.saveFiles(device,'Current (mA)','Voltage (V)', ii, CurA, VoltA,
+                                                    'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
+                                                self.devFolder, routine + '_VI')
+                                    self.drawGraph(CurA, VoltA, self.graphPanel, 'Current (mA)', 'Voltage (V)')
+                                if B:
+                                    self.graphPanel.canvas.sweepResultDict['voltage'] = VoltB
+                                    self.graphPanel.canvas.sweepResultDict['current'] = CurB
 
-                        if B:
-                            self.graphPanel.canvas.sweepResultDict['current'] = CurB
-                            self.graphPanel.canvas.sweepResultDict['power'] = PowB
+
+                                    # save all associated files
+                                    self.saveFiles(device, 'Current (mA)', 'Voltage (V)', ii, CurB, VoltB,
+                                                'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
+                                                self.devFolder, routine + '_VI')
+                                    self.drawGraph(CurB, VoltB, self.graphPanel, 'Current (mA)', 'Voltage (V)')
+
+                            if RV:
+                                self.graphPanel.canvas.sweepResultDict = {}
+                                if A:
+                                    self.graphPanel.canvas.sweepResultDict['current'] = CurA
+                                    self.graphPanel.canvas.sweepResultDict['resistance'] = ResA
 
 
-                            # save all associated files
-                            self.saveFiles(device, 'Current (mA)', 'Power (W)', ii, CurB, PowB,
-                                            'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
-                                           self.devFolder, routine + '_PI')
-                            self.drawGraph(CurB, PowB, self.graphPanel, 'Current (mA)', 'Power (W)')
+                                    # save all associated files
+                                    self.saveFiles(device, 'Current (mA)', 'Resistance (Ohms)', ii, CurA, ResA,
+                                                    'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
+                                                self.devFolder, routine + '_RI')
+                                    self.drawGraph(CurA, ResA, self.graphPanel, 'Current (mA)', 'Resistance (Ohms)')
 
-            if device.getWavelengthSweepRoutines() and self.laser:
-                for routine in device.getWavelengthSweepRoutines():
-                    ii = self.wavelengthSweeps['RoutineName'].index(routine)
-                    timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
-                    routineName = self.wavelengthSweeps['RoutineName'][ii]
-                    print("Performing Optical Test {}".format(routineName))
-                    start = self.wavelengthSweeps['Start'][ii]
-                    stop = self.wavelengthSweeps['Stop'][ii]
-                    stepsize = self.wavelengthSweeps['Stepsize'][ii]
-                    sweepspeed = self.wavelengthSweeps['Sweepspeed'][ii]
-                    sweeppower = self.wavelengthSweeps['Sweeppower'][ii]
-                    laseroutput = self.wavelengthSweeps['Laseroutput'][ii]
-                    numscans = self.wavelengthSweeps['Numscans'][ii]
-                    initrange = self.wavelengthSweeps['InitialRange'][ii]
-                    rangedec = self.wavelengthSweeps['RangeDec'][ii]
-                    wav, pow = measurement.opticalSweep(start, stop, stepsize, sweepspeed, sweeppower,
-                                                        laseroutput, numscans, initrange, rangedec)
-                    timeStop = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
+                                if B:
+                                    self.graphPanel.canvas.sweepResultDict['current'] = CurB
+                                    self.graphPanel.canvas.sweepResultDict['resistance'] = ResB
 
-                    self.graphPanel.canvas.sweepResultDict = {}
-                    self.graphPanel.canvas.sweepResultDict['wavelength'] = wav
-                    self.graphPanel.canvas.sweepResultDict['power'] = pow
-                    if len(self.activeDetectors) > 1:
-                        self.detstringlist = ['Detector Slot ' + str(self.activeDetectors[0] + 1)]
-                        for det in self.activeDetectors:
-                            if det == self.activeDetectors[0]:
-                                pass
+
+                                    # save all associated files
+                                    self.saveFiles(device, 'Current (mA)', 'Resistance (Ohms)', ii, CurB, ResB,
+                                                    'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
+                                                self.devFolder, routine + '_RI')
+                                    self.drawGraph(CurB, ResB, self.graphPanel, 'Current (mA)', 'Resistance (Ohms)')
+                            if PV:
+                                self.graphPanel.canvas.sweepResultDict = {}
+                                if A:
+                                    self.graphPanel.canvas.sweepResultDict['current'] = CurA
+                                    self.graphPanel.canvas.sweepResultDict['power'] = PowA
+
+
+                                    # save all associated files
+                                    self.saveFiles(device, 'Current (mA)', 'Power (W)', ii, CurA, PowA,
+                                                    'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
+                                                self.devFolder, routine + '_PI')
+                                    self.drawGraph(CurA, PowA, self.graphPanel, 'Current (mA)', 'Power (W)')
+
+                                if B:
+                                    self.graphPanel.canvas.sweepResultDict['current'] = CurB
+                                    self.graphPanel.canvas.sweepResultDict['power'] = PowB
+
+
+                                    # save all associated files
+                                    self.saveFiles(device, 'Current (mA)', 'Power (W)', ii, CurB, PowB,
+                                                    'Current sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
+                                                self.devFolder, routine + '_PI')
+                                    self.drawGraph(CurB, PowB, self.graphPanel, 'Current (mA)', 'Power (W)')
+
+            if self.sequencerunning == 'All' or self.sequencerunning == 'Wavelength Sweep':
+                if self.probeCheckFlag == False:
+                    if device.getWavelengthSweepRoutines() and self.laser:
+                        for routine in device.getWavelengthSweepRoutines():
+                            ii = self.wavelengthSweeps['RoutineName'].index(routine)
+                            timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
+                            routineName = self.wavelengthSweeps['RoutineName'][ii]
+                            print("Performing Optical Test {}".format(routineName))
+                            start = self.wavelengthSweeps['Start'][ii]
+                            stop = self.wavelengthSweeps['Stop'][ii]
+                            stepsize = self.wavelengthSweeps['Stepsize'][ii]
+                            sweepspeed = self.wavelengthSweeps['Sweepspeed'][ii]
+                            sweeppower = self.wavelengthSweeps['Sweeppower'][ii]
+                            laseroutput = self.wavelengthSweeps['Laseroutput'][ii]
+                            numscans = self.wavelengthSweeps['Numscans'][ii]
+                            initrange = self.wavelengthSweeps['InitialRange'][ii]
+                            rangedec = self.wavelengthSweeps['RangeDec'][ii]
+                            wav, pow = measurement.opticalSweep(start, stop, stepsize, sweepspeed, sweeppower,
+                                                                laseroutput, numscans, initrange, rangedec)
+                            timeStop = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
+
+                            self.graphPanel.canvas.sweepResultDict = {}
+                            self.graphPanel.canvas.sweepResultDict['wavelength'] = wav
+                            self.graphPanel.canvas.sweepResultDict['power'] = pow
+                            if len(self.activeDetectors) > 1:
+                                self.detstringlist = ['Detector Slot ' + str(self.activeDetectors[0] + 1)]
+                                for det in self.activeDetectors:
+                                    if det == self.activeDetectors[0]:
+                                        pass
+                                    else:
+                                        self.detstringlist.append('Detector Slot ' + str(det + 1))
+
+                            if len(self.activeDetectors) == 1:
+                                legend = 0
                             else:
-                                self.detstringlist.append('Detector Slot ' + str(det + 1))
-
-                    if len(self.activeDetectors) == 1:
-                        legend = 0
-                    else:
-                        legend = 1
-
-                    # save all associated files
-                    self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', ii, wav * 1e9, pow,
-                                    'Wavelength sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
-                                   self.devFolder, routine, leg=legend)
-
-                    self.drawGraph(wav * 1e9, pow, self.graphPanel, 'Wavelength (nm)', 'Power (dBm)', legend=legend)
-                    #data.extend([wav * 1e9, pow, self.graphPanel, 'Wavelength (nm)', 'Power (dBm)', legend=0])
-
-            if device.getSetWavelengthVoltageSweepRoutines() and self.laser and self.motorElec and self.smu:
-                for routine in device.getSetWavelengthVoltageSweepRoutines():
-                    ii = self.setWavelengthVoltageSweeps['RoutineName'].index(routine)
-                    timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
-                    print("Performing Voltage Sweep with set wavelength")
-                    voltmin = self.setWavelengthVoltageSweeps['VoltMin'][ii]
-                    voltmax = self.setWavelengthVoltageSweeps['VoltMax'][ii]
-                    voltres = self.setWavelengthVoltageSweeps['VoltRes'][ii]
-                    A = self.setWavelengthVoltageSweeps['ChannelA'][ii]
-                    B = self.setWavelengthVoltageSweeps['ChannelB'][ii]
-                    IV = self.setWavelengthVoltageSweeps['IV'][ii]
-                    RV = self.setWavelengthVoltageSweeps['RV'][ii]
-                    PV = self.setWavelengthVoltageSweeps['PV'][ii]
-                    wavelengths = self.setWavelengthVoltageSweeps['Wavelength'][ii].split(',')
-
-                    VoltA = [[]for _ in range(len(wavelengths))]
-                    CurA = [[]for _ in range(len(wavelengths))]
-                    VoltB = [[]for _ in range(len(wavelengths))]
-                    CurB = [[]for _ in range(len(wavelengths))]
-                    ResA = [[]for _ in range(len(wavelengths))]
-                    PowA = [[]for _ in range(len(wavelengths))]
-                    ResB = [[]for _ in range(len(wavelengths))]
-                    PowB = [[]for _ in range(len(wavelengths))]
-
-                    for l, wavelength in enumerate(wavelengths):
-                        VoltA[l], CurA[l], ResA[l], PowA[l], VoltB[l], CurB[l], ResB[l], PowB[l] = \
-                            measurement.fixedWavelengthVoltageSweep(voltmin, voltmax, voltres, A, B, wavelength)
-                        timeStop = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
-
-                    if IV:
-                        self.graphPanel.canvas.sweepResultDict = {}
-                        if A:
-                            for wav in range(len(wavelengths)):
-                                self.graphPanel.canvas.sweepResultDict['voltage'] = VoltA[wav]
-                                self.graphPanel.canvas.sweepResultDict['current'] = CurA[wav]
-                                # save all associated files
-                                self.saveFiles(device, 'Voltage (V)', 'Current (mA)', ii, VoltA[wav], CurA[wav],
-                                               'Voltage Sweep w Set Wavelength',
-                                               motorCoordOpt, timeStart, timeStop, chipTimeStart, self.devFolder,
-                                               routine + str(wavelengths[wav]) + '_VI_A')
-                                self.drawGraph(VoltA[wav], CurA[wav], self.graphPanel, 'Voltage (V)', 'Current (mA)', legend=0)
-
-                            vol3 = [[]]
-                            cur3 = [[]]
-                            for i in range(len(VoltA[0]) - 1):
-                                vol3.append([])
-                                cur3.append([])
-                            for p in range(len(VoltA[ii])):
-                                for v in range(len(wavelengths)):
-                                    vol3[p].append(VoltA[v][p] )
-                                    cur3[p].append(CurA[v][p])
-
-                            self.wavstringlist = [str(wav) + ' nm' for wav in wavelengths]
-
-                            self.graphPanel.canvas.sweepResultDict['voltage'] = vol3
-                            self.graphPanel.canvas.sweepResultDict['current'] = cur3
+                                legend = 1
 
                             # save all associated files
-                            self.saveFiles(device, 'Voltage (V)', 'Current (mA)', ii,vol3, cur3, 'Voltage Sweep w Set Wavelength',
-                                               motorCoordOpt, timeStart, timeStop, chipTimeStart, self.devFolder,
-                                               routine + 'combined' + '_VI_A', leg = 3)
-                            self.drawGraph(vol3, cur3, self.graphPanel, 'Voltage (V)', 'Current (mA)', legend=3)
+                            self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', ii, wav * 1e9, pow,
+                                            'Wavelength sweep', motorCoordOpt, timeStart, timeStop, chipTimeStart,
+                                        self.devFolder, routine, leg=legend)
 
-                        if B:
-                            for wav in range(len(wavelengths)):
-                                self.graphPanel.canvas.sweepResultDict['voltage'] = VoltA[wav]
-                                self.graphPanel.canvas.sweepResultDict['current'] = CurA[wav]
+                            self.drawGraph(wav * 1e9, pow, self.graphPanel, 'Wavelength (nm)', 'Power (dBm)', legend=legend)
+                            #data.extend([wav * 1e9, pow, self.graphPanel, 'Wavelength (nm)', 'Power (dBm)', legend=0])
 
-                                # save all associated files
-                                self.saveFiles(device, 'Voltage (V)', 'Current (mA)', ii, VoltA[wav], CurA[wav],
-                                              'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                              chipTimeStart, self.devFolder, routine + str(wavelengths[wav]) + '_VI_B')
-                                self.drawGraph(VoltA[wav], CurA[wav], self.graphPanel, 'Voltage (V)', 'Current (mA)',
-                                               legend=0)
 
-                            vol3 = [[]]
-                            cur3 = [[]]
-                            for i in range(len(VoltB[0]) - 1):
-                                vol3.append([])
-                                cur3.append([])
-                            for p in range(len(VoltB[ii])):
-                                for v in range(len(wavelengths)):
-                                    vol3[p].append(VoltB[v][p])
-                                    cur3[p].append(CurB[v][p])
+            if self.sequencerunning == 'All' or self.sequencerunning == 'Set Wavelength Voltage Sweep':
+                if self.probeCheckFlag:
+                    if device.getSetWavelengthVoltageSweepRoutines() and self.laser and self.motorElec and self.smu:
+                        for routine in device.getSetWavelengthVoltageSweepRoutines():
+                            ii = self.setWavelengthVoltageSweeps['RoutineName'].index(routine)
+                            timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
+                            print("Performing Voltage Sweep with set wavelength")
+                            voltmin = self.setWavelengthVoltageSweeps['VoltMin'][ii]
+                            voltmax = self.setWavelengthVoltageSweeps['VoltMax'][ii]
+                            voltres = self.setWavelengthVoltageSweeps['VoltRes'][ii]
+                            A = self.setWavelengthVoltageSweeps['ChannelA'][ii]
+                            B = self.setWavelengthVoltageSweeps['ChannelB'][ii]
+                            IV = self.setWavelengthVoltageSweeps['IV'][ii]
+                            RV = self.setWavelengthVoltageSweeps['RV'][ii]
+                            PV = self.setWavelengthVoltageSweeps['PV'][ii]
+                            wavelengths = self.setWavelengthVoltageSweeps['Wavelength'][ii].split(',')
 
-                            self.wavstringlist = [str(wav) + ' nm' for wav in wavelengths]
+                            VoltA = [[]for _ in range(len(wavelengths))]
+                            CurA = [[]for _ in range(len(wavelengths))]
+                            VoltB = [[]for _ in range(len(wavelengths))]
+                            CurB = [[]for _ in range(len(wavelengths))]
+                            ResA = [[]for _ in range(len(wavelengths))]
+                            PowA = [[]for _ in range(len(wavelengths))]
+                            ResB = [[]for _ in range(len(wavelengths))]
+                            PowB = [[]for _ in range(len(wavelengths))]
 
-                            self.graphPanel.canvas.sweepResultDict['voltage'] =vol3
-                            self.graphPanel.canvas.sweepResultDict['current'] = cur3
+                            for l, wavelength in enumerate(wavelengths):
+                                VoltA[l], CurA[l], ResA[l], PowA[l], VoltB[l], CurB[l], ResB[l], PowB[l] = \
+                                    measurement.fixedWavelengthVoltageSweep(voltmin, voltmax, voltres, A, B, wavelength)
+                                timeStop = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
 
-                            # save all associated files
-                            self.saveFiles(device, 'Voltage (V)', 'Current (mA)', ii, vol3, cur3,
+                            if IV:
+                                self.graphPanel.canvas.sweepResultDict = {}
+                                if A:
+                                    for wav in range(len(wavelengths)):
+                                        self.graphPanel.canvas.sweepResultDict['voltage'] = VoltA[wav]
+                                        self.graphPanel.canvas.sweepResultDict['current'] = CurA[wav]
+                                        # save all associated files
+                                        self.saveFiles(device, 'Voltage (V)', 'Current (mA)', ii, VoltA[wav], CurA[wav],
+                                                    'Voltage Sweep w Set Wavelength',
+                                                    motorCoordOpt, timeStart, timeStop, chipTimeStart, self.devFolder,
+                                                    routine + str(wavelengths[wav]) + '_VI_A')
+                                        self.drawGraph(VoltA[wav], CurA[wav], self.graphPanel, 'Voltage (V)', 'Current (mA)', legend=0)
+
+                                    vol3 = [[]]
+                                    cur3 = [[]]
+                                    for i in range(len(VoltA[0]) - 1):
+                                        vol3.append([])
+                                        cur3.append([])
+                                    for p in range(len(VoltA[ii])):
+                                        for v in range(len(wavelengths)):
+                                            vol3[p].append(VoltA[v][p] )
+                                            cur3[p].append(CurA[v][p])
+
+                                    self.wavstringlist = [str(wav) + ' nm' for wav in wavelengths]
+
+                                    self.graphPanel.canvas.sweepResultDict['voltage'] = vol3
+                                    self.graphPanel.canvas.sweepResultDict['current'] = cur3
+
+                                    # save all associated files
+                                    self.saveFiles(device, 'Voltage (V)', 'Current (mA)', ii,vol3, cur3, 'Voltage Sweep w Set Wavelength',
+                                                    motorCoordOpt, timeStart, timeStop, chipTimeStart, self.devFolder,
+                                                    routine + 'combined' + '_VI_A', leg = 3)
+                                    self.drawGraph(vol3, cur3, self.graphPanel, 'Voltage (V)', 'Current (mA)', legend=3)
+
+                                if B:
+                                    for wav in range(len(wavelengths)):
+                                        self.graphPanel.canvas.sweepResultDict['voltage'] = VoltA[wav]
+                                        self.graphPanel.canvas.sweepResultDict['current'] = CurA[wav]
+
+                                        # save all associated files
+                                        self.saveFiles(device, 'Voltage (V)', 'Current (mA)', ii, VoltA[wav], CurA[wav],
                                                     'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                                    chipTimeStart, self.devFolder, routine + 'combined' + '_VI_B', leg = 3)
-                            self.drawGraph(vol3, cur3, self.graphPanel, 'Voltage (V)', 'Current (mA)',
+                                                    chipTimeStart, self.devFolder, routine + str(wavelengths[wav]) + '_VI_B')
+                                        self.drawGraph(VoltA[wav], CurA[wav], self.graphPanel, 'Voltage (V)', 'Current (mA)',
+                                                    legend=0)
+
+                                    vol3 = [[]]
+                                    cur3 = [[]]
+                                    for i in range(len(VoltB[0]) - 1):
+                                        vol3.append([])
+                                        cur3.append([])
+                                    for p in range(len(VoltB[ii])):
+                                        for v in range(len(wavelengths)):
+                                            vol3[p].append(VoltB[v][p])
+                                            cur3[p].append(CurB[v][p])
+
+                                    self.wavstringlist = [str(wav) + ' nm' for wav in wavelengths]
+
+                                    self.graphPanel.canvas.sweepResultDict['voltage'] =vol3
+                                    self.graphPanel.canvas.sweepResultDict['current'] = cur3
+
+                                    # save all associated files
+                                    self.saveFiles(device, 'Voltage (V)', 'Current (mA)', ii, vol3, cur3,
+                                                            'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                                            chipTimeStart, self.devFolder, routine + 'combined' + '_VI_B', leg = 3)
+                                    self.drawGraph(vol3, cur3, self.graphPanel, 'Voltage (V)', 'Current (mA)',
+                                                            legend=3)
+
+                            if RV:
+                                self.graphPanel.canvas.sweepResultDict = {}
+                                if A:
+                                    for wav in range(len(wavelengths)):
+                                        self.graphPanel.canvas.sweepResultDict['voltage'] = VoltA[wav]
+                                        self.graphPanel.canvas.sweepResultDict['resistance'] = ResA[wav]
+
+                                        # save all associated files
+                                        self.saveFiles(device, 'Voltage (V)', 'Resistance (Ohms)', ii, VoltA[wav], ResA[wav],
+                                                    'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                                    chipTimeStart, self.devFolder, routine + str(wavelengths[wav]) + '_VR_A')
+                                        self.drawGraph(VoltA[wav], ResA[wav], self.graphPanel, 'Voltage (V)', 'Resistance (Ohms)',
+                                                    legend=0)
+
+                                    vol3 = [[]]
+                                    res3 = [[]]
+                                    for i in range(len(VoltA[0]) - 1):
+                                        vol3.append([])
+                                        res3.append([])
+                                    for p in range(len(VoltA[ii])):
+                                        for v in range(len(wavelengths)):
+                                            vol3[p].append(VoltA[v][p])
+                                            res3[p].append(ResA[v][p])
+
+                                    self.wavstringlist = [str(wav) + ' nm' for wav in wavelengths]
+                                    for wav in wavelengths:
+                                        if wav == wavelengths[0]:
+                                            pass
+                                        else:
+                                            self.wavstringlist.append(str(wav) + ' nm')
+
+                                    self.graphPanel.canvas.sweepResultDict['voltage'] = vol3
+                                    self.graphPanel.canvas.sweepResultDict['resistance'] = res3
+
+                                    # save all associated files
+                                    self.saveFiles(device, 'Voltage (V)', 'Resistance (Ohms)', ii, vol3, res3,
+                                                        'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                                        chipTimeStart, self.devFolder, routine + 'combined' + '_RV', leg = 3)
+                                    self.drawGraph(vol3, res3, self.graphPanel, 'Voltage (V)', 'Resistance (Ohms)',
+                                                        legend=3)
+
+                                if B:
+                                    for wav in range(len(wavelengths)):
+                                        self.graphPanel.canvas.sweepResultDict['voltage'] = VoltB[wav]
+                                        self.graphPanel.canvas.sweepResultDict['resistance'] = ResB[wav]
+
+                                        # save all associated files
+                                        self.saveFiles(device, 'Voltage (V)', 'Resistance (Ohms)', ii, VoltB[wav], ResB[wav],
+                                                    'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                                    chipTimeStart, self.devFolder, routine + str(wavelengths[wav]) + '_VR_B')
+                                        self.drawGraph(VoltB[wav], ResB[wav], self.graphPanel, 'Voltage (V)', 'Resistance (Ohms)',
+                                                    legend=0)
+
+                                    vol3 = [[]]
+                                    res3 = [[]]
+                                    for i in range(len(VoltB[0]) - 1):
+                                        vol3.append([])
+                                        res3.append([])
+                                    for p in range(len(VoltB[ii])):
+                                        for v in range(len(wavelengths)):
+                                            vol3[p].append(VoltB[v][p])
+                                            res3[p].append(ResB[v][p])
+
+                                    self.wavstringlist = [str(wav) + ' nm' for wav in wavelengths]
+
+                                    self.graphPanel.canvas.sweepResultDict['voltage'] = vol3
+                                    self.graphPanel.canvas.sweepResultDict['resistance'] = res3
+
+                                    # save all associated files
+                                    self.saveFiles(device, 'Voltage (V)', 'Resistance (Ohms)', ii, vol3, res3,
+                                                        'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                                        chipTimeStart, self.devFolder, routine + 'combined' + '_RV', leg = 3)
+                                    self.drawGraph(vol3, res3, self.graphPanel, 'Voltage (V)', 'Resistance (Ohms)',
+                                                        legend=3)
+                            if PV:
+                                self.graphPanel.canvas.sweepResultDict = {}
+                                if A:
+                                    for wav in range(len(wavelengths)):
+                                        self.graphPanel.canvas.sweepResultDict['voltage'] = VoltA[wav]
+                                        self.graphPanel.canvas.sweepResultDict['power'] = PowA[wav]
+
+                                        # save all associated files
+                                        self.saveFiles(device, 'Voltage (V)', 'Power (W)', ii, VoltA[wav], PowA[wav],
+                                                    'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                                    chipTimeStart, self.devFolder, routine + str(wavelengths[wav]) + '_VP_A')
+                                        self.drawGraph(VoltA[wav], PowA[wav], self.graphPanel, 'Voltage (V)', 'Power (W)',
+                                                    legend=0)
+                                    vol3 = [[]]
+                                    pow3 = [[]]
+                                    for i in range(len(VoltA[0]) - 1):
+                                        vol3.append([])
+                                        pow3.append([])
+                                    for p in range(len(VoltA[ii])):
+                                        for v in range(len(wavelengths)):
+                                            vol3[p].append(VoltA[v][p])
+                                            pow3[p].append(PowA[v][p])
+
+                                    self.wavstringlist = [str(wav) + ' nm' for wav in wavelengths]
+
+                                    self.graphPanel.canvas.sweepResultDict['voltage'] = vol3
+                                    self.graphPanel.canvas.sweepResultDict['power'] = pow3
+
+                                    # save all associated files
+                                    self.saveFiles(device, 'Voltage (V)', 'Power (W)', ii, vol3, pow3,
+                                                        'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                                        chipTimeStart, self.devFolder, routine + 'combined' + '_PV', leg = 3)
+                                    self.drawGraph(vol3, pow3, self.graphPanel, 'Voltage (V)', 'Power (W)',
+                                                        legend=3)
+
+                                if B:
+                                    for wav in range(len(wavelengths)):
+                                        self.graphPanel.canvas.sweepResultDict['voltage'] = VoltB[wav]
+                                        self.graphPanel.canvas.sweepResultDict['power'] = PowB[wav]
+
+                                        # save all associated files
+                                        self.saveFiles(device, 'Voltage (V)', 'Power (W)', ii, VoltB[wav], PowB[wav],
+                                                    'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                                    chipTimeStart, self.devFolder, routine + str(wavelengths[wav]) + '_VP_B')
+                                        self.drawGraph(VoltB[wav], PowB[wav], self.graphPanel, 'Voltage (V)', 'Power (W)',
+                                                    legend=0)
+                                    vol3 = [[]]
+                                    pow3 = [[]]
+                                    for i in range(len(VoltB[0]) - 1):
+                                        vol3.append([])
+                                        pow3.append([])
+                                    for p in range(len(VoltB[ii])):
+                                        for v in range(len(wavelengths)):
+                                            vol3[p].append(VoltB[v][p])
+                                            pow3[p].append(PowB[v][p])
+
+                                    self.wavstringlist = [str(wav) + ' nm' for wav in wavelengths]
+
+                                    self.graphPanel.canvas.sweepResultDict['voltage'] = vol3
+                                    self.graphPanel.canvas.sweepResultDict['power'] = pow3
+
+                                    # save all associated files
+                                    self.saveFiles(device, 'Voltage (V)', 'Power (W)', ii, vol3, pow3,
+                                                        'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                                        chipTimeStart, self.devFolder, routine + 'combined' + '_PV', leg = 3)
+                                    self.drawGraph(vol3, pow3, self.graphPanel, 'Voltage (V)', 'Power (W)',
+                                                        legend=3)
+                                
+            if self.sequencerunning == 'All' or self.sequencerunning == 'Set Wavelength Current Sweep':
+                if self.probeCheckFlag:
+                    if device.getSetWavelengthCurrentSweepRoutines() and self.laser and self.motorElec and self.smu:
+                        currentSweeps = device.getSetWavelengthCurrentSweepRoutines()
+                        for routine in currentSweeps:
+                            ii = self.setWavelengthCurrentSweeps['RoutineName'].index(routine)
+                            timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
+                            print("Performing Current Sweep with set wavelength")
+                            imin = self.setWavelengthCurrentSweeps['CurrentMin'][ii]
+                            imax = self.setWavelengthCurrentSweeps['CurrentMax'][ii]
+                            ires = self.setWavelengthCurrentSweeps['CurrentRes'][ii]
+                            A = self.setWavelengthCurrentSweeps['ChannelA'][ii]
+                            B = self.setWavelengthCurrentSweeps['ChannelB'][ii]
+                            IV = self.setWavelengthCurrentSweeps['IV'][ii]
+                            RV = self.setWavelengthCurrentSweeps['RV'][ii]
+                            PV = self.setWavelengthCurrentSweeps['PV'][ii]
+                            wavelengths = self.setWavelengthCurrentSweeps['Wavelength'][ii].split(',')
+
+                            VoltA = [[]for _ in range(len(wavelengths))]
+                            CurA = [[]for _ in range(len(wavelengths))]
+                            VoltB = [[]for _ in range(len(wavelengths))]
+                            CurB = [[]for _ in range(len(wavelengths))]
+                            ResA = [[]for _ in range(len(wavelengths))]
+                            PowA = [[]for _ in range(len(wavelengths))]
+                            ResB = [[]for _ in range(len(wavelengths))]
+                            PowB = [[]for _ in range(len(wavelengths))]
+
+                            for l, wavelength in enumerate(wavelengths):
+                                VoltA[l], CurA[l], ResA[l], PowA[l], VoltB[l], CurB[l], ResB[l], PowB[l] = \
+                                    measurement.fixedWavelengthCurrentSweep(imin, imax, ires, A, B, wavelength)
+                                timeStop = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
+                            if IV:
+                                self.graphPanel.canvas.sweepResultDict = {}
+                                if A:
+                                    for wav in range(len(wavelengths)):
+                                        self.graphPanel.canvas.sweepResultDict['voltage'] = VoltA[wav]
+                                        self.graphPanel.canvas.sweepResultDict['current'] = CurA[wav]
+
+                                        # save all associated files
+                                        self.saveFiles(device, 'Current (mA)', 'Voltage (V)', ii, CurA[wav], VoltA[wav],
+                                                    'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                                    chipTimeStart, self.devFolder, routine + str(wavelengths[wav]) + '_IV_A')
+                                        self.drawGraph(CurA[wav], VoltA[wav], self.graphPanel, 'Current (mA)', 'Voltage (V)', legend=0)
+
+                                    vol3 = [[]]
+                                    cur3 = [[]]
+                                    for b in range(len(VoltA[0]) - 1):
+                                        vol3.append([])
+                                        cur3.append([])
+                                    for p in range(len(VoltA[l])):
+                                        for v in range(len(wavelengths)):
+                                            vol3[p].append(VoltA[v][p])
+                                            cur3[p].append(CurA[v][p])
+
+                                    self.wavstringlist = [str(wav) + ' nm' for wav in wavelengths]
+
+                                    self.graphPanel.canvas.sweepResultDict['voltage'] = vol3
+                                    self.graphPanel.canvas.sweepResultDict['current'] = cur3
+
+                                    # save all associated files
+                                    self.saveFiles(device,  'Current (mA)','Voltage (V)', ii,  cur3, vol3,
+                                                    'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                                    chipTimeStart, self.devFolder, routine+'combined' + '_IV_A', leg = 3)
+                                    self.drawGraph(cur3,vol3, self.graphPanel,  'Current (mA)', 'Voltage (V)',legend = 3)
+
+                                if B:
+                                    for wav in range(len(wavelengths)):
+                                        self.graphPanel.canvas.sweepResultDict['voltage'] = VoltB[wav]
+                                        self.graphPanel.canvas.sweepResultDict['current'] = CurB[wav]
+
+                                        # save all associated files
+                                        self.saveFiles(device, 'Current (mA)', 'Voltage (V)', ii, CurB[wav], VoltB[wav],
+                                                    'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                                    chipTimeStart, self.devFolder, routine + str(wavelengths[wav]) + '_IV_B')
+                                        self.drawGraph(CurB[wav], VoltB[wav], self.graphPanel, 'Current (mA)', 'Voltage (V)',
+                                                    legend=0)
+
+                                    vol3 = [[]]
+                                    cur3 = [[]]
+                                    for b in range(len(VoltB[0]) - 1):
+                                        vol3.append([])
+                                        cur3.append([])
+                                    for p in range(len(VoltB[l])):
+                                        for v in range(len(wavelengths)):
+                                            vol3[p].append(VoltB[v][p])
+                                            cur3[p].append(CurB[v][p])
+
+                                    self.wavstringlist = [str(wav) + ' nm' for wav in wavelengths]
+
+                                    self.graphPanel.canvas.sweepResultDict['voltage'] = vol3
+                                    self.graphPanel.canvas.sweepResultDict['current'] = cur3
+
+                                    # save all associated files
+                                    self.saveFiles(device,  'Current (mA)','Voltage (V)', ii,  cur3,vol3,
+                                                'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                                chipTimeStart, self.devFolder, routine + 'combined' + '_IV_B', leg = 3)
+                                    self.drawGraph(cur3, vol3,self.graphPanel,  'Current (mA)','Voltage (V)',
+                                                legend=3)
+
+                            if RV:
+                                self.graphPanel.canvas.sweepResultDict = {}
+                                if A:
+                                    for wav in range(len(wavelengths)):
+                                        self.graphPanel.canvas.sweepResultDict['resistance'] = ResA[wav]
+                                        self.graphPanel.canvas.sweepResultDict['current'] = CurA[wav]
+
+                                        # save all associated files
+                                        self.saveFiles(device, 'Current (mA)', 'Resistance (Ohms)', ii, CurA[wav], ResA[wav],
+                                                    'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                                    chipTimeStart, self.devFolder, routine + str(wavelengths[wav]) + '_IR_A')
+                                        self.drawGraph(CurA[wav], ResA[wav], self.graphPanel, 'Current (mA)', 'Resistance (Ohms)',
+                                                    legend=0)
+                                    res3 = [[]]
+                                    cur3 = [[]]
+                                    for b in range(len(VoltA[0]) - 1):
+                                        res3.append([])
+                                        cur3.append([])
+                                    for p in range(len(VoltA[l])):
+                                        for v in range(len(wavelengths)):
+                                            res3[p].append(ResA[v][p] )
+                                            cur3[p].append(CurA[v][p])
+
+                                    self.wavstringlist = [str(wav) + ' nm' for wav in wavelengths]
+
+                                    self.graphPanel.canvas.sweepResultDict['resistance'] = res3
+                                    self.graphPanel.canvas.sweepResultDict['current'] = cur3
+
+                                    # save all associated files
+                                    self.saveFiles(device,  'Current (mA)','Resistance (Ohms)', ii,  cur3,res3,
+                                                    'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                                    chipTimeStart, self.devFolder, routine+ 'combined' + '_IR_A', leg = 3)
+                                    self.drawGraph(cur3,res3, self.graphPanel,  'Current (mA)', 'Resistance (Ohms)',legend = 3)
+
+                                if B:
+                                    for wav in range(len(wavelengths)):
+                                        self.graphPanel.canvas.sweepResultDict['resistance'] = ResB[wav]
+                                        self.graphPanel.canvas.sweepResultDict['current'] =  CurB[wav]
+
+                                        # save all associated files
+                                        self.saveFiles(device, 'Current (mA)', 'Resistance (Ohms)', ii, CurB[wav], ResB[wav],
+                                                    'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                                    chipTimeStart, self.devFolder, routine + str(wavelengths[wav]) + '_IR_B')
+                                        self.drawGraph(CurB[wav], ResB[wav], self.graphPanel, 'Current (mA)', 'Resistance (Ohms)',
+                                                    legend=0)
+
+                                    res3 = [[]]
+                                    cur3 = [[]]
+                                    for b in range(len(VoltB[0]) - 1):
+                                        res3.append([])
+                                        cur3.append([])
+                                    for p in range(len(VoltB[l])):
+                                        for v in range(len(wavelengths)):
+                                            res3[p].append(VoltB[v][p])
+                                            cur3[p].append(CurB[v][p])
+
+                                    self.wavstringlist = [str(wav) + ' nm' for wav in wavelengths]
+
+                                    self.graphPanel.canvas.sweepResultDict['resistance'] = res3
+                                    self.graphPanel.canvas.sweepResultDict['current'] = cur3
+
+                                    # save all associated files
+                                    self.saveFiles(device,  'Current (mA)','Resistance (Ohms)', ii,  cur3, res3,
+                                                    'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                                    chipTimeStart, self.devFolder, routine + 'combined' + '_IR_B', leg = 3)
+                                    self.drawGraph( cur3, res3,self.graphPanel,  'Current (mA)','Resistance (Ohms)',
                                                     legend=3)
 
-                    if RV:
-                        self.graphPanel.canvas.sweepResultDict = {}
-                        if A:
-                            for wav in range(len(wavelengths)):
-                                self.graphPanel.canvas.sweepResultDict['voltage'] = VoltA[wav]
-                                self.graphPanel.canvas.sweepResultDict['resistance'] = ResA[wav]
+                            if PV:
+                                self.graphPanel.canvas.sweepResultDict = {}
+                                if A:
+                                    for wav in range(len(wavelengths)):
+                                        self.graphPanel.canvas.sweepResultDict['power'] = PowA[wav]
+                                        self.graphPanel.canvas.sweepResultDict['current'] = CurA[wav]
+                                        # save all associated files
+                                        self.saveFiles(device, 'Current (mA)', 'Power (W)', ii, CurA[wav], PowA[wav],
+                                                    'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                                    chipTimeStart, self.devFolder, routine + str(wavelengths[wav]) + '_IP_A')
+                                        self.drawGraph(CurA[wav], PowA[wav], self.graphPanel, 'Current (mA)', 'Power (W)', legend=0)
+
+                                    pow3 = [[]]
+                                    cur3 = [[]]
+                                    for b in range(len(VoltA[0]) - 1):
+                                        pow3.append([])
+                                        cur3.append([])
+                                    for p in range(len(VoltA[l])):
+                                        for v in range(len(wavelengths)):
+                                            pow3[p].append(PowA[v][p] )
+                                            cur3[p].append(CurA[v][p])
+
+                                    self.wavstringlist = [str(wav) + ' nm' for wav in wavelengths]
+
+                                    self.graphPanel.canvas.sweepResultDict['power'] = pow3
+                                    self.graphPanel.canvas.sweepResultDict['current'] = cur3
+
+                                    # save all associated files
+                                    self.saveFiles(device,  'Current (mA)','Power (W)', ii,  cur3, pow3,
+                                                    'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                                    chipTimeStart, self.devFolder, routine+ 'combined' + '_IP_A', leg = 3)
+                                    self.drawGraph(cur3,pow3, self.graphPanel,  'Current (mA)', 'Power (W)',legend = 3)
+
+                                if B:
+                                    for wav in range(len(wavelengths)):
+                                        self.graphPanel.canvas.sweepResultDict['power'] = PowB[wav]
+                                        self.graphPanel.canvas.sweepResultDict['current'] = CurB[wav]
+
+                                        # save all associated files
+                                        self.saveFiles(device, 'Current (mA)', 'Power (W)', ii, CurB[wav], PowB[wav],
+                                                    'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                                    chipTimeStart, self.devFolder, routine + 'combined' + '_IP_B')
+                                        self.drawGraph(CurB[wav], PowB[wav], self.graphPanel, 'Current (mA)', 'Power (W)',
+                                                    legend=0)
+                                    pow3 = [[]]
+                                    cur3 = [[]]
+                                    for b in range(len(VoltB[0]) - 1):
+                                        pow3.append([])
+                                        cur3.append([])
+                                    for p in range(len(VoltB[l])):
+                                        for v in range(len(wavelengths)):
+                                            pow3[p].append(VoltB[v][p])
+                                            cur3[p].append(CurB[v][p])
+
+                                    self.wavstringlist = [str(wav) + ' nm' for wav in wavelengths]
+
+                                    self.graphPanel.canvas.sweepResultDict['power'] = pow3
+                                    self.graphPanel.canvas.sweepResultDict['current'] = cur3
+
+                                    # save all associated files
+                                    self.saveFiles(device,  'Current (mA)','Power (W)', ii,  cur3, pow3,
+                                                'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
+                                                chipTimeStart, self.devFolder, routine + 'combined' + '_IP_B', leg = 3)
+                                    self.drawGraph( cur3, pow3,self.graphPanel,  'Current (mA)','Power (W)',
+                                                legend=3)
+                                
+            if self.sequencerunning == 'All' or self.sequencerunning == 'Set Voltage Wavelength Sweep':
+                if self.probeCheckFlag:
+                    if device.getSetVoltageWavelengthSweepRoutines() and self.laser and self.motorElec and self.smu:
+                        for routine in device.getSetVoltageWavelengthSweepRoutines():
+                            ii = self.setVoltageWavelengthSweeps['RoutineName'].index(routine)
+                            timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
+                            print("Performing Optical Test with Bias Voltage")
+                            start = self.setVoltageWavelengthSweeps['Start'][ii]
+                            stop = self.setVoltageWavelengthSweeps['Stop'][ii]
+                            stepsize = self.setVoltageWavelengthSweeps['Stepsize'][ii]
+                            sweepspeed = self.setVoltageWavelengthSweeps['Sweepspeed'][ii]
+                            sweeppower = self.setVoltageWavelengthSweeps['Sweeppower'][ii]
+                            laseroutput = self.setVoltageWavelengthSweeps['Laseroutput'][ii]
+                            numscans = self.setVoltageWavelengthSweeps['Numscans'][ii]
+                            initrange = self.setVoltageWavelengthSweeps['InitialRange'][ii]
+                            rangedec = self.setVoltageWavelengthSweeps['RangeDec'][ii]
+                            A = self.setVoltageWavelengthSweeps['ChannelA'][ii]
+                            B = self.setVoltageWavelengthSweeps['ChannelB'][ii]
+                            voltages = self.setVoltageWavelengthSweeps['Voltage'][ii].split(',')
+
+                            if len(self.activeDetectors) > 1:
+                                self.detstringlist = ['Detector Slot ' + str(self.activeDetectors[0] + 1)]
+                                for det in self.activeDetectors:
+                                    if det == self.activeDetectors[0]:
+                                        pass
+                                    else:
+                                        self.detstringlist.append('Detector Slot ' + str(det + 1))
+
+                            wav = [[]for _ in range(len(voltages))]
+                            pow = [[]for _ in range(len(voltages))]
+
+                            for l, voltage in enumerate(voltages):
+                                wav[l], pow[l] = measurement.opticalSweepWithBiasVoltage(start, stop, stepsize, sweepspeed,
+                                                                                    sweeppower, laseroutput, numscans,
+                                                                                    initrange, rangedec, voltage, A, B)
+
+
+                                timeStop = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
+
+                                self.graphPanel.canvas.sweepResultDict = {}
+                                self.graphPanel.canvas.sweepResultDict['wavelength'] = wav[l]
+                                self.graphPanel.canvas.sweepResultDict['power'] = pow[l]
 
                                 # save all associated files
-                                self.saveFiles(device, 'Voltage (V)', 'Resistance (Ohms)', ii, VoltA[wav], ResA[wav],
-                                               'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                               chipTimeStart, self.devFolder, routine + str(wavelengths[wav]) + '_VR_A')
-                                self.drawGraph(VoltA[wav], ResA[wav], self.graphPanel, 'Voltage (V)', 'Resistance (Ohms)',
-                                               legend=0)
+                                self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', ii, wav[l] * 1e9, pow[l],
+                                                'Wavelength sweep w Bias Voltage', motorCoordOpt, timeStart, timeStop,
+                                            chipTimeStart, self.devFolder, routine+str(voltage), leg=0)
 
-                            vol3 = [[]]
-                            res3 = [[]]
-                            for i in range(len(VoltA[0]) - 1):
-                                vol3.append([])
-                                res3.append([])
-                            for p in range(len(VoltA[ii])):
-                                for v in range(len(wavelengths)):
-                                    vol3[p].append(VoltA[v][p])
-                                    res3[p].append(ResA[v][p])
+                                self.drawGraph(wav[l] * 1e9, pow[l], self.graphPanel, 'Wavelength (nm)', 'Power (dBm)', legend=0)
 
-                            self.wavstringlist = [str(wav) + ' nm' for wav in wavelengths]
-                            for wav in wavelengths:
-                                if wav == wavelengths[0]:
-                                    pass
-                                else:
-                                    self.wavstringlist.append(str(wav) + ' nm')
 
-                            self.graphPanel.canvas.sweepResultDict['voltage'] = vol3
-                            self.graphPanel.canvas.sweepResultDict['resistance'] = res3
+                            for det in range(len(self.activeDetectors)):
+                                wav3 = [[]]
+                                pow3 = [[]]
+                                for b in range(len(wav[0])-1):
+                                    wav3.append([])
+                                    pow3.append([])
+                                for p in range(len(wav[0])):
+                                    for v in range(len(voltages)):
+                                        wav3[p].append(wav[v][p] * 1e9)
+                                        pow3[p].append(pow[v][p][det])
 
-                            # save all associated files
-                            self.saveFiles(device, 'Voltage (V)', 'Resistance (Ohms)', ii, vol3, res3,
-                                                   'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                                   chipTimeStart, self.devFolder, routine + 'combined' + '_RV', leg = 3)
-                            self.drawGraph(vol3, res3, self.graphPanel, 'Voltage (V)', 'Resistance (Ohms)',
-                                                   legend=3)
+                                self.graphPanel.canvas.sweepResultDict = {}
+                                self.graphPanel.canvas.sweepResultDict['wavelength'] = wav3[det]
+                                self.graphPanel.canvas.sweepResultDict['power'] = pow3[det]
 
-                        if B:
-                            for wav in range(len(wavelengths)):
-                                self.graphPanel.canvas.sweepResultDict['voltage'] = VoltB[wav]
-                                self.graphPanel.canvas.sweepResultDict['resistance'] = ResB[wav]
+                                self.voltstringlist = [str(voltages[0]) + ' V']
+                                for volt in voltages:
+                                    if volt == voltages[0]:
+                                        pass
+                                    else:
+                                        self.voltstringlist.append(str(volt) + ' V')
 
                                 # save all associated files
-                                self.saveFiles(device, 'Voltage (V)', 'Resistance (Ohms)', ii, VoltB[wav], ResB[wav],
-                                               'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                               chipTimeStart, self.devFolder, routine + str(wavelengths[wav]) + '_VR_B')
-                                self.drawGraph(VoltB[wav], ResB[wav], self.graphPanel, 'Voltage (V)', 'Resistance (Ohms)',
-                                               legend=0)
-
-                            vol3 = [[]]
-                            res3 = [[]]
-                            for i in range(len(VoltB[0]) - 1):
-                                vol3.append([])
-                                res3.append([])
-                            for p in range(len(VoltB[ii])):
-                                for v in range(len(wavelengths)):
-                                    vol3[p].append(VoltB[v][p])
-                                    res3[p].append(ResB[v][p])
-
-                            self.wavstringlist = [str(wav) + ' nm' for wav in wavelengths]
-
-                            self.graphPanel.canvas.sweepResultDict['voltage'] = vol3
-                            self.graphPanel.canvas.sweepResultDict['resistance'] = res3
-
-                            # save all associated files
-                            self.saveFiles(device, 'Voltage (V)', 'Resistance (Ohms)', ii, vol3, res3,
-                                                   'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                                   chipTimeStart, self.devFolder, routine + 'combined' + '_RV', leg = 3)
-                            self.drawGraph(vol3, res3, self.graphPanel, 'Voltage (V)', 'Resistance (Ohms)',
-                                                   legend=3)
-                    if PV:
-                        self.graphPanel.canvas.sweepResultDict = {}
-                        if A:
-                            for wav in range(len(wavelengths)):
-                                self.graphPanel.canvas.sweepResultDict['voltage'] = VoltA[wav]
-                                self.graphPanel.canvas.sweepResultDict['power'] = PowA[wav]
-
-                                # save all associated files
-                                self.saveFiles(device, 'Voltage (V)', 'Power (W)', ii, VoltA[wav], PowA[wav],
-                                               'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                               chipTimeStart, self.devFolder, routine + str(wavelengths[wav]) + '_VP_A')
-                                self.drawGraph(VoltA[wav], PowA[wav], self.graphPanel, 'Voltage (V)', 'Power (W)',
-                                               legend=0)
-                            vol3 = [[]]
-                            pow3 = [[]]
-                            for i in range(len(VoltA[0]) - 1):
-                                vol3.append([])
-                                pow3.append([])
-                            for p in range(len(VoltA[ii])):
-                                for v in range(len(wavelengths)):
-                                    vol3[p].append(VoltA[v][p])
-                                    pow3[p].append(PowA[v][p])
-
-                            self.wavstringlist = [str(wav) + ' nm' for wav in wavelengths]
-
-                            self.graphPanel.canvas.sweepResultDict['voltage'] = vol3
-                            self.graphPanel.canvas.sweepResultDict['power'] = pow3
-
-                            # save all associated files
-                            self.saveFiles(device, 'Voltage (V)', 'Power (W)', ii, vol3, pow3,
-                                                'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                                chipTimeStart, self.devFolder, routine + 'combined' + '_PV', leg = 3)
-                            self.drawGraph(vol3, pow3, self.graphPanel, 'Voltage (V)', 'Power (W)',
-                                                   legend=3)
-
-                        if B:
-                            for wav in range(len(wavelengths)):
-                                self.graphPanel.canvas.sweepResultDict['voltage'] = VoltB[wav]
-                                self.graphPanel.canvas.sweepResultDict['power'] = PowB[wav]
-
-                                # save all associated files
-                                self.saveFiles(device, 'Voltage (V)', 'Power (W)', ii, VoltB[wav], PowB[wav],
-                                               'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                               chipTimeStart, self.devFolder, routine + str(wavelengths[wav]) + '_VP_B')
-                                self.drawGraph(VoltB[wav], PowB[wav], self.graphPanel, 'Voltage (V)', 'Power (W)',
-                                               legend=0)
-                            vol3 = [[]]
-                            pow3 = [[]]
-                            for i in range(len(VoltB[0]) - 1):
-                                vol3.append([])
-                                pow3.append([])
-                            for p in range(len(VoltB[ii])):
-                                for v in range(len(wavelengths)):
-                                    vol3[p].append(VoltB[v][p])
-                                    pow3[p].append(PowB[v][p])
-
-                            self.wavstringlist = [str(wav) + ' nm' for wav in wavelengths]
-
-                            self.graphPanel.canvas.sweepResultDict['voltage'] = vol3
-                            self.graphPanel.canvas.sweepResultDict['power'] = pow3
-
-                            # save all associated files
-                            self.saveFiles(device, 'Voltage (V)', 'Power (W)', ii, vol3, pow3,
-                                                   'Voltage Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                                   chipTimeStart, self.devFolder, routine + 'combined' + '_PV', leg = 3)
-                            self.drawGraph(vol3, pow3, self.graphPanel, 'Voltage (V)', 'Power (W)',
-                                                   legend=3)
-
-            if device.getSetWavelengthCurrentSweepRoutines() and self.laser and self.motorElec and self.smu:
-                currentSweeps = device.getSetWavelengthCurrentSweepRoutines()
-                for routine in currentSweeps:
-                    ii = self.setWavelengthCurrentSweeps['RoutineName'].index(routine)
-                    timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
-                    print("Performing Current Sweep with set wavelength")
-                    imin = self.setWavelengthCurrentSweeps['CurrentMin'][ii]
-                    imax = self.setWavelengthCurrentSweeps['CurrentMax'][ii]
-                    ires = self.setWavelengthCurrentSweeps['CurrentRes'][ii]
-                    A = self.setWavelengthCurrentSweeps['ChannelA'][ii]
-                    B = self.setWavelengthCurrentSweeps['ChannelB'][ii]
-                    IV = self.setWavelengthCurrentSweeps['IV'][ii]
-                    RV = self.setWavelengthCurrentSweeps['RV'][ii]
-                    PV = self.setWavelengthCurrentSweeps['PV'][ii]
-                    wavelengths = self.setWavelengthCurrentSweeps['Wavelength'][ii].split(',')
-
-                    VoltA = [[]for _ in range(len(wavelengths))]
-                    CurA = [[]for _ in range(len(wavelengths))]
-                    VoltB = [[]for _ in range(len(wavelengths))]
-                    CurB = [[]for _ in range(len(wavelengths))]
-                    ResA = [[]for _ in range(len(wavelengths))]
-                    PowA = [[]for _ in range(len(wavelengths))]
-                    ResB = [[]for _ in range(len(wavelengths))]
-                    PowB = [[]for _ in range(len(wavelengths))]
-
-                    for l, wavelength in enumerate(wavelengths):
-                        VoltA[l], CurA[l], ResA[l], PowA[l], VoltB[l], CurB[l], ResB[l], PowB[l] = \
-                            measurement.fixedWavelengthCurrentSweep(imin, imax, ires, A, B, wavelength)
-                        timeStop = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
-                    if IV:
-                        self.graphPanel.canvas.sweepResultDict = {}
-                        if A:
-                            for wav in range(len(wavelengths)):
-                                self.graphPanel.canvas.sweepResultDict['voltage'] = VoltA[wav]
-                                self.graphPanel.canvas.sweepResultDict['current'] = CurA[wav]
-
-                                # save all associated files
-                                self.saveFiles(device, 'Current (mA)', 'Voltage (V)', ii, CurA[wav], VoltA[wav],
-                                               'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                               chipTimeStart, self.devFolder, routine + str(wavelengths[wav]) + '_IV_A')
-                                self.drawGraph(CurA[wav], VoltA[wav], self.graphPanel, 'Current (mA)', 'Voltage (V)', legend=0)
-
-                            vol3 = [[]]
-                            cur3 = [[]]
-                            for b in range(len(VoltA[0]) - 1):
-                                vol3.append([])
-                                cur3.append([])
-                            for p in range(len(VoltA[l])):
-                                for v in range(len(wavelengths)):
-                                    vol3[p].append(VoltA[v][p])
-                                    cur3[p].append(CurA[v][p])
-
-                            self.wavstringlist = [str(wav) + ' nm' for wav in wavelengths]
-
-                            self.graphPanel.canvas.sweepResultDict['voltage'] = vol3
-                            self.graphPanel.canvas.sweepResultDict['current'] = cur3
-
-                            # save all associated files
-                            self.saveFiles(device,  'Current (mA)','Voltage (V)', ii,  cur3, vol3,
-                                            'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                            chipTimeStart, self.devFolder, routine+'combined' + '_IV_A', leg = 3)
-                            self.drawGraph(cur3,vol3, self.graphPanel,  'Current (mA)', 'Voltage (V)',legend = 3)
-
-                        if B:
-                            for wav in range(len(wavelengths)):
-                                self.graphPanel.canvas.sweepResultDict['voltage'] = VoltB[wav]
-                                self.graphPanel.canvas.sweepResultDict['current'] = CurB[wav]
-
-                                # save all associated files
-                                self.saveFiles(device, 'Current (mA)', 'Voltage (V)', ii, CurB[wav], VoltB[wav],
-                                               'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                               chipTimeStart, self.devFolder, routine + str(wavelengths[wav]) + '_IV_B')
-                                self.drawGraph(CurB[wav], VoltB[wav], self.graphPanel, 'Current (mA)', 'Voltage (V)',
-                                               legend=0)
-
-                            vol3 = [[]]
-                            cur3 = [[]]
-                            for b in range(len(VoltB[0]) - 1):
-                                vol3.append([])
-                                cur3.append([])
-                            for p in range(len(VoltB[l])):
-                                for v in range(len(wavelengths)):
-                                    vol3[p].append(VoltB[v][p])
-                                    cur3[p].append(CurB[v][p])
-
-                            self.wavstringlist = [str(wav) + ' nm' for wav in wavelengths]
-
-                            self.graphPanel.canvas.sweepResultDict['voltage'] = vol3
-                            self.graphPanel.canvas.sweepResultDict['current'] = cur3
-
-                            # save all associated files
-                            self.saveFiles(device,  'Current (mA)','Voltage (V)', ii,  cur3,vol3,
-                                        'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                        chipTimeStart, self.devFolder, routine + 'combined' + '_IV_B', leg = 3)
-                            self.drawGraph(cur3, vol3,self.graphPanel,  'Current (mA)','Voltage (V)',
-                                        legend=3)
-
-                    if RV:
-                        self.graphPanel.canvas.sweepResultDict = {}
-                        if A:
-                            for wav in range(len(wavelengths)):
-                                self.graphPanel.canvas.sweepResultDict['resistance'] = ResA[wav]
-                                self.graphPanel.canvas.sweepResultDict['current'] = CurA[wav]
-
-                                # save all associated files
-                                self.saveFiles(device, 'Current (mA)', 'Resistance (Ohms)', ii, CurA[wav], ResA[wav],
-                                               'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                               chipTimeStart, self.devFolder, routine + str(wavelengths[wav]) + '_IR_A')
-                                self.drawGraph(CurA[wav], ResA[wav], self.graphPanel, 'Current (mA)', 'Resistance (Ohms)',
-                                               legend=0)
-                            res3 = [[]]
-                            cur3 = [[]]
-                            for b in range(len(VoltA[0]) - 1):
-                                res3.append([])
-                                cur3.append([])
-                            for p in range(len(VoltA[l])):
-                                for v in range(len(wavelengths)):
-                                    res3[p].append(ResA[v][p] )
-                                    cur3[p].append(CurA[v][p])
-
-                            self.wavstringlist = [str(wav) + ' nm' for wav in wavelengths]
-
-                            self.graphPanel.canvas.sweepResultDict['resistance'] = res3
-                            self.graphPanel.canvas.sweepResultDict['current'] = cur3
-
-                            # save all associated files
-                            self.saveFiles(device,  'Current (mA)','Resistance (Ohms)', ii,  cur3,res3,
-                                            'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                            chipTimeStart, self.devFolder, routine+ 'combined' + '_IR_A', leg = 3)
-                            self.drawGraph(cur3,res3, self.graphPanel,  'Current (mA)', 'Resistance (Ohms)',legend = 3)
-
-                        if B:
-                            for wav in range(len(wavelengths)):
-                                self.graphPanel.canvas.sweepResultDict['resistance'] = ResB[wav]
-                                self.graphPanel.canvas.sweepResultDict['current'] =  CurB[wav]
-
-                                # save all associated files
-                                self.saveFiles(device, 'Current (mA)', 'Resistance (Ohms)', ii, CurB[wav], ResB[wav],
-                                               'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                               chipTimeStart, self.devFolder, routine + str(wavelengths[wav]) + '_IR_B')
-                                self.drawGraph(CurB[wav], ResB[wav], self.graphPanel, 'Current (mA)', 'Resistance (Ohms)',
-                                               legend=0)
-
-                            res3 = [[]]
-                            cur3 = [[]]
-                            for b in range(len(VoltB[0]) - 1):
-                                res3.append([])
-                                cur3.append([])
-                            for p in range(len(VoltB[l])):
-                                for v in range(len(wavelengths)):
-                                    res3[p].append(VoltB[v][p])
-                                    cur3[p].append(CurB[v][p])
-
-                            self.wavstringlist = [str(wav) + ' nm' for wav in wavelengths]
-
-                            self.graphPanel.canvas.sweepResultDict['resistance'] = res3
-                            self.graphPanel.canvas.sweepResultDict['current'] = cur3
-
-                            # save all associated files
-                            self.saveFiles(device,  'Current (mA)','Resistance (Ohms)', ii,  cur3, res3,
-                                            'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                            chipTimeStart, self.devFolder, routine + 'combined' + '_IR_B', leg = 3)
-                            self.drawGraph( cur3, res3,self.graphPanel,  'Current (mA)','Resistance (Ohms)',
-                                            legend=3)
-
-                    if PV:
-                        self.graphPanel.canvas.sweepResultDict = {}
-                        if A:
-                            for wav in range(len(wavelengths)):
-                                self.graphPanel.canvas.sweepResultDict['power'] = PowA[wav]
-                                self.graphPanel.canvas.sweepResultDict['current'] = CurA[wav]
-                                # save all associated files
-                                self.saveFiles(device, 'Current (mA)', 'Power (W)', ii, CurA[wav], PowA[wav],
-                                               'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                               chipTimeStart, self.devFolder, routine + str(wavelengths[wav]) + '_IP_A')
-                                self.drawGraph(CurA[wav], PowA[wav], self.graphPanel, 'Current (mA)', 'Power (W)', legend=0)
-
-                            pow3 = [[]]
-                            cur3 = [[]]
-                            for b in range(len(VoltA[0]) - 1):
-                                pow3.append([])
-                                cur3.append([])
-                            for p in range(len(VoltA[l])):
-                                for v in range(len(wavelengths)):
-                                    pow3[p].append(PowA[v][p] )
-                                    cur3[p].append(CurA[v][p])
-
-                            self.wavstringlist = [str(wav) + ' nm' for wav in wavelengths]
-
-                            self.graphPanel.canvas.sweepResultDict['power'] = pow3
-                            self.graphPanel.canvas.sweepResultDict['current'] = cur3
-
-                            # save all associated files
-                            self.saveFiles(device,  'Current (mA)','Power (W)', ii,  cur3, pow3,
-                                             'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                             chipTimeStart, self.devFolder, routine+ 'combined' + '_IP_A', leg = 3)
-                            self.drawGraph(cur3,pow3, self.graphPanel,  'Current (mA)', 'Power (W)',legend = 3)
-
-                        if B:
-                            for wav in range(len(wavelengths)):
-                                self.graphPanel.canvas.sweepResultDict['power'] = PowB[wav]
-                                self.graphPanel.canvas.sweepResultDict['current'] = CurB[wav]
-
-                                # save all associated files
-                                self.saveFiles(device, 'Current (mA)', 'Power (W)', ii, CurB[wav], PowB[wav],
-                                               'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                               chipTimeStart, self.devFolder, routine + 'combined' + '_IP_B')
-                                self.drawGraph(CurB[wav], PowB[wav], self.graphPanel, 'Current (mA)', 'Power (W)',
-                                               legend=0)
-                            pow3 = [[]]
-                            cur3 = [[]]
-                            for b in range(len(VoltB[0]) - 1):
-                                pow3.append([])
-                                cur3.append([])
-                            for p in range(len(VoltB[l])):
-                                for v in range(len(wavelengths)):
-                                    pow3[p].append(VoltB[v][p])
-                                    cur3[p].append(CurB[v][p])
-
-                            self.wavstringlist = [str(wav) + ' nm' for wav in wavelengths]
-
-                            self.graphPanel.canvas.sweepResultDict['power'] = pow3
-                            self.graphPanel.canvas.sweepResultDict['current'] = cur3
-
-                            # save all associated files
-                            self.saveFiles(device,  'Current (mA)','Power (W)', ii,  cur3, pow3,
-                                        'Current Sweep w Set Wavelength', motorCoordOpt, timeStart, timeStop,
-                                        chipTimeStart, self.devFolder, routine + 'combined' + '_IP_B', leg = 3)
-                            self.drawGraph( cur3, pow3,self.graphPanel,  'Current (mA)','Power (W)',
-                                        legend=3)
-
-            if device.getSetVoltageWavelengthSweepRoutines() and self.laser and self.motorElec and self.smu:
-                for routine in device.getSetVoltageWavelengthSweepRoutines():
-                    ii = self.setVoltageWavelengthSweeps['RoutineName'].index(routine)
-                    timeStart = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
-                    print("Performing Optical Test with Bias Voltage")
-                    start = self.setVoltageWavelengthSweeps['Start'][ii]
-                    stop = self.setVoltageWavelengthSweeps['Stop'][ii]
-                    stepsize = self.setVoltageWavelengthSweeps['Stepsize'][ii]
-                    sweepspeed = self.setVoltageWavelengthSweeps['Sweepspeed'][ii]
-                    sweeppower = self.setVoltageWavelengthSweeps['Sweeppower'][ii]
-                    laseroutput = self.setVoltageWavelengthSweeps['Laseroutput'][ii]
-                    numscans = self.setVoltageWavelengthSweeps['Numscans'][ii]
-                    initrange = self.setVoltageWavelengthSweeps['InitialRange'][ii]
-                    rangedec = self.setVoltageWavelengthSweeps['RangeDec'][ii]
-                    A = self.setVoltageWavelengthSweeps['ChannelA'][ii]
-                    B = self.setVoltageWavelengthSweeps['ChannelB'][ii]
-                    voltages = self.setVoltageWavelengthSweeps['Voltage'][ii].split(',')
-
-                    if len(self.activeDetectors) > 1:
-                        self.detstringlist = ['Detector Slot ' + str(self.activeDetectors[0] + 1)]
-                        for det in self.activeDetectors:
-                            if det == self.activeDetectors[0]:
-                                pass
-                            else:
-                                self.detstringlist.append('Detector Slot ' + str(det + 1))
-
-                    wav = [[]for _ in range(len(voltages))]
-                    pow = [[]for _ in range(len(voltages))]
-
-                    for l, voltage in enumerate(voltages):
-                        wav[l], pow[l] = measurement.opticalSweepWithBiasVoltage(start, stop, stepsize, sweepspeed,
-                                                                            sweeppower, laseroutput, numscans,
-                                                                            initrange, rangedec, voltage, A, B)
-
-
-                        timeStop = time.strftime("%d_%b_%Y_%H_%M_%S", time.localtime())
-
-                        self.graphPanel.canvas.sweepResultDict = {}
-                        self.graphPanel.canvas.sweepResultDict['wavelength'] = wav[l]
-                        self.graphPanel.canvas.sweepResultDict['power'] = pow[l]
-
-                        # save all associated files
-                        self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', ii, wav[l] * 1e9, pow[l],
-                                        'Wavelength sweep w Bias Voltage', motorCoordOpt, timeStart, timeStop,
-                                       chipTimeStart, self.devFolder, routine+str(voltage), leg=0)
-
-                        self.drawGraph(wav[l] * 1e9, pow[l], self.graphPanel, 'Wavelength (nm)', 'Power (dBm)', legend=0)
-
-
-                    for det in range(len(self.activeDetectors)):
-                        wav3 = [[]]
-                        pow3 = [[]]
-                        for b in range(len(wav[0])-1):
-                            wav3.append([])
-                            pow3.append([])
-                        for p in range(len(wav[0])):
-                            for v in range(len(voltages)):
-                                wav3[p].append(wav[v][p] * 1e9)
-                                pow3[p].append(pow[v][p][det])
-
-                        self.graphPanel.canvas.sweepResultDict = {}
-                        self.graphPanel.canvas.sweepResultDict['wavelength'] = wav3[det]
-                        self.graphPanel.canvas.sweepResultDict['power'] = pow3[det]
-
-                        self.voltstringlist = [str(voltages[0]) + ' V']
-                        for volt in voltages:
-                            if volt == voltages[0]:
-                                pass
-                            else:
-                                self.voltstringlist.append(str(volt) + ' V')
-
-                        # save all associated files
-                        self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', ii, wav3, pow3,
-                                        'Wavelength sweep w Bias Voltage', motorCoordOpt, timeStart, timeStop,
-                                        chipTimeStart, self.devFolder, routine + '_combinedVoltages' + '_Detector' + str(det), 2)
-                        self.drawGraph(wav3, pow3, self.graphPanel, 'Wavelength (nm)', 'Power (dBm)', legend=2)
+                                self.saveFiles(device, 'Wavelength (nm)', 'Power (dBm)', ii, wav3, pow3,
+                                                'Wavelength sweep w Bias Voltage', motorCoordOpt, timeStart, timeStop,
+                                                chipTimeStart, self.devFolder, routine + '_combinedVoltages' + '_Detector' + str(det), 2)
+                                self.drawGraph(wav3, pow3, self.graphPanel, 'Wavelength (nm)', 'Power (dBm)', legend=2)
 
             camera.stoprecord()
 
@@ -1227,7 +1246,7 @@ class autoMeasure(object):
         """
         # If laser and probe are connected
         print('Moving to device')
-        if self.laser and self.motorElec:
+        if self.laser and self.motorElec and self.probeCheckFlag:
             # lift wedge probe
             self.motorElec.moveRelativeZ(1000)
             time.sleep(2)
@@ -1272,9 +1291,11 @@ class autoMeasure(object):
                     self.motorElec.moveRelativeX(-relativex)
                     time.sleep(2)
                     self.motorElec.moveRelativeY(-relativey)
-                    time.sleep(2)
+                    scale= 0.3
+                    time_delay = scale * (abs(relativex) + abs(relativey))
+                    time.sleep(time_delay)
                     self.motorElec.moveRelativeZ(-relativez)
-                    # Fine align to device again
+                    # Fine align to device  again
                     res, completed = self.fineAlign.doFineAlign()
                     # If fine align fails change text colour of device to red in the checklist
                     if completed is False:
@@ -1288,7 +1309,7 @@ class autoMeasure(object):
                                 self.checkList.SetItemTextColour(ii, wx.Colour(0, 255, 0))
 
         # if laser is connected but probe isn't
-        elif self.laser and not self.motorElec:
+        elif (self.laser and not self.motorElec) or self.probeCheckFlag == False:
             # Calculate optical transform matrix
             selectedDevice = deviceName
             # find device object
@@ -1358,7 +1379,7 @@ class autoMeasure(object):
     def save_pdf(self, deviceObject, x, y, xarr, yarr, saveFolder, routineName, legend):
         # Create pdf file
         path = saveFolder
-        d1 = deviceObject.getDeviceID().replace(":", "")
+        #d1 = deviceObject.getDeviceID().replace(":", "")
         pdfFileName = os.path.join(path, saveFolder + "\\" + routineName + ".pdf")
         #plt.ion()
         plt.figure()
@@ -1377,7 +1398,7 @@ class autoMeasure(object):
 
     def save_mat(self, deviceObject, devNum, motorCoordOpt, xArray, yArray, x, y, saveFolder, routineName):
         path = saveFolder
-        d1 = deviceObject.getDeviceID().replace(":", "")
+        #d1 = deviceObject.getDeviceID().replace(":", "")
         matFileName = os.path.join(path, saveFolder + "\\" + routineName + ".mat")
 
         # Save sweep data and metadata to the mat file
@@ -1401,7 +1422,7 @@ class autoMeasure(object):
     def save_csv(self, deviceObject, testType, xArray, yArray, start, stop, chipStart, motorCoords, devNum, saveFolder, routineName, xlabel, ylabel):
 
         path = saveFolder
-        d1 = deviceObject.getDeviceID().replace(":", "")
+        #d1 = deviceObject.getDeviceID().replace(":", "")
         csvFileName = os.path.join(path, saveFolder + "\\" + routineName + ".csv")
         f = open(csvFileName, 'w', newline='')
         writer = csv.writer(f)

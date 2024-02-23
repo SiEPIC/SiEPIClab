@@ -26,6 +26,8 @@ import numpy.ctypeslib as npct;
 from itertools import repeat;
 import math;
 import string
+import os
+
 
 
 class hp816x(object):
@@ -72,10 +74,11 @@ class hp816x(object):
 
     def __init__(self, libLocation='hp816x_64.dll'):
         """ Initializes the driver.
-        libLocation -- Location of hp816x_32.dll library. It will search the system's PATH variable by default.
+        libLocation -- Location of hp816x_64.dll library. It will search the system's PATH variable by default.
         """
-
-        self.hLib = WinDLL('hp816x_64.dll')
+    
+        self.hLib = WinDLL('C:\\Program Files\\IVI Foundation\\VISA\\Win64\\Bin\\hp816x_64.dll')
+        #self.hLib = WinDLL('hp816x_64.dll')
         self.createPrototypes()
         self.connected = False
 
@@ -191,6 +194,7 @@ class hp816x(object):
         unitNum = self.sweepUnitDict[self.sweepUnit]
         outputNum = self.laserOutputDict[self.sweepLaserOutput]
         numScans = self.sweepNumScansDict[self.sweepNumScans]
+        sweepSpeed = self.sweepSpeedDict[self.sweepSpeed]
         numChan = len(self.pwmSlotIndex)
         numActiveChan = len(self.activeSlotIndex)  # Number of active channels
 
@@ -231,7 +235,7 @@ class hp816x(object):
             pointsAccum += points
 
         # Set sweep speed
-        self.setSweepSpeed(self.sweepSpeed)
+        self.setSweepSpeed(sweepSpeed)
 
         wavelengthArrPWM = np.zeros(int(numTotalPoints))
         powerArrPWM = np.zeros((int(numTotalPoints), numActiveChan))

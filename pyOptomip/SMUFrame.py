@@ -863,13 +863,14 @@ class resistancePanel(wx.Panel):
         self.SetSizer(vboxOuter)
 
     def UpdateResMeasurement(self, event):
-        if self.smu.automeasureflag:
-            ra = self.smu.getresistanceA()
-            ra = float(ra)
-            self.rdetA.SetLabel(str(ra))
+        if self.smu:
+            if self.smu.automeasureflag:
+                ra = self.smu.getresistanceA()
+                ra = float(ra)
+                self.rdetA.SetLabel(str(ra))
 
-            rb = self.smu.getresistanceB()
-            rb = float(rb)
-            self.rdetB.SetLabel(str(rb))
+                rb = self.smu.getresistanceB()
+                rb = float(rb)
+                self.rdetB.SetLabel(str(rb))
 
 

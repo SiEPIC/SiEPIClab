@@ -120,9 +120,9 @@ class instrumentFrame_withtabs(wx.Frame):
             tab4 = self.AutoMeasureTab(nb, self.laserWithDetector, self.opticalStage, self.electricalStage, self.SMU,
                                        self.camera)
             nb.AddPage(tab4, "Automated Measurements")
-            if (self.laserWithDetector and self.opticalStage) or (self.SMU and self.electricalStage):
-                tab5 = self.TestingParametersTab(nb, tab4.autoMeasurePanel)
-                nb.AddPage(tab5, "Testing Parameters")
+            # if (self.laserWithDetector and self.opticalStage) or (self.SMU and self.electricalStage):
+            #     tab5 = self.TestingParametersTab(nb, tab4.autoMeasurePanel)
+            #     nb.AddPage(tab5, "Testing Parameters")
 
         """Set notebook in a sizer to create the layout"""
         sizer = wx.BoxSizer(wx.VERTICAL)
@@ -326,6 +326,7 @@ class instrumentFrame_withtabs(wx.Frame):
                     dial.ShowModal()
 
                 self.graph = myMatplotlibPanel.myMatplotlibPanel(self)
+                #self.graph = self
                 self.autoMeasure = autoMeasure(laser, motorOpt, motorElec, SMU, self.fineAlign, self.graph)
 
                 self.autoMeasurePanel = autoMeasurePanel(self, self.autoMeasure, cam=camera)
