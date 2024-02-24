@@ -90,8 +90,8 @@ class coordinateMapPanel(wx.Panel):
         self.stzMotorCoordLst = np.zeros(3)
         self.stxGdsCoordLst = np.zeros(3)
         self.styGdsCoordLst = np.zeros(3)
-        self.elecxGdsCoordLst = []
-        self.elecyGdsCoordLst = []
+        self.elecxGdsCoordLst = np.zeros(3)
+        self.elecyGdsCoordLst = np.zeros(3)
 
         self.tbGdsDevice1 = wx.ComboBox(self, size=(200, 20), choices=[], style=wx.TE_PROCESS_ENTER)
         self.tbGdsDevice1.Bind(wx.EVT_CHOICE, self.on_drop_down1)
@@ -116,6 +116,8 @@ class coordinateMapPanel(wx.Panel):
         self.tbxMotorCoord1 = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
         self.tbyMotorCoord1 = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
         self.tbzMotorCoord1 = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
+        self.xGDSCoord1 = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
+        self.yGDSCoord1 = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
 
         btnGetMotorCoord = wx.Button(self, label='Get Pos.', size=(50, 20))
 
@@ -125,7 +127,9 @@ class coordinateMapPanel(wx.Panel):
         gbs.Add(self.tbyMotorCoord1, pos=(2, 3), span=(1, 1))
         gbs.Add(self.tbzMotorCoord1, pos=(2, 4), span=(1, 1))
         gbs.Add(self.GDSDevList[0], pos=(2, 1), span=(1, 1))
-        gbs.Add(btnGetMotorCoord, pos=(2, 6), span=(1, 1))
+        gbs.Add(self.xGDSCoord1, pos=(2, 6), span=(1, 1))
+        gbs.Add(self.yGDSCoord1, pos=(2, 7), span=(1, 1))
+        gbs.Add(btnGetMotorCoord, pos=(2, 8), span=(1, 1))
 
         # For "Get Position" button map a function which is called when it is pressed
         btnGetMotorCoord.Bind(wx.EVT_BUTTON,
@@ -138,6 +142,8 @@ class coordinateMapPanel(wx.Panel):
         self.tbxMotorCoord2 = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
         self.tbyMotorCoord2 = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
         self.tbzMotorCoord2 = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
+        self.xGDSCoord2 = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
+        self.yGDSCoord2 = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
 
         btnGetMotorCoord = wx.Button(self, label='Get Pos.', size=(50, 20))
 
@@ -147,7 +153,9 @@ class coordinateMapPanel(wx.Panel):
         gbs.Add(self.tbyMotorCoord2, pos=(3, 3), span=(1, 1))
         gbs.Add(self.tbzMotorCoord2, pos=(3, 4), span=(1, 1))
         gbs.Add(self.GDSDevList[1], pos=(3, 1), span=(1, 1))
-        gbs.Add(btnGetMotorCoord, pos=(3, 6), span=(1, 1))
+        gbs.Add(self.xGDSCoord2, pos=(3, 6), span=(1, 1))
+        gbs.Add(self.yGDSCoord2, pos=(3, 7), span=(1, 1))
+        gbs.Add(btnGetMotorCoord, pos=(3, 8), span=(1, 1))
 
         # For "Get Position" button map a function which is called when it is pressed
         btnGetMotorCoord.Bind(wx.EVT_BUTTON,
@@ -160,6 +168,8 @@ class coordinateMapPanel(wx.Panel):
         self.tbxMotorCoord3 = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
         self.tbyMotorCoord3 = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
         self.tbzMotorCoord3 = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
+        self.xGDSCoord3 = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
+        self.yGDSCoord3 = wx.TextCtrl(self, size=(80, 20), style=wx.TE_READONLY)
 
         btnGetMotorCoord = wx.Button(self, label='Get Pos.', size=(50, 20))
 
@@ -169,7 +179,9 @@ class coordinateMapPanel(wx.Panel):
         gbs.Add(self.tbyMotorCoord3, pos=(4, 3), span=(1, 1))
         gbs.Add(self.tbzMotorCoord3, pos=(4, 4), span=(1, 1))
         gbs.Add(self.GDSDevList[2], pos=(4, 1), span=(1, 1))
-        gbs.Add(btnGetMotorCoord, pos=(4, 6), span=(1, 1))
+        gbs.Add(self.xGDSCoord3, pos=(4, 6), span=(1, 1))
+        gbs.Add(self.yGDSCoord3, pos=(4, 7), span=(1, 1))
+        gbs.Add(btnGetMotorCoord, pos=(4, 8), span=(1, 1))
 
         # For "Get Position" button map a function which is called when it is pressed
         btnGetMotorCoord.Bind(wx.EVT_BUTTON,
@@ -186,44 +198,73 @@ class coordinateMapPanel(wx.Panel):
     def on_drop_down1(self, event):
         """Drop down menu for the first device. When a device is selected, its coordinates are added to the
         gds coordinates list"""
+        self.xGDSCoord1.SetValue('')
+        self.yGDSCoord1.SetValue('')
         for dev in self.autoMeasure.devices:
             check = self.GDSDevList[0].GetSelection()
             if check != -1:
                 if self.GDSDevList[0].GetString(self.GDSDevList[0].GetSelection()) == dev.getDeviceID():
-                    if dev.getOpticalCoordinates() is not None:
-                        self.stxGdsCoordLst[0] = dev.getOpticalCoordinates()[0]
-                        self.styGdsCoordLst[0] = dev.getOpticalCoordinates()[1]
-                    if dev.getReferenceBondPad() is not None:
-                        self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[0])
-                        self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[1])
+                    if self.type == 'opt':
+                        if dev.getOpticalCoordinates() is not None:
+                            self.stxGdsCoordLst[0] = dev.getOpticalCoordinates()[0]
+                            self.styGdsCoordLst[0] = dev.getOpticalCoordinates()[1]
+                            self.xGDSCoord1.SetValue(str(dev.getOpticalCoordinates()[0]))
+                            self.yGDSCoord1.SetValue(str(dev.getOpticalCoordinates()[1]))
+                    elif self.type == 'elec':
+                        if dev.getReferenceBondPad() is not None:
+                            top_pad = self.autoMeasure.find_highest_pad(dev.getReferenceBondPad())
+                            self.elecxGdsCoordLst[0] = top_pad[1]
+                            self.elecyGdsCoordLst[0] = top_pad[2]
+                            self.xGDSCoord1.SetValue(str(top_pad[1]))
+                            self.yGDSCoord1.SetValue(str(top_pad[2]))
+
+    
 
     def on_drop_down2(self, event):
         """Drop down menu for the second device. When a device is selected, its coordinates are added to the
         gds coordinates list and associated motor coordinates are added to the motor coordinates list"""
+        self.xGDSCoord2.SetValue('')
+        self.yGDSCoord2.SetValue('')
         for dev in self.autoMeasure.devices:
             check = self.GDSDevList[1].GetSelection()
             if check != -1:
                 if self.GDSDevList[1].GetString(self.GDSDevList[1].GetSelection()) == dev.getDeviceID():
-                    if dev.getOpticalCoordinates() is not None:
-                        self.stxGdsCoordLst[1] = dev.getOpticalCoordinates()[0]
-                        self.styGdsCoordLst[1] = dev.getOpticalCoordinates()[1]
-                    if dev.getReferenceBondPad() is not None:
-                        self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[0])
-                        self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[1])
+                    if self.type == 'opt':
+                        if dev.getOpticalCoordinates() is not None:
+                            self.stxGdsCoordLst[1] = dev.getOpticalCoordinates()[0]
+                            self.styGdsCoordLst[1] = dev.getOpticalCoordinates()[1]
+                            self.xGDSCoord2.SetValue(str(dev.getOpticalCoordinates()[0]))
+                            self.yGDSCoord2.SetValue(str(dev.getOpticalCoordinates()[1]))
+                    elif self.type == 'elec':
+                        if dev.getReferenceBondPad() is not None:
+                            top_pad = self.autoMeasure.find_highest_pad(dev.getReferenceBondPad())
+                            self.elecxGdsCoordLst[1] = top_pad[1]
+                            self.elecyGdsCoordLst[1] = top_pad[2]
+                            self.xGDSCoord2.SetValue(str(top_pad[1]))
+                            self.yGDSCoord2.SetValue(str(top_pad[2]))
 
     def on_drop_down3(self, event):
         """Drop down menu for the third device. When a device is selected, its coordinates are added to the
         gds coordinates list and associated motor coordinates are added to the motor coordinates list"""
+        self.xGDSCoord3.SetValue('')
+        self.yGDSCoord3.SetValue('')
         for dev in self.autoMeasure.devices:
             check = self.GDSDevList[2].GetSelection()
             if check != -1:
                 if self.GDSDevList[2].GetString(self.GDSDevList[2].GetSelection()) == dev.getDeviceID():
-                    if dev.getOpticalCoordinates() is not None:
-                        self.stxGdsCoordLst[2] = dev.getOpticalCoordinates()[0]
-                        self.styGdsCoordLst[2] = dev.getOpticalCoordinates()[1]
-                    if dev.getReferenceBondPad() is not None:
-                        self.elecxGdsCoordLst.append(dev.getReferenceBondPad()[0])
-                        self.elecyGdsCoordLst.append(dev.getReferenceBondPad()[1])
+                    if self.type == 'opt':
+                        if dev.getOpticalCoordinates() is not None:
+                            self.stxGdsCoordLst[2] = dev.getOpticalCoordinates()[0]
+                            self.styGdsCoordLst[2] = dev.getOpticalCoordinates()[1]
+                            self.xGDSCoord3.SetValue(str(dev.getOpticalCoordinates()[0]))
+                            self.yGDSCoord3.SetValue(str(dev.getOpticalCoordinates()[1]))
+                    elif self.type == 'elec':
+                        if dev.getReferenceBondPad() is not None:
+                            top_pad = self.autoMeasure.find_highest_pad(dev.getReferenceBondPad())
+                            self.elecxGdsCoordLst[2] = top_pad[1]
+                            self.elecyGdsCoordLst[2] = top_pad[2]
+                            self.xGDSCoord3.SetValue(str(top_pad[1]))
+                            self.yGDSCoord3.SetValue(str(top_pad[2]))
 
     def Event_OnCoordButton1(self, event, xcoord, ycoord, zcoord):
         """ Called when the button is pressed to get the current motor coordinates, and put it into the text box. """
@@ -533,10 +574,16 @@ class autoMeasurePanel(wx.Panel):
         self.calibrateBtn.Bind(wx.EVT_BUTTON, self.OnButton_Calibrate)
 
         # Add devices checklist
-        self.checkList = wx.ListCtrl(self, size = (500, 100),  style=wx.LC_REPORT)
-        self.checkList.InsertColumn(0, 'Device', width=500)
+        checklistBoxinner = wx.BoxSizer(wx.HORIZONTAL)
+        self.checkList = wx.ListCtrl(self, size = (300, 100),  style=wx.LC_REPORT)
+        self.checkList.InsertColumn(0, 'Device', width=300)
+        self.checkList.Bind(wx.EVT_LIST_ITEM_CHECKED, self.update_device_data)
+        self.deviceinfoList = wx.ListCtrl(self, size = (300, 100),  style=wx.LC_REPORT)
+        self.deviceinfoList.InsertColumn(0, 'Info', width=300)
+        checklistBoxinner.Add(self.checkList, proportion=1, flag=wx.EXPAND)
+        checklistBoxinner.Add(self.deviceinfoList, proportion=1, flag=wx.EXPAND)
         checkListBox = wx.BoxSizer(wx.HORIZONTAL)
-        checkListBox.Add(self.checkList, proportion=1, flag=wx.EXPAND)
+        checkListBox.Add(checklistBoxinner, proportion=1, flag=wx.EXPAND)
 
         # CheckList Search
         self.search = wx.SearchCtrl(self, -1)
@@ -677,8 +724,11 @@ class autoMeasurePanel(wx.Panel):
         self.probeCheckFlag = False
         self.probeCheckBtn = wx.Button(self, label='Probe out of the way', size=(300, 20))
         self.probeCheckBtn.Bind(wx.EVT_BUTTON, self.probeCheckChange)
+        self.autoFlag = True
+        self.autoBtn = wx.Button(self, label='Auto', size=(100, 20))
+        self.autoBtn.Bind(wx.EVT_BUTTON, self.manualFlagChange)
 
-        filterBox.AddMany([(self.sequenceselectCb, 0, wx.EXPAND), (self.probeCheckBtn, 0, wx.EXPAND)])
+        filterBox.AddMany([(self.sequenceselectCb, 0, wx.EXPAND), (self.probeCheckBtn, 0, wx.EXPAND), (self.autoBtn, 0, wx.EXPAND)])
 
         # Add all boxes to outer box
         vboxOuter.AddMany([(checkBox, 0, wx.EXPAND), (selectBox, 0, wx.EXPAND),
@@ -688,6 +738,49 @@ class autoMeasurePanel(wx.Panel):
         matPlotBox.Add(vboxOuter, flag=wx.LEFT | wx.TOP | wx.ALIGN_LEFT, border=0, proportion=0)
 
         self.SetSizer(matPlotBox)
+
+    def manualFlagChange(self, item):
+        if self.autoFlag == False:
+            self.autoFlag = True
+            self.autoBtn.SetLabel('Auto')
+            self.autoMeasure.autoFlag = self.autoFlag
+        elif self.autoFlag:
+            self.autoFlag = False
+            self.autoBtn.SetLabel('Manual')
+            self.autoMeasure.autoFlag = self.autoFlag
+
+
+    def update_device_data(self, item):
+        # Clear the device data listbox and associated sequences listbox before populating
+        self.deviceinfoList.DeleteAllItems()
+        index = item.GetIndex()
+        item_text = self.checkList.GetItemText(index)
+
+
+        # Find the corresponding device object
+        for device in self.autoMeasure.devices:
+            if device.device_id == item_text:
+                # Format the device data as a string
+                self.deviceinfoList.Append([f"Device ID: {device.device_id}"])
+                self.deviceinfoList.Append([f"Type: {device.type}"])
+                self.deviceinfoList.Append([f"Wavelength: {device.wavelength}"])
+                self.deviceinfoList.Append([f"Polarization: {device.polarization}"])
+                self.deviceinfoList.Append([f"Optical Coordinates: {device.opticalCoordinates}"])
+                self.deviceinfoList.Append([f"Electrical Coordinates: {device.electricalCoordinates}"])
+                self.deviceinfoList.Append(["Sequences:"])
+                for i in range(len(device.routines)):
+                    self.deviceinfoList.Append([device.routines[i]])
+        
+
+                # Populate the device data listbox with the formatted device data
+                #self.deviceinfoList.Append([device_data_str])  # wx.ListCtrl
+                #self.listbox3.addItem(device_data_item)
+
+                # Populate the associated sequences listbox with the sequences associated with the device
+                # for sequence in device.sequences:
+                #     sequence_item = QListWidgetItem(sequence)
+                #     self.listbox4.addItem(sequence_item)
+
 
     def probeCheckChange(self, event):
         if self.probeCheckFlag == False:
@@ -1064,7 +1157,7 @@ class autoMeasurePanel(wx.Panel):
             return
 
         if not Files:
-            print('Please select a file to import')
+            #print('Please select a file to import')
             return
 
         for file in Files:
@@ -1288,18 +1381,20 @@ class autoMeasurePanel(wx.Panel):
             self.autoMeasure.findCoordinateTransformOpt(self.coordMapPanelOpt.getMotorCoords(),
                                                         self.coordMapPanelOpt.getGdsCoordsOpt())
             elec = self.coordMapPanelElec.getGdsCoordsElec()
-            if elec != []:
-                self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
-                                                            self.coordMapPanelElec.getGdsCoordsElec())
+            if self.probeCheckFlag:
+                if elec != []:
+                    self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
+                                                                self.coordMapPanelElec.getGdsCoordsElec())
             # lift wedge probe
-            self.autoMeasure.motorElec.moveRelativeZ(1000)
-            time.sleep(2)
-            # move wedge probe out of the way
-            elecPosition = self.autoMeasure.motorElec.getPosition()
-            if elecPosition[0] < self.autoMeasure.motorElec.minXPosition:
-                relativex = self.autoMeasure.motorElec.minXPosition - elecPosition[0]
-                self.autoMeasure.motorElec.moveRelativeX(-relativex)
+            if self.probeCheckFlag:
+                self.autoMeasure.motorElec.moveRelativeZ(1000)
                 time.sleep(2)
+            # move wedge probe out of the way
+                elecPosition = self.autoMeasure.motorElec.getPosition()
+                if elecPosition[0] < self.autoMeasure.motorElec.minXPosition:
+                    relativex = self.autoMeasure.motorElec.minXPosition - elecPosition[0]
+                    self.autoMeasure.motorElec.moveRelativeX(-relativex)
+                    time.sleep(2)
             selectedDevice = self.devSelectCb.GetString(self.devSelectCb.GetSelection())
             # find device object
             for device in self.autoMeasure.devices:
@@ -1311,28 +1406,29 @@ class autoMeasurePanel(wx.Panel):
                     # Fine align to device
                     self.autoMeasure.fineAlign.doFineAlign()
                     # Find relative probe position
-                    if elec != []:
-                        gdsCoordElec = (float(device.getElectricalCoordinates()[0][0]), float(device.getElectricalCoordinates()[0][1]))
-                        motorCoordElec = self.autoMeasure.gdsToMotorCoordsElec(gdsCoordElec)
-                        optPosition = self.autoMeasure.motorOpt.getPosition()
-                        elecPosition = self.autoMeasure.motorElec.getPosition()
-                        adjustment = self.autoMeasure.motorOpt.getPositionforRelativeMovement()
-                        absolutex = motorCoordElec[0] + optPosition[0]*xscalevar
-                        absolutey = motorCoordElec[1] + optPosition[1]*yscalevar
-                        absolutez = motorCoordElec[2]
-                        relativex = absolutex[0] - elecPosition[0]
-                        relativey = absolutey[0] - elecPosition[1]
-                        relativez = absolutez[0] - elecPosition[2] + 15
-                        # Move probe to device
-                        self.autoMeasure.motorElec.moveRelativeX(-relativex)
-                        time.sleep(2)
-                        self.autoMeasure.motorElec.moveRelativeY(-relativey)
-                        time.sleep(2)
-                        self.adjustalignment()
-                        time.sleep(2)
-                        self.autoMeasure.motorElec.moveRelativeZ(-relativez)
-                        # Fine align to device again
-                        self.autoMeasure.fineAlign.doFineAlign()
+                    if self.probeCheckFlag:
+                        if elec != []:
+                            gdsCoordElec = (float(device.getElectricalCoordinates()[0][0]), float(device.getElectricalCoordinates()[0][1]))
+                            motorCoordElec = self.autoMeasure.gdsToMotorCoordsElec(gdsCoordElec)
+                            optPosition = self.autoMeasure.motorOpt.getPosition()
+                            elecPosition = self.autoMeasure.motorElec.getPosition()
+                            adjustment = self.autoMeasure.motorOpt.getPositionforRelativeMovement()
+                            absolutex = motorCoordElec[0] + optPosition[0]*xscalevar
+                            absolutey = motorCoordElec[1] + optPosition[1]*yscalevar
+                            absolutez = motorCoordElec[2]
+                            relativex = absolutex[0] - elecPosition[0]
+                            relativey = absolutey[0] - elecPosition[1]
+                            relativez = absolutez[0] - elecPosition[2] + 15
+                            # Move probe to device
+                            self.autoMeasure.motorElec.moveRelativeX(-relativex)
+                            time.sleep(2)
+                            self.autoMeasure.motorElec.moveRelativeY(-relativey)
+                            time.sleep(2)
+                            self.adjustalignment()
+                            time.sleep(2)
+                            self.autoMeasure.motorElec.moveRelativeZ(-relativez)
+                            # Fine align to device again
+                            self.autoMeasure.fineAlign.doFineAlign()
 
         # if laser is connected but probe isn't
         elif self.autoMeasure.laser and not self.autoMeasure.motorElec:
@@ -1403,31 +1499,38 @@ class autoMeasurePanel(wx.Panel):
         if self.outputFolderTb.GetValue() == "":
             print("Please Choose Location to Save Measurement Results.")
         else:
-            optDevSet = set()
-            self.noOptMatrix = False
-            for devName in self.coordMapPanelOpt.GDSDevList:
-                optDevSet.add(devName)
-            if len(optDevSet) < len(self.coordMapPanelOpt.GDSDevList):
-                print("Please Use Three Different Devices for the Optical Matrix.")
-                self.noOptMatrix = True
+            if self.autoFlag:
+                optDevSet = set()
+                self.noOptMatrix = False
+                for devName in self.coordMapPanelOpt.GDSDevList:
+                    optDevSet.add(devName)
+                if len(optDevSet) < len(self.coordMapPanelOpt.GDSDevList):
+                    print("Please Use Three Different Devices for the Optical Matrix.")
+                    self.noOptMatrix = True
+                else:
+                    try:
+                        self.autoMeasure.findCoordinateTransformOpt(self.coordMapPanelOpt.getMotorCoords(),
+                                                            self.coordMapPanelOpt.getGdsCoordsOpt())
+                    except:
+                        print('Please upload a yaml file')
+                        return 
+                self.noElecMatrix = False
+                if self.probeCheckFlag:
+                    if self.autoMeasure.motorElec and self.autoMeasure.smu:
+                        elecDevSet = set()
+                        for devName in self.coordMapPanelElec.GDSDevList:
+                            elecDevSet.add(devName)
+                        if len(elecDevSet) < len(self.coordMapPanelElec.GDSDevList):
+                            print("Please Use Three Different Devices for the Electrical Matrix.")
+                            self.noElecMatrix = True
+                        else:
+                            self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
+                                                                self.coordMapPanelElec.getGdsCoordsElec())
+                            if self.autoMeasure.matrixissueflag == True:
+                                return
             else:
-                self.autoMeasure.findCoordinateTransformOpt(self.coordMapPanelOpt.getMotorCoords(),
-                                                        self.coordMapPanelOpt.getGdsCoordsOpt())
-            self.noElecMatrix = False
-            if self.probeCheckFlag:
-                if self.autoMeasure.motorElec and self.autoMeasure.smu:
-                    elecDevSet = set()
-                    for devName in self.coordMapPanelElec.GDSDevList:
-                        elecDevSet.add(devName)
-                    if len(elecDevSet) < len(self.coordMapPanelElec.GDSDevList):
-                        print("Please Use Three Different Devices for the Electrical Matrix.")
-                        self.noElecMatrix = True
-                    else:
-                        self.autoMeasure.findCoordinateTransformElec(self.coordMapPanelElec.getMotorCoords(),
-                                                            self.coordMapPanelElec.getGdsCoordsElec())
-                        if self.autoMeasure.matrixissueflag == True:
-                            return
-
+                self.noElecMatrix = False
+                self.noOptMatrix = False
 
             if self.noElecMatrix is True or self.noOptMatrix is True:
                 pass

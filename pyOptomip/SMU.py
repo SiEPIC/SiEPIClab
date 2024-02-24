@@ -515,9 +515,9 @@ class SMUClass:
         sweeplist = [minVar]
         x = minVar
 
-        while x < maxVar:
-            sweeplist.append(x + resolution / 1000)
-            x = x + resolution / 1000
+        while x < maxVar - 0.00000000000000000000000001:
+            sweeplist.append(x + resolution)
+            x = x + resolution
 
         if independantvar == 'Voltage':
             if self.Aflag == True:

@@ -33,8 +33,8 @@ class BSC203MotorParameters(wx.Panel):
         self.para1name = wx.StaticText(self, label='Serial Port')
         self.para1tc = wx.ComboBox(self, choices=self.instList)
         for x in self.instList:
-            if x == 'ASRL4::INSTR':
-                self.para1tc.SetValue('ASRL4::INSTR')
+            if x == 'ASRL5::INSTR':
+                self.para1tc.SetValue('ASRL5::INSTR')
         # self.para1tc = wx.TextCtrl(self,value='ASRL5::INSTR')
         self.para1.AddMany([(self.para1name, 1, wx.EXPAND), (self.para1tc, 1, wx.EXPAND)])
 

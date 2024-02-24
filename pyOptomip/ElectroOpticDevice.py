@@ -87,7 +87,7 @@ class ElectroOpticDevice:
         for routine in self.routines:
             routineType = self.find_string_in_brackets(routine)
             routineType = routineType.replace('_ida','')
-            if routineType == 'set_Wavelength_Voltage_Sweep':
+            if routineType == 'set_wavelength_voltage_sweep':
                 setWavelengthVoltageSweepRoutines.append(routine)
         return setWavelengthVoltageSweepRoutines
 
@@ -95,7 +95,7 @@ class ElectroOpticDevice:
         setWavelengthCurrentSweepRoutines = []
         for routine in self.routines:
             routineType = routine.split(':')[0]
-            if routineType == 'set_Wavelength_Current_Sweep':
+            if routineType == 'set_wavelength_current_sweep':
                 setWavelengthCurrentSweepRoutines.append(routine)
         return setWavelengthCurrentSweepRoutines
 
@@ -104,7 +104,7 @@ class ElectroOpticDevice:
         for routine in self.routines:
             routineType = self.find_string_in_brackets(routine)
             routineType = routineType.replace('_ida','')
-            if routineType == 'set_Voltage_Wavelength_Sweep':
+            if routineType == 'set_voltage_wavelength_sweep':
                 setVoltageWavelengthSweepRoutines.append(routine)
         return setVoltageWavelengthSweepRoutines
 

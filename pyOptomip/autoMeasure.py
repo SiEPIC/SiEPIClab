@@ -56,6 +56,7 @@ class autoMeasure(object):
         if laser != 0:
             self.laser = laser
             self.probeCheckFlag = False
+            self.autoFlag = True
             self.motorOpt = motorOpt
             self.motorElec = motorElec
             self.smu = smu
@@ -425,6 +426,11 @@ class autoMeasure(object):
             if device.getDeviceID() in devices:
                 checkedDevices.append(device)
 
+        if self.autoFlag == False:
+            if len(checkedDevices) > 1:
+                print('Please select only the device you are at')
+                return
+
         devices = checkedDevices
 
         measurement = measurementRoutines(self.smu, self.laser, self.activeDetectors)
@@ -443,8 +449,9 @@ class autoMeasure(object):
             camera.startrecord(path=self.devFolder)
 
             # Move to device
-            self.moveToDevice(device.getDeviceID())
-            time.sleep(0.5)
+            if self.autoFlag:
+                self.moveToDevice(device.getDeviceID())
+                time.sleep(0.5)
 
             # Check which type of measurement is to be completed
             if self.sequencerunning == 'All' or self.sequencerunning == 'Voltage Sweep':
@@ -681,10 +688,17 @@ class autoMeasure(object):
                             voltres = self.setWavelengthVoltageSweeps['VoltRes'][ii]
                             A = self.setWavelengthVoltageSweeps['ChannelA'][ii]
                             B = self.setWavelengthVoltageSweeps['ChannelB'][ii]
+                            A = self.string_to_boolean(A)
+                            B = self.string_to_boolean(B)
                             IV = self.setWavelengthVoltageSweeps['IV'][ii]
+                            IV = self.string_to_boolean(IV)
                             RV = self.setWavelengthVoltageSweeps['RV'][ii]
+                            RV = self.string_to_boolean(RV)
                             PV = self.setWavelengthVoltageSweeps['PV'][ii]
+                            PV = self.string_to_boolean(PV)
                             wavelengths = self.setWavelengthVoltageSweeps['Wavelength'][ii].split(',')
+                            for i in range(len(wavelengths)):
+                                wavelengths[i] = wavelengths[i].replace(' ', '')
 
                             VoltA = [[]for _ in range(len(wavelengths))]
                             CurA = [[]for _ in range(len(wavelengths))]
@@ -922,10 +936,15 @@ class autoMeasure(object):
                             imax = self.setWavelengthCurrentSweeps['CurrentMax'][ii]
                             ires = self.setWavelengthCurrentSweeps['CurrentRes'][ii]
                             A = self.setWavelengthCurrentSweeps['ChannelA'][ii]
+                            A = self.string_to_boolean(A)
                             B = self.setWavelengthCurrentSweeps['ChannelB'][ii]
+                            B = self.string_to_boolean(B)
                             IV = self.setWavelengthCurrentSweeps['IV'][ii]
+                            IV = self.string_to_boolean(IV)
                             RV = self.setWavelengthCurrentSweeps['RV'][ii]
+                            RV = self.string_to_boolean(RV)
                             PV = self.setWavelengthCurrentSweeps['PV'][ii]
+                            PV = self.string_to_boolean(PV)
                             wavelengths = self.setWavelengthCurrentSweeps['Wavelength'][ii].split(',')
 
                             VoltA = [[]for _ in range(len(wavelengths))]
@@ -1160,7 +1179,9 @@ class autoMeasure(object):
                             initrange = self.setVoltageWavelengthSweeps['InitialRange'][ii]
                             rangedec = self.setVoltageWavelengthSweeps['RangeDec'][ii]
                             A = self.setVoltageWavelengthSweeps['ChannelA'][ii]
+                            A = self.string_to_boolean(A)
                             B = self.setVoltageWavelengthSweeps['ChannelB'][ii]
+                            B = self.string_to_boolean(B)
                             voltages = self.setVoltageWavelengthSweeps['Voltage'][ii].split(',')
 
                             if len(self.activeDetectors) > 1:
@@ -1236,6 +1257,12 @@ class autoMeasure(object):
             #self.laser.ctrlPanel.laserPanel.laserPanel.startDetTimer()
         self.smu.automeasureflag = True
 
+    def string_to_boolean(self, x):
+        if x == 'True':
+            x = True
+        else:
+            x = False
+
     def setScale(self, x, y):
         self.xscalevar = x
         self.yscalevar = y
@@ -1277,7 +1304,8 @@ class autoMeasure(object):
                             if self.checkList.GetItemText(ii) == device.getDeviceID():
                                 self.checkList.SetItemTextColour(ii, wx.Colour(0, 255, 0))
                     # Find relative probe position
-                    gdsCoordElec = (float(device.getElectricalCoordinates()[0][0]), float(device.getElectricalCoordinates()[0][1]))
+                    top_pad = self.find_highest_pad(device.getElectricalCoordinates()[0])
+                    gdsCoordElec = (float(top_pad[1]), float(top_pad[2]))
                     motorCoordElec = self.gdsToMotorCoordsElec(gdsCoordElec)
                     optPosition = self.motorOpt.getPosition()
                     elecPosition = self.motorElec.getPosition()
@@ -1286,12 +1314,12 @@ class autoMeasure(object):
                     absolutez = motorCoordElec[2]
                     relativex = absolutex[0] - elecPosition[0]
                     relativey = absolutey[0] - elecPosition[1]
-                    relativez = absolutez[0] - elecPosition[2] + 20
+                    relativez = absolutez[0] - elecPosition[2] #+ 20
                     # Move probe to device
                     self.motorElec.moveRelativeX(-relativex)
                     time.sleep(2)
                     self.motorElec.moveRelativeY(-relativey)
-                    scale= 0.3
+                    scale= 0.005
                     time_delay = scale * (abs(relativex) + abs(relativey))
                     time.sleep(time_delay)
                     self.motorElec.moveRelativeZ(-relativez)
@@ -1360,6 +1388,17 @@ class autoMeasure(object):
                         self.motorElec.moveRelativeZ(-relativez)
 
         self.graphPanel.canvas.draw()
+
+    def find_highest_pad(self, pads):
+        x = pads[0][2]
+        a = x
+        b = 0
+        for i in range(len(pads)):
+            x = pads[i][2]
+            if x >= a:
+                a = x 
+                b = i
+        return pads[b]
 
     def drawGraph(self, x, y, graphPanel, xlabel, ylabel, legend=0):
         graphPanel.axes.cla()
