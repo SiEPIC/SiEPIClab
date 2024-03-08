@@ -74,7 +74,8 @@ class SMUClass:
         A print statement indicating that the SMU is connected
         """
         self.visaName = visaName
-        self.k = Keithley2600(visaName)
+        self.k = Keithley2600(visaName)#, visa_library=r'C:\windows\system32\visa64.dll')
+        self.k.connect()
 
         self.inst = rm.open_resource(visaName)
         print(self.inst.query("*IDN?\n"))
@@ -164,24 +165,24 @@ class SMUClass:
             self.inst.write("smua.source.func = smua.OUTPUT_DCAMPS")
             setcurrentstring = "smua.source.leveli = " + str(current)
             self.inst.write(setcurrentstring)
-            print('Set channel A current to ' + str(float(current * 1e6) / 1000) + 'mA')
+            print('Set channel A current to ' + str(float(float(current) * 1e6) / 1000) + 'mA')
 
         if channel == 'B':
             self.inst.write("smub.source.func = smub.OUTPUT_DCAMPS")
             setcurrentstring = "smub.source.leveli = " + str(current)
             self.inst.write(setcurrentstring)
-            print('Set channel B current to ' + str(float(current * 1e6) / 1000) + 'mA')
+            print('Set channel B current to ' + str(float(float(current) * 1e6) / 1000) + 'mA')
 
         if channel == 'All':
             self.inst.write("smua.source.func = smua.OUTPUT_DCAMPS")
             setcurrentstring = "smua.source.leveli = " + str(current)
             self.inst.write(setcurrentstring)
-            print('Set channel A current to ' + str(float(current * 1e6) / 1000) + 'mA')
+            print('Set channel A current to ' + str(float(float(current) * 1e6) / 1000) + 'mA')
 
             self.inst.write("smub.source.func = smub.OUTPUT_DCAMPS")
             setcurrentstring = "smub.source.leveli = " + str(current)
             self.inst.write(setcurrentstring)
-            print('Set channel B current to ' + str(float(current * 1e6) / 1000) + 'mA')
+            print('Set channel B current to ' + str(float(float(current) * 1e6) / 1000) + 'mA')
 
     def setcurrentlimit(self, currentlimit, channel):
         """
@@ -318,7 +319,7 @@ class SMUClass:
         -------
         the current seen at channel B in Amps
         """
-        i = self.inst.query("print(smub.measure.r())")
+        i = self.inst.query("print(smub.measure.i())")
         return i
 
     def getresistanceA(self):
@@ -515,24 +516,28 @@ class SMUClass:
         sweeplist = [minVar]
         x = minVar
 
-        while x < maxVar - 0.00000000000000000000000001:
-            sweeplist.append(x + resolution)
-            x = x + resolution
+        while x < maxVar - 0.001:
+            sweeplist.append(x + resolution/1000)
+            x = x + resolution/1000
 
         if independantvar == 'Voltage':
             if self.Aflag == True:
+                #self.voltageresultA, self.currentresultA = self.k.voltage_sweep_single_smu(self.k.smua, range(0,10), t_int=0.01, delay=-1, pulsed=False)
                 self.voltageresultA, self.currentresultA = self.k.voltage_sweep_single_smu(self.k.smua, sweeplist, t_int=0.1, delay=-1, pulsed=False)
                 self.resistanceresultA = [i / j for i, j in zip(self.voltageresultA, self.currentresultA)]
                 #self.resistanceresultA = self.voltageresultA / self.currentresultA
                 self.powerresultA = [i * j for i, j in zip(self.voltageresultA, self.currentresultA)]
                 setvoltstring = "smua.source.levelv = " + str(0)
                 self.inst.write(setvoltstring)
+                self.turnchanneloff('A')
+
             if self.Bflag == True:
-                self.voltageresultB, self.currentresultB = self.k.voltage_sweep_single_smu(self.k.smub, range(minVar, maxVar), t_int=0.1, delay=-1, pulsed=False)
-                self.resistanceresultA = self.voltageresultB / self.currentresultB
-                self.powerresultA = self.voltageresultB * self.currentresultB
+                self.voltageresultB, self.currentresultB = self.k.voltage_sweep_single_smu(self.k.smub, sweeplist, t_int=0.1, delay=-1, pulsed=False)
+                self.resistanceresultB = [i / j for i, j in zip(self.voltageresultB, self.currentresultB)]
+                self.powerresultB = [i * j for i, j in zip(self.voltageresultB, self.currentresultB)]
                 setvoltstring = "smub.source.levelv = " + str(0)
                 self.inst.write(setvoltstring)
+                self.turnchanneloff('B')
 
         #if independantvar == 'Current':
            # if self.Aflag == True:
@@ -602,6 +607,7 @@ class SMUClass:
                 self.inst.write(setcurrentstring)
 
         self.sweepcompletedflag = True
+        print('Sweep completed')
 
     def turnchannelon(self, channel):
         """

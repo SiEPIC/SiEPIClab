@@ -37,7 +37,7 @@ from multiprocessing import Process
 from threading import Thread
 from queue import Queue
 import matplotlib
-matplotlib.use('WXAgg')
+#matplotlib.use('WXAgg')
 import matplotlib.pyplot as plt
 from scipy.io import savemat
 import os.path
@@ -467,6 +467,37 @@ class coordinateMapPanel(wx.Panel):
     def setMaxZPositionForMotor(self, maxZ):
         self.autoMeasure.motorElec.setMaxZPosition(maxZ)
 
+class SimplePopup(wx.Dialog):
+    def __init__(self, parent, message):
+        super().__init__(parent, title="Warning")
+
+        # Create a panel for the text label
+        panel = wx.Panel(self) 
+        label = wx.StaticText(panel, label=message)
+
+        # Center the label within the panel
+        panel_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        panel_sizer.Add(label, 1, wx.EXPAND)# | wx.ALIGN_CENTER_HORIZONTAL) 
+        #panel_sizer.Add(label, 1, wx.EXPAND | wx.ALIGN_CENTER)
+        panel.SetSizer(panel_sizer)
+
+        # Create an OK button
+        ok_button = wx.Button(self, label="OK")
+        ok_button.Bind(wx.EVT_BUTTON, self.on_close)
+
+        # Layout the widgets
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        sizer.AddSpacer(10)
+        sizer.Add(panel, 1, wx.EXPAND)  # Add the panel 
+        sizer.Add(ok_button, 0, wx.ALIGN_CENTER | wx.ALL, 10)  
+        sizer.AddSpacer(10)
+
+        self.SetMinSize((400, -1))  
+        self.SetSizer(sizer)
+        self.Fit()
+
+    def on_close(self, event):
+        self.Destroy()
 
 class autoMeasurePanel(wx.Panel):
 
@@ -500,8 +531,8 @@ class autoMeasurePanel(wx.Panel):
         self.part = 0
         global xscalevar
         global yscalevar
-        xscalevar = 0.8
-        yscalevar = 0.8
+        xscalevar = 1
+        yscalevar = 1
         global stopflag
         stopflag = False
         if ida == True:
@@ -791,6 +822,8 @@ class autoMeasurePanel(wx.Panel):
             self.probeCheckFlag = False
             self.probeCheckBtn.SetLabel('Probe out of the way')
             self.autoMeasure.probeCheckFlag = self.probeCheckFlag
+            popup = SimplePopup(None, "Please ensure probe is actually out of the way before proceeding")
+            popup.ShowModal()  # Show the popup as a modal dialog 
 
     def calibrationcheck(self, event):
         if self.caldone == True:
@@ -946,6 +979,8 @@ class autoMeasurePanel(wx.Panel):
             sequenceslist.append('Set Wavelength Current Sweep')
         if len(self.autoMeasure.setVoltageWavelengthSweeps['RoutineName']) >= 1:
             sequenceslist.append('Set Voltage Wavelength Sweep')
+        if len(self.autoMeasure.setCurrentWavelengthSweeps['RoutineName']) >= 1:
+            sequenceslist.append('Set Current Wavelength Sweep')
 
         self.sequenceselectCb.Clear()
         self.sequenceselectCb.AppendItems(sequenceslist)
@@ -953,7 +988,10 @@ class autoMeasurePanel(wx.Panel):
         # Adds items to the checklist
         self.checkList.DeleteAllItems()
         for ii, device in enumerate(deviceList):
+            #index = self.checkList.InsertItem(ii, device)  # Get the inserted item's index
+            #self.checkList.SetItemData(index, device)  # Associate the device object
             self.checkList.InsertItem(ii, device)
+            self.checkList.SetItemData(ii, ii)
             for dev in listOfDevicesAsObjects:
                 if dev.getDeviceID() == device:
                     if not dev.hasRoutines():
@@ -1000,6 +1038,12 @@ class autoMeasurePanel(wx.Panel):
         def checkListSort(item1, item2):
             """Used for sorting the checklist of devices on the chip"""
             # Items are the client data associated with each entry
+
+            device1 = self.autoMeasure.devices[item2].getDeviceID()
+
+            devcie2 = self.autoMeasure.devices[item1].getDeviceID()
+
+
             if term in self.autoMeasure.devices[item2].getDeviceID() and term not in self.autoMeasure.devices[
                 item1].getDeviceID():
                 return 1
@@ -1224,7 +1268,7 @@ class autoMeasurePanel(wx.Panel):
                 elif type == 'current_sweep':
                     currsweep = loadedYAML['Sequences'][sequencename]
                     dict = currsweep['variables']
-                    self.autoMeasure.addCurrentSweep(sequencename, dict['Min'], dict['Max'],
+                    self.autoMeasure.addCurrentSweep(sequencename, dict['Start'], dict['Stop'],
                                                             dict['Res'], dict['IV'], dict['RV'],
                                                             dict['PV'], dict['Channel A'],
                                                             dict['Channel B'])
@@ -1240,11 +1284,10 @@ class autoMeasurePanel(wx.Panel):
                 elif type == 'set_wavelength_current_sweep':
                     setwcsweep = loadedYAML['Sequences'][sequencename]
                     dict = setwcsweep['variables']
-                    self.autoMeasure.addSetWavelengthCurrentSweep(sequencename, dict['Min'], dict['Max'],
+                    self.autoMeasure.addSetWavelengthCurrentSweep(sequencename, dict['Start'], dict['Stop'],
                                                                         dict['Res'], dict['IV'], dict['RV'],
                                                                         dict['PV'], dict['Channel A'],
                                                                         dict['Channel B'], dict['Wavelengths'])
-                
                 elif type == 'set_voltage_wavelength_sweep':
                     setvwavsweep = loadedYAML['Sequences'][sequencename]
                     dict = setvwavsweep['variables']
@@ -1408,27 +1451,32 @@ class autoMeasurePanel(wx.Panel):
                     # Find relative probe position
                     if self.probeCheckFlag:
                         if elec != []:
-                            gdsCoordElec = (float(device.getElectricalCoordinates()[0][0]), float(device.getElectricalCoordinates()[0][1]))
-                            motorCoordElec = self.autoMeasure.gdsToMotorCoordsElec(gdsCoordElec)
-                            optPosition = self.autoMeasure.motorOpt.getPosition()
-                            elecPosition = self.autoMeasure.motorElec.getPosition()
-                            adjustment = self.autoMeasure.motorOpt.getPositionforRelativeMovement()
-                            absolutex = motorCoordElec[0] + optPosition[0]*xscalevar
-                            absolutey = motorCoordElec[1] + optPosition[1]*yscalevar
-                            absolutez = motorCoordElec[2]
-                            relativex = absolutex[0] - elecPosition[0]
-                            relativey = absolutey[0] - elecPosition[1]
-                            relativez = absolutez[0] - elecPosition[2] + 15
-                            # Move probe to device
-                            self.autoMeasure.motorElec.moveRelativeX(-relativex)
-                            time.sleep(2)
-                            self.autoMeasure.motorElec.moveRelativeY(-relativey)
-                            time.sleep(2)
-                            self.adjustalignment()
-                            time.sleep(2)
-                            self.autoMeasure.motorElec.moveRelativeZ(-relativez)
-                            # Fine align to device again
-                            self.autoMeasure.fineAlign.doFineAlign()
+                            if self.autoMeasure.elecMatrixReadyFlag:
+                                top_pad = self.autoMeasure.find_highest_pad(device.getElectricalCoordinates()[0])
+                                gdsCoordElec = (float(top_pad[1]), float(top_pad[2]))
+                                #gdsCoordElec = (float(device.getElectricalCoordinates()[0][0]), float(device.getElectricalCoordinates()[0][1]))
+                                motorCoordElec = self.autoMeasure.gdsToMotorCoordsElec(gdsCoordElec)
+                                optPosition = self.autoMeasure.motorOpt.getPosition()
+                                elecPosition = self.autoMeasure.motorElec.getPosition()
+                                adjustment = self.autoMeasure.motorOpt.getPositionforRelativeMovement()
+                                absolutex = motorCoordElec[0] + optPosition[0]*xscalevar
+                                absolutey = motorCoordElec[1] + optPosition[1]*yscalevar
+                                absolutez = motorCoordElec[2]
+                                relativex = absolutex[0] - elecPosition[0]
+                                relativey = absolutey[0] - elecPosition[1]
+                                relativez = absolutez[0] - elecPosition[2] + 15
+                                # Move probe to device
+                                self.autoMeasure.motorElec.moveRelativeX(-relativex)
+                                time.sleep(2)
+                                self.autoMeasure.motorElec.moveRelativeY(-relativey)
+                                time.sleep(2)
+                                self.adjustalignment()
+                                scale= 0.005
+                                time_delay = scale * (abs(relativex) + abs(relativey))
+                                time.sleep(time_delay)
+                                self.autoMeasure.motorElec.moveRelativeZ(-relativez)
+                                # Fine align to device again
+                                self.autoMeasure.fineAlign.doFineAlign()
 
         # if laser is connected but probe isn't
         elif self.autoMeasure.laser and not self.autoMeasure.motorElec:
@@ -1457,8 +1505,10 @@ class autoMeasurePanel(wx.Panel):
                 selectedDevice = self.devSelectCb.GetString(self.devSelectCb.GetSelection())
             for device in self.autoMeasure.devices:
                 if device.getDeviceID() == selectedDevice:
-                    gdsCoord = (
-                    float(device.getElectricalCoordinates()[0][0]), float(device.getElectricalCoordinates()[0][1]))
+                    top_pad = self.find_highest_pad(device.getElectricalCoordinates()[0])
+                    gdsCoord = (float(top_pad[1]), float(top_pad[2]))
+                    #gdsCoord = (
+                    #float(device.getElectricalCoordinates()[0][0]), float(device.getElectricalCoordinates()[0][1]))
                     motorCoord = self.autoMeasure.gdsToMotorCoordsElec(gdsCoord)
                     self.autoMeasure.motorElec.moveRelativeZ(1000)
                     time.sleep(2)
@@ -1477,7 +1527,9 @@ class autoMeasurePanel(wx.Panel):
                         self.autoMeasure.motorElec.moveRelativeY(-relativey)
                         time.sleep(2)
                         self.adjustalignment()
-                        time.sleep(2)
+                        scale= 0.005
+                        time_delay = scale * (abs(relativex) + abs(relativey))
+                        time.sleep(time_delay)
                         if self.calibrationflag:
                             self.autoMeasure.motorElec.moveRelativeZ(-relativez + 300)
                         else:

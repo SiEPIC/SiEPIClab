@@ -510,7 +510,7 @@ class SMUPanel(wx.Panel):
             return
 
         self.smu.setCurrent((float(self.currentset.GetValue())/1e3), self.smusel.GetValue())#self.smuasel.GetValue(), self.smubsel.GetValue())
-        self.voltset.SetValue('')
+        self.voltset.SetValue('0')
 
     def OnButton_voltageSet(self, event):
         self.inputcheck('general')
@@ -518,7 +518,7 @@ class SMUPanel(wx.Panel):
             print('Please check input parameters')
             return
         self.smu.setVoltage((float(self.voltset.GetValue())), self.smusel.GetValue()) # self.smuasel.GetValue(), self.smubsel.GetValue())
-        self.currentset.SetValue('')
+        self.currentset.SetValue('0')
 
     def OnButton_currentlim(self, event):
         self.inputcheck('general')

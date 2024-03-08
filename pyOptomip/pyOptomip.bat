@@ -1,0 +1,2 @@
+@echo off
+cmd /k "cd /d C:\Users\SiEPIC_Kaiser\Documents\GitHub\SiEPIClab\pyOptomip\.venv\Scripts & .\activate & cd /d C:\Users\SiEPIC_Kaiser\Documents\GitHub\SiEPIClab\pyOptomip & python .\pyOptomip.pyw"

@@ -94,7 +94,8 @@ class ElectroOpticDevice:
     def getSetWavelengthCurrentSweepRoutines(self):
         setWavelengthCurrentSweepRoutines = []
         for routine in self.routines:
-            routineType = routine.split(':')[0]
+            routineType = self.find_string_in_brackets(routine)
+            routineType = routineType.replace('_ida','')
             if routineType == 'set_wavelength_current_sweep':
                 setWavelengthCurrentSweepRoutines.append(routine)
         return setWavelengthCurrentSweepRoutines
@@ -107,6 +108,15 @@ class ElectroOpticDevice:
             if routineType == 'set_voltage_wavelength_sweep':
                 setVoltageWavelengthSweepRoutines.append(routine)
         return setVoltageWavelengthSweepRoutines
+    
+    def getSetCurrentWavelengthSweepRoutines(self):
+        setCurrentWavelengthSweepRoutines = []
+        for routine in self.routines:
+            routineType = self.find_string_in_brackets(routine)
+            routineType = routineType.replace('_ida','')
+            if routineType == 'set_current_wavelength_sweep':
+                setCurrentWavelengthSweepRoutines.append(routine)
+        return setCurrentWavelengthSweepRoutines
 
     def addRoutines(self, routines):
         """Adds the names of routines to be performed on this device to a list."""

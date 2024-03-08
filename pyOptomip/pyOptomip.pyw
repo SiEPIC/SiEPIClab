@@ -37,6 +37,10 @@ from SMUParameters import SMUParameters
 from outputlogPanel import outputlogPanel
 from logWriter import logWriter, logWriterError
 import sys
+# import gpib_ctypes
+# gpib_ctypes.gpib.gpib._load_lib("C:\\Windows\\System32\\gpib-32.dll")
+from gpib_ctypes import make_default_gpib
+make_default_gpib()
 import pyvisa as visa
 from instrumentFrame_withtabs import instrumentFrame_withtabs 
 from pylablib.devices import Thorlabs

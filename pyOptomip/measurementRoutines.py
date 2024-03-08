@@ -86,7 +86,19 @@ class measurementRoutines:
     def opticalSweepWithBiasVoltage(self, start, stop, stepsize, sweepspeed, sweeppower, laseroutput, numscans,
                                     initrange, rangedec, voltage, A, B):
         if A:
+            self.SMU.turnchannelon('A')
             self.SMU.setVoltage(voltage, 'A')
         if B:
+            self.SMU.turnchannelon('B')
             self.SMU.setVoltage(voltage, 'B')
+        return self.opticalSweep(start, stop, stepsize, sweepspeed, sweeppower, laseroutput, numscans, initrange, rangedec)
+    
+    def opticalSweepWithBiasCurrent(self, start, stop, stepsize, sweepspeed, sweeppower, laseroutput, numscans,
+                                    initrange, rangedec, current, A, B):
+        if A:
+            self.SMU.turnchannelon('A')
+            self.SMU.setCurrent(current, 'A')
+        if B:
+            self.SMU.turnchannelon('B')
+            self.SMU.setCurrent(current, 'B')
         return self.opticalSweep(start, stop, stepsize, sweepspeed, sweeppower, laseroutput, numscans, initrange, rangedec)
